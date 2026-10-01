@@ -1,37 +1,16 @@
 // @generated from CamundaClient.template.ts - DO NOT EDIT DIRECTLY
-import { node } from '#platform';
-import { createClient } from '../gen/client/client.gen';
-import * as Sdk from '../gen/sdk.gen';
-import { createAuthFacade } from '../runtime/auth';
-import type { CamundaConfig } from '../runtime/unifiedConfiguration';
-import type { EnvOverrides } from '../runtime/configSchema';
-import { hydrateConfig } from '../runtime/unifiedConfiguration';
-import { ConsistencyOptions, eventualPoll } from '../runtime/eventual';
-import { installAuthInterceptor } from '../runtime/installAuthInterceptor';
-import { createLogger, type Logger, type LogLevel, type LogTransport } from '../runtime/logger';
-import {
-  createSupportLogger,
-  type SupportLogger,
-  writeSupportLogPreamble,
-} from '../runtime/supportLogger';
-import {
-  wrapFetch,
-  withCorrelation as _withCorrelation,
-  getCorrelation,
-} from '../runtime/telemetry';
-import { ValidationManager } from '../runtime/validationManager';
-import type { Client } from '../gen/client/types.gen';
+
+import type * as Sdk from '../gen/sdk.gen';
 import type { ProcessInstanceKey, ScopeKey, TenantId, VariableFilter } from '../gen/types.gen';
 import type { ActivatedJobResultWithJobLeaseToken, ActivatedJobResultWithoutJobLeaseToken } from '../gen/types.gen'; // present-when projection imports
-import {
-  executeWithHttpRetry,
-  defaultHttpClassifier,
-  type HttpRetryPolicy,
-  type OperationOptions,
-} from '../runtime/retry';
-import { normalizeError } from '../runtime/errors';
-import { BackpressureManager } from '../runtime/backpressure';
-import { type Clock, createLiveClock } from '../runtime/clock';
+import { CamundaCore, type CamundaOptions } from '../runtime/camundaCore';
+import { type CancelablePromise, toCancelable } from '../runtime/cancelable';
+import { JobWorker, type JobWorkerConfig } from '../runtime/jobWorker';
+import { EnrichedActivatedJob, EnrichedActivatedJobOf } from '../runtime/jobActions';
+import type { OperationOptions } from '../runtime/retry';
+import { installSearchPagination, type WithSearchPagination } from '../runtime/searchPagination';
+import { ThreadedJobWorker, type ThreadedJobWorkerConfig } from '../runtime/threadedJobWorker';
+import { ThreadPool } from '../runtime/threadPool';
 import {
   type AnyVariableSchema,
   collectTypedVariables,
@@ -39,1342 +18,17 @@ import {
   type VariableMap,
   variableNamesFromSchema,
 } from '../runtime/typedVariables';
-import { JobWorker, type JobWorkerConfig } from '../runtime/jobWorker';
-import { enrichActivatedJob, EnrichedActivatedJob, EnrichedActivatedJobOf } from '../runtime/jobActions';
-import { ThreadedJobWorker, type ThreadedJobWorkerConfig } from '../runtime/threadedJobWorker';
-import { ThreadPool } from '../runtime/threadPool';
-import { evaluateSdkResponse } from '../runtime/responseEvaluation';
-import { installSearchPagination, type WithSearchPagination } from '../runtime/searchPagination';
-
-// Internal deep-freeze to make exposed config immutable for consumers.
-function deepFreeze<T>(obj: T): T {
-  if (obj && typeof obj === 'object' && !Object.isFrozen(obj)) {
-    Object.freeze(obj as any);
-    for (const v of Object.values(obj as any)) {
-      if (v && typeof v === 'object') deepFreeze(v as any);
-    }
-  }
-  return obj;
-}
+import { node } from '#platform';
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
 // Operations: 244
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
-type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
-type activateAdHocSubProcessActivitiesBody = (NonNullable<activateAdHocSubProcessActivitiesOptions> extends { body?: infer B } ? B : never);
-type activateAdHocSubProcessActivitiesPathParam_adHocSubProcessInstanceKey = (NonNullable<activateAdHocSubProcessActivitiesOptions> extends { path: { adHocSubProcessInstanceKey: infer P } } ? P : any);
-export type activateAdHocSubProcessActivitiesInput = activateAdHocSubProcessActivitiesBody & { adHocSubProcessInstanceKey: activateAdHocSubProcessActivitiesPathParam_adHocSubProcessInstanceKey };
-type activateJobsOptions = Parameters<typeof Sdk.activateJobs>[0];
-type activateJobsBody = (NonNullable<activateJobsOptions> extends { body?: infer B } ? B : never);
-export type activateJobsInput = activateJobsBody;
-type assignClientToGroupOptions = Parameters<typeof Sdk.assignClientToGroup>[0];
-type assignClientToGroupPathParam_groupId = (NonNullable<assignClientToGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-type assignClientToGroupPathParam_clientId = (NonNullable<assignClientToGroupOptions> extends { path: { clientId: infer P } } ? P : any);
-export type assignClientToGroupInput = { groupId: assignClientToGroupPathParam_groupId; clientId: assignClientToGroupPathParam_clientId };
-type assignClientToTenantOptions = Parameters<typeof Sdk.assignClientToTenant>[0];
-type assignClientToTenantPathParam_tenantId = (NonNullable<assignClientToTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type assignClientToTenantPathParam_clientId = (NonNullable<assignClientToTenantOptions> extends { path: { clientId: infer P } } ? P : any);
-export type assignClientToTenantInput = { tenantId: assignClientToTenantPathParam_tenantId; clientId: assignClientToTenantPathParam_clientId };
-type assignGroupToTenantOptions = Parameters<typeof Sdk.assignGroupToTenant>[0];
-type assignGroupToTenantPathParam_tenantId = (NonNullable<assignGroupToTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type assignGroupToTenantPathParam_groupId = (NonNullable<assignGroupToTenantOptions> extends { path: { groupId: infer P } } ? P : any);
-export type assignGroupToTenantInput = { tenantId: assignGroupToTenantPathParam_tenantId; groupId: assignGroupToTenantPathParam_groupId };
-type assignMappingRuleToGroupOptions = Parameters<typeof Sdk.assignMappingRuleToGroup>[0];
-type assignMappingRuleToGroupPathParam_groupId = (NonNullable<assignMappingRuleToGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-type assignMappingRuleToGroupPathParam_mappingRuleId = (NonNullable<assignMappingRuleToGroupOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
-export type assignMappingRuleToGroupInput = { groupId: assignMappingRuleToGroupPathParam_groupId; mappingRuleId: assignMappingRuleToGroupPathParam_mappingRuleId };
-type assignMappingRuleToTenantOptions = Parameters<typeof Sdk.assignMappingRuleToTenant>[0];
-type assignMappingRuleToTenantPathParam_tenantId = (NonNullable<assignMappingRuleToTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type assignMappingRuleToTenantPathParam_mappingRuleId = (NonNullable<assignMappingRuleToTenantOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
-export type assignMappingRuleToTenantInput = { tenantId: assignMappingRuleToTenantPathParam_tenantId; mappingRuleId: assignMappingRuleToTenantPathParam_mappingRuleId };
-type assignProcessInstanceBusinessIdOptions = Parameters<typeof Sdk.assignProcessInstanceBusinessId>[0];
-type assignProcessInstanceBusinessIdBody = (NonNullable<assignProcessInstanceBusinessIdOptions> extends { body?: infer B } ? B : never);
-type assignProcessInstanceBusinessIdPathParam_processInstanceKey = (NonNullable<assignProcessInstanceBusinessIdOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
-export type assignProcessInstanceBusinessIdInput = assignProcessInstanceBusinessIdBody & { processInstanceKey: assignProcessInstanceBusinessIdPathParam_processInstanceKey };
-type assignRoleToClientOptions = Parameters<typeof Sdk.assignRoleToClient>[0];
-type assignRoleToClientPathParam_roleId = (NonNullable<assignRoleToClientOptions> extends { path: { roleId: infer P } } ? P : any);
-type assignRoleToClientPathParam_clientId = (NonNullable<assignRoleToClientOptions> extends { path: { clientId: infer P } } ? P : any);
-export type assignRoleToClientInput = { roleId: assignRoleToClientPathParam_roleId; clientId: assignRoleToClientPathParam_clientId };
-type assignRoleToGroupOptions = Parameters<typeof Sdk.assignRoleToGroup>[0];
-type assignRoleToGroupPathParam_roleId = (NonNullable<assignRoleToGroupOptions> extends { path: { roleId: infer P } } ? P : any);
-type assignRoleToGroupPathParam_groupId = (NonNullable<assignRoleToGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-export type assignRoleToGroupInput = { roleId: assignRoleToGroupPathParam_roleId; groupId: assignRoleToGroupPathParam_groupId };
-type assignRoleToMappingRuleOptions = Parameters<typeof Sdk.assignRoleToMappingRule>[0];
-type assignRoleToMappingRulePathParam_roleId = (NonNullable<assignRoleToMappingRuleOptions> extends { path: { roleId: infer P } } ? P : any);
-type assignRoleToMappingRulePathParam_mappingRuleId = (NonNullable<assignRoleToMappingRuleOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
-export type assignRoleToMappingRuleInput = { roleId: assignRoleToMappingRulePathParam_roleId; mappingRuleId: assignRoleToMappingRulePathParam_mappingRuleId };
-type assignRoleToTenantOptions = Parameters<typeof Sdk.assignRoleToTenant>[0];
-type assignRoleToTenantPathParam_tenantId = (NonNullable<assignRoleToTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type assignRoleToTenantPathParam_roleId = (NonNullable<assignRoleToTenantOptions> extends { path: { roleId: infer P } } ? P : any);
-export type assignRoleToTenantInput = { tenantId: assignRoleToTenantPathParam_tenantId; roleId: assignRoleToTenantPathParam_roleId };
-type assignRoleToUserOptions = Parameters<typeof Sdk.assignRoleToUser>[0];
-type assignRoleToUserPathParam_roleId = (NonNullable<assignRoleToUserOptions> extends { path: { roleId: infer P } } ? P : any);
-type assignRoleToUserPathParam_username = (NonNullable<assignRoleToUserOptions> extends { path: { username: infer P } } ? P : any);
-export type assignRoleToUserInput = { roleId: assignRoleToUserPathParam_roleId; username: assignRoleToUserPathParam_username };
-type assignUserTaskOptions = Parameters<typeof Sdk.assignUserTask>[0];
-type assignUserTaskBody = (NonNullable<assignUserTaskOptions> extends { body?: infer B } ? B : never);
-type assignUserTaskPathParam_userTaskKey = (NonNullable<assignUserTaskOptions> extends { path: { userTaskKey: infer P } } ? P : any);
-export type assignUserTaskInput = assignUserTaskBody & { userTaskKey: assignUserTaskPathParam_userTaskKey };
-type assignUserToGroupOptions = Parameters<typeof Sdk.assignUserToGroup>[0];
-type assignUserToGroupPathParam_groupId = (NonNullable<assignUserToGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-type assignUserToGroupPathParam_username = (NonNullable<assignUserToGroupOptions> extends { path: { username: infer P } } ? P : any);
-export type assignUserToGroupInput = { groupId: assignUserToGroupPathParam_groupId; username: assignUserToGroupPathParam_username };
-type assignUserToTenantOptions = Parameters<typeof Sdk.assignUserToTenant>[0];
-type assignUserToTenantPathParam_tenantId = (NonNullable<assignUserToTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type assignUserToTenantPathParam_username = (NonNullable<assignUserToTenantOptions> extends { path: { username: infer P } } ? P : any);
-export type assignUserToTenantInput = { tenantId: assignUserToTenantPathParam_tenantId; username: assignUserToTenantPathParam_username };
-type broadcastSignalOptions = Parameters<typeof Sdk.broadcastSignal>[0];
-type broadcastSignalBody = (NonNullable<broadcastSignalOptions> extends { body?: infer B } ? B : never);
-export type broadcastSignalInput = broadcastSignalBody;
-type cancelBatchOperationOptions = Parameters<typeof Sdk.cancelBatchOperation>[0];
-type cancelBatchOperationBody = (NonNullable<cancelBatchOperationOptions> extends { body?: infer B } ? B : never);
-type cancelBatchOperationPathParam_batchOperationKey = (NonNullable<cancelBatchOperationOptions> extends { path: { batchOperationKey: infer P } } ? P : any);
-export type cancelBatchOperationInput = cancelBatchOperationBody & { batchOperationKey: cancelBatchOperationPathParam_batchOperationKey };
-type cancelClusterRebalanceOptions = Parameters<typeof Sdk.cancelClusterRebalance>[0];
-export type cancelClusterRebalanceInput = void;
-type cancelProcessInstanceOptions = Parameters<typeof Sdk.cancelProcessInstance>[0];
-type cancelProcessInstanceBody = (NonNullable<cancelProcessInstanceOptions> extends { body?: infer B } ? B : never);
-type cancelProcessInstancePathParam_processInstanceKey = (NonNullable<cancelProcessInstanceOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
-export type cancelProcessInstanceInput = cancelProcessInstanceBody & { processInstanceKey: cancelProcessInstancePathParam_processInstanceKey };
-type cancelProcessInstancesBatchOperationOptions = Parameters<typeof Sdk.cancelProcessInstancesBatchOperation>[0];
-type cancelProcessInstancesBatchOperationBody = (NonNullable<cancelProcessInstancesBatchOperationOptions> extends { body?: infer B } ? B : never);
-export type cancelProcessInstancesBatchOperationInput = cancelProcessInstancesBatchOperationBody;
-type changeClusterModeOptions = Parameters<typeof Sdk.changeClusterMode>[0];
-type changeClusterModeQueryParam_mode = (NonNullable<changeClusterModeOptions> extends { query?: { mode?: infer Q } } ? Q : any);
-type changeClusterModeQueryParam_dryRun = (NonNullable<changeClusterModeOptions> extends { query?: { dryRun?: infer Q } } ? Q : any);
-export type changeClusterModeInput = { mode: changeClusterModeQueryParam_mode; dryRun?: changeClusterModeQueryParam_dryRun };
-type changeClusterModeAsClusterAdminOptions = Parameters<typeof Sdk.changeClusterModeAsClusterAdmin>[0];
-type changeClusterModeAsClusterAdminQueryParam_mode = (NonNullable<changeClusterModeAsClusterAdminOptions> extends { query?: { mode?: infer Q } } ? Q : any);
-type changeClusterModeAsClusterAdminQueryParam_physicalTenantId = (NonNullable<changeClusterModeAsClusterAdminOptions> extends { query?: { physicalTenantId?: infer Q } } ? Q : any);
-type changeClusterModeAsClusterAdminQueryParam_dryRun = (NonNullable<changeClusterModeAsClusterAdminOptions> extends { query?: { dryRun?: infer Q } } ? Q : any);
-export type changeClusterModeAsClusterAdminInput = { mode: changeClusterModeAsClusterAdminQueryParam_mode; physicalTenantId?: changeClusterModeAsClusterAdminQueryParam_physicalTenantId; dryRun?: changeClusterModeAsClusterAdminQueryParam_dryRun };
-type completeJobOptions = Parameters<typeof Sdk.completeJob>[0];
-type completeJobBody = (NonNullable<completeJobOptions> extends { body?: infer B } ? B : never);
-type completeJobPathParam_jobKey = (NonNullable<completeJobOptions> extends { path: { jobKey: infer P } } ? P : any);
-export type completeJobInput = completeJobBody & { jobKey: completeJobPathParam_jobKey };
-type completeUserTaskOptions = Parameters<typeof Sdk.completeUserTask>[0];
-type completeUserTaskBody = (NonNullable<completeUserTaskOptions> extends { body?: infer B } ? B : never);
-type completeUserTaskPathParam_userTaskKey = (NonNullable<completeUserTaskOptions> extends { path: { userTaskKey: infer P } } ? P : any);
-export type completeUserTaskInput = completeUserTaskBody & { userTaskKey: completeUserTaskPathParam_userTaskKey };
-type correlateMessageOptions = Parameters<typeof Sdk.correlateMessage>[0];
-type correlateMessageBody = (NonNullable<correlateMessageOptions> extends { body?: infer B } ? B : never);
-export type correlateMessageInput = correlateMessageBody;
-type createAdminUserOptions = Parameters<typeof Sdk.createAdminUser>[0];
-type createAdminUserBody = (NonNullable<createAdminUserOptions> extends { body?: infer B } ? B : never);
-export type createAdminUserInput = createAdminUserBody;
-type createAgentInstanceOptions = Parameters<typeof Sdk.createAgentInstance>[0];
-type createAgentInstanceBody = (NonNullable<createAgentInstanceOptions> extends { body?: infer B } ? B : never);
-export type createAgentInstanceInput = createAgentInstanceBody;
-type createAuthorizationOptions = Parameters<typeof Sdk.createAuthorization>[0];
-type createAuthorizationBody = (NonNullable<createAuthorizationOptions> extends { body?: infer B } ? B : never);
-export type createAuthorizationInput = createAuthorizationBody;
-type createDeploymentOptions = Parameters<typeof Sdk.createDeployment>[0];
-type createDeploymentBody = (NonNullable<createDeploymentOptions> extends { body?: infer B } ? B : never);
-export type createDeploymentInput = Omit<createDeploymentBody, 'resources'> & { resources: File[] };
-type createDocumentOptions = Parameters<typeof Sdk.createDocument>[0];
-type createDocumentBody = (NonNullable<createDocumentOptions> extends { body?: infer B } ? B : never);
-type createDocumentQueryParam_storeId = (NonNullable<createDocumentOptions> extends { query?: { storeId?: infer Q } } ? Q : any);
-type createDocumentQueryParam_documentId = (NonNullable<createDocumentOptions> extends { query?: { documentId?: infer Q } } ? Q : any);
-export type createDocumentInput = createDocumentBody & { storeId?: createDocumentQueryParam_storeId; documentId?: createDocumentQueryParam_documentId };
-type createDocumentLinkOptions = Parameters<typeof Sdk.createDocumentLink>[0];
-type createDocumentLinkBody = (NonNullable<createDocumentLinkOptions> extends { body?: infer B } ? B : never);
-type createDocumentLinkPathParam_documentId = (NonNullable<createDocumentLinkOptions> extends { path: { documentId: infer P } } ? P : any);
-type createDocumentLinkQueryParam_storeId = (NonNullable<createDocumentLinkOptions> extends { query?: { storeId?: infer Q } } ? Q : any);
-type createDocumentLinkQueryParam_contentHash = (NonNullable<createDocumentLinkOptions> extends { query?: { contentHash?: infer Q } } ? Q : any);
-export type createDocumentLinkInput = createDocumentLinkBody & { documentId: createDocumentLinkPathParam_documentId; storeId?: createDocumentLinkQueryParam_storeId; contentHash?: createDocumentLinkQueryParam_contentHash };
-type createDocumentsOptions = Parameters<typeof Sdk.createDocuments>[0];
-type createDocumentsBody = (NonNullable<createDocumentsOptions> extends { body?: infer B } ? B : never);
-type createDocumentsQueryParam_storeId = (NonNullable<createDocumentsOptions> extends { query?: { storeId?: infer Q } } ? Q : any);
-export type createDocumentsInput = createDocumentsBody & { storeId?: createDocumentsQueryParam_storeId };
-type createElementInstanceVariablesOptions = Parameters<typeof Sdk.createElementInstanceVariables>[0];
-type createElementInstanceVariablesBody = (NonNullable<createElementInstanceVariablesOptions> extends { body?: infer B } ? B : never);
-type createElementInstanceVariablesPathParam_elementInstanceKey = (NonNullable<createElementInstanceVariablesOptions> extends { path: { elementInstanceKey: infer P } } ? P : any);
-export type createElementInstanceVariablesInput = createElementInstanceVariablesBody & { elementInstanceKey: createElementInstanceVariablesPathParam_elementInstanceKey };
-type createGlobalClusterVariableOptions = Parameters<typeof Sdk.createGlobalClusterVariable>[0];
-type createGlobalClusterVariableBody = (NonNullable<createGlobalClusterVariableOptions> extends { body?: infer B } ? B : never);
-export type createGlobalClusterVariableInput = createGlobalClusterVariableBody;
-type createGlobalTaskListenerOptions = Parameters<typeof Sdk.createGlobalTaskListener>[0];
-type createGlobalTaskListenerBody = (NonNullable<createGlobalTaskListenerOptions> extends { body?: infer B } ? B : never);
-export type createGlobalTaskListenerInput = createGlobalTaskListenerBody;
-type createGroupOptions = Parameters<typeof Sdk.createGroup>[0];
-type createGroupBody = (NonNullable<createGroupOptions> extends { body?: infer B } ? B : never);
-export type createGroupInput = createGroupBody;
-type createMappingRuleOptions = Parameters<typeof Sdk.createMappingRule>[0];
-type createMappingRuleBody = (NonNullable<createMappingRuleOptions> extends { body?: infer B } ? B : never);
-export type createMappingRuleInput = createMappingRuleBody;
-type createProcessInstanceOptions = Parameters<typeof Sdk.createProcessInstance>[0];
-type createProcessInstanceBody = (NonNullable<createProcessInstanceOptions> extends { body?: infer B } ? B : never);
-export type createProcessInstanceInput = createProcessInstanceBody;
-type createRoleOptions = Parameters<typeof Sdk.createRole>[0];
-type createRoleBody = (NonNullable<createRoleOptions> extends { body?: infer B } ? B : never);
-export type createRoleInput = createRoleBody;
-type createTenantOptions = Parameters<typeof Sdk.createTenant>[0];
-type createTenantBody = (NonNullable<createTenantOptions> extends { body?: infer B } ? B : never);
-export type createTenantInput = createTenantBody;
-type createTenantClusterVariableOptions = Parameters<typeof Sdk.createTenantClusterVariable>[0];
-type createTenantClusterVariableBody = (NonNullable<createTenantClusterVariableOptions> extends { body?: infer B } ? B : never);
-type createTenantClusterVariablePathParam_tenantId = (NonNullable<createTenantClusterVariableOptions> extends { path: { tenantId: infer P } } ? P : any);
-export type createTenantClusterVariableInput = createTenantClusterVariableBody & { tenantId: createTenantClusterVariablePathParam_tenantId };
-type createUserOptions = Parameters<typeof Sdk.createUser>[0];
-type createUserBody = (NonNullable<createUserOptions> extends { body?: infer B } ? B : never);
-export type createUserInput = createUserBody;
-type deleteAuthorizationOptions = Parameters<typeof Sdk.deleteAuthorization>[0];
-type deleteAuthorizationPathParam_authorizationKey = (NonNullable<deleteAuthorizationOptions> extends { path: { authorizationKey: infer P } } ? P : any);
-export type deleteAuthorizationInput = { authorizationKey: deleteAuthorizationPathParam_authorizationKey };
-type deleteDecisionInstanceOptions = Parameters<typeof Sdk.deleteDecisionInstance>[0];
-type deleteDecisionInstanceBody = (NonNullable<deleteDecisionInstanceOptions> extends { body?: infer B } ? B : never);
-type deleteDecisionInstancePathParam_decisionEvaluationKey = (NonNullable<deleteDecisionInstanceOptions> extends { path: { decisionEvaluationKey: infer P } } ? P : any);
-export type deleteDecisionInstanceInput = deleteDecisionInstanceBody & { decisionEvaluationKey: deleteDecisionInstancePathParam_decisionEvaluationKey };
-type deleteDecisionInstancesBatchOperationOptions = Parameters<typeof Sdk.deleteDecisionInstancesBatchOperation>[0];
-type deleteDecisionInstancesBatchOperationBody = (NonNullable<deleteDecisionInstancesBatchOperationOptions> extends { body?: infer B } ? B : never);
-export type deleteDecisionInstancesBatchOperationInput = deleteDecisionInstancesBatchOperationBody;
-type deleteDocumentOptions = Parameters<typeof Sdk.deleteDocument>[0];
-type deleteDocumentPathParam_documentId = (NonNullable<deleteDocumentOptions> extends { path: { documentId: infer P } } ? P : any);
-type deleteDocumentQueryParam_storeId = (NonNullable<deleteDocumentOptions> extends { query?: { storeId?: infer Q } } ? Q : any);
-export type deleteDocumentInput = { documentId: deleteDocumentPathParam_documentId; storeId?: deleteDocumentQueryParam_storeId };
-type deleteGlobalClusterVariableOptions = Parameters<typeof Sdk.deleteGlobalClusterVariable>[0];
-type deleteGlobalClusterVariablePathParam_name = (NonNullable<deleteGlobalClusterVariableOptions> extends { path: { name: infer P } } ? P : any);
-export type deleteGlobalClusterVariableInput = { name: deleteGlobalClusterVariablePathParam_name };
-type deleteGlobalTaskListenerOptions = Parameters<typeof Sdk.deleteGlobalTaskListener>[0];
-type deleteGlobalTaskListenerPathParam_id = (NonNullable<deleteGlobalTaskListenerOptions> extends { path: { id: infer P } } ? P : any);
-export type deleteGlobalTaskListenerInput = { id: deleteGlobalTaskListenerPathParam_id };
-type deleteGroupOptions = Parameters<typeof Sdk.deleteGroup>[0];
-type deleteGroupPathParam_groupId = (NonNullable<deleteGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-export type deleteGroupInput = { groupId: deleteGroupPathParam_groupId };
-type deleteHistoryBackupOptions = Parameters<typeof Sdk.deleteHistoryBackup>[0];
-type deleteHistoryBackupPathParam_backupId = (NonNullable<deleteHistoryBackupOptions> extends { path: { backupId: infer P } } ? P : any);
-export type deleteHistoryBackupInput = { backupId: deleteHistoryBackupPathParam_backupId };
-type deleteHistoryBackupAsClusterAdminOptions = Parameters<typeof Sdk.deleteHistoryBackupAsClusterAdmin>[0];
-type deleteHistoryBackupAsClusterAdminPathParam_backupId = (NonNullable<deleteHistoryBackupAsClusterAdminOptions> extends { path: { backupId: infer P } } ? P : any);
-type deleteHistoryBackupAsClusterAdminQueryParam_physicalTenantId = (NonNullable<deleteHistoryBackupAsClusterAdminOptions> extends { query?: { physicalTenantId?: infer Q } } ? Q : any);
-export type deleteHistoryBackupAsClusterAdminInput = { backupId: deleteHistoryBackupAsClusterAdminPathParam_backupId; physicalTenantId?: deleteHistoryBackupAsClusterAdminQueryParam_physicalTenantId };
-type deleteMappingRuleOptions = Parameters<typeof Sdk.deleteMappingRule>[0];
-type deleteMappingRulePathParam_mappingRuleId = (NonNullable<deleteMappingRuleOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
-export type deleteMappingRuleInput = { mappingRuleId: deleteMappingRulePathParam_mappingRuleId };
-type deleteProcessInstanceOptions = Parameters<typeof Sdk.deleteProcessInstance>[0];
-type deleteProcessInstanceBody = (NonNullable<deleteProcessInstanceOptions> extends { body?: infer B } ? B : never);
-type deleteProcessInstancePathParam_processInstanceKey = (NonNullable<deleteProcessInstanceOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
-export type deleteProcessInstanceInput = deleteProcessInstanceBody & { processInstanceKey: deleteProcessInstancePathParam_processInstanceKey };
-type deleteProcessInstancesBatchOperationOptions = Parameters<typeof Sdk.deleteProcessInstancesBatchOperation>[0];
-type deleteProcessInstancesBatchOperationBody = (NonNullable<deleteProcessInstancesBatchOperationOptions> extends { body?: infer B } ? B : never);
-export type deleteProcessInstancesBatchOperationInput = deleteProcessInstancesBatchOperationBody;
-type deleteResourceOptions = Parameters<typeof Sdk.deleteResource>[0];
-type deleteResourceBody = (NonNullable<deleteResourceOptions> extends { body?: infer B } ? B : never);
-type deleteResourcePathParam_resourceKey = (NonNullable<deleteResourceOptions> extends { path: { resourceKey: infer P } } ? P : any);
-export type deleteResourceInput = deleteResourceBody & { resourceKey: deleteResourcePathParam_resourceKey };
-type deleteRoleOptions = Parameters<typeof Sdk.deleteRole>[0];
-type deleteRolePathParam_roleId = (NonNullable<deleteRoleOptions> extends { path: { roleId: infer P } } ? P : any);
-export type deleteRoleInput = { roleId: deleteRolePathParam_roleId };
-type deleteRuntimeBackupOptions = Parameters<typeof Sdk.deleteRuntimeBackup>[0];
-type deleteRuntimeBackupPathParam_backupId = (NonNullable<deleteRuntimeBackupOptions> extends { path: { backupId: infer P } } ? P : any);
-export type deleteRuntimeBackupInput = { backupId: deleteRuntimeBackupPathParam_backupId };
-type deleteRuntimeBackupAsClusterAdminOptions = Parameters<typeof Sdk.deleteRuntimeBackupAsClusterAdmin>[0];
-type deleteRuntimeBackupAsClusterAdminPathParam_backupId = (NonNullable<deleteRuntimeBackupAsClusterAdminOptions> extends { path: { backupId: infer P } } ? P : any);
-type deleteRuntimeBackupAsClusterAdminQueryParam_physicalTenantId = (NonNullable<deleteRuntimeBackupAsClusterAdminOptions> extends { query?: { physicalTenantId?: infer Q } } ? Q : any);
-export type deleteRuntimeBackupAsClusterAdminInput = { backupId: deleteRuntimeBackupAsClusterAdminPathParam_backupId; physicalTenantId?: deleteRuntimeBackupAsClusterAdminQueryParam_physicalTenantId };
-type deleteRuntimeBackupStateOptions = Parameters<typeof Sdk.deleteRuntimeBackupState>[0];
-export type deleteRuntimeBackupStateInput = void;
-type deleteRuntimeBackupStateAsClusterAdminOptions = Parameters<typeof Sdk.deleteRuntimeBackupStateAsClusterAdmin>[0];
-type deleteRuntimeBackupStateAsClusterAdminQueryParam_physicalTenantId = (NonNullable<deleteRuntimeBackupStateAsClusterAdminOptions> extends { query?: { physicalTenantId?: infer Q } } ? Q : any);
-export type deleteRuntimeBackupStateAsClusterAdminInput = { physicalTenantId?: deleteRuntimeBackupStateAsClusterAdminQueryParam_physicalTenantId };
-type deleteTenantOptions = Parameters<typeof Sdk.deleteTenant>[0];
-type deleteTenantPathParam_tenantId = (NonNullable<deleteTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-export type deleteTenantInput = { tenantId: deleteTenantPathParam_tenantId };
-type deleteTenantClusterVariableOptions = Parameters<typeof Sdk.deleteTenantClusterVariable>[0];
-type deleteTenantClusterVariablePathParam_tenantId = (NonNullable<deleteTenantClusterVariableOptions> extends { path: { tenantId: infer P } } ? P : any);
-type deleteTenantClusterVariablePathParam_name = (NonNullable<deleteTenantClusterVariableOptions> extends { path: { name: infer P } } ? P : any);
-export type deleteTenantClusterVariableInput = { tenantId: deleteTenantClusterVariablePathParam_tenantId; name: deleteTenantClusterVariablePathParam_name };
-type deleteUserOptions = Parameters<typeof Sdk.deleteUser>[0];
-type deleteUserPathParam_username = (NonNullable<deleteUserOptions> extends { path: { username: infer P } } ? P : any);
-export type deleteUserInput = { username: deleteUserPathParam_username };
-type evaluateConditionalsOptions = Parameters<typeof Sdk.evaluateConditionals>[0];
-type evaluateConditionalsBody = (NonNullable<evaluateConditionalsOptions> extends { body?: infer B } ? B : never);
-export type evaluateConditionalsInput = evaluateConditionalsBody;
-type evaluateDecisionOptions = Parameters<typeof Sdk.evaluateDecision>[0];
-type evaluateDecisionBody = (NonNullable<evaluateDecisionOptions> extends { body?: infer B } ? B : never);
-export type evaluateDecisionInput = evaluateDecisionBody;
-type evaluateExpressionOptions = Parameters<typeof Sdk.evaluateExpression>[0];
-type evaluateExpressionBody = (NonNullable<evaluateExpressionOptions> extends { body?: infer B } ? B : never);
-export type evaluateExpressionInput = evaluateExpressionBody;
-type failJobOptions = Parameters<typeof Sdk.failJob>[0];
-type failJobBody = (NonNullable<failJobOptions> extends { body?: infer B } ? B : never);
-type failJobPathParam_jobKey = (NonNullable<failJobOptions> extends { path: { jobKey: infer P } } ? P : any);
-export type failJobInput = failJobBody & { jobKey: failJobPathParam_jobKey };
-type getAgentDefinitionOptions = Parameters<typeof Sdk.getAgentDefinition>[0];
-type getAgentDefinitionPathParam_agentDefinitionKey = (NonNullable<getAgentDefinitionOptions> extends { path: { agentDefinitionKey: infer P } } ? P : any);
-export type getAgentDefinitionInput = { agentDefinitionKey: getAgentDefinitionPathParam_agentDefinitionKey };
-/** Management of eventual consistency **/
-export type getAgentDefinitionConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getAgentDefinition>> 
-};
-type getAgentInstanceOptions = Parameters<typeof Sdk.getAgentInstance>[0];
-type getAgentInstancePathParam_agentInstanceKey = (NonNullable<getAgentInstanceOptions> extends { path: { agentInstanceKey: infer P } } ? P : any);
-export type getAgentInstanceInput = { agentInstanceKey: getAgentInstancePathParam_agentInstanceKey };
-/** Management of eventual consistency **/
-export type getAgentInstanceConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getAgentInstance>> 
-};
-type getAuditLogOptions = Parameters<typeof Sdk.getAuditLog>[0];
-type getAuditLogPathParam_auditLogKey = (NonNullable<getAuditLogOptions> extends { path: { auditLogKey: infer P } } ? P : any);
-export type getAuditLogInput = { auditLogKey: getAuditLogPathParam_auditLogKey };
-/** Management of eventual consistency **/
-export type getAuditLogConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getAuditLog>> 
-};
-type getAuthenticationOptions = Parameters<typeof Sdk.getAuthentication>[0];
-export type getAuthenticationInput = void;
-type getAuthorizationOptions = Parameters<typeof Sdk.getAuthorization>[0];
-type getAuthorizationPathParam_authorizationKey = (NonNullable<getAuthorizationOptions> extends { path: { authorizationKey: infer P } } ? P : any);
-export type getAuthorizationInput = { authorizationKey: getAuthorizationPathParam_authorizationKey };
-/** Management of eventual consistency **/
-export type getAuthorizationConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getAuthorization>> 
-};
-type getBatchOperationOptions = Parameters<typeof Sdk.getBatchOperation>[0];
-type getBatchOperationPathParam_batchOperationKey = (NonNullable<getBatchOperationOptions> extends { path: { batchOperationKey: infer P } } ? P : any);
-export type getBatchOperationInput = { batchOperationKey: getBatchOperationPathParam_batchOperationKey };
-/** Management of eventual consistency **/
-export type getBatchOperationConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getBatchOperation>> 
-};
-type getClusterExportingStatusOptions = Parameters<typeof Sdk.getClusterExportingStatus>[0];
-export type getClusterExportingStatusInput = void;
-type getClusterRebalanceOptions = Parameters<typeof Sdk.getClusterRebalance>[0];
-export type getClusterRebalanceInput = void;
-type getClusterStatusOptions = Parameters<typeof Sdk.getClusterStatus>[0];
-export type getClusterStatusInput = void;
-type getClusterTopologyOptions = Parameters<typeof Sdk.getClusterTopology>[0];
-export type getClusterTopologyInput = void;
-type getClusterUpgradeStatusOptions = Parameters<typeof Sdk.getClusterUpgradeStatus>[0];
-export type getClusterUpgradeStatusInput = void;
-type getDecisionDefinitionOptions = Parameters<typeof Sdk.getDecisionDefinition>[0];
-type getDecisionDefinitionPathParam_decisionDefinitionKey = (NonNullable<getDecisionDefinitionOptions> extends { path: { decisionDefinitionKey: infer P } } ? P : any);
-export type getDecisionDefinitionInput = { decisionDefinitionKey: getDecisionDefinitionPathParam_decisionDefinitionKey };
-/** Management of eventual consistency **/
-export type getDecisionDefinitionConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getDecisionDefinition>> 
-};
-type getDecisionDefinitionXmlOptions = Parameters<typeof Sdk.getDecisionDefinitionXml>[0];
-type getDecisionDefinitionXmlPathParam_decisionDefinitionKey = (NonNullable<getDecisionDefinitionXmlOptions> extends { path: { decisionDefinitionKey: infer P } } ? P : any);
-export type getDecisionDefinitionXmlInput = { decisionDefinitionKey: getDecisionDefinitionXmlPathParam_decisionDefinitionKey };
-/** Management of eventual consistency **/
-export type getDecisionDefinitionXmlConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getDecisionDefinitionXml>> 
-};
-type getDecisionInstanceOptions = Parameters<typeof Sdk.getDecisionInstance>[0];
-type getDecisionInstancePathParam_decisionEvaluationInstanceKey = (NonNullable<getDecisionInstanceOptions> extends { path: { decisionEvaluationInstanceKey: infer P } } ? P : any);
-export type getDecisionInstanceInput = { decisionEvaluationInstanceKey: getDecisionInstancePathParam_decisionEvaluationInstanceKey };
-/** Management of eventual consistency **/
-export type getDecisionInstanceConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getDecisionInstance>> 
-};
-type getDecisionRequirementsOptions = Parameters<typeof Sdk.getDecisionRequirements>[0];
-type getDecisionRequirementsPathParam_decisionRequirementsKey = (NonNullable<getDecisionRequirementsOptions> extends { path: { decisionRequirementsKey: infer P } } ? P : any);
-export type getDecisionRequirementsInput = { decisionRequirementsKey: getDecisionRequirementsPathParam_decisionRequirementsKey };
-/** Management of eventual consistency **/
-export type getDecisionRequirementsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getDecisionRequirements>> 
-};
-type getDecisionRequirementsXmlOptions = Parameters<typeof Sdk.getDecisionRequirementsXml>[0];
-type getDecisionRequirementsXmlPathParam_decisionRequirementsKey = (NonNullable<getDecisionRequirementsXmlOptions> extends { path: { decisionRequirementsKey: infer P } } ? P : any);
-export type getDecisionRequirementsXmlInput = { decisionRequirementsKey: getDecisionRequirementsXmlPathParam_decisionRequirementsKey };
-/** Management of eventual consistency **/
-export type getDecisionRequirementsXmlConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getDecisionRequirementsXml>> 
-};
-type getDocumentOptions = Parameters<typeof Sdk.getDocument>[0];
-type getDocumentPathParam_documentId = (NonNullable<getDocumentOptions> extends { path: { documentId: infer P } } ? P : any);
-type getDocumentQueryParam_storeId = (NonNullable<getDocumentOptions> extends { query?: { storeId?: infer Q } } ? Q : any);
-type getDocumentQueryParam_contentHash = (NonNullable<getDocumentOptions> extends { query?: { contentHash?: infer Q } } ? Q : any);
-export type getDocumentInput = { documentId: getDocumentPathParam_documentId; storeId?: getDocumentQueryParam_storeId; contentHash?: getDocumentQueryParam_contentHash };
-type getElementInstanceOptions = Parameters<typeof Sdk.getElementInstance>[0];
-type getElementInstancePathParam_elementInstanceKey = (NonNullable<getElementInstanceOptions> extends { path: { elementInstanceKey: infer P } } ? P : any);
-export type getElementInstanceInput = { elementInstanceKey: getElementInstancePathParam_elementInstanceKey };
-/** Management of eventual consistency **/
-export type getElementInstanceConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getElementInstance>> 
-};
-type getExportingStatusOptions = Parameters<typeof Sdk.getExportingStatus>[0];
-export type getExportingStatusInput = void;
-type getFormByKeyOptions = Parameters<typeof Sdk.getFormByKey>[0];
-type getFormByKeyPathParam_formKey = (NonNullable<getFormByKeyOptions> extends { path: { formKey: infer P } } ? P : any);
-export type getFormByKeyInput = { formKey: getFormByKeyPathParam_formKey };
-/** Management of eventual consistency **/
-export type getFormByKeyConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getFormByKey>> 
-};
-type getGlobalClusterVariableOptions = Parameters<typeof Sdk.getGlobalClusterVariable>[0];
-type getGlobalClusterVariablePathParam_name = (NonNullable<getGlobalClusterVariableOptions> extends { path: { name: infer P } } ? P : any);
-export type getGlobalClusterVariableInput = { name: getGlobalClusterVariablePathParam_name };
-/** Management of eventual consistency **/
-export type getGlobalClusterVariableConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getGlobalClusterVariable>> 
-};
-type getGlobalJobStatisticsOptions = Parameters<typeof Sdk.getGlobalJobStatistics>[0];
-type getGlobalJobStatisticsQueryParam_from = (NonNullable<getGlobalJobStatisticsOptions> extends { query?: { from?: infer Q } } ? Q : any);
-type getGlobalJobStatisticsQueryParam_to = (NonNullable<getGlobalJobStatisticsOptions> extends { query?: { to?: infer Q } } ? Q : any);
-type getGlobalJobStatisticsQueryParam_jobType = (NonNullable<getGlobalJobStatisticsOptions> extends { query?: { jobType?: infer Q } } ? Q : any);
-export type getGlobalJobStatisticsInput = { from: getGlobalJobStatisticsQueryParam_from; to: getGlobalJobStatisticsQueryParam_to; jobType?: getGlobalJobStatisticsQueryParam_jobType };
-/** Management of eventual consistency **/
-export type getGlobalJobStatisticsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getGlobalJobStatistics>> 
-};
-type getGlobalTaskListenerOptions = Parameters<typeof Sdk.getGlobalTaskListener>[0];
-type getGlobalTaskListenerPathParam_id = (NonNullable<getGlobalTaskListenerOptions> extends { path: { id: infer P } } ? P : any);
-export type getGlobalTaskListenerInput = { id: getGlobalTaskListenerPathParam_id };
-/** Management of eventual consistency **/
-export type getGlobalTaskListenerConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getGlobalTaskListener>> 
-};
-type getGroupOptions = Parameters<typeof Sdk.getGroup>[0];
-type getGroupPathParam_groupId = (NonNullable<getGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-export type getGroupInput = { groupId: getGroupPathParam_groupId };
-/** Management of eventual consistency **/
-export type getGroupConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getGroup>> 
-};
-type getHistoryBackupOptions = Parameters<typeof Sdk.getHistoryBackup>[0];
-type getHistoryBackupPathParam_backupId = (NonNullable<getHistoryBackupOptions> extends { path: { backupId: infer P } } ? P : any);
-export type getHistoryBackupInput = { backupId: getHistoryBackupPathParam_backupId };
-type getHistoryBackupAsClusterAdminOptions = Parameters<typeof Sdk.getHistoryBackupAsClusterAdmin>[0];
-type getHistoryBackupAsClusterAdminPathParam_backupId = (NonNullable<getHistoryBackupAsClusterAdminOptions> extends { path: { backupId: infer P } } ? P : any);
-type getHistoryBackupAsClusterAdminQueryParam_physicalTenantId = (NonNullable<getHistoryBackupAsClusterAdminOptions> extends { query?: { physicalTenantId?: infer Q } } ? Q : any);
-export type getHistoryBackupAsClusterAdminInput = { backupId: getHistoryBackupAsClusterAdminPathParam_backupId; physicalTenantId?: getHistoryBackupAsClusterAdminQueryParam_physicalTenantId };
-type getIncidentOptions = Parameters<typeof Sdk.getIncident>[0];
-type getIncidentPathParam_incidentKey = (NonNullable<getIncidentOptions> extends { path: { incidentKey: infer P } } ? P : any);
-export type getIncidentInput = { incidentKey: getIncidentPathParam_incidentKey };
-/** Management of eventual consistency **/
-export type getIncidentConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getIncident>> 
-};
-type getJobErrorStatisticsOptions = Parameters<typeof Sdk.getJobErrorStatistics>[0];
-type getJobErrorStatisticsBody = (NonNullable<getJobErrorStatisticsOptions> extends { body?: infer B } ? B : never);
-export type getJobErrorStatisticsInput = getJobErrorStatisticsBody;
-/** Management of eventual consistency **/
-export type getJobErrorStatisticsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getJobErrorStatistics>> 
-};
-type getJobTimeSeriesStatisticsOptions = Parameters<typeof Sdk.getJobTimeSeriesStatistics>[0];
-type getJobTimeSeriesStatisticsBody = (NonNullable<getJobTimeSeriesStatisticsOptions> extends { body?: infer B } ? B : never);
-export type getJobTimeSeriesStatisticsInput = getJobTimeSeriesStatisticsBody;
-/** Management of eventual consistency **/
-export type getJobTimeSeriesStatisticsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getJobTimeSeriesStatistics>> 
-};
-type getJobTypeStatisticsOptions = Parameters<typeof Sdk.getJobTypeStatistics>[0];
-type getJobTypeStatisticsBody = (NonNullable<getJobTypeStatisticsOptions> extends { body?: infer B } ? B : never);
-export type getJobTypeStatisticsInput = getJobTypeStatisticsBody;
-/** Management of eventual consistency **/
-export type getJobTypeStatisticsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getJobTypeStatistics>> 
-};
-type getJobWorkerStatisticsOptions = Parameters<typeof Sdk.getJobWorkerStatistics>[0];
-type getJobWorkerStatisticsBody = (NonNullable<getJobWorkerStatisticsOptions> extends { body?: infer B } ? B : never);
-export type getJobWorkerStatisticsInput = getJobWorkerStatisticsBody;
-/** Management of eventual consistency **/
-export type getJobWorkerStatisticsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getJobWorkerStatistics>> 
-};
-type getLicenseOptions = Parameters<typeof Sdk.getLicense>[0];
-export type getLicenseInput = void;
-type getMappingRuleOptions = Parameters<typeof Sdk.getMappingRule>[0];
-type getMappingRulePathParam_mappingRuleId = (NonNullable<getMappingRuleOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
-export type getMappingRuleInput = { mappingRuleId: getMappingRulePathParam_mappingRuleId };
-/** Management of eventual consistency **/
-export type getMappingRuleConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getMappingRule>> 
-};
-type getProcessDefinitionOptions = Parameters<typeof Sdk.getProcessDefinition>[0];
-type getProcessDefinitionPathParam_processDefinitionKey = (NonNullable<getProcessDefinitionOptions> extends { path: { processDefinitionKey: infer P } } ? P : any);
-export type getProcessDefinitionInput = { processDefinitionKey: getProcessDefinitionPathParam_processDefinitionKey };
-/** Management of eventual consistency **/
-export type getProcessDefinitionConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessDefinition>> 
-};
-type getProcessDefinitionInstanceStatisticsOptions = Parameters<typeof Sdk.getProcessDefinitionInstanceStatistics>[0];
-type getProcessDefinitionInstanceStatisticsBody = (NonNullable<getProcessDefinitionInstanceStatisticsOptions> extends { body?: infer B } ? B : never);
-export type getProcessDefinitionInstanceStatisticsInput = getProcessDefinitionInstanceStatisticsBody;
-/** Management of eventual consistency **/
-export type getProcessDefinitionInstanceStatisticsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessDefinitionInstanceStatistics>> 
-};
-type getProcessDefinitionInstanceVersionStatisticsOptions = Parameters<typeof Sdk.getProcessDefinitionInstanceVersionStatistics>[0];
-type getProcessDefinitionInstanceVersionStatisticsBody = (NonNullable<getProcessDefinitionInstanceVersionStatisticsOptions> extends { body?: infer B } ? B : never);
-export type getProcessDefinitionInstanceVersionStatisticsInput = getProcessDefinitionInstanceVersionStatisticsBody;
-/** Management of eventual consistency **/
-export type getProcessDefinitionInstanceVersionStatisticsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessDefinitionInstanceVersionStatistics>> 
-};
-type getProcessDefinitionMessageSubscriptionStatisticsOptions = Parameters<typeof Sdk.getProcessDefinitionMessageSubscriptionStatistics>[0];
-type getProcessDefinitionMessageSubscriptionStatisticsBody = (NonNullable<getProcessDefinitionMessageSubscriptionStatisticsOptions> extends { body?: infer B } ? B : never);
-export type getProcessDefinitionMessageSubscriptionStatisticsInput = getProcessDefinitionMessageSubscriptionStatisticsBody;
-/** Management of eventual consistency **/
-export type getProcessDefinitionMessageSubscriptionStatisticsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessDefinitionMessageSubscriptionStatistics>> 
-};
-type getProcessDefinitionStatisticsOptions = Parameters<typeof Sdk.getProcessDefinitionStatistics>[0];
-type getProcessDefinitionStatisticsBody = (NonNullable<getProcessDefinitionStatisticsOptions> extends { body?: infer B } ? B : never);
-type getProcessDefinitionStatisticsPathParam_processDefinitionKey = (NonNullable<getProcessDefinitionStatisticsOptions> extends { path: { processDefinitionKey: infer P } } ? P : any);
-export type getProcessDefinitionStatisticsInput = getProcessDefinitionStatisticsBody & { processDefinitionKey: getProcessDefinitionStatisticsPathParam_processDefinitionKey };
-/** Management of eventual consistency **/
-export type getProcessDefinitionStatisticsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessDefinitionStatistics>> 
-};
-type getProcessDefinitionXmlOptions = Parameters<typeof Sdk.getProcessDefinitionXml>[0];
-type getProcessDefinitionXmlPathParam_processDefinitionKey = (NonNullable<getProcessDefinitionXmlOptions> extends { path: { processDefinitionKey: infer P } } ? P : any);
-export type getProcessDefinitionXmlInput = { processDefinitionKey: getProcessDefinitionXmlPathParam_processDefinitionKey };
-/** Management of eventual consistency **/
-export type getProcessDefinitionXmlConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessDefinitionXml>> 
-};
-type getProcessInstanceOptions = Parameters<typeof Sdk.getProcessInstance>[0];
-type getProcessInstancePathParam_processInstanceKey = (NonNullable<getProcessInstanceOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
-export type getProcessInstanceInput = { processInstanceKey: getProcessInstancePathParam_processInstanceKey };
-/** Management of eventual consistency **/
-export type getProcessInstanceConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessInstance>> 
-};
-type getProcessInstanceCallHierarchyOptions = Parameters<typeof Sdk.getProcessInstanceCallHierarchy>[0];
-type getProcessInstanceCallHierarchyPathParam_processInstanceKey = (NonNullable<getProcessInstanceCallHierarchyOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
-export type getProcessInstanceCallHierarchyInput = { processInstanceKey: getProcessInstanceCallHierarchyPathParam_processInstanceKey };
-/** Management of eventual consistency **/
-export type getProcessInstanceCallHierarchyConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessInstanceCallHierarchy>> 
-};
-type getProcessInstanceSequenceFlowsOptions = Parameters<typeof Sdk.getProcessInstanceSequenceFlows>[0];
-type getProcessInstanceSequenceFlowsPathParam_processInstanceKey = (NonNullable<getProcessInstanceSequenceFlowsOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
-export type getProcessInstanceSequenceFlowsInput = { processInstanceKey: getProcessInstanceSequenceFlowsPathParam_processInstanceKey };
-/** Management of eventual consistency **/
-export type getProcessInstanceSequenceFlowsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessInstanceSequenceFlows>> 
-};
-type getProcessInstanceStatisticsOptions = Parameters<typeof Sdk.getProcessInstanceStatistics>[0];
-type getProcessInstanceStatisticsPathParam_processInstanceKey = (NonNullable<getProcessInstanceStatisticsOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
-export type getProcessInstanceStatisticsInput = { processInstanceKey: getProcessInstanceStatisticsPathParam_processInstanceKey };
-/** Management of eventual consistency **/
-export type getProcessInstanceStatisticsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessInstanceStatistics>> 
-};
-type getProcessInstanceStatisticsByDefinitionOptions = Parameters<typeof Sdk.getProcessInstanceStatisticsByDefinition>[0];
-type getProcessInstanceStatisticsByDefinitionBody = (NonNullable<getProcessInstanceStatisticsByDefinitionOptions> extends { body?: infer B } ? B : never);
-export type getProcessInstanceStatisticsByDefinitionInput = getProcessInstanceStatisticsByDefinitionBody;
-/** Management of eventual consistency **/
-export type getProcessInstanceStatisticsByDefinitionConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessInstanceStatisticsByDefinition>> 
-};
-type getProcessInstanceStatisticsByErrorOptions = Parameters<typeof Sdk.getProcessInstanceStatisticsByError>[0];
-type getProcessInstanceStatisticsByErrorBody = (NonNullable<getProcessInstanceStatisticsByErrorOptions> extends { body?: infer B } ? B : never);
-export type getProcessInstanceStatisticsByErrorInput = getProcessInstanceStatisticsByErrorBody;
-/** Management of eventual consistency **/
-export type getProcessInstanceStatisticsByErrorConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessInstanceStatisticsByError>> 
-};
-type getProcessInstanceWaitStateStatisticsOptions = Parameters<typeof Sdk.getProcessInstanceWaitStateStatistics>[0];
-type getProcessInstanceWaitStateStatisticsPathParam_processInstanceKey = (NonNullable<getProcessInstanceWaitStateStatisticsOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
-export type getProcessInstanceWaitStateStatisticsInput = { processInstanceKey: getProcessInstanceWaitStateStatisticsPathParam_processInstanceKey };
-/** Management of eventual consistency **/
-export type getProcessInstanceWaitStateStatisticsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessInstanceWaitStateStatistics>> 
-};
-type getResourceOptions = Parameters<typeof Sdk.getResource>[0];
-type getResourcePathParam_resourceKey = (NonNullable<getResourceOptions> extends { path: { resourceKey: infer P } } ? P : any);
-export type getResourceInput = { resourceKey: getResourcePathParam_resourceKey };
-/** Management of eventual consistency **/
-export type getResourceConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getResource>> 
-};
-type getResourceContentOptions = Parameters<typeof Sdk.getResourceContent>[0];
-type getResourceContentPathParam_resourceKey = (NonNullable<getResourceContentOptions> extends { path: { resourceKey: infer P } } ? P : any);
-export type getResourceContentInput = { resourceKey: getResourceContentPathParam_resourceKey };
-/** Management of eventual consistency **/
-export type getResourceContentConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getResourceContent>> 
-};
-type getResourceContentBinaryOptions = Parameters<typeof Sdk.getResourceContentBinary>[0];
-type getResourceContentBinaryPathParam_resourceKey = (NonNullable<getResourceContentBinaryOptions> extends { path: { resourceKey: infer P } } ? P : any);
-export type getResourceContentBinaryInput = { resourceKey: getResourceContentBinaryPathParam_resourceKey };
-/** Management of eventual consistency **/
-export type getResourceContentBinaryConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getResourceContentBinary>> 
-};
-type getRestoreStatusOptions = Parameters<typeof Sdk.getRestoreStatus>[0];
-export type getRestoreStatusInput = void;
-type getRoleOptions = Parameters<typeof Sdk.getRole>[0];
-type getRolePathParam_roleId = (NonNullable<getRoleOptions> extends { path: { roleId: infer P } } ? P : any);
-export type getRoleInput = { roleId: getRolePathParam_roleId };
-/** Management of eventual consistency **/
-export type getRoleConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getRole>> 
-};
-type getRuntimeBackupOptions = Parameters<typeof Sdk.getRuntimeBackup>[0];
-type getRuntimeBackupPathParam_backupId = (NonNullable<getRuntimeBackupOptions> extends { path: { backupId: infer P } } ? P : any);
-export type getRuntimeBackupInput = { backupId: getRuntimeBackupPathParam_backupId };
-type getRuntimeBackupAsClusterAdminOptions = Parameters<typeof Sdk.getRuntimeBackupAsClusterAdmin>[0];
-type getRuntimeBackupAsClusterAdminPathParam_backupId = (NonNullable<getRuntimeBackupAsClusterAdminOptions> extends { path: { backupId: infer P } } ? P : any);
-type getRuntimeBackupAsClusterAdminQueryParam_physicalTenantId = (NonNullable<getRuntimeBackupAsClusterAdminOptions> extends { query?: { physicalTenantId?: infer Q } } ? Q : any);
-export type getRuntimeBackupAsClusterAdminInput = { backupId: getRuntimeBackupAsClusterAdminPathParam_backupId; physicalTenantId?: getRuntimeBackupAsClusterAdminQueryParam_physicalTenantId };
-type getRuntimeBackupStateOptions = Parameters<typeof Sdk.getRuntimeBackupState>[0];
-export type getRuntimeBackupStateInput = void;
-type getRuntimeBackupStateAsClusterAdminOptions = Parameters<typeof Sdk.getRuntimeBackupStateAsClusterAdmin>[0];
-type getRuntimeBackupStateAsClusterAdminQueryParam_physicalTenantId = (NonNullable<getRuntimeBackupStateAsClusterAdminOptions> extends { query?: { physicalTenantId?: infer Q } } ? Q : any);
-export type getRuntimeBackupStateAsClusterAdminInput = { physicalTenantId?: getRuntimeBackupStateAsClusterAdminQueryParam_physicalTenantId };
-type getStartProcessFormOptions = Parameters<typeof Sdk.getStartProcessForm>[0];
-type getStartProcessFormPathParam_processDefinitionKey = (NonNullable<getStartProcessFormOptions> extends { path: { processDefinitionKey: infer P } } ? P : any);
-export type getStartProcessFormInput = { processDefinitionKey: getStartProcessFormPathParam_processDefinitionKey };
-/** Management of eventual consistency **/
-export type getStartProcessFormConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getStartProcessForm>> 
-};
-type getStatusOptions = Parameters<typeof Sdk.getStatus>[0];
-export type getStatusInput = void;
-type getSystemConfigurationOptions = Parameters<typeof Sdk.getSystemConfiguration>[0];
-export type getSystemConfigurationInput = void;
-type getTenantOptions = Parameters<typeof Sdk.getTenant>[0];
-type getTenantPathParam_tenantId = (NonNullable<getTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-export type getTenantInput = { tenantId: getTenantPathParam_tenantId };
-/** Management of eventual consistency **/
-export type getTenantConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getTenant>> 
-};
-type getTenantClusterVariableOptions = Parameters<typeof Sdk.getTenantClusterVariable>[0];
-type getTenantClusterVariablePathParam_tenantId = (NonNullable<getTenantClusterVariableOptions> extends { path: { tenantId: infer P } } ? P : any);
-type getTenantClusterVariablePathParam_name = (NonNullable<getTenantClusterVariableOptions> extends { path: { name: infer P } } ? P : any);
-export type getTenantClusterVariableInput = { tenantId: getTenantClusterVariablePathParam_tenantId; name: getTenantClusterVariablePathParam_name };
-/** Management of eventual consistency **/
-export type getTenantClusterVariableConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getTenantClusterVariable>> 
-};
-type getTopologyOptions = Parameters<typeof Sdk.getTopology>[0];
-export type getTopologyInput = void;
-type getUsageMetricsOptions = Parameters<typeof Sdk.getUsageMetrics>[0];
-type getUsageMetricsQueryParam_startTime = (NonNullable<getUsageMetricsOptions> extends { query?: { startTime?: infer Q } } ? Q : any);
-type getUsageMetricsQueryParam_endTime = (NonNullable<getUsageMetricsOptions> extends { query?: { endTime?: infer Q } } ? Q : any);
-type getUsageMetricsQueryParam_tenantId = (NonNullable<getUsageMetricsOptions> extends { query?: { tenantId?: infer Q } } ? Q : any);
-type getUsageMetricsQueryParam_withTenants = (NonNullable<getUsageMetricsOptions> extends { query?: { withTenants?: infer Q } } ? Q : any);
-export type getUsageMetricsInput = { startTime: getUsageMetricsQueryParam_startTime; endTime: getUsageMetricsQueryParam_endTime; tenantId?: getUsageMetricsQueryParam_tenantId; withTenants?: getUsageMetricsQueryParam_withTenants };
-/** Management of eventual consistency **/
-export type getUsageMetricsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getUsageMetrics>> 
-};
-type getUserOptions = Parameters<typeof Sdk.getUser>[0];
-type getUserPathParam_username = (NonNullable<getUserOptions> extends { path: { username: infer P } } ? P : any);
-export type getUserInput = { username: getUserPathParam_username };
-/** Management of eventual consistency **/
-export type getUserConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getUser>> 
-};
-type getUserTaskOptions = Parameters<typeof Sdk.getUserTask>[0];
-type getUserTaskPathParam_userTaskKey = (NonNullable<getUserTaskOptions> extends { path: { userTaskKey: infer P } } ? P : any);
-export type getUserTaskInput = { userTaskKey: getUserTaskPathParam_userTaskKey };
-/** Management of eventual consistency **/
-export type getUserTaskConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getUserTask>> 
-};
-type getUserTaskFormOptions = Parameters<typeof Sdk.getUserTaskForm>[0];
-type getUserTaskFormPathParam_userTaskKey = (NonNullable<getUserTaskFormOptions> extends { path: { userTaskKey: infer P } } ? P : any);
-export type getUserTaskFormInput = { userTaskKey: getUserTaskFormPathParam_userTaskKey };
-/** Management of eventual consistency **/
-export type getUserTaskFormConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getUserTaskForm>> 
-};
-type getVariableOptions = Parameters<typeof Sdk.getVariable>[0];
-type getVariablePathParam_variableKey = (NonNullable<getVariableOptions> extends { path: { variableKey: infer P } } ? P : any);
-export type getVariableInput = { variableKey: getVariablePathParam_variableKey };
-/** Management of eventual consistency **/
-export type getVariableConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getVariable>> 
-};
-type listHistoryBackupsOptions = Parameters<typeof Sdk.listHistoryBackups>[0];
-type listHistoryBackupsQueryParam_prefix = (NonNullable<listHistoryBackupsOptions> extends { query?: { prefix?: infer Q } } ? Q : any);
-type listHistoryBackupsQueryParam_verbose = (NonNullable<listHistoryBackupsOptions> extends { query?: { verbose?: infer Q } } ? Q : any);
-export type listHistoryBackupsInput = { prefix?: listHistoryBackupsQueryParam_prefix; verbose?: listHistoryBackupsQueryParam_verbose };
-type listHistoryBackupsAsClusterAdminOptions = Parameters<typeof Sdk.listHistoryBackupsAsClusterAdmin>[0];
-type listHistoryBackupsAsClusterAdminQueryParam_physicalTenantId = (NonNullable<listHistoryBackupsAsClusterAdminOptions> extends { query?: { physicalTenantId?: infer Q } } ? Q : any);
-type listHistoryBackupsAsClusterAdminQueryParam_prefix = (NonNullable<listHistoryBackupsAsClusterAdminOptions> extends { query?: { prefix?: infer Q } } ? Q : any);
-type listHistoryBackupsAsClusterAdminQueryParam_verbose = (NonNullable<listHistoryBackupsAsClusterAdminOptions> extends { query?: { verbose?: infer Q } } ? Q : any);
-export type listHistoryBackupsAsClusterAdminInput = { physicalTenantId?: listHistoryBackupsAsClusterAdminQueryParam_physicalTenantId; prefix?: listHistoryBackupsAsClusterAdminQueryParam_prefix; verbose?: listHistoryBackupsAsClusterAdminQueryParam_verbose };
-type listRuntimeBackupsOptions = Parameters<typeof Sdk.listRuntimeBackups>[0];
-type listRuntimeBackupsQueryParam_prefix = (NonNullable<listRuntimeBackupsOptions> extends { query?: { prefix?: infer Q } } ? Q : any);
-export type listRuntimeBackupsInput = { prefix?: listRuntimeBackupsQueryParam_prefix };
-type listRuntimeBackupsAsClusterAdminOptions = Parameters<typeof Sdk.listRuntimeBackupsAsClusterAdmin>[0];
-type listRuntimeBackupsAsClusterAdminQueryParam_physicalTenantId = (NonNullable<listRuntimeBackupsAsClusterAdminOptions> extends { query?: { physicalTenantId?: infer Q } } ? Q : any);
-type listRuntimeBackupsAsClusterAdminQueryParam_prefix = (NonNullable<listRuntimeBackupsAsClusterAdminOptions> extends { query?: { prefix?: infer Q } } ? Q : any);
-export type listRuntimeBackupsAsClusterAdminInput = { physicalTenantId?: listRuntimeBackupsAsClusterAdminQueryParam_physicalTenantId; prefix?: listRuntimeBackupsAsClusterAdminQueryParam_prefix };
-type listSecretsOptions = Parameters<typeof Sdk.listSecrets>[0];
-type listSecretsBody = (NonNullable<listSecretsOptions> extends { body?: infer B } ? B : never);
-export type listSecretsInput = listSecretsBody;
-type migrateProcessInstanceOptions = Parameters<typeof Sdk.migrateProcessInstance>[0];
-type migrateProcessInstanceBody = (NonNullable<migrateProcessInstanceOptions> extends { body?: infer B } ? B : never);
-type migrateProcessInstancePathParam_processInstanceKey = (NonNullable<migrateProcessInstanceOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
-export type migrateProcessInstanceInput = migrateProcessInstanceBody & { processInstanceKey: migrateProcessInstancePathParam_processInstanceKey };
-type migrateProcessInstancesBatchOperationOptions = Parameters<typeof Sdk.migrateProcessInstancesBatchOperation>[0];
-type migrateProcessInstancesBatchOperationBody = (NonNullable<migrateProcessInstancesBatchOperationOptions> extends { body?: infer B } ? B : never);
-export type migrateProcessInstancesBatchOperationInput = migrateProcessInstancesBatchOperationBody;
-type modifyProcessInstanceOptions = Parameters<typeof Sdk.modifyProcessInstance>[0];
-type modifyProcessInstanceBody = (NonNullable<modifyProcessInstanceOptions> extends { body?: infer B } ? B : never);
-type modifyProcessInstancePathParam_processInstanceKey = (NonNullable<modifyProcessInstanceOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
-export type modifyProcessInstanceInput = modifyProcessInstanceBody & { processInstanceKey: modifyProcessInstancePathParam_processInstanceKey };
-type modifyProcessInstancesBatchOperationOptions = Parameters<typeof Sdk.modifyProcessInstancesBatchOperation>[0];
-type modifyProcessInstancesBatchOperationBody = (NonNullable<modifyProcessInstancesBatchOperationOptions> extends { body?: infer B } ? B : never);
-export type modifyProcessInstancesBatchOperationInput = modifyProcessInstancesBatchOperationBody;
-type pauseClusterExportingOptions = Parameters<typeof Sdk.pauseClusterExporting>[0];
-type pauseClusterExportingQueryParam_soft = (NonNullable<pauseClusterExportingOptions> extends { query?: { soft?: infer Q } } ? Q : any);
-export type pauseClusterExportingInput = { soft?: pauseClusterExportingQueryParam_soft };
-type pauseExportingOptions = Parameters<typeof Sdk.pauseExporting>[0];
-type pauseExportingQueryParam_soft = (NonNullable<pauseExportingOptions> extends { query?: { soft?: infer Q } } ? Q : any);
-export type pauseExportingInput = { soft?: pauseExportingQueryParam_soft };
-type pinClockOptions = Parameters<typeof Sdk.pinClock>[0];
-type pinClockBody = (NonNullable<pinClockOptions> extends { body?: infer B } ? B : never);
-export type pinClockInput = pinClockBody;
-type publishMessageOptions = Parameters<typeof Sdk.publishMessage>[0];
-type publishMessageBody = (NonNullable<publishMessageOptions> extends { body?: infer B } ? B : never);
-export type publishMessageInput = publishMessageBody;
-type resetClockOptions = Parameters<typeof Sdk.resetClock>[0];
-export type resetClockInput = void;
-type resolveIncidentOptions = Parameters<typeof Sdk.resolveIncident>[0];
-type resolveIncidentBody = (NonNullable<resolveIncidentOptions> extends { body?: infer B } ? B : never);
-type resolveIncidentPathParam_incidentKey = (NonNullable<resolveIncidentOptions> extends { path: { incidentKey: infer P } } ? P : any);
-export type resolveIncidentInput = resolveIncidentBody & { incidentKey: resolveIncidentPathParam_incidentKey };
-type resolveIncidentsBatchOperationOptions = Parameters<typeof Sdk.resolveIncidentsBatchOperation>[0];
-type resolveIncidentsBatchOperationBody = (NonNullable<resolveIncidentsBatchOperationOptions> extends { body?: infer B } ? B : never);
-export type resolveIncidentsBatchOperationInput = resolveIncidentsBatchOperationBody;
-type resolveProcessInstanceIncidentsOptions = Parameters<typeof Sdk.resolveProcessInstanceIncidents>[0];
-type resolveProcessInstanceIncidentsPathParam_processInstanceKey = (NonNullable<resolveProcessInstanceIncidentsOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
-export type resolveProcessInstanceIncidentsInput = { processInstanceKey: resolveProcessInstanceIncidentsPathParam_processInstanceKey };
-type resolveSecretsOptions = Parameters<typeof Sdk.resolveSecrets>[0];
-type resolveSecretsBody = (NonNullable<resolveSecretsOptions> extends { body?: infer B } ? B : never);
-export type resolveSecretsInput = resolveSecretsBody;
-type restoreOptions = Parameters<typeof Sdk.restore>[0];
-type restoreBody = (NonNullable<restoreOptions> extends { body?: infer B } ? B : never);
-type restoreQueryParam_dryRun = (NonNullable<restoreOptions> extends { query?: { dryRun?: infer Q } } ? Q : any);
-export type restoreInput = restoreBody & { dryRun?: restoreQueryParam_dryRun };
-type restoreAsClusterAdminOptions = Parameters<typeof Sdk.restoreAsClusterAdmin>[0];
-type restoreAsClusterAdminBody = (NonNullable<restoreAsClusterAdminOptions> extends { body?: infer B } ? B : never);
-type restoreAsClusterAdminQueryParam_physicalTenantId = (NonNullable<restoreAsClusterAdminOptions> extends { query?: { physicalTenantId?: infer Q } } ? Q : any);
-type restoreAsClusterAdminQueryParam_dryRun = (NonNullable<restoreAsClusterAdminOptions> extends { query?: { dryRun?: infer Q } } ? Q : any);
-export type restoreAsClusterAdminInput = restoreAsClusterAdminBody & { physicalTenantId?: restoreAsClusterAdminQueryParam_physicalTenantId; dryRun?: restoreAsClusterAdminQueryParam_dryRun };
-type resumeBatchOperationOptions = Parameters<typeof Sdk.resumeBatchOperation>[0];
-type resumeBatchOperationBody = (NonNullable<resumeBatchOperationOptions> extends { body?: infer B } ? B : never);
-type resumeBatchOperationPathParam_batchOperationKey = (NonNullable<resumeBatchOperationOptions> extends { path: { batchOperationKey: infer P } } ? P : any);
-export type resumeBatchOperationInput = resumeBatchOperationBody & { batchOperationKey: resumeBatchOperationPathParam_batchOperationKey };
-type resumeClusterExportingOptions = Parameters<typeof Sdk.resumeClusterExporting>[0];
-export type resumeClusterExportingInput = void;
-type resumeExportingOptions = Parameters<typeof Sdk.resumeExporting>[0];
-export type resumeExportingInput = void;
-type resumeProcessInstanceOptions = Parameters<typeof Sdk.resumeProcessInstance>[0];
-type resumeProcessInstanceBody = (NonNullable<resumeProcessInstanceOptions> extends { body?: infer B } ? B : never);
-type resumeProcessInstancePathParam_processInstanceKey = (NonNullable<resumeProcessInstanceOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
-export type resumeProcessInstanceInput = resumeProcessInstanceBody & { processInstanceKey: resumeProcessInstancePathParam_processInstanceKey };
-type resumeProcessInstancesBatchOperationOptions = Parameters<typeof Sdk.resumeProcessInstancesBatchOperation>[0];
-type resumeProcessInstancesBatchOperationBody = (NonNullable<resumeProcessInstancesBatchOperationOptions> extends { body?: infer B } ? B : never);
-export type resumeProcessInstancesBatchOperationInput = resumeProcessInstancesBatchOperationBody;
-type searchAgentDefinitionsOptions = Parameters<typeof Sdk.searchAgentDefinitions>[0];
-type searchAgentDefinitionsBody = (NonNullable<searchAgentDefinitionsOptions> extends { body?: infer B } ? B : never);
-export type searchAgentDefinitionsInput = searchAgentDefinitionsBody;
-/** Management of eventual consistency **/
-export type searchAgentDefinitionsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchAgentDefinitions>> 
-};
-type searchAgentInstanceHistoryOptions = Parameters<typeof Sdk.searchAgentInstanceHistory>[0];
-type searchAgentInstanceHistoryBody = (NonNullable<searchAgentInstanceHistoryOptions> extends { body?: infer B } ? B : never);
-type searchAgentInstanceHistoryPathParam_agentInstanceKey = (NonNullable<searchAgentInstanceHistoryOptions> extends { path: { agentInstanceKey: infer P } } ? P : any);
-export type searchAgentInstanceHistoryInput = searchAgentInstanceHistoryBody & { agentInstanceKey: searchAgentInstanceHistoryPathParam_agentInstanceKey };
-/** Management of eventual consistency **/
-export type searchAgentInstanceHistoryConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchAgentInstanceHistory>> 
-};
-type searchAgentInstancesOptions = Parameters<typeof Sdk.searchAgentInstances>[0];
-type searchAgentInstancesBody = (NonNullable<searchAgentInstancesOptions> extends { body?: infer B } ? B : never);
-export type searchAgentInstancesInput = searchAgentInstancesBody;
-/** Management of eventual consistency **/
-export type searchAgentInstancesConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchAgentInstances>> 
-};
-type searchAuditLogsOptions = Parameters<typeof Sdk.searchAuditLogs>[0];
-type searchAuditLogsBody = (NonNullable<searchAuditLogsOptions> extends { body?: infer B } ? B : never);
-export type searchAuditLogsInput = searchAuditLogsBody;
-/** Management of eventual consistency **/
-export type searchAuditLogsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchAuditLogs>> 
-};
-type searchAuthorizationsOptions = Parameters<typeof Sdk.searchAuthorizations>[0];
-type searchAuthorizationsBody = (NonNullable<searchAuthorizationsOptions> extends { body?: infer B } ? B : never);
-export type searchAuthorizationsInput = searchAuthorizationsBody;
-/** Management of eventual consistency **/
-export type searchAuthorizationsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchAuthorizations>> 
-};
-type searchBatchOperationItemsOptions = Parameters<typeof Sdk.searchBatchOperationItems>[0];
-type searchBatchOperationItemsBody = (NonNullable<searchBatchOperationItemsOptions> extends { body?: infer B } ? B : never);
-export type searchBatchOperationItemsInput = searchBatchOperationItemsBody;
-/** Management of eventual consistency **/
-export type searchBatchOperationItemsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchBatchOperationItems>> 
-};
-type searchBatchOperationsOptions = Parameters<typeof Sdk.searchBatchOperations>[0];
-type searchBatchOperationsBody = (NonNullable<searchBatchOperationsOptions> extends { body?: infer B } ? B : never);
-export type searchBatchOperationsInput = searchBatchOperationsBody;
-/** Management of eventual consistency **/
-export type searchBatchOperationsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchBatchOperations>> 
-};
-type searchClientsForGroupOptions = Parameters<typeof Sdk.searchClientsForGroup>[0];
-type searchClientsForGroupBody = (NonNullable<searchClientsForGroupOptions> extends { body?: infer B } ? B : never);
-type searchClientsForGroupPathParam_groupId = (NonNullable<searchClientsForGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-export type searchClientsForGroupInput = searchClientsForGroupBody & { groupId: searchClientsForGroupPathParam_groupId };
-/** Management of eventual consistency **/
-export type searchClientsForGroupConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchClientsForGroup>> 
-};
-type searchClientsForRoleOptions = Parameters<typeof Sdk.searchClientsForRole>[0];
-type searchClientsForRoleBody = (NonNullable<searchClientsForRoleOptions> extends { body?: infer B } ? B : never);
-type searchClientsForRolePathParam_roleId = (NonNullable<searchClientsForRoleOptions> extends { path: { roleId: infer P } } ? P : any);
-export type searchClientsForRoleInput = searchClientsForRoleBody & { roleId: searchClientsForRolePathParam_roleId };
-/** Management of eventual consistency **/
-export type searchClientsForRoleConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchClientsForRole>> 
-};
-type searchClientsForTenantOptions = Parameters<typeof Sdk.searchClientsForTenant>[0];
-type searchClientsForTenantBody = (NonNullable<searchClientsForTenantOptions> extends { body?: infer B } ? B : never);
-type searchClientsForTenantPathParam_tenantId = (NonNullable<searchClientsForTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-export type searchClientsForTenantInput = searchClientsForTenantBody & { tenantId: searchClientsForTenantPathParam_tenantId };
-/** Management of eventual consistency **/
-export type searchClientsForTenantConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchClientsForTenant>> 
-};
-type searchClusterVariablesOptions = Parameters<typeof Sdk.searchClusterVariables>[0];
-type searchClusterVariablesBody = (NonNullable<searchClusterVariablesOptions> extends { body?: infer B } ? B : never);
-type searchClusterVariablesQueryParam_truncateValues = (NonNullable<searchClusterVariablesOptions> extends { query?: { truncateValues?: infer Q } } ? Q : any);
-export type searchClusterVariablesInput = searchClusterVariablesBody & { truncateValues?: searchClusterVariablesQueryParam_truncateValues };
-/** Management of eventual consistency **/
-export type searchClusterVariablesConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchClusterVariables>> 
-};
-type searchCorrelatedMessageSubscriptionsOptions = Parameters<typeof Sdk.searchCorrelatedMessageSubscriptions>[0];
-type searchCorrelatedMessageSubscriptionsBody = (NonNullable<searchCorrelatedMessageSubscriptionsOptions> extends { body?: infer B } ? B : never);
-export type searchCorrelatedMessageSubscriptionsInput = searchCorrelatedMessageSubscriptionsBody;
-/** Management of eventual consistency **/
-export type searchCorrelatedMessageSubscriptionsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchCorrelatedMessageSubscriptions>> 
-};
-type searchDecisionDefinitionsOptions = Parameters<typeof Sdk.searchDecisionDefinitions>[0];
-type searchDecisionDefinitionsBody = (NonNullable<searchDecisionDefinitionsOptions> extends { body?: infer B } ? B : never);
-export type searchDecisionDefinitionsInput = searchDecisionDefinitionsBody;
-/** Management of eventual consistency **/
-export type searchDecisionDefinitionsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchDecisionDefinitions>> 
-};
-type searchDecisionInstancesOptions = Parameters<typeof Sdk.searchDecisionInstances>[0];
-type searchDecisionInstancesBody = (NonNullable<searchDecisionInstancesOptions> extends { body?: infer B } ? B : never);
-export type searchDecisionInstancesInput = searchDecisionInstancesBody;
-/** Management of eventual consistency **/
-export type searchDecisionInstancesConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchDecisionInstances>> 
-};
-type searchDecisionRequirementsOptions = Parameters<typeof Sdk.searchDecisionRequirements>[0];
-type searchDecisionRequirementsBody = (NonNullable<searchDecisionRequirementsOptions> extends { body?: infer B } ? B : never);
-export type searchDecisionRequirementsInput = searchDecisionRequirementsBody;
-/** Management of eventual consistency **/
-export type searchDecisionRequirementsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchDecisionRequirements>> 
-};
-type searchElementInstanceIncidentsOptions = Parameters<typeof Sdk.searchElementInstanceIncidents>[0];
-type searchElementInstanceIncidentsBody = (NonNullable<searchElementInstanceIncidentsOptions> extends { body?: infer B } ? B : never);
-type searchElementInstanceIncidentsPathParam_elementInstanceKey = (NonNullable<searchElementInstanceIncidentsOptions> extends { path: { elementInstanceKey: infer P } } ? P : any);
-export type searchElementInstanceIncidentsInput = searchElementInstanceIncidentsBody & { elementInstanceKey: searchElementInstanceIncidentsPathParam_elementInstanceKey };
-/** Management of eventual consistency **/
-export type searchElementInstanceIncidentsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchElementInstanceIncidents>> 
-};
-type searchElementInstancesOptions = Parameters<typeof Sdk.searchElementInstances>[0];
-type searchElementInstancesBody = (NonNullable<searchElementInstancesOptions> extends { body?: infer B } ? B : never);
-export type searchElementInstancesInput = searchElementInstancesBody;
-/** Management of eventual consistency **/
-export type searchElementInstancesConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchElementInstances>> 
-};
-type searchElementInstanceWaitStatesOptions = Parameters<typeof Sdk.searchElementInstanceWaitStates>[0];
-type searchElementInstanceWaitStatesBody = (NonNullable<searchElementInstanceWaitStatesOptions> extends { body?: infer B } ? B : never);
-export type searchElementInstanceWaitStatesInput = searchElementInstanceWaitStatesBody;
-/** Management of eventual consistency **/
-export type searchElementInstanceWaitStatesConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchElementInstanceWaitStates>> 
-};
-type searchGlobalTaskListenersOptions = Parameters<typeof Sdk.searchGlobalTaskListeners>[0];
-type searchGlobalTaskListenersBody = (NonNullable<searchGlobalTaskListenersOptions> extends { body?: infer B } ? B : never);
-export type searchGlobalTaskListenersInput = searchGlobalTaskListenersBody;
-/** Management of eventual consistency **/
-export type searchGlobalTaskListenersConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchGlobalTaskListeners>> 
-};
-type searchGroupIdsForTenantOptions = Parameters<typeof Sdk.searchGroupIdsForTenant>[0];
-type searchGroupIdsForTenantBody = (NonNullable<searchGroupIdsForTenantOptions> extends { body?: infer B } ? B : never);
-type searchGroupIdsForTenantPathParam_tenantId = (NonNullable<searchGroupIdsForTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-export type searchGroupIdsForTenantInput = searchGroupIdsForTenantBody & { tenantId: searchGroupIdsForTenantPathParam_tenantId };
-/** Management of eventual consistency **/
-export type searchGroupIdsForTenantConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchGroupIdsForTenant>> 
-};
-type searchGroupsOptions = Parameters<typeof Sdk.searchGroups>[0];
-type searchGroupsBody = (NonNullable<searchGroupsOptions> extends { body?: infer B } ? B : never);
-export type searchGroupsInput = searchGroupsBody;
-/** Management of eventual consistency **/
-export type searchGroupsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchGroups>> 
-};
-type searchGroupsForRoleOptions = Parameters<typeof Sdk.searchGroupsForRole>[0];
-type searchGroupsForRoleBody = (NonNullable<searchGroupsForRoleOptions> extends { body?: infer B } ? B : never);
-type searchGroupsForRolePathParam_roleId = (NonNullable<searchGroupsForRoleOptions> extends { path: { roleId: infer P } } ? P : any);
-export type searchGroupsForRoleInput = searchGroupsForRoleBody & { roleId: searchGroupsForRolePathParam_roleId };
-/** Management of eventual consistency **/
-export type searchGroupsForRoleConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchGroupsForRole>> 
-};
-type searchIncidentsOptions = Parameters<typeof Sdk.searchIncidents>[0];
-type searchIncidentsBody = (NonNullable<searchIncidentsOptions> extends { body?: infer B } ? B : never);
-export type searchIncidentsInput = searchIncidentsBody;
-/** Management of eventual consistency **/
-export type searchIncidentsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchIncidents>> 
-};
-type searchJobsOptions = Parameters<typeof Sdk.searchJobs>[0];
-type searchJobsBody = (NonNullable<searchJobsOptions> extends { body?: infer B } ? B : never);
-export type searchJobsInput = searchJobsBody;
-/** Management of eventual consistency **/
-export type searchJobsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchJobs>> 
-};
-type searchMappingRuleOptions = Parameters<typeof Sdk.searchMappingRule>[0];
-type searchMappingRuleBody = (NonNullable<searchMappingRuleOptions> extends { body?: infer B } ? B : never);
-export type searchMappingRuleInput = searchMappingRuleBody;
-/** Management of eventual consistency **/
-export type searchMappingRuleConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchMappingRule>> 
-};
-type searchMappingRulesForGroupOptions = Parameters<typeof Sdk.searchMappingRulesForGroup>[0];
-type searchMappingRulesForGroupBody = (NonNullable<searchMappingRulesForGroupOptions> extends { body?: infer B } ? B : never);
-type searchMappingRulesForGroupPathParam_groupId = (NonNullable<searchMappingRulesForGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-export type searchMappingRulesForGroupInput = searchMappingRulesForGroupBody & { groupId: searchMappingRulesForGroupPathParam_groupId };
-/** Management of eventual consistency **/
-export type searchMappingRulesForGroupConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchMappingRulesForGroup>> 
-};
-type searchMappingRulesForRoleOptions = Parameters<typeof Sdk.searchMappingRulesForRole>[0];
-type searchMappingRulesForRoleBody = (NonNullable<searchMappingRulesForRoleOptions> extends { body?: infer B } ? B : never);
-type searchMappingRulesForRolePathParam_roleId = (NonNullable<searchMappingRulesForRoleOptions> extends { path: { roleId: infer P } } ? P : any);
-export type searchMappingRulesForRoleInput = searchMappingRulesForRoleBody & { roleId: searchMappingRulesForRolePathParam_roleId };
-/** Management of eventual consistency **/
-export type searchMappingRulesForRoleConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchMappingRulesForRole>> 
-};
-type searchMappingRulesForTenantOptions = Parameters<typeof Sdk.searchMappingRulesForTenant>[0];
-type searchMappingRulesForTenantBody = (NonNullable<searchMappingRulesForTenantOptions> extends { body?: infer B } ? B : never);
-type searchMappingRulesForTenantPathParam_tenantId = (NonNullable<searchMappingRulesForTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-export type searchMappingRulesForTenantInput = searchMappingRulesForTenantBody & { tenantId: searchMappingRulesForTenantPathParam_tenantId };
-/** Management of eventual consistency **/
-export type searchMappingRulesForTenantConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchMappingRulesForTenant>> 
-};
-type searchMessageSubscriptionsOptions = Parameters<typeof Sdk.searchMessageSubscriptions>[0];
-type searchMessageSubscriptionsBody = (NonNullable<searchMessageSubscriptionsOptions> extends { body?: infer B } ? B : never);
-export type searchMessageSubscriptionsInput = searchMessageSubscriptionsBody;
-/** Management of eventual consistency **/
-export type searchMessageSubscriptionsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchMessageSubscriptions>> 
-};
-type searchOwnAuthorizationsOptions = Parameters<typeof Sdk.searchOwnAuthorizations>[0];
-type searchOwnAuthorizationsBody = (NonNullable<searchOwnAuthorizationsOptions> extends { body?: infer B } ? B : never);
-export type searchOwnAuthorizationsInput = searchOwnAuthorizationsBody;
-/** Management of eventual consistency **/
-export type searchOwnAuthorizationsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchOwnAuthorizations>> 
-};
-type searchProcessDefinitionsOptions = Parameters<typeof Sdk.searchProcessDefinitions>[0];
-type searchProcessDefinitionsBody = (NonNullable<searchProcessDefinitionsOptions> extends { body?: infer B } ? B : never);
-export type searchProcessDefinitionsInput = searchProcessDefinitionsBody;
-/** Management of eventual consistency **/
-export type searchProcessDefinitionsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchProcessDefinitions>> 
-};
-type searchProcessDefinitionVariableNamesOptions = Parameters<typeof Sdk.searchProcessDefinitionVariableNames>[0];
-type searchProcessDefinitionVariableNamesBody = (NonNullable<searchProcessDefinitionVariableNamesOptions> extends { body?: infer B } ? B : never);
-type searchProcessDefinitionVariableNamesPathParam_processDefinitionKey = (NonNullable<searchProcessDefinitionVariableNamesOptions> extends { path: { processDefinitionKey: infer P } } ? P : any);
-export type searchProcessDefinitionVariableNamesInput = searchProcessDefinitionVariableNamesBody & { processDefinitionKey: searchProcessDefinitionVariableNamesPathParam_processDefinitionKey };
-/** Management of eventual consistency **/
-export type searchProcessDefinitionVariableNamesConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchProcessDefinitionVariableNames>> 
-};
-type searchProcessInstanceIncidentsOptions = Parameters<typeof Sdk.searchProcessInstanceIncidents>[0];
-type searchProcessInstanceIncidentsBody = (NonNullable<searchProcessInstanceIncidentsOptions> extends { body?: infer B } ? B : never);
-type searchProcessInstanceIncidentsPathParam_processInstanceKey = (NonNullable<searchProcessInstanceIncidentsOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
-export type searchProcessInstanceIncidentsInput = searchProcessInstanceIncidentsBody & { processInstanceKey: searchProcessInstanceIncidentsPathParam_processInstanceKey };
-/** Management of eventual consistency **/
-export type searchProcessInstanceIncidentsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchProcessInstanceIncidents>> 
-};
-type searchProcessInstancesOptions = Parameters<typeof Sdk.searchProcessInstances>[0];
-type searchProcessInstancesBody = (NonNullable<searchProcessInstancesOptions> extends { body?: infer B } ? B : never);
-export type searchProcessInstancesInput = searchProcessInstancesBody;
-/** Management of eventual consistency **/
-export type searchProcessInstancesConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchProcessInstances>> 
-};
-type searchResourcesOptions = Parameters<typeof Sdk.searchResources>[0];
-type searchResourcesBody = (NonNullable<searchResourcesOptions> extends { body?: infer B } ? B : never);
-export type searchResourcesInput = searchResourcesBody;
-/** Management of eventual consistency **/
-export type searchResourcesConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchResources>> 
-};
-type searchRolesOptions = Parameters<typeof Sdk.searchRoles>[0];
-type searchRolesBody = (NonNullable<searchRolesOptions> extends { body?: infer B } ? B : never);
-export type searchRolesInput = searchRolesBody;
-/** Management of eventual consistency **/
-export type searchRolesConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchRoles>> 
-};
-type searchRolesForGroupOptions = Parameters<typeof Sdk.searchRolesForGroup>[0];
-type searchRolesForGroupBody = (NonNullable<searchRolesForGroupOptions> extends { body?: infer B } ? B : never);
-type searchRolesForGroupPathParam_groupId = (NonNullable<searchRolesForGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-export type searchRolesForGroupInput = searchRolesForGroupBody & { groupId: searchRolesForGroupPathParam_groupId };
-/** Management of eventual consistency **/
-export type searchRolesForGroupConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchRolesForGroup>> 
-};
-type searchRolesForTenantOptions = Parameters<typeof Sdk.searchRolesForTenant>[0];
-type searchRolesForTenantBody = (NonNullable<searchRolesForTenantOptions> extends { body?: infer B } ? B : never);
-type searchRolesForTenantPathParam_tenantId = (NonNullable<searchRolesForTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-export type searchRolesForTenantInput = searchRolesForTenantBody & { tenantId: searchRolesForTenantPathParam_tenantId };
-/** Management of eventual consistency **/
-export type searchRolesForTenantConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchRolesForTenant>> 
-};
-type searchTenantsOptions = Parameters<typeof Sdk.searchTenants>[0];
-type searchTenantsBody = (NonNullable<searchTenantsOptions> extends { body?: infer B } ? B : never);
-export type searchTenantsInput = searchTenantsBody;
-/** Management of eventual consistency **/
-export type searchTenantsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchTenants>> 
-};
-type searchUsersOptions = Parameters<typeof Sdk.searchUsers>[0];
-type searchUsersBody = (NonNullable<searchUsersOptions> extends { body?: infer B } ? B : never);
-export type searchUsersInput = searchUsersBody;
-/** Management of eventual consistency **/
-export type searchUsersConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchUsers>> 
-};
-type searchUsersForGroupOptions = Parameters<typeof Sdk.searchUsersForGroup>[0];
-type searchUsersForGroupBody = (NonNullable<searchUsersForGroupOptions> extends { body?: infer B } ? B : never);
-type searchUsersForGroupPathParam_groupId = (NonNullable<searchUsersForGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-export type searchUsersForGroupInput = searchUsersForGroupBody & { groupId: searchUsersForGroupPathParam_groupId };
-/** Management of eventual consistency **/
-export type searchUsersForGroupConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchUsersForGroup>> 
-};
-type searchUsersForRoleOptions = Parameters<typeof Sdk.searchUsersForRole>[0];
-type searchUsersForRoleBody = (NonNullable<searchUsersForRoleOptions> extends { body?: infer B } ? B : never);
-type searchUsersForRolePathParam_roleId = (NonNullable<searchUsersForRoleOptions> extends { path: { roleId: infer P } } ? P : any);
-export type searchUsersForRoleInput = searchUsersForRoleBody & { roleId: searchUsersForRolePathParam_roleId };
-/** Management of eventual consistency **/
-export type searchUsersForRoleConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchUsersForRole>> 
-};
-type searchUsersForTenantOptions = Parameters<typeof Sdk.searchUsersForTenant>[0];
-type searchUsersForTenantBody = (NonNullable<searchUsersForTenantOptions> extends { body?: infer B } ? B : never);
-type searchUsersForTenantPathParam_tenantId = (NonNullable<searchUsersForTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-export type searchUsersForTenantInput = searchUsersForTenantBody & { tenantId: searchUsersForTenantPathParam_tenantId };
-/** Management of eventual consistency **/
-export type searchUsersForTenantConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchUsersForTenant>> 
-};
-type searchUserTaskAuditLogsOptions = Parameters<typeof Sdk.searchUserTaskAuditLogs>[0];
-type searchUserTaskAuditLogsBody = (NonNullable<searchUserTaskAuditLogsOptions> extends { body?: infer B } ? B : never);
-type searchUserTaskAuditLogsPathParam_userTaskKey = (NonNullable<searchUserTaskAuditLogsOptions> extends { path: { userTaskKey: infer P } } ? P : any);
-export type searchUserTaskAuditLogsInput = searchUserTaskAuditLogsBody & { userTaskKey: searchUserTaskAuditLogsPathParam_userTaskKey };
-/** Management of eventual consistency **/
-export type searchUserTaskAuditLogsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchUserTaskAuditLogs>> 
-};
-type searchUserTaskEffectiveVariablesOptions = Parameters<typeof Sdk.searchUserTaskEffectiveVariables>[0];
-type searchUserTaskEffectiveVariablesBody = (NonNullable<searchUserTaskEffectiveVariablesOptions> extends { body?: infer B } ? B : never);
-type searchUserTaskEffectiveVariablesPathParam_userTaskKey = (NonNullable<searchUserTaskEffectiveVariablesOptions> extends { path: { userTaskKey: infer P } } ? P : any);
-type searchUserTaskEffectiveVariablesQueryParam_truncateValues = (NonNullable<searchUserTaskEffectiveVariablesOptions> extends { query?: { truncateValues?: infer Q } } ? Q : any);
-export type searchUserTaskEffectiveVariablesInput = searchUserTaskEffectiveVariablesBody & { userTaskKey: searchUserTaskEffectiveVariablesPathParam_userTaskKey; truncateValues?: searchUserTaskEffectiveVariablesQueryParam_truncateValues };
-/** Management of eventual consistency **/
-export type searchUserTaskEffectiveVariablesConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchUserTaskEffectiveVariables>> 
-};
-type searchUserTasksOptions = Parameters<typeof Sdk.searchUserTasks>[0];
-type searchUserTasksBody = (NonNullable<searchUserTasksOptions> extends { body?: infer B } ? B : never);
-export type searchUserTasksInput = searchUserTasksBody;
-/** Management of eventual consistency **/
-export type searchUserTasksConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchUserTasks>> 
-};
-type searchUserTaskVariablesOptions = Parameters<typeof Sdk.searchUserTaskVariables>[0];
-type searchUserTaskVariablesBody = (NonNullable<searchUserTaskVariablesOptions> extends { body?: infer B } ? B : never);
-type searchUserTaskVariablesPathParam_userTaskKey = (NonNullable<searchUserTaskVariablesOptions> extends { path: { userTaskKey: infer P } } ? P : any);
-type searchUserTaskVariablesQueryParam_truncateValues = (NonNullable<searchUserTaskVariablesOptions> extends { query?: { truncateValues?: infer Q } } ? Q : any);
-export type searchUserTaskVariablesInput = searchUserTaskVariablesBody & { userTaskKey: searchUserTaskVariablesPathParam_userTaskKey; truncateValues?: searchUserTaskVariablesQueryParam_truncateValues };
-/** Management of eventual consistency **/
-export type searchUserTaskVariablesConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchUserTaskVariables>> 
-};
-type searchVariablesOptions = Parameters<typeof Sdk.searchVariables>[0];
-type searchVariablesBody = (NonNullable<searchVariablesOptions> extends { body?: infer B } ? B : never);
-type searchVariablesQueryParam_truncateValues = (NonNullable<searchVariablesOptions> extends { query?: { truncateValues?: infer Q } } ? Q : any);
-export type searchVariablesInput = searchVariablesBody & { truncateValues?: searchVariablesQueryParam_truncateValues };
-/** Management of eventual consistency **/
-export type searchVariablesConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchVariables>> 
-};
-type suspendBatchOperationOptions = Parameters<typeof Sdk.suspendBatchOperation>[0];
-type suspendBatchOperationBody = (NonNullable<suspendBatchOperationOptions> extends { body?: infer B } ? B : never);
-type suspendBatchOperationPathParam_batchOperationKey = (NonNullable<suspendBatchOperationOptions> extends { path: { batchOperationKey: infer P } } ? P : any);
-export type suspendBatchOperationInput = suspendBatchOperationBody & { batchOperationKey: suspendBatchOperationPathParam_batchOperationKey };
-type suspendProcessInstanceOptions = Parameters<typeof Sdk.suspendProcessInstance>[0];
-type suspendProcessInstanceBody = (NonNullable<suspendProcessInstanceOptions> extends { body?: infer B } ? B : never);
-type suspendProcessInstancePathParam_processInstanceKey = (NonNullable<suspendProcessInstanceOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
-export type suspendProcessInstanceInput = suspendProcessInstanceBody & { processInstanceKey: suspendProcessInstancePathParam_processInstanceKey };
-type suspendProcessInstancesBatchOperationOptions = Parameters<typeof Sdk.suspendProcessInstancesBatchOperation>[0];
-type suspendProcessInstancesBatchOperationBody = (NonNullable<suspendProcessInstancesBatchOperationOptions> extends { body?: infer B } ? B : never);
-export type suspendProcessInstancesBatchOperationInput = suspendProcessInstancesBatchOperationBody;
-type syncRuntimeBackupStateOptions = Parameters<typeof Sdk.syncRuntimeBackupState>[0];
-export type syncRuntimeBackupStateInput = void;
-type syncRuntimeBackupStateAsClusterAdminOptions = Parameters<typeof Sdk.syncRuntimeBackupStateAsClusterAdmin>[0];
-type syncRuntimeBackupStateAsClusterAdminQueryParam_physicalTenantId = (NonNullable<syncRuntimeBackupStateAsClusterAdminOptions> extends { query?: { physicalTenantId?: infer Q } } ? Q : any);
-export type syncRuntimeBackupStateAsClusterAdminInput = { physicalTenantId?: syncRuntimeBackupStateAsClusterAdminQueryParam_physicalTenantId };
-type takeHistoryBackupOptions = Parameters<typeof Sdk.takeHistoryBackup>[0];
-type takeHistoryBackupBody = (NonNullable<takeHistoryBackupOptions> extends { body?: infer B } ? B : never);
-export type takeHistoryBackupInput = takeHistoryBackupBody;
-type takeHistoryBackupAsClusterAdminOptions = Parameters<typeof Sdk.takeHistoryBackupAsClusterAdmin>[0];
-type takeHistoryBackupAsClusterAdminBody = (NonNullable<takeHistoryBackupAsClusterAdminOptions> extends { body?: infer B } ? B : never);
-type takeHistoryBackupAsClusterAdminQueryParam_physicalTenantId = (NonNullable<takeHistoryBackupAsClusterAdminOptions> extends { query?: { physicalTenantId?: infer Q } } ? Q : any);
-export type takeHistoryBackupAsClusterAdminInput = takeHistoryBackupAsClusterAdminBody & { physicalTenantId?: takeHistoryBackupAsClusterAdminQueryParam_physicalTenantId };
-type takeRuntimeBackupOptions = Parameters<typeof Sdk.takeRuntimeBackup>[0];
-type takeRuntimeBackupBody = (NonNullable<takeRuntimeBackupOptions> extends { body?: infer B } ? B : never);
-export type takeRuntimeBackupInput = takeRuntimeBackupBody;
-type takeRuntimeBackupAsClusterAdminOptions = Parameters<typeof Sdk.takeRuntimeBackupAsClusterAdmin>[0];
-type takeRuntimeBackupAsClusterAdminBody = (NonNullable<takeRuntimeBackupAsClusterAdminOptions> extends { body?: infer B } ? B : never);
-type takeRuntimeBackupAsClusterAdminQueryParam_physicalTenantId = (NonNullable<takeRuntimeBackupAsClusterAdminOptions> extends { query?: { physicalTenantId?: infer Q } } ? Q : any);
-export type takeRuntimeBackupAsClusterAdminInput = takeRuntimeBackupAsClusterAdminBody & { physicalTenantId?: takeRuntimeBackupAsClusterAdminQueryParam_physicalTenantId };
-type throwJobErrorOptions = Parameters<typeof Sdk.throwJobError>[0];
-type throwJobErrorBody = (NonNullable<throwJobErrorOptions> extends { body?: infer B } ? B : never);
-type throwJobErrorPathParam_jobKey = (NonNullable<throwJobErrorOptions> extends { path: { jobKey: infer P } } ? P : any);
-export type throwJobErrorInput = throwJobErrorBody & { jobKey: throwJobErrorPathParam_jobKey };
-type triggerClusterRebalanceOptions = Parameters<typeof Sdk.triggerClusterRebalance>[0];
-type triggerClusterRebalanceBody = (NonNullable<triggerClusterRebalanceOptions> extends { body?: infer B } ? B : never);
-type triggerClusterRebalanceQueryParam_dryRun = (NonNullable<triggerClusterRebalanceOptions> extends { query?: { dryRun?: infer Q } } ? Q : any);
-export type triggerClusterRebalanceInput = triggerClusterRebalanceBody & { dryRun?: triggerClusterRebalanceQueryParam_dryRun };
-type unassignClientFromGroupOptions = Parameters<typeof Sdk.unassignClientFromGroup>[0];
-type unassignClientFromGroupPathParam_groupId = (NonNullable<unassignClientFromGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-type unassignClientFromGroupPathParam_clientId = (NonNullable<unassignClientFromGroupOptions> extends { path: { clientId: infer P } } ? P : any);
-export type unassignClientFromGroupInput = { groupId: unassignClientFromGroupPathParam_groupId; clientId: unassignClientFromGroupPathParam_clientId };
-type unassignClientFromTenantOptions = Parameters<typeof Sdk.unassignClientFromTenant>[0];
-type unassignClientFromTenantPathParam_tenantId = (NonNullable<unassignClientFromTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type unassignClientFromTenantPathParam_clientId = (NonNullable<unassignClientFromTenantOptions> extends { path: { clientId: infer P } } ? P : any);
-export type unassignClientFromTenantInput = { tenantId: unassignClientFromTenantPathParam_tenantId; clientId: unassignClientFromTenantPathParam_clientId };
-type unassignGroupFromTenantOptions = Parameters<typeof Sdk.unassignGroupFromTenant>[0];
-type unassignGroupFromTenantPathParam_tenantId = (NonNullable<unassignGroupFromTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type unassignGroupFromTenantPathParam_groupId = (NonNullable<unassignGroupFromTenantOptions> extends { path: { groupId: infer P } } ? P : any);
-export type unassignGroupFromTenantInput = { tenantId: unassignGroupFromTenantPathParam_tenantId; groupId: unassignGroupFromTenantPathParam_groupId };
-type unassignMappingRuleFromGroupOptions = Parameters<typeof Sdk.unassignMappingRuleFromGroup>[0];
-type unassignMappingRuleFromGroupPathParam_groupId = (NonNullable<unassignMappingRuleFromGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-type unassignMappingRuleFromGroupPathParam_mappingRuleId = (NonNullable<unassignMappingRuleFromGroupOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
-export type unassignMappingRuleFromGroupInput = { groupId: unassignMappingRuleFromGroupPathParam_groupId; mappingRuleId: unassignMappingRuleFromGroupPathParam_mappingRuleId };
-type unassignMappingRuleFromTenantOptions = Parameters<typeof Sdk.unassignMappingRuleFromTenant>[0];
-type unassignMappingRuleFromTenantPathParam_tenantId = (NonNullable<unassignMappingRuleFromTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type unassignMappingRuleFromTenantPathParam_mappingRuleId = (NonNullable<unassignMappingRuleFromTenantOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
-export type unassignMappingRuleFromTenantInput = { tenantId: unassignMappingRuleFromTenantPathParam_tenantId; mappingRuleId: unassignMappingRuleFromTenantPathParam_mappingRuleId };
-type unassignRoleFromClientOptions = Parameters<typeof Sdk.unassignRoleFromClient>[0];
-type unassignRoleFromClientPathParam_roleId = (NonNullable<unassignRoleFromClientOptions> extends { path: { roleId: infer P } } ? P : any);
-type unassignRoleFromClientPathParam_clientId = (NonNullable<unassignRoleFromClientOptions> extends { path: { clientId: infer P } } ? P : any);
-export type unassignRoleFromClientInput = { roleId: unassignRoleFromClientPathParam_roleId; clientId: unassignRoleFromClientPathParam_clientId };
-type unassignRoleFromGroupOptions = Parameters<typeof Sdk.unassignRoleFromGroup>[0];
-type unassignRoleFromGroupPathParam_roleId = (NonNullable<unassignRoleFromGroupOptions> extends { path: { roleId: infer P } } ? P : any);
-type unassignRoleFromGroupPathParam_groupId = (NonNullable<unassignRoleFromGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-export type unassignRoleFromGroupInput = { roleId: unassignRoleFromGroupPathParam_roleId; groupId: unassignRoleFromGroupPathParam_groupId };
-type unassignRoleFromMappingRuleOptions = Parameters<typeof Sdk.unassignRoleFromMappingRule>[0];
-type unassignRoleFromMappingRulePathParam_roleId = (NonNullable<unassignRoleFromMappingRuleOptions> extends { path: { roleId: infer P } } ? P : any);
-type unassignRoleFromMappingRulePathParam_mappingRuleId = (NonNullable<unassignRoleFromMappingRuleOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
-export type unassignRoleFromMappingRuleInput = { roleId: unassignRoleFromMappingRulePathParam_roleId; mappingRuleId: unassignRoleFromMappingRulePathParam_mappingRuleId };
-type unassignRoleFromTenantOptions = Parameters<typeof Sdk.unassignRoleFromTenant>[0];
-type unassignRoleFromTenantPathParam_tenantId = (NonNullable<unassignRoleFromTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type unassignRoleFromTenantPathParam_roleId = (NonNullable<unassignRoleFromTenantOptions> extends { path: { roleId: infer P } } ? P : any);
-export type unassignRoleFromTenantInput = { tenantId: unassignRoleFromTenantPathParam_tenantId; roleId: unassignRoleFromTenantPathParam_roleId };
-type unassignRoleFromUserOptions = Parameters<typeof Sdk.unassignRoleFromUser>[0];
-type unassignRoleFromUserPathParam_roleId = (NonNullable<unassignRoleFromUserOptions> extends { path: { roleId: infer P } } ? P : any);
-type unassignRoleFromUserPathParam_username = (NonNullable<unassignRoleFromUserOptions> extends { path: { username: infer P } } ? P : any);
-export type unassignRoleFromUserInput = { roleId: unassignRoleFromUserPathParam_roleId; username: unassignRoleFromUserPathParam_username };
-type unassignUserFromGroupOptions = Parameters<typeof Sdk.unassignUserFromGroup>[0];
-type unassignUserFromGroupPathParam_groupId = (NonNullable<unassignUserFromGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-type unassignUserFromGroupPathParam_username = (NonNullable<unassignUserFromGroupOptions> extends { path: { username: infer P } } ? P : any);
-export type unassignUserFromGroupInput = { groupId: unassignUserFromGroupPathParam_groupId; username: unassignUserFromGroupPathParam_username };
-type unassignUserFromTenantOptions = Parameters<typeof Sdk.unassignUserFromTenant>[0];
-type unassignUserFromTenantPathParam_tenantId = (NonNullable<unassignUserFromTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type unassignUserFromTenantPathParam_username = (NonNullable<unassignUserFromTenantOptions> extends { path: { username: infer P } } ? P : any);
-export type unassignUserFromTenantInput = { tenantId: unassignUserFromTenantPathParam_tenantId; username: unassignUserFromTenantPathParam_username };
-type unassignUserTaskOptions = Parameters<typeof Sdk.unassignUserTask>[0];
-type unassignUserTaskPathParam_userTaskKey = (NonNullable<unassignUserTaskOptions> extends { path: { userTaskKey: infer P } } ? P : any);
-export type unassignUserTaskInput = { userTaskKey: unassignUserTaskPathParam_userTaskKey };
-type updateAgentInstanceOptions = Parameters<typeof Sdk.updateAgentInstance>[0];
-type updateAgentInstanceBody = (NonNullable<updateAgentInstanceOptions> extends { body?: infer B } ? B : never);
-type updateAgentInstancePathParam_agentInstanceKey = (NonNullable<updateAgentInstanceOptions> extends { path: { agentInstanceKey: infer P } } ? P : any);
-export type updateAgentInstanceInput = updateAgentInstanceBody & { agentInstanceKey: updateAgentInstancePathParam_agentInstanceKey };
-type updateAuthorizationOptions = Parameters<typeof Sdk.updateAuthorization>[0];
-type updateAuthorizationBody = (NonNullable<updateAuthorizationOptions> extends { body?: infer B } ? B : never);
-type updateAuthorizationPathParam_authorizationKey = (NonNullable<updateAuthorizationOptions> extends { path: { authorizationKey: infer P } } ? P : any);
-export type updateAuthorizationInput = updateAuthorizationBody & { authorizationKey: updateAuthorizationPathParam_authorizationKey };
-type updateGlobalClusterVariableOptions = Parameters<typeof Sdk.updateGlobalClusterVariable>[0];
-type updateGlobalClusterVariableBody = (NonNullable<updateGlobalClusterVariableOptions> extends { body?: infer B } ? B : never);
-type updateGlobalClusterVariablePathParam_name = (NonNullable<updateGlobalClusterVariableOptions> extends { path: { name: infer P } } ? P : any);
-export type updateGlobalClusterVariableInput = updateGlobalClusterVariableBody & { name: updateGlobalClusterVariablePathParam_name };
-type updateGlobalTaskListenerOptions = Parameters<typeof Sdk.updateGlobalTaskListener>[0];
-type updateGlobalTaskListenerBody = (NonNullable<updateGlobalTaskListenerOptions> extends { body?: infer B } ? B : never);
-type updateGlobalTaskListenerPathParam_id = (NonNullable<updateGlobalTaskListenerOptions> extends { path: { id: infer P } } ? P : any);
-export type updateGlobalTaskListenerInput = updateGlobalTaskListenerBody & { id: updateGlobalTaskListenerPathParam_id };
-type updateGroupOptions = Parameters<typeof Sdk.updateGroup>[0];
-type updateGroupBody = (NonNullable<updateGroupOptions> extends { body?: infer B } ? B : never);
-type updateGroupPathParam_groupId = (NonNullable<updateGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-export type updateGroupInput = updateGroupBody & { groupId: updateGroupPathParam_groupId };
-type updateJobOptions = Parameters<typeof Sdk.updateJob>[0];
-type updateJobBody = (NonNullable<updateJobOptions> extends { body?: infer B } ? B : never);
-type updateJobPathParam_jobKey = (NonNullable<updateJobOptions> extends { path: { jobKey: infer P } } ? P : any);
-export type updateJobInput = updateJobBody & { jobKey: updateJobPathParam_jobKey };
-type updateJobsBatchOperationOptions = Parameters<typeof Sdk.updateJobsBatchOperation>[0];
-type updateJobsBatchOperationBody = (NonNullable<updateJobsBatchOperationOptions> extends { body?: infer B } ? B : never);
-export type updateJobsBatchOperationInput = updateJobsBatchOperationBody;
-type updateMappingRuleOptions = Parameters<typeof Sdk.updateMappingRule>[0];
-type updateMappingRuleBody = (NonNullable<updateMappingRuleOptions> extends { body?: infer B } ? B : never);
-type updateMappingRulePathParam_mappingRuleId = (NonNullable<updateMappingRuleOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
-export type updateMappingRuleInput = updateMappingRuleBody & { mappingRuleId: updateMappingRulePathParam_mappingRuleId };
-type updateRoleOptions = Parameters<typeof Sdk.updateRole>[0];
-type updateRoleBody = (NonNullable<updateRoleOptions> extends { body?: infer B } ? B : never);
-type updateRolePathParam_roleId = (NonNullable<updateRoleOptions> extends { path: { roleId: infer P } } ? P : any);
-export type updateRoleInput = updateRoleBody & { roleId: updateRolePathParam_roleId };
-type updateTenantOptions = Parameters<typeof Sdk.updateTenant>[0];
-type updateTenantBody = (NonNullable<updateTenantOptions> extends { body?: infer B } ? B : never);
-type updateTenantPathParam_tenantId = (NonNullable<updateTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-export type updateTenantInput = updateTenantBody & { tenantId: updateTenantPathParam_tenantId };
-type updateTenantClusterVariableOptions = Parameters<typeof Sdk.updateTenantClusterVariable>[0];
-type updateTenantClusterVariableBody = (NonNullable<updateTenantClusterVariableOptions> extends { body?: infer B } ? B : never);
-type updateTenantClusterVariablePathParam_tenantId = (NonNullable<updateTenantClusterVariableOptions> extends { path: { tenantId: infer P } } ? P : any);
-type updateTenantClusterVariablePathParam_name = (NonNullable<updateTenantClusterVariableOptions> extends { path: { name: infer P } } ? P : any);
-export type updateTenantClusterVariableInput = updateTenantClusterVariableBody & { tenantId: updateTenantClusterVariablePathParam_tenantId; name: updateTenantClusterVariablePathParam_name };
-type updateUserOptions = Parameters<typeof Sdk.updateUser>[0];
-type updateUserBody = (NonNullable<updateUserOptions> extends { body?: infer B } ? B : never);
-type updateUserPathParam_username = (NonNullable<updateUserOptions> extends { path: { username: infer P } } ? P : any);
-export type updateUserInput = updateUserBody & { username: updateUserPathParam_username };
-type updateUserTaskOptions = Parameters<typeof Sdk.updateUserTask>[0];
-type updateUserTaskBody = (NonNullable<updateUserTaskOptions> extends { body?: infer B } ? B : never);
-type updateUserTaskPathParam_userTaskKey = (NonNullable<updateUserTaskOptions> extends { path: { userTaskKey: infer P } } ? P : any);
-export type updateUserTaskInput = updateUserTaskBody & { userTaskKey: updateUserTaskPathParam_userTaskKey };
+import * as Ops from './operations.gen';
+import type { activateAdHocSubProcessActivitiesInput, activateJobsInput, assignClientToGroupInput, assignClientToTenantInput, assignGroupToTenantInput, assignMappingRuleToGroupInput, assignMappingRuleToTenantInput, assignProcessInstanceBusinessIdInput, assignRoleToClientInput, assignRoleToGroupInput, assignRoleToMappingRuleInput, assignRoleToTenantInput, assignRoleToUserInput, assignUserTaskInput, assignUserToGroupInput, assignUserToTenantInput, broadcastSignalInput, cancelBatchOperationInput, cancelClusterRebalanceInput, cancelProcessInstanceInput, cancelProcessInstancesBatchOperationInput, changeClusterModeInput, changeClusterModeAsClusterAdminInput, completeJobInput, completeUserTaskInput, correlateMessageInput, createAdminUserInput, createAgentInstanceInput, createAuthorizationInput, createDeploymentInput, createDocumentInput, createDocumentLinkInput, createDocumentsInput, createElementInstanceVariablesInput, createGlobalClusterVariableInput, createGlobalTaskListenerInput, createGroupInput, createMappingRuleInput, createProcessInstanceInput, createRoleInput, createTenantInput, createTenantClusterVariableInput, createUserInput, deleteAuthorizationInput, deleteDecisionInstanceInput, deleteDecisionInstancesBatchOperationInput, deleteDocumentInput, deleteGlobalClusterVariableInput, deleteGlobalTaskListenerInput, deleteGroupInput, deleteHistoryBackupInput, deleteHistoryBackupAsClusterAdminInput, deleteMappingRuleInput, deleteProcessInstanceInput, deleteProcessInstancesBatchOperationInput, deleteResourceInput, deleteRoleInput, deleteRuntimeBackupInput, deleteRuntimeBackupAsClusterAdminInput, deleteRuntimeBackupStateInput, deleteRuntimeBackupStateAsClusterAdminInput, deleteTenantInput, deleteTenantClusterVariableInput, deleteUserInput, evaluateConditionalsInput, evaluateDecisionInput, evaluateExpressionInput, failJobInput, getAgentDefinitionInput, getAgentDefinitionConsistency, getAgentInstanceInput, getAgentInstanceConsistency, getAuditLogInput, getAuditLogConsistency, getAuthenticationInput, getAuthorizationInput, getAuthorizationConsistency, getBatchOperationInput, getBatchOperationConsistency, getClusterExportingStatusInput, getClusterRebalanceInput, getClusterStatusInput, getClusterTopologyInput, getClusterUpgradeStatusInput, getDecisionDefinitionInput, getDecisionDefinitionConsistency, getDecisionDefinitionXmlInput, getDecisionDefinitionXmlConsistency, getDecisionInstanceInput, getDecisionInstanceConsistency, getDecisionRequirementsInput, getDecisionRequirementsConsistency, getDecisionRequirementsXmlInput, getDecisionRequirementsXmlConsistency, getDocumentInput, getElementInstanceInput, getElementInstanceConsistency, getExportingStatusInput, getFormByKeyInput, getFormByKeyConsistency, getGlobalClusterVariableInput, getGlobalClusterVariableConsistency, getGlobalJobStatisticsInput, getGlobalJobStatisticsConsistency, getGlobalTaskListenerInput, getGlobalTaskListenerConsistency, getGroupInput, getGroupConsistency, getHistoryBackupInput, getHistoryBackupAsClusterAdminInput, getIncidentInput, getIncidentConsistency, getJobErrorStatisticsInput, getJobErrorStatisticsConsistency, getJobTimeSeriesStatisticsInput, getJobTimeSeriesStatisticsConsistency, getJobTypeStatisticsInput, getJobTypeStatisticsConsistency, getJobWorkerStatisticsInput, getJobWorkerStatisticsConsistency, getLicenseInput, getMappingRuleInput, getMappingRuleConsistency, getProcessDefinitionInput, getProcessDefinitionConsistency, getProcessDefinitionInstanceStatisticsInput, getProcessDefinitionInstanceStatisticsConsistency, getProcessDefinitionInstanceVersionStatisticsInput, getProcessDefinitionInstanceVersionStatisticsConsistency, getProcessDefinitionMessageSubscriptionStatisticsInput, getProcessDefinitionMessageSubscriptionStatisticsConsistency, getProcessDefinitionStatisticsInput, getProcessDefinitionStatisticsConsistency, getProcessDefinitionXmlInput, getProcessDefinitionXmlConsistency, getProcessInstanceInput, getProcessInstanceConsistency, getProcessInstanceCallHierarchyInput, getProcessInstanceCallHierarchyConsistency, getProcessInstanceSequenceFlowsInput, getProcessInstanceSequenceFlowsConsistency, getProcessInstanceStatisticsInput, getProcessInstanceStatisticsConsistency, getProcessInstanceStatisticsByDefinitionInput, getProcessInstanceStatisticsByDefinitionConsistency, getProcessInstanceStatisticsByErrorInput, getProcessInstanceStatisticsByErrorConsistency, getProcessInstanceWaitStateStatisticsInput, getProcessInstanceWaitStateStatisticsConsistency, getResourceInput, getResourceConsistency, getResourceContentInput, getResourceContentConsistency, getResourceContentBinaryInput, getResourceContentBinaryConsistency, getRestoreStatusInput, getRoleInput, getRoleConsistency, getRuntimeBackupInput, getRuntimeBackupAsClusterAdminInput, getRuntimeBackupStateInput, getRuntimeBackupStateAsClusterAdminInput, getStartProcessFormInput, getStartProcessFormConsistency, getStatusInput, getSystemConfigurationInput, getTenantInput, getTenantConsistency, getTenantClusterVariableInput, getTenantClusterVariableConsistency, getTopologyInput, getUsageMetricsInput, getUsageMetricsConsistency, getUserInput, getUserConsistency, getUserTaskInput, getUserTaskConsistency, getUserTaskFormInput, getUserTaskFormConsistency, getVariableInput, getVariableConsistency, listHistoryBackupsInput, listHistoryBackupsAsClusterAdminInput, listRuntimeBackupsInput, listRuntimeBackupsAsClusterAdminInput, listSecretsInput, migrateProcessInstanceInput, migrateProcessInstancesBatchOperationInput, modifyProcessInstanceInput, modifyProcessInstancesBatchOperationInput, pauseClusterExportingInput, pauseExportingInput, pinClockInput, publishMessageInput, resetClockInput, resolveIncidentInput, resolveIncidentsBatchOperationInput, resolveProcessInstanceIncidentsInput, resolveSecretsInput, restoreInput, restoreAsClusterAdminInput, resumeBatchOperationInput, resumeClusterExportingInput, resumeExportingInput, resumeProcessInstanceInput, resumeProcessInstancesBatchOperationInput, searchAgentDefinitionsInput, searchAgentDefinitionsConsistency, searchAgentInstanceHistoryInput, searchAgentInstanceHistoryConsistency, searchAgentInstancesInput, searchAgentInstancesConsistency, searchAuditLogsInput, searchAuditLogsConsistency, searchAuthorizationsInput, searchAuthorizationsConsistency, searchBatchOperationItemsInput, searchBatchOperationItemsConsistency, searchBatchOperationsInput, searchBatchOperationsConsistency, searchClientsForGroupInput, searchClientsForGroupConsistency, searchClientsForRoleInput, searchClientsForRoleConsistency, searchClientsForTenantInput, searchClientsForTenantConsistency, searchClusterVariablesInput, searchClusterVariablesConsistency, searchCorrelatedMessageSubscriptionsInput, searchCorrelatedMessageSubscriptionsConsistency, searchDecisionDefinitionsInput, searchDecisionDefinitionsConsistency, searchDecisionInstancesInput, searchDecisionInstancesConsistency, searchDecisionRequirementsInput, searchDecisionRequirementsConsistency, searchElementInstanceIncidentsInput, searchElementInstanceIncidentsConsistency, searchElementInstancesInput, searchElementInstancesConsistency, searchElementInstanceWaitStatesInput, searchElementInstanceWaitStatesConsistency, searchGlobalTaskListenersInput, searchGlobalTaskListenersConsistency, searchGroupIdsForTenantInput, searchGroupIdsForTenantConsistency, searchGroupsInput, searchGroupsConsistency, searchGroupsForRoleInput, searchGroupsForRoleConsistency, searchIncidentsInput, searchIncidentsConsistency, searchJobsInput, searchJobsConsistency, searchMappingRuleInput, searchMappingRuleConsistency, searchMappingRulesForGroupInput, searchMappingRulesForGroupConsistency, searchMappingRulesForRoleInput, searchMappingRulesForRoleConsistency, searchMappingRulesForTenantInput, searchMappingRulesForTenantConsistency, searchMessageSubscriptionsInput, searchMessageSubscriptionsConsistency, searchOwnAuthorizationsInput, searchOwnAuthorizationsConsistency, searchProcessDefinitionsInput, searchProcessDefinitionsConsistency, searchProcessDefinitionVariableNamesInput, searchProcessDefinitionVariableNamesConsistency, searchProcessInstanceIncidentsInput, searchProcessInstanceIncidentsConsistency, searchProcessInstancesInput, searchProcessInstancesConsistency, searchResourcesInput, searchResourcesConsistency, searchRolesInput, searchRolesConsistency, searchRolesForGroupInput, searchRolesForGroupConsistency, searchRolesForTenantInput, searchRolesForTenantConsistency, searchTenantsInput, searchTenantsConsistency, searchUsersInput, searchUsersConsistency, searchUsersForGroupInput, searchUsersForGroupConsistency, searchUsersForRoleInput, searchUsersForRoleConsistency, searchUsersForTenantInput, searchUsersForTenantConsistency, searchUserTaskAuditLogsInput, searchUserTaskAuditLogsConsistency, searchUserTaskEffectiveVariablesInput, searchUserTaskEffectiveVariablesConsistency, searchUserTasksInput, searchUserTasksConsistency, searchUserTaskVariablesInput, searchUserTaskVariablesConsistency, searchVariablesInput, searchVariablesConsistency, suspendBatchOperationInput, suspendProcessInstanceInput, suspendProcessInstancesBatchOperationInput, syncRuntimeBackupStateInput, syncRuntimeBackupStateAsClusterAdminInput, takeHistoryBackupInput, takeHistoryBackupAsClusterAdminInput, takeRuntimeBackupInput, takeRuntimeBackupAsClusterAdminInput, throwJobErrorInput, triggerClusterRebalanceInput, unassignClientFromGroupInput, unassignClientFromTenantInput, unassignGroupFromTenantInput, unassignMappingRuleFromGroupInput, unassignMappingRuleFromTenantInput, unassignRoleFromClientInput, unassignRoleFromGroupInput, unassignRoleFromMappingRuleInput, unassignRoleFromTenantInput, unassignRoleFromUserInput, unassignUserFromGroupInput, unassignUserFromTenantInput, unassignUserTaskInput, updateAgentInstanceInput, updateAuthorizationInput, updateGlobalClusterVariableInput, updateGlobalTaskListenerInput, updateGroupInput, updateJobInput, updateJobsBatchOperationInput, updateMappingRuleInput, updateRoleInput, updateTenantInput, updateTenantClusterVariableInput, updateUserInput, updateUserTaskInput, ExtendedDeploymentResult } from './operations.gen';
+export type { activateAdHocSubProcessActivitiesInput, activateJobsInput, assignClientToGroupInput, assignClientToTenantInput, assignGroupToTenantInput, assignMappingRuleToGroupInput, assignMappingRuleToTenantInput, assignProcessInstanceBusinessIdInput, assignRoleToClientInput, assignRoleToGroupInput, assignRoleToMappingRuleInput, assignRoleToTenantInput, assignRoleToUserInput, assignUserTaskInput, assignUserToGroupInput, assignUserToTenantInput, broadcastSignalInput, cancelBatchOperationInput, cancelClusterRebalanceInput, cancelProcessInstanceInput, cancelProcessInstancesBatchOperationInput, changeClusterModeInput, changeClusterModeAsClusterAdminInput, completeJobInput, completeUserTaskInput, correlateMessageInput, createAdminUserInput, createAgentInstanceInput, createAuthorizationInput, createDeploymentInput, createDocumentInput, createDocumentLinkInput, createDocumentsInput, createElementInstanceVariablesInput, createGlobalClusterVariableInput, createGlobalTaskListenerInput, createGroupInput, createMappingRuleInput, createProcessInstanceInput, createRoleInput, createTenantInput, createTenantClusterVariableInput, createUserInput, deleteAuthorizationInput, deleteDecisionInstanceInput, deleteDecisionInstancesBatchOperationInput, deleteDocumentInput, deleteGlobalClusterVariableInput, deleteGlobalTaskListenerInput, deleteGroupInput, deleteHistoryBackupInput, deleteHistoryBackupAsClusterAdminInput, deleteMappingRuleInput, deleteProcessInstanceInput, deleteProcessInstancesBatchOperationInput, deleteResourceInput, deleteRoleInput, deleteRuntimeBackupInput, deleteRuntimeBackupAsClusterAdminInput, deleteRuntimeBackupStateInput, deleteRuntimeBackupStateAsClusterAdminInput, deleteTenantInput, deleteTenantClusterVariableInput, deleteUserInput, evaluateConditionalsInput, evaluateDecisionInput, evaluateExpressionInput, failJobInput, getAgentDefinitionInput, getAgentDefinitionConsistency, getAgentInstanceInput, getAgentInstanceConsistency, getAuditLogInput, getAuditLogConsistency, getAuthenticationInput, getAuthorizationInput, getAuthorizationConsistency, getBatchOperationInput, getBatchOperationConsistency, getClusterExportingStatusInput, getClusterRebalanceInput, getClusterStatusInput, getClusterTopologyInput, getClusterUpgradeStatusInput, getDecisionDefinitionInput, getDecisionDefinitionConsistency, getDecisionDefinitionXmlInput, getDecisionDefinitionXmlConsistency, getDecisionInstanceInput, getDecisionInstanceConsistency, getDecisionRequirementsInput, getDecisionRequirementsConsistency, getDecisionRequirementsXmlInput, getDecisionRequirementsXmlConsistency, getDocumentInput, getElementInstanceInput, getElementInstanceConsistency, getExportingStatusInput, getFormByKeyInput, getFormByKeyConsistency, getGlobalClusterVariableInput, getGlobalClusterVariableConsistency, getGlobalJobStatisticsInput, getGlobalJobStatisticsConsistency, getGlobalTaskListenerInput, getGlobalTaskListenerConsistency, getGroupInput, getGroupConsistency, getHistoryBackupInput, getHistoryBackupAsClusterAdminInput, getIncidentInput, getIncidentConsistency, getJobErrorStatisticsInput, getJobErrorStatisticsConsistency, getJobTimeSeriesStatisticsInput, getJobTimeSeriesStatisticsConsistency, getJobTypeStatisticsInput, getJobTypeStatisticsConsistency, getJobWorkerStatisticsInput, getJobWorkerStatisticsConsistency, getLicenseInput, getMappingRuleInput, getMappingRuleConsistency, getProcessDefinitionInput, getProcessDefinitionConsistency, getProcessDefinitionInstanceStatisticsInput, getProcessDefinitionInstanceStatisticsConsistency, getProcessDefinitionInstanceVersionStatisticsInput, getProcessDefinitionInstanceVersionStatisticsConsistency, getProcessDefinitionMessageSubscriptionStatisticsInput, getProcessDefinitionMessageSubscriptionStatisticsConsistency, getProcessDefinitionStatisticsInput, getProcessDefinitionStatisticsConsistency, getProcessDefinitionXmlInput, getProcessDefinitionXmlConsistency, getProcessInstanceInput, getProcessInstanceConsistency, getProcessInstanceCallHierarchyInput, getProcessInstanceCallHierarchyConsistency, getProcessInstanceSequenceFlowsInput, getProcessInstanceSequenceFlowsConsistency, getProcessInstanceStatisticsInput, getProcessInstanceStatisticsConsistency, getProcessInstanceStatisticsByDefinitionInput, getProcessInstanceStatisticsByDefinitionConsistency, getProcessInstanceStatisticsByErrorInput, getProcessInstanceStatisticsByErrorConsistency, getProcessInstanceWaitStateStatisticsInput, getProcessInstanceWaitStateStatisticsConsistency, getResourceInput, getResourceConsistency, getResourceContentInput, getResourceContentConsistency, getResourceContentBinaryInput, getResourceContentBinaryConsistency, getRestoreStatusInput, getRoleInput, getRoleConsistency, getRuntimeBackupInput, getRuntimeBackupAsClusterAdminInput, getRuntimeBackupStateInput, getRuntimeBackupStateAsClusterAdminInput, getStartProcessFormInput, getStartProcessFormConsistency, getStatusInput, getSystemConfigurationInput, getTenantInput, getTenantConsistency, getTenantClusterVariableInput, getTenantClusterVariableConsistency, getTopologyInput, getUsageMetricsInput, getUsageMetricsConsistency, getUserInput, getUserConsistency, getUserTaskInput, getUserTaskConsistency, getUserTaskFormInput, getUserTaskFormConsistency, getVariableInput, getVariableConsistency, listHistoryBackupsInput, listHistoryBackupsAsClusterAdminInput, listRuntimeBackupsInput, listRuntimeBackupsAsClusterAdminInput, listSecretsInput, migrateProcessInstanceInput, migrateProcessInstancesBatchOperationInput, modifyProcessInstanceInput, modifyProcessInstancesBatchOperationInput, pauseClusterExportingInput, pauseExportingInput, pinClockInput, publishMessageInput, resetClockInput, resolveIncidentInput, resolveIncidentsBatchOperationInput, resolveProcessInstanceIncidentsInput, resolveSecretsInput, restoreInput, restoreAsClusterAdminInput, resumeBatchOperationInput, resumeClusterExportingInput, resumeExportingInput, resumeProcessInstanceInput, resumeProcessInstancesBatchOperationInput, searchAgentDefinitionsInput, searchAgentDefinitionsConsistency, searchAgentInstanceHistoryInput, searchAgentInstanceHistoryConsistency, searchAgentInstancesInput, searchAgentInstancesConsistency, searchAuditLogsInput, searchAuditLogsConsistency, searchAuthorizationsInput, searchAuthorizationsConsistency, searchBatchOperationItemsInput, searchBatchOperationItemsConsistency, searchBatchOperationsInput, searchBatchOperationsConsistency, searchClientsForGroupInput, searchClientsForGroupConsistency, searchClientsForRoleInput, searchClientsForRoleConsistency, searchClientsForTenantInput, searchClientsForTenantConsistency, searchClusterVariablesInput, searchClusterVariablesConsistency, searchCorrelatedMessageSubscriptionsInput, searchCorrelatedMessageSubscriptionsConsistency, searchDecisionDefinitionsInput, searchDecisionDefinitionsConsistency, searchDecisionInstancesInput, searchDecisionInstancesConsistency, searchDecisionRequirementsInput, searchDecisionRequirementsConsistency, searchElementInstanceIncidentsInput, searchElementInstanceIncidentsConsistency, searchElementInstancesInput, searchElementInstancesConsistency, searchElementInstanceWaitStatesInput, searchElementInstanceWaitStatesConsistency, searchGlobalTaskListenersInput, searchGlobalTaskListenersConsistency, searchGroupIdsForTenantInput, searchGroupIdsForTenantConsistency, searchGroupsInput, searchGroupsConsistency, searchGroupsForRoleInput, searchGroupsForRoleConsistency, searchIncidentsInput, searchIncidentsConsistency, searchJobsInput, searchJobsConsistency, searchMappingRuleInput, searchMappingRuleConsistency, searchMappingRulesForGroupInput, searchMappingRulesForGroupConsistency, searchMappingRulesForRoleInput, searchMappingRulesForRoleConsistency, searchMappingRulesForTenantInput, searchMappingRulesForTenantConsistency, searchMessageSubscriptionsInput, searchMessageSubscriptionsConsistency, searchOwnAuthorizationsInput, searchOwnAuthorizationsConsistency, searchProcessDefinitionsInput, searchProcessDefinitionsConsistency, searchProcessDefinitionVariableNamesInput, searchProcessDefinitionVariableNamesConsistency, searchProcessInstanceIncidentsInput, searchProcessInstanceIncidentsConsistency, searchProcessInstancesInput, searchProcessInstancesConsistency, searchResourcesInput, searchResourcesConsistency, searchRolesInput, searchRolesConsistency, searchRolesForGroupInput, searchRolesForGroupConsistency, searchRolesForTenantInput, searchRolesForTenantConsistency, searchTenantsInput, searchTenantsConsistency, searchUsersInput, searchUsersConsistency, searchUsersForGroupInput, searchUsersForGroupConsistency, searchUsersForRoleInput, searchUsersForRoleConsistency, searchUsersForTenantInput, searchUsersForTenantConsistency, searchUserTaskAuditLogsInput, searchUserTaskAuditLogsConsistency, searchUserTaskEffectiveVariablesInput, searchUserTaskEffectiveVariablesConsistency, searchUserTasksInput, searchUserTasksConsistency, searchUserTaskVariablesInput, searchUserTaskVariablesConsistency, searchVariablesInput, searchVariablesConsistency, suspendBatchOperationInput, suspendProcessInstanceInput, suspendProcessInstancesBatchOperationInput, syncRuntimeBackupStateInput, syncRuntimeBackupStateAsClusterAdminInput, takeHistoryBackupInput, takeHistoryBackupAsClusterAdminInput, takeRuntimeBackupInput, takeRuntimeBackupAsClusterAdminInput, throwJobErrorInput, triggerClusterRebalanceInput, unassignClientFromGroupInput, unassignClientFromTenantInput, unassignGroupFromTenantInput, unassignMappingRuleFromGroupInput, unassignMappingRuleFromTenantInput, unassignRoleFromClientInput, unassignRoleFromGroupInput, unassignRoleFromMappingRuleInput, unassignRoleFromTenantInput, unassignRoleFromUserInput, unassignUserFromGroupInput, unassignUserFromTenantInput, unassignUserTaskInput, updateAgentInstanceInput, updateAuthorizationInput, updateGlobalClusterVariableInput, updateGlobalTaskListenerInput, updateGroupInput, updateJobInput, updateJobsBatchOperationInput, updateMappingRuleInput, updateRoleInput, updateTenantInput, updateTenantClusterVariableInput, updateUserInput, updateUserTaskInput, ExtendedDeploymentResult } from './operations.gen';
 const VOID_RESPONSES = new Set(['zDeleteAuthorizationResponse', 'zUpdateAuthorizationResponse', 'zDeleteRuntimeBackupStateResponse', 'zDeleteRuntimeBackupResponse', 'zDeleteHistoryBackupResponse', 'zCancelBatchOperationResponse', 'zResumeBatchOperationResponse', 'zSuspendBatchOperationResponse', 'zPinClockResponse', 'zResetClockResponse', 'zDeleteGlobalClusterVariableResponse', 'zDeleteTenantClusterVariableResponse', 'zDeleteDecisionInstanceResponse', 'zDeleteDocumentResponse', 'zActivateAdHocSubProcessActivitiesResponse', 'zCreateElementInstanceVariablesResponse', 'zPauseExportingResponse', 'zResumeExportingResponse', 'zDeleteGlobalTaskListenerResponse', 'zDeleteGroupResponse', 'zUnassignClientFromGroupResponse', 'zAssignClientToGroupResponse', 'zUnassignMappingRuleFromGroupResponse', 'zAssignMappingRuleToGroupResponse', 'zUnassignUserFromGroupResponse', 'zAssignUserToGroupResponse', 'zResolveIncidentResponse', 'zUpdateJobResponse', 'zCompleteJobResponse', 'zThrowJobErrorResponse', 'zFailJobResponse', 'zDeleteMappingRuleResponse', 'zAssignProcessInstanceBusinessIdResponse', 'zCancelProcessInstanceResponse', 'zDeleteProcessInstanceResponse', 'zMigrateProcessInstanceResponse', 'zModifyProcessInstanceResponse', 'zResumeProcessInstanceResponse', 'zSuspendProcessInstanceResponse', 'zDeleteRoleResponse', 'zUnassignRoleFromClientResponse', 'zAssignRoleToClientResponse', 'zUnassignRoleFromGroupResponse', 'zAssignRoleToGroupResponse', 'zUnassignRoleFromMappingRuleResponse', 'zAssignRoleToMappingRuleResponse', 'zUnassignRoleFromUserResponse', 'zAssignRoleToUserResponse', 'zGetStatusResponse', 'zDeleteTenantResponse', 'zUnassignClientFromTenantResponse', 'zAssignClientToTenantResponse', 'zUnassignGroupFromTenantResponse', 'zAssignGroupToTenantResponse', 'zUnassignMappingRuleFromTenantResponse', 'zAssignMappingRuleToTenantResponse', 'zUnassignRoleFromTenantResponse', 'zAssignRoleToTenantResponse', 'zUnassignUserFromTenantResponse', 'zAssignUserToTenantResponse', 'zPauseClusterExportingResponse', 'zResumeClusterExportingResponse', 'zDeleteRuntimeBackupStateAsClusterAdminResponse', 'zDeleteRuntimeBackupAsClusterAdminResponse', 'zDeleteHistoryBackupAsClusterAdminResponse', 'zDeleteUserResponse', 'zUpdateUserTaskResponse', 'zUnassignUserTaskResponse', 'zAssignUserTaskResponse', 'zCompleteUserTaskResponse']);
-/** Extended deployment result with typed buckets for direct access to deployed artifacts. */
-export interface ExtendedDeploymentResult extends _DataOf<typeof Sdk.createDeployment> {
-  processes: Array<NonNullable<_DataOf<typeof Sdk.createDeployment>["deployments"][number]["processDefinition"]>>;
-  decisions: Array<NonNullable<_DataOf<typeof Sdk.createDeployment>["deployments"][number]["decisionDefinition"]>>;
-  decisionRequirements: Array<NonNullable<_DataOf<typeof Sdk.createDeployment>["deployments"][number]["decisionRequirements"]>>;
-  forms: Array<NonNullable<_DataOf<typeof Sdk.createDeployment>["deployments"][number]["form"]>>;
-  resources: Array<NonNullable<_DataOf<typeof Sdk.createDeployment>["deployments"][number]["resource"]>>;
-}
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES END ===
 
 // Cancelable primitive (kept lightweight & local)
@@ -1384,74 +38,7 @@ export class CancelError extends Error {
     this.name = 'CancelError';
   }
 }
-export interface CancelablePromise<T> extends Promise<T> {
-  cancel(): void;
-}
-function toCancelable<T>(factory: (signal: AbortSignal) => Promise<T>): CancelablePromise<T> {
-  const ac = new AbortController();
-  let settled = false;
-  let rejectRef: (e: any) => void = () => {};
-  const p: any = new Promise<T>((resolve, reject) => {
-    rejectRef = reject;
-    factory(ac.signal)
-      .then((v) => {
-        settled = true;
-        resolve(v);
-      })
-      .catch((e) => {
-        // If already canceled and fetch produced an abort, translate to CancelSdkError once.
-        if (
-          ac.signal.aborted &&
-          (e?.name === 'AbortError' || /abort|cancel/i.test(e?.message || ''))
-        ) {
-          const c = new Error('Cancelled') as any;
-          c.name = 'CancelSdkError';
-          return reject(c);
-        }
-        reject(e);
-      });
-  });
-  p.cancel = () => {
-    if (ac.signal.aborted) return; // idempotent
-    ac.abort();
-    // If underlying promise hasn't settled yet, proactively reject with CancelSdkError.
-    if (!settled) {
-      const c = new Error('Cancelled') as any;
-      c.name = 'CancelSdkError';
-      rejectRef(c);
-    }
-  };
-  return p as CancelablePromise<T>;
-}
-
-// New simplified input: we only accept an already hydrated CamundaConfig. Users wanting env
-// overrides or partials should call hydrateConfig first (single source of truth) and pass
-// the resulting config.
-export interface CamundaOptions {
-  // Strongly typed env-style overrides (CAMUNDA_* keys). Optional.
-  config?: EnvOverrides;
-  // Custom fetch implementation.
-  fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
-  // Provide a custom env map (mainly for tests). Defaults to process.env.
-  env?: Record<string, string | undefined>;
-  // Per-client logging options
-  log?: { level?: LogLevel; transport?: LogTransport };
-  // Telemetry (Phase 1)
-  telemetry?: {
-    hooks?: import('../runtime/telemetry').TelemetryHooks;
-    correlation?: boolean;
-    mirrorToLog?: boolean;
-  };
-  // If true (default), non-2xx HTTP responses throw instead of returning an error object.
-  // Set to false to opt into non-throwing behavior.
-  throwOnError?: boolean;
-  // Optional injected SupportLogger (Node-only). If absent, auto-created when enabled via env/config.
-  supportLogger?: SupportLogger;
-  // Clock backing SDK-internal cadence (poll loops, backoff, decay). Inject a pinned clock
-  // to drive those loops in tests without waiting for real time. Defaults to the live clock.
-  // Liveness bounds — shutdown drains and request timeouts — deliberately do not use it.
-  clock?: Clock;
-}
+export type { CamundaOptions, CancelablePromise };
 
 export function createCamundaClient(options?: CamundaOptions): CamundaClient {
   return new CamundaClient(options);
@@ -1461,327 +48,30 @@ export function createCamundaClient(options?: CamundaOptions): CamundaClient {
  * The Camunda client's operation methods. Create clients with {@link createCamundaClient}
  * or {@link CamundaClient}, which add `.paginate(...)` to every search operation.
  */
-export class CamundaClientBase {
-  private _client: Client;
-  private _config: Readonly<CamundaConfig>;
-  private _auth: ReturnType<typeof createAuthFacade> = createAuthFacade({
-    restAddress: '',
-    auth: { strategy: 'NONE', basic: { username: '', password: '' } } as any,
-    validation: { req: 'none', res: 'none', raw: 'req:none,res:none' } as any,
-    oauth: { oauthUrl: '', timeoutMs: 0, retry: { max: 0, baseDelayMs: 0 } } as any,
-    tokenAudience: '',
-  } as any);
-  private _baseFetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
-  private _fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
-  private _validation: ValidationManager = new ValidationManager({ req: 'none', res: 'none' });
-  private _log: Logger = createLogger();
-  private _bp: BackpressureManager;
-  private _clock: Clock;
+export class CamundaClientBase extends CamundaCore {
   /** Registered job workers created via createJobWorker (lifecycle managed by user). */
   private _workers: any[] = [];
   /** Shared thread pool for all threaded job workers (lazy-initialised on first use). */
   private _threadPool: ThreadPool | null = null;
-  /** Support logger (Node-only; no-op in browser). */
-  private _supportLogger: SupportLogger = new (class implements SupportLogger {
-    log() {}
-  })();
-
-  // Internal fixed error mode for eventual consistency ('throw' | 'result'). Not user mutable after construction.
-  private readonly _errorMode: 'throw' | 'result';
-
-  private _overrides: EnvOverrides = {};
 
   constructor(opts: CamundaOptions = {}) {
-    if (opts.config) this._overrides = { ...opts.config };
-    this._clock = opts.clock ?? createLiveClock();
-    const { config } = hydrateConfig({ overrides: this._overrides, env: opts.env });
-    this._config = deepFreeze(config) as Readonly<CamundaConfig>;
-    // Initialize per-client logger
-    this._log = createLogger({
-      level: opts.log?.level || this._config.logLevel,
-      transport: opts.log?.transport,
-    });
-    const baseFetch = opts.fetch;
-    this._baseFetch = baseFetch;
-    this._fetch = baseFetch;
-    // Telemetry wrap (after logger & config known). If user provided explicit telemetry, honor it.
-    // Else if environment enabled auto telemetry logging, wrap with mirrorToLog + optional correlation.
-    if (opts.telemetry) {
-      this._fetch = wrapFetch(this._fetch || (fetch as any), {
-        hooks: opts.telemetry.hooks,
-        correlation: opts.telemetry.correlation ? () => getCorrelation() : undefined,
-        logger: this._log,
-        supportLogger: this._supportLogger,
-        mirrorToLog: opts.telemetry.mirrorToLog,
-      });
-    } else if (this._config.telemetry?.log) {
-      this._fetch = wrapFetch(this._fetch || (fetch as any), {
-        hooks: undefined,
-        correlation: this._config.telemetry.correlation ? () => getCorrelation() : undefined,
-        logger: this._log,
-        supportLogger: this._supportLogger,
-        mirrorToLog: true,
-      });
-    } else if (
-      // Auto-enable mirror telemetry when trace level and user did not explicitly set CAMUNDA_SDK_TELEMETRY_LOG to a disabling value.
-      /^(trace|silly)$/.test(this._log.level()) &&
-      !this._config.telemetry?.log &&
-      // No explicit override provided
-      (this._overrides as any)['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined &&
-      // And env var either absent or truthy enabling value
-      (typeof process === 'undefined' ||
-        process.env['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined ||
-        /^(1|true|yes|on)$/i.test(process.env['CAMUNDA_SDK_TELEMETRY_LOG'] || ''))
-    ) {
-      this._fetch = wrapFetch(this._fetch || (fetch as any), {
-        hooks: undefined,
-        correlation: this._config.telemetry?.correlation ? () => getCorrelation() : undefined,
-        logger: this._log,
-        supportLogger: this._supportLogger,
-        mirrorToLog: true,
-      });
-    }
-    this._client = createClient({
-      baseUrl: this._config.restAddress,
-      fetch: this._fetch,
-      throwOnError: opts.throwOnError !== false,
-    });
-    // Unsafe diagnostic level warning
-    if (this._log.level() === 'silly') {
-      this._log.warn(
-        'log.level.silly.enabled',
-        'HTTP request and response bodies will be logged; this may leak sensitive information. Use only for local debugging.'
-      );
-    }
-    installAuthInterceptor(
-      this._client,
-      () => this._config.auth.strategy,
-      () => this._auth.getAuthHeaders()
-    );
-    this._auth = createAuthFacade(this._config, {
-      fetch: this._fetch,
-      logger: this._log,
-      clock: this._clock,
-      telemetryHooks: opts.telemetry?.hooks,
-      correlationProvider:
-        opts.telemetry?.correlation || (!opts.telemetry && this._config.telemetry?.correlation)
-          ? () => getCorrelation()
-          : undefined,
-    });
-    this._validation.update(this._config.validation);
-    this._validation.attachLogger(this._log);
-    this._errorMode = (opts as any).errorMode === 'result' ? 'result' : 'throw';
-    // Support logger initialization (after config hydration & before major components start emitting)
-    this._supportLogger = createSupportLogger(this._config, opts.supportLogger);
-    try {
-      this._supportLogger.log('CamundaClient constructed');
-    } catch {
-      /* ignore */
-    }
-    // Emit canonical support log preamble (idempotent; covers injected loggers)
-    this.emitSupportLogPreamble();
-    // Initialize global backpressure manager with tuned config
-    this._bp = new BackpressureManager({
-      logger: this._log.scope('bp'),
-      now: () => this._clock.now(),
-      sleep: (ms) => this._clock.sleep(ms),
-      config: {
-        enabled: this._config.backpressure.enabled,
-        observeOnly: this._config.backpressure.observeOnly,
-        // In observe-only or disabled modes we keep permitsMax null.
-        initialMaxConcurrency:
-          this._config.backpressure.enabled && !this._config.backpressure.observeOnly
-            ? this._config.backpressure.initialMax || null
-            : null,
-        reduceFactor: this._config.backpressure.softFactor,
-        severeReduceFactor: this._config.backpressure.severeFactor,
-        recoveryIntervalMs: this._config.backpressure.recoveryIntervalMs,
-        recoveryStep: this._config.backpressure.recoveryStep,
-        decayQuietMs: this._config.backpressure.decayQuietMs,
-        floorConcurrency: this._config.backpressure.floor,
-        severeThreshold: this._config.backpressure.severeThreshold,
-        maxWaiters: this._config.backpressure.maxWaiters,
-        healthyRecoveryMultiplier: this._config.backpressure.healthyRecoveryMultiplier,
-        unlimitedAfterHealthyMs: this._config.backpressure.unlimitedAfterHealthyMs,
-      },
-    });
-    // Debug-level emission of redacted effective configuration (lazy)
-    this._log.debug(() => {
-      try {
-        const last = (globalThis as any).__CAMUNDA_SDK_LAST_CONFIG;
-        const redacted = last?.toRedactedObject ? last.toRedactedObject() : undefined;
-        return redacted ? ['config.hydrated', { config: redacted }] : ['config.hydrated'];
-      } catch {
-        return ['config.hydrated'];
-      }
-    });
+    super(opts);
     // Attach `.paginate` to every search* operation (issue #3). One well-known
     // wiring point; discovers search methods generically (no per-op list).
     installSearchPagination(this);
   }
 
-  get config(): Readonly<CamundaConfig> {
-    return this._config;
-  }
-  /**
-   * Read-only snapshot of current hydrated configuration (do not mutate directly).
-   * Use configure(...) to apply changes.
-   */
-  getConfig(): Readonly<CamundaConfig> {
-    return this._config;
-  }
-
-  // Merge new overrides and re-hydrate.
-  configure(next: CamundaOptions) {
-    if (next.config) this._overrides = { ...this._overrides, ...next.config };
-    if (next.fetch) this._baseFetch = next.fetch;
-    // Always wrap from the base fetch to avoid accumulating closure layers on repeated configure() calls.
-    this._fetch = this._baseFetch;
-    const { config } = hydrateConfig({ overrides: this._overrides, env: next.env });
-    this._config = deepFreeze(config) as Readonly<CamundaConfig>;
-    // Re-wrap fetch if telemetry present OR env auto telemetry toggled
-    if (next.telemetry) {
-      this._fetch = wrapFetch(this._fetch || (fetch as any), {
-        hooks: next.telemetry.hooks,
-        correlation: next.telemetry.correlation ? () => getCorrelation() : undefined,
-        logger: this._log,
-        supportLogger: this._supportLogger,
-        mirrorToLog: next.telemetry.mirrorToLog,
-      });
-    } else if (this._config.telemetry?.log) {
-      this._fetch = wrapFetch(this._fetch || (fetch as any), {
-        hooks: undefined,
-        correlation: this._config.telemetry.correlation ? () => getCorrelation() : undefined,
-        logger: this._log,
-        supportLogger: this._supportLogger,
-        mirrorToLog: true,
-      });
-    } else if (
-      /^(trace|silly)$/.test(this._log.level()) &&
-      !this._config.telemetry?.log &&
-      (this._overrides as any)['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined &&
-      (typeof process === 'undefined' ||
-        process.env['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined ||
-        /^(1|true|yes|on)$/i.test(process.env['CAMUNDA_SDK_TELEMETRY_LOG'] || ''))
-    ) {
-      this._fetch = wrapFetch(this._fetch || (fetch as any), {
-        hooks: undefined,
-        correlation: this._config.telemetry?.correlation ? () => getCorrelation() : undefined,
-        logger: this._log,
-        supportLogger: this._supportLogger,
-        mirrorToLog: true,
-      });
-    }
-    this._client = createClient({
-      baseUrl: this._config.restAddress,
-      fetch: this._fetch,
-      throwOnError: next.throwOnError !== false,
-    });
-    installAuthInterceptor(
-      this._client,
-      () => this._config.auth.strategy,
-      () => this._auth.getAuthHeaders()
-    );
-    // Update logger level / transport if provided, else apply config log level
-    if (next.log?.level) this._log.setLevel(next.log.level);
-    else this._log.setLevel(this._config.logLevel);
-    if (next.log?.transport !== undefined) this._log.setTransport(next.log.transport);
-    this._auth = createAuthFacade(this._config, {
-      fetch: this._fetch,
-      logger: this._log,
-      clock: this._clock,
-      telemetryHooks: next.telemetry?.hooks,
-      correlationProvider:
-        next.telemetry?.correlation || (!next.telemetry && this._config.telemetry?.correlation)
-          ? () => getCorrelation()
-          : undefined,
-    });
-    this._validation.update(this._config.validation);
-    this._validation.attachLogger(this._log);
-    // _errorMode intentionally not mutable post-construction.
-    // Re-init support logger only if it was disabled and now enabled (avoid overwriting custom injected instance)
-    if (!next.supportLogger && !('supportLogger' in next)) {
-      // Auto-detect change in enable flag
-      const shouldEnable = this._config.supportLog?.enabled;
-      const previouslyEnabled = (this._supportLogger as any).enabled === true; // heuristic
-      if (shouldEnable && !previouslyEnabled) {
-        this._supportLogger = createSupportLogger(this._config);
-        this._supportLogger.log('Support logger enabled via reconfigure');
-      }
-    } else if (next.supportLogger) {
-      this._supportLogger = next.supportLogger;
-      this._supportLogger.log('Support logger injected via reconfigure');
-    }
-    // Emit updated redacted configuration when debug enabled
-    this._log.debug(() => {
-      try {
-        const last = (globalThis as any).__CAMUNDA_SDK_LAST_CONFIG;
-        const redacted = last?.toRedactedObject ? last.toRedactedObject() : undefined;
-        return redacted ? ['config.reconfigured', { config: redacted }] : ['config.reconfigured'];
-      } catch {
-        return ['config.reconfigured'];
-      }
-    });
-  }
-
-  // Auth helpers
-  async getAuthHeaders() {
-    return this._auth.getAuthHeaders();
-  }
-  async forceAuthRefresh() {
-    return this._auth.forceRefresh();
-  }
-  clearAuthCache(opts?: { disk?: boolean; memory?: boolean }) {
-    this._auth.clearCache(opts);
-  }
-  onAuthHeaders(
-    h: (headers: Record<string, string>) => Record<string, string> | Promise<Record<string, string>>
-  ) {
-    this._auth.registerHeadersHook(h);
-  }
-
-  /** @internal ValidationManager is internal; tests may reach via (client as any)._validation */
-  /** Access a scoped logger (internal & future user emission). */
-  logger(scope?: string) {
-    return scope ? this._log.scope(scope) : this._log;
-  }
-
-  /** Internal accessor (read-only) for eventual consistency error mode. */
-  getErrorMode(): 'throw' | 'result' {
-    return this._errorMode;
-  }
-
-  /** Internal accessor for support logger (no public API commitment yet). */
-  _getSupportLogger(): SupportLogger {
-    return this._supportLogger;
-  }
-
-  /**
-   * Emit the standard support log preamble & redacted configuration to the current support logger.
-   * Safe to call multiple times; subsequent calls are ignored (idempotent).
-   * Useful when a custom supportLogger was injected and you still want the canonical header & config dump.
-   */
-  emitSupportLogPreamble() {
-    try {
-      writeSupportLogPreamble(this._supportLogger, this._config as CamundaConfig);
-    } catch (e) {
-      this._log.debug(() => ['supportLog.preamble.error', e]);
-    }
-  }
-
-  // Run a function with a correlation ID (manual propagation phase 1)
-  withCorrelation<T>(id: string, fn: () => Promise<T> | T): Promise<T> {
-    return _withCorrelation(id, fn);
-  }
-
-  // Helper for detecting documented void responses (stable public contract)
-  // Referenced from generated code - DO NOT REMOVE
+  // Helper for detecting documented void responses (stable public contract).
+  // The generated per-operation functions carry their own copy of the set.
   // Uses build-time generated VOID_RESPONSES set (no runtime zod dependency needed)
   private _isVoidResponse(name: string): boolean {
     return VOID_RESPONSES.has(name);
   }
 
-  // Lazy-load zod schemas on first validation use. Returns cached module.
+  // Lazy-load the full zod schema module. Returns cached module. Operations load
+  // their own per-operation schema module instead (see operations.gen.ts); this
+  // stays on the class (not the core) so the per-operation entry point does not
+  // reference the whole schema module.
   private _schemasPromise: Promise<typeof import('../gen/zod.gen')> | null = null;
   private _loadSchemas(): Promise<typeof import('../gen/zod.gen')> {
     if (!this._schemasPromise) {
@@ -1790,79 +80,6 @@ export class CamundaClientBase {
     return this._schemasPromise;
   }
 
-  /** Internal invocation helper to apply global backpressure gating + retry + normalization */
-  public async _invokeWithRetry<T>(
-    op: () => Promise<T>,
-    opts: {
-      opId: string;
-      exempt?: boolean;
-      classify?: (e: any) => { retryable: boolean; reason: string };
-      retryOverride?: Partial<HttpRetryPolicy> | false;
-    }
-  ): Promise<T> {
-    const { opId, exempt, classify, retryOverride } = opts;
-    const policy: HttpRetryPolicy =
-      retryOverride === false
-        ? { maxAttempts: 1, baseDelayMs: 0, maxDelayMs: 0 }
-        : retryOverride
-          ? { ...this._config.httpRetry, ...retryOverride }
-          : this._config.httpRetry;
-    const signal: AbortSignal | undefined = undefined; // placeholder if we later pass through
-    if (!exempt) {
-      await this._bp.acquire(signal);
-    }
-    try {
-      const result = await executeWithHttpRetry(
-        async () => op(),
-        policy,
-        this._log.scope(opId),
-        (err) => {
-          const decision = (classify ? classify(err) : defaultHttpClassifier(err)) as any;
-          if (decision && decision.retryable && /backpressure|http-429/.test(decision.reason)) {
-            this._bp.recordBackpressure();
-          }
-          return decision;
-        },
-        undefined,
-        this._clock
-      );
-      this._bp.recordHealthyHint();
-      return result;
-    } catch (e: any) {
-      // Non-retryable or exhausted
-      if (e && (e as any).status && (e as any).status === 429) this._bp.recordBackpressure();
-      throw normalizeError(e, { opId });
-    } finally {
-      if (!exempt) this._bp.release();
-    }
-  }
-  /** Shared evaluation for raw transport responses (throwOnError:false) */
-  private _evaluateResponse(
-    raw: any,
-    opId: string,
-    buildBackpressureError: (resp: any) => Error | undefined
-  ) {
-    return evaluateSdkResponse(raw, { opId, buildBackpressureError });
-  }
-  /** Clock backing SDK-internal cadence. The injected one when supplied, else the live clock. */
-  get clock(): Clock {
-    return this._clock;
-  }
-  /** Public accessor for current backpressure adaptive limiter state (stable) */
-  getBackpressureState() {
-    try {
-      return this._bp.getState();
-    } catch (e) {
-      this._log.error('Error retrieving backpressure state', e);
-      return {
-        severity: 'healthy',
-        permitsMax: null,
-        permitsCurrent: 0,
-        consecutive: 0,
-        waiters: 0,
-      };
-    }
-  }
   /** Return a read-only snapshot of currently registered job workers. */
   getWorkers() {
     return [...this._workers];
@@ -1890,7 +107,7 @@ export class CamundaClientBase {
     return this._threadPool;
   }
   // === AUTO-GENERATED CAMUNDA METHODS START ===
-  // Generated methods
+  // Generated methods: each delegates to its standalone function in operations.gen.ts
   /**
    * Activate activities within an ad-hoc sub-process
    *
@@ -1918,62 +135,7 @@ export class CamundaClientBase {
    */
   activateAdHocSubProcessActivities(input: activateAdHocSubProcessActivitiesInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.activateAdHocSubProcessActivities>>;
   activateAdHocSubProcessActivities(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { adHocSubProcessInstanceKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { adHocSubProcessInstanceKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('activateAdHocSubProcessActivities', _schemas.zActivateAdHocSubProcessActivitiesBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('activateAdHocSubProcessActivities', _schemas.zActivateAdHocSubProcessActivitiesPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.activateAdHocSubProcessActivities(opts);
-        let data = this._evaluateResponse(_raw, 'activateAdHocSubProcessActivities', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zActivateAdHocSubProcessActivitiesResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zActivateAdHocSubProcessActivitiesResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('activateAdHocSubProcessActivities', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'activateAdHocSubProcessActivities', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.activateAdHocSubProcessActivities(this, arg, options);
   }
 
   /**
@@ -2008,62 +170,7 @@ export class CamundaClientBase {
   activateJobs(input: activateJobsInput & { withLease?: false | null | undefined }, options?: OperationOptions): CancelablePromise<{ jobs: EnrichedActivatedJobOf<ActivatedJobResultWithoutJobLeaseToken>[] }>;
   activateJobs(input: activateJobsInput, options?: OperationOptions): CancelablePromise<{ jobs: EnrichedActivatedJob[] }>;
   activateJobs(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (envelope.body && this._config.defaultTenantId !== undefined && this._config.defaultTenantId !== null && (!Array.isArray(envelope.body.tenantIds) || envelope.body.tenantIds.length === 0)) {
-        envelope.body.tenantIds = [this._config.defaultTenantId];
-        this._log.trace(() => ['tenant.default.inject', { op: 'activateJobs', tenantIds: [this._config.defaultTenantId] }]);
-      }
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('activateJobs', _schemas.zActivateJobsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.activateJobs(opts);
-        let data = this._evaluateResponse(_raw, 'activateJobs', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zActivateJobsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zActivateJobsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('activateJobs', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        /* present-when-guard:activateJobs:withLease=true:jobLeaseToken */ if (data && data.jobs && _body && (_body as any).withLease === true) { for (const _el of data.jobs) { if (_el.jobLeaseToken == null) { const _e: any = new Error("activateJobs: withLease=true was requested but the server returned an item without 'jobLeaseToken' — the server may predate this feature. Refusing to silently mis-type the dependent field."); _e.name = 'PresentWhenUnsupportedError'; _e.nonRetryable = true; throw _e; } } }
-        if (data && data.jobs) { data.jobs = data.jobs.map((j: any) => enrichActivatedJob(j, this as any, this.logger().scope(`job:${j.jobKey}`))); }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'activateJobs', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.activateJobs(this, arg, options);
   }
 
   /**
@@ -2089,56 +196,7 @@ export class CamundaClientBase {
    */
   assignClientToGroup(input: assignClientToGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignClientToGroup>>;
   assignClientToGroup(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { groupId, clientId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { groupId, clientId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('assignClientToGroup', _schemas.zAssignClientToGroupPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.assignClientToGroup(opts);
-        let data = this._evaluateResponse(_raw, 'assignClientToGroup', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zAssignClientToGroupResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zAssignClientToGroupResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('assignClientToGroup', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'assignClientToGroup', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.assignClientToGroup(this, arg, options);
   }
 
   /**
@@ -2164,56 +222,7 @@ export class CamundaClientBase {
    */
   assignClientToTenant(input: assignClientToTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignClientToTenant>>;
   assignClientToTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { tenantId, clientId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { tenantId, clientId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('assignClientToTenant', _schemas.zAssignClientToTenantPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.assignClientToTenant(opts);
-        let data = this._evaluateResponse(_raw, 'assignClientToTenant', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zAssignClientToTenantResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zAssignClientToTenantResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('assignClientToTenant', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'assignClientToTenant', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.assignClientToTenant(this, arg, options);
   }
 
   /**
@@ -2239,56 +248,7 @@ export class CamundaClientBase {
    */
   assignGroupToTenant(input: assignGroupToTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignGroupToTenant>>;
   assignGroupToTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { tenantId, groupId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { tenantId, groupId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('assignGroupToTenant', _schemas.zAssignGroupToTenantPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.assignGroupToTenant(opts);
-        let data = this._evaluateResponse(_raw, 'assignGroupToTenant', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zAssignGroupToTenantResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zAssignGroupToTenantResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('assignGroupToTenant', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'assignGroupToTenant', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.assignGroupToTenant(this, arg, options);
   }
 
   /**
@@ -2312,56 +272,7 @@ export class CamundaClientBase {
    */
   assignMappingRuleToGroup(input: assignMappingRuleToGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignMappingRuleToGroup>>;
   assignMappingRuleToGroup(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { groupId, mappingRuleId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { groupId, mappingRuleId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('assignMappingRuleToGroup', _schemas.zAssignMappingRuleToGroupPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.assignMappingRuleToGroup(opts);
-        let data = this._evaluateResponse(_raw, 'assignMappingRuleToGroup', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zAssignMappingRuleToGroupResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zAssignMappingRuleToGroupResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('assignMappingRuleToGroup', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'assignMappingRuleToGroup', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.assignMappingRuleToGroup(this, arg, options);
   }
 
   /**
@@ -2385,56 +296,7 @@ export class CamundaClientBase {
    */
   assignMappingRuleToTenant(input: assignMappingRuleToTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignMappingRuleToTenant>>;
   assignMappingRuleToTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { tenantId, mappingRuleId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { tenantId, mappingRuleId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('assignMappingRuleToTenant', _schemas.zAssignMappingRuleToTenantPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.assignMappingRuleToTenant(opts);
-        let data = this._evaluateResponse(_raw, 'assignMappingRuleToTenant', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zAssignMappingRuleToTenantResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zAssignMappingRuleToTenantResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('assignMappingRuleToTenant', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'assignMappingRuleToTenant', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.assignMappingRuleToTenant(this, arg, options);
   }
 
   /**
@@ -2469,62 +331,7 @@ export class CamundaClientBase {
    */
   assignProcessInstanceBusinessId(input: assignProcessInstanceBusinessIdInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignProcessInstanceBusinessId>>;
   assignProcessInstanceBusinessId(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { processInstanceKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { processInstanceKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('assignProcessInstanceBusinessId', _schemas.zAssignProcessInstanceBusinessIdBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('assignProcessInstanceBusinessId', _schemas.zAssignProcessInstanceBusinessIdPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.assignProcessInstanceBusinessId(opts);
-        let data = this._evaluateResponse(_raw, 'assignProcessInstanceBusinessId', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zAssignProcessInstanceBusinessIdResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zAssignProcessInstanceBusinessIdResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('assignProcessInstanceBusinessId', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'assignProcessInstanceBusinessId', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.assignProcessInstanceBusinessId(this, arg, options);
   }
 
   /**
@@ -2548,56 +355,7 @@ export class CamundaClientBase {
    */
   assignRoleToClient(input: assignRoleToClientInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignRoleToClient>>;
   assignRoleToClient(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { roleId, clientId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { roleId, clientId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('assignRoleToClient', _schemas.zAssignRoleToClientPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.assignRoleToClient(opts);
-        let data = this._evaluateResponse(_raw, 'assignRoleToClient', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zAssignRoleToClientResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zAssignRoleToClientResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('assignRoleToClient', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'assignRoleToClient', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.assignRoleToClient(this, arg, options);
   }
 
   /**
@@ -2621,56 +379,7 @@ export class CamundaClientBase {
    */
   assignRoleToGroup(input: assignRoleToGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignRoleToGroup>>;
   assignRoleToGroup(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { roleId, groupId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { roleId, groupId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('assignRoleToGroup', _schemas.zAssignRoleToGroupPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.assignRoleToGroup(opts);
-        let data = this._evaluateResponse(_raw, 'assignRoleToGroup', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zAssignRoleToGroupResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zAssignRoleToGroupResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('assignRoleToGroup', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'assignRoleToGroup', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.assignRoleToGroup(this, arg, options);
   }
 
   /**
@@ -2694,56 +403,7 @@ export class CamundaClientBase {
    */
   assignRoleToMappingRule(input: assignRoleToMappingRuleInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignRoleToMappingRule>>;
   assignRoleToMappingRule(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { roleId, mappingRuleId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { roleId, mappingRuleId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('assignRoleToMappingRule', _schemas.zAssignRoleToMappingRulePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.assignRoleToMappingRule(opts);
-        let data = this._evaluateResponse(_raw, 'assignRoleToMappingRule', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zAssignRoleToMappingRuleResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zAssignRoleToMappingRuleResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('assignRoleToMappingRule', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'assignRoleToMappingRule', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.assignRoleToMappingRule(this, arg, options);
   }
 
   /**
@@ -2769,56 +429,7 @@ export class CamundaClientBase {
    */
   assignRoleToTenant(input: assignRoleToTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignRoleToTenant>>;
   assignRoleToTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { tenantId, roleId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { tenantId, roleId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('assignRoleToTenant', _schemas.zAssignRoleToTenantPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.assignRoleToTenant(opts);
-        let data = this._evaluateResponse(_raw, 'assignRoleToTenant', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zAssignRoleToTenantResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zAssignRoleToTenantResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('assignRoleToTenant', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'assignRoleToTenant', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.assignRoleToTenant(this, arg, options);
   }
 
   /**
@@ -2842,56 +453,7 @@ export class CamundaClientBase {
    */
   assignRoleToUser(input: assignRoleToUserInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignRoleToUser>>;
   assignRoleToUser(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { roleId, username } = arg || {};
-      let envelope: any = {};
-      envelope.path = { roleId, username };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('assignRoleToUser', _schemas.zAssignRoleToUserPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.assignRoleToUser(opts);
-        let data = this._evaluateResponse(_raw, 'assignRoleToUser', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zAssignRoleToUserResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zAssignRoleToUserResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('assignRoleToUser', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'assignRoleToUser', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.assignRoleToUser(this, arg, options);
   }
 
   /**
@@ -2917,62 +479,7 @@ export class CamundaClientBase {
    */
   assignUserTask(input: assignUserTaskInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignUserTask>>;
   assignUserTask(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { userTaskKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { userTaskKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('assignUserTask', _schemas.zAssignUserTaskBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('assignUserTask', _schemas.zAssignUserTaskPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.assignUserTask(opts);
-        let data = this._evaluateResponse(_raw, 'assignUserTask', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zAssignUserTaskResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zAssignUserTaskResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('assignUserTask', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'assignUserTask', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.assignUserTask(this, arg, options);
   }
 
   /**
@@ -2998,56 +505,7 @@ export class CamundaClientBase {
    */
   assignUserToGroup(input: assignUserToGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignUserToGroup>>;
   assignUserToGroup(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { groupId, username } = arg || {};
-      let envelope: any = {};
-      envelope.path = { groupId, username };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('assignUserToGroup', _schemas.zAssignUserToGroupPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.assignUserToGroup(opts);
-        let data = this._evaluateResponse(_raw, 'assignUserToGroup', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zAssignUserToGroupResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zAssignUserToGroupResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('assignUserToGroup', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'assignUserToGroup', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.assignUserToGroup(this, arg, options);
   }
 
   /**
@@ -3071,56 +529,7 @@ export class CamundaClientBase {
    */
   assignUserToTenant(input: assignUserToTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignUserToTenant>>;
   assignUserToTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { tenantId, username } = arg || {};
-      let envelope: any = {};
-      envelope.path = { tenantId, username };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('assignUserToTenant', _schemas.zAssignUserToTenantPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.assignUserToTenant(opts);
-        let data = this._evaluateResponse(_raw, 'assignUserToTenant', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zAssignUserToTenantResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zAssignUserToTenantResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('assignUserToTenant', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'assignUserToTenant', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.assignUserToTenant(this, arg, options);
   }
 
   /**
@@ -3148,60 +557,7 @@ export class CamundaClientBase {
    */
   broadcastSignal(input: broadcastSignalInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.broadcastSignal>>;
   broadcastSignal(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-        envelope.body.tenantId = this._config.defaultTenantId;
-        this._log.trace(() => ['tenant.default.inject', { op: 'broadcastSignal', tenant: this._config.defaultTenantId }]);
-      }
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('broadcastSignal', _schemas.zBroadcastSignalBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.broadcastSignal(opts);
-        let data = this._evaluateResponse(_raw, 'broadcastSignal', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zBroadcastSignalResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zBroadcastSignalResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('broadcastSignal', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'broadcastSignal', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.broadcastSignal(this, arg, options);
   }
 
   /**
@@ -3224,62 +580,7 @@ export class CamundaClientBase {
    */
   cancelBatchOperation(input: cancelBatchOperationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.cancelBatchOperation>>;
   cancelBatchOperation(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { batchOperationKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { batchOperationKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('cancelBatchOperation', _schemas.zCancelBatchOperationBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('cancelBatchOperation', _schemas.zCancelBatchOperationPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.cancelBatchOperation(opts);
-        let data = this._evaluateResponse(_raw, 'cancelBatchOperation', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zCancelBatchOperationResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zCancelBatchOperationResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('cancelBatchOperation', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'cancelBatchOperation', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.cancelBatchOperation(this, arg, options);
   }
 
   /**
@@ -3306,44 +607,7 @@ export class CamundaClientBase {
    */
   cancelClusterRebalance(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.cancelClusterRebalance>>;
   cancelClusterRebalance(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      const call = async () => {
-        try {
-        const _raw = await Sdk.cancelClusterRebalance(opts as any);
-        let data = this._evaluateResponse(_raw, 'cancelClusterRebalance', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zCancelClusterRebalanceResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zCancelClusterRebalanceResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('cancelClusterRebalance', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'cancelClusterRebalance', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.cancelClusterRebalance(this, options);
   }
 
   /**
@@ -3373,62 +637,7 @@ export class CamundaClientBase {
    */
   cancelProcessInstance(input: cancelProcessInstanceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.cancelProcessInstance>>;
   cancelProcessInstance(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { processInstanceKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { processInstanceKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('cancelProcessInstance', _schemas.zCancelProcessInstanceBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('cancelProcessInstance', _schemas.zCancelProcessInstancePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.cancelProcessInstance(opts);
-        let data = this._evaluateResponse(_raw, 'cancelProcessInstance', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zCancelProcessInstanceResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zCancelProcessInstanceResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('cancelProcessInstance', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'cancelProcessInstance', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.cancelProcessInstance(this, arg, options);
   }
 
   /**
@@ -3465,56 +674,7 @@ export class CamundaClientBase {
    */
   cancelProcessInstancesBatchOperation(input: cancelProcessInstancesBatchOperationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.cancelProcessInstancesBatchOperation>>;
   cancelProcessInstancesBatchOperation(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('cancelProcessInstancesBatchOperation', _schemas.zCancelProcessInstancesBatchOperationBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.cancelProcessInstancesBatchOperation(opts);
-        let data = this._evaluateResponse(_raw, 'cancelProcessInstancesBatchOperation', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zCancelProcessInstancesBatchOperationResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zCancelProcessInstancesBatchOperationResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('cancelProcessInstancesBatchOperation', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'cancelProcessInstancesBatchOperation', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.cancelProcessInstancesBatchOperation(this, arg, options);
   }
 
   /**
@@ -3551,56 +711,7 @@ export class CamundaClientBase {
    */
   changeClusterMode(input: changeClusterModeInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.changeClusterMode>>;
   changeClusterMode(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { mode, dryRun } = arg || {};
-      let envelope: any = {};
-      envelope.query = { mode, dryRun };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('changeClusterMode', _schemas.zChangeClusterModeQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.query) opts.query = envelope.query;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.changeClusterMode(opts);
-        let data = this._evaluateResponse(_raw, 'changeClusterMode', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zChangeClusterModeResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zChangeClusterModeResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('changeClusterMode', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'changeClusterMode', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.changeClusterMode(this, arg, options);
   }
 
   /**
@@ -3639,56 +750,7 @@ export class CamundaClientBase {
    */
   changeClusterModeAsClusterAdmin(input: changeClusterModeAsClusterAdminInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.changeClusterModeAsClusterAdmin>>;
   changeClusterModeAsClusterAdmin(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { mode, physicalTenantId, dryRun } = arg || {};
-      let envelope: any = {};
-      envelope.query = { mode, physicalTenantId, dryRun };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('changeClusterModeAsClusterAdmin', _schemas.zChangeClusterModeAsClusterAdminQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.query) opts.query = envelope.query;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.changeClusterModeAsClusterAdmin(opts);
-        let data = this._evaluateResponse(_raw, 'changeClusterModeAsClusterAdmin', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zChangeClusterModeAsClusterAdminResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zChangeClusterModeAsClusterAdminResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('changeClusterModeAsClusterAdmin', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'changeClusterModeAsClusterAdmin', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.changeClusterModeAsClusterAdmin(this, arg, options);
   }
 
   /**
@@ -3716,62 +778,7 @@ export class CamundaClientBase {
    */
   completeJob(input: completeJobInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.completeJob>>;
   completeJob(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { jobKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { jobKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('completeJob', _schemas.zCompleteJobBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('completeJob', _schemas.zCompleteJobPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.completeJob(opts);
-        let data = this._evaluateResponse(_raw, 'completeJob', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zCompleteJobResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zCompleteJobResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('completeJob', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'completeJob', exempt: true, retryOverride: options?.retry });
-    });
+    return Ops.completeJob(this, arg, options);
   }
 
   /**
@@ -3799,62 +806,7 @@ export class CamundaClientBase {
    */
   completeUserTask(input: completeUserTaskInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.completeUserTask>>;
   completeUserTask(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { userTaskKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { userTaskKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('completeUserTask', _schemas.zCompleteUserTaskBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('completeUserTask', _schemas.zCompleteUserTaskPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.completeUserTask(opts);
-        let data = this._evaluateResponse(_raw, 'completeUserTask', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zCompleteUserTaskResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zCompleteUserTaskResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('completeUserTask', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'completeUserTask', exempt: true, retryOverride: options?.retry });
-    });
+    return Ops.completeUserTask(this, arg, options);
   }
 
   /**
@@ -3888,60 +840,7 @@ export class CamundaClientBase {
    */
   correlateMessage(input: correlateMessageInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.correlateMessage>>;
   correlateMessage(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-        envelope.body.tenantId = this._config.defaultTenantId;
-        this._log.trace(() => ['tenant.default.inject', { op: 'correlateMessage', tenant: this._config.defaultTenantId }]);
-      }
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('correlateMessage', _schemas.zCorrelateMessageBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.correlateMessage(opts);
-        let data = this._evaluateResponse(_raw, 'correlateMessage', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zCorrelateMessageResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zCorrelateMessageResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('correlateMessage', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'correlateMessage', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.correlateMessage(this, arg, options);
   }
 
   /**
@@ -3969,56 +868,7 @@ export class CamundaClientBase {
    */
   createAdminUser(input: createAdminUserInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createAdminUser>>;
   createAdminUser(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('createAdminUser', _schemas.zCreateAdminUserBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.createAdminUser(opts);
-        let data = this._evaluateResponse(_raw, 'createAdminUser', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zCreateAdminUserResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zCreateAdminUserResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('createAdminUser', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'createAdminUser', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.createAdminUser(this, arg, options);
   }
 
   /**
@@ -4065,56 +915,7 @@ export class CamundaClientBase {
    */
   createAgentInstance(input: createAgentInstanceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createAgentInstance>>;
   createAgentInstance(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('createAgentInstance', _schemas.zCreateAgentInstanceBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.createAgentInstance(opts);
-        let data = this._evaluateResponse(_raw, 'createAgentInstance', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zCreateAgentInstanceResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zCreateAgentInstanceResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('createAgentInstance', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'createAgentInstance', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.createAgentInstance(this, arg, options);
   }
 
   /**
@@ -4143,56 +944,7 @@ export class CamundaClientBase {
    */
   createAuthorization(input: createAuthorizationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createAuthorization>>;
   createAuthorization(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('createAuthorization', _schemas.zCreateAuthorizationBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.createAuthorization(opts);
-        let data = this._evaluateResponse(_raw, 'createAuthorization', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zCreateAuthorizationResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zCreateAuthorizationResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('createAuthorization', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'createAuthorization', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.createAuthorization(this, arg, options);
   }
 
   /**
@@ -4220,75 +972,7 @@ export class CamundaClientBase {
    */
   createDeployment(input: createDeploymentInput, options?: OperationOptions): CancelablePromise<ExtendedDeploymentResult>;
   createDeployment(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-        envelope.body.tenantId = this._config.defaultTenantId;
-        this._log.trace(() => ['tenant.default.inject', { op: 'createDeployment', tenant: this._config.defaultTenantId }]);
-      }
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('createDeployment', _schemas.zCreateDeploymentBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.createDeployment(opts);
-        let data = this._evaluateResponse(_raw, 'createDeployment', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zCreateDeploymentResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zCreateDeploymentResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('createDeployment', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        // Enrich deployment response AFTER validation to avoid fanatical extras errors
-        if (data) {
-          const base = data as _DataOf<typeof Sdk.createDeployment>;
-          const ext: ExtendedDeploymentResult = { ...base, processes: [], decisions: [], decisionRequirements: [], forms: [], resources: [] };
-          if (Array.isArray(base.deployments)) {
-            for (const d of base.deployments) {
-              if (d?.processDefinition) ext.processes.push(d.processDefinition);
-              if (d?.decisionDefinition) ext.decisions.push(d.decisionDefinition);
-              if (d?.decisionRequirements) ext.decisionRequirements.push(d.decisionRequirements);
-              if (d?.form) ext.forms.push(d.form);
-              if (d?.resource) ext.resources.push(d.resource);
-            }
-          }
-          data = ext;
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'createDeployment', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.createDeployment(this, arg, options);
   }
 
   /**
@@ -4319,62 +1003,7 @@ export class CamundaClientBase {
    */
   createDocument(input: createDocumentInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createDocument>>;
   createDocument(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { storeId, documentId, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.query = { storeId, documentId };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('createDocument', _schemas.zCreateDocumentBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('createDocument', _schemas.zCreateDocumentQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.query) opts.query = envelope.query;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.createDocument(opts);
-        let data = this._evaluateResponse(_raw, 'createDocument', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zCreateDocumentResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zCreateDocumentResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('createDocument', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'createDocument', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.createDocument(this, arg, options);
   }
 
   /**
@@ -4403,68 +1032,7 @@ export class CamundaClientBase {
    */
   createDocumentLink(input: createDocumentLinkInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createDocumentLink>>;
   createDocumentLink(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { documentId, storeId, contentHash, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { documentId };
-      envelope.query = { storeId, contentHash };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('createDocumentLink', _schemas.zCreateDocumentLinkBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('createDocumentLink', _schemas.zCreateDocumentLinkPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('createDocumentLink', _schemas.zCreateDocumentLinkQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.query) opts.query = envelope.query;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.createDocumentLink(opts);
-        let data = this._evaluateResponse(_raw, 'createDocumentLink', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zCreateDocumentLinkResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zCreateDocumentLinkResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('createDocumentLink', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'createDocumentLink', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.createDocumentLink(this, arg, options);
   }
 
   /**
@@ -4510,62 +1078,7 @@ export class CamundaClientBase {
    */
   createDocuments(input: createDocumentsInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createDocuments>>;
   createDocuments(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { storeId, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.query = { storeId };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('createDocuments', _schemas.zCreateDocumentsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('createDocuments', _schemas.zCreateDocumentsQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.query) opts.query = envelope.query;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.createDocuments(opts);
-        let data = this._evaluateResponse(_raw, 'createDocuments', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zCreateDocumentsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zCreateDocumentsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('createDocuments', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'createDocuments', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.createDocuments(this, arg, options);
   }
 
   /**
@@ -4595,62 +1108,7 @@ export class CamundaClientBase {
    */
   createElementInstanceVariables(input: createElementInstanceVariablesInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createElementInstanceVariables>>;
   createElementInstanceVariables(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { elementInstanceKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { elementInstanceKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('createElementInstanceVariables', _schemas.zCreateElementInstanceVariablesBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('createElementInstanceVariables', _schemas.zCreateElementInstanceVariablesPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.createElementInstanceVariables(opts);
-        let data = this._evaluateResponse(_raw, 'createElementInstanceVariables', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zCreateElementInstanceVariablesResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zCreateElementInstanceVariablesResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('createElementInstanceVariables', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'createElementInstanceVariables', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.createElementInstanceVariables(this, arg, options);
   }
 
   /**
@@ -4676,56 +1134,7 @@ export class CamundaClientBase {
    */
   createGlobalClusterVariable(input: createGlobalClusterVariableInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createGlobalClusterVariable>>;
   createGlobalClusterVariable(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('createGlobalClusterVariable', _schemas.zCreateGlobalClusterVariableBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.createGlobalClusterVariable(opts);
-        let data = this._evaluateResponse(_raw, 'createGlobalClusterVariable', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zCreateGlobalClusterVariableResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zCreateGlobalClusterVariableResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('createGlobalClusterVariable', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'createGlobalClusterVariable', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.createGlobalClusterVariable(this, arg, options);
   }
 
   /**
@@ -4752,56 +1161,7 @@ export class CamundaClientBase {
    */
   createGlobalTaskListener(input: createGlobalTaskListenerInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createGlobalTaskListener>>;
   createGlobalTaskListener(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('createGlobalTaskListener', _schemas.zCreateGlobalTaskListenerBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.createGlobalTaskListener(opts);
-        let data = this._evaluateResponse(_raw, 'createGlobalTaskListener', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zCreateGlobalTaskListenerResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zCreateGlobalTaskListenerResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('createGlobalTaskListener', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'createGlobalTaskListener', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.createGlobalTaskListener(this, arg, options);
   }
 
   /**
@@ -4843,56 +1203,7 @@ export class CamundaClientBase {
    */
   createGroup(input: createGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createGroup>>;
   createGroup(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('createGroup', _schemas.zCreateGroupBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.createGroup(opts);
-        let data = this._evaluateResponse(_raw, 'createGroup', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zCreateGroupResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zCreateGroupResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('createGroup', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'createGroup', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.createGroup(this, arg, options);
   }
 
   /**
@@ -4921,56 +1232,7 @@ export class CamundaClientBase {
    */
   createMappingRule(input: createMappingRuleInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createMappingRule>>;
   createMappingRule(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('createMappingRule', _schemas.zCreateMappingRuleBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.createMappingRule(opts);
-        let data = this._evaluateResponse(_raw, 'createMappingRule', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zCreateMappingRuleResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zCreateMappingRuleResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('createMappingRule', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'createMappingRule', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.createMappingRule(this, arg, options);
   }
 
   /**
@@ -5024,60 +1286,7 @@ export class CamundaClientBase {
    */
   createProcessInstance(input: createProcessInstanceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createProcessInstance>>;
   createProcessInstance(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-        envelope.body.tenantId = this._config.defaultTenantId;
-        this._log.trace(() => ['tenant.default.inject', { op: 'createProcessInstance', tenant: this._config.defaultTenantId }]);
-      }
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('createProcessInstance', _schemas.zCreateProcessInstanceBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.createProcessInstance(opts);
-        let data = this._evaluateResponse(_raw, 'createProcessInstance', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zCreateProcessInstanceResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zCreateProcessInstanceResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('createProcessInstance', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'createProcessInstance', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.createProcessInstance(this, arg, options);
   }
 
   /**
@@ -5103,56 +1312,7 @@ export class CamundaClientBase {
    */
   createRole(input: createRoleInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createRole>>;
   createRole(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('createRole', _schemas.zCreateRoleBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.createRole(opts);
-        let data = this._evaluateResponse(_raw, 'createRole', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zCreateRoleResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zCreateRoleResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('createRole', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'createRole', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.createRole(this, arg, options);
   }
 
   /**
@@ -5178,56 +1338,7 @@ export class CamundaClientBase {
    */
   createTenant(input: createTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createTenant>>;
   createTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('createTenant', _schemas.zCreateTenantBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.createTenant(opts);
-        let data = this._evaluateResponse(_raw, 'createTenant', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zCreateTenantResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zCreateTenantResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('createTenant', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'createTenant', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.createTenant(this, arg, options);
   }
 
   /**
@@ -5254,62 +1365,7 @@ export class CamundaClientBase {
    */
   createTenantClusterVariable(input: createTenantClusterVariableInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createTenantClusterVariable>>;
   createTenantClusterVariable(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { tenantId, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { tenantId };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('createTenantClusterVariable', _schemas.zCreateTenantClusterVariableBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('createTenantClusterVariable', _schemas.zCreateTenantClusterVariablePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.createTenantClusterVariable(opts);
-        let data = this._evaluateResponse(_raw, 'createTenantClusterVariable', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zCreateTenantClusterVariableResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zCreateTenantClusterVariableResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('createTenantClusterVariable', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'createTenantClusterVariable', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.createTenantClusterVariable(this, arg, options);
   }
 
   /**
@@ -5337,56 +1393,7 @@ export class CamundaClientBase {
    */
   createUser(input: createUserInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createUser>>;
   createUser(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('createUser', _schemas.zCreateUserBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.createUser(opts);
-        let data = this._evaluateResponse(_raw, 'createUser', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zCreateUserResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zCreateUserResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('createUser', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'createUser', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.createUser(this, arg, options);
   }
 
   /**
@@ -5407,56 +1414,7 @@ export class CamundaClientBase {
    */
   deleteAuthorization(input: deleteAuthorizationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteAuthorization>>;
   deleteAuthorization(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { authorizationKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { authorizationKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('deleteAuthorization', _schemas.zDeleteAuthorizationPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.deleteAuthorization(opts);
-        let data = this._evaluateResponse(_raw, 'deleteAuthorization', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zDeleteAuthorizationResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zDeleteAuthorizationResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('deleteAuthorization', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteAuthorization', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.deleteAuthorization(this, arg, options);
   }
 
   /**
@@ -5477,62 +1435,7 @@ export class CamundaClientBase {
    */
   deleteDecisionInstance(input: deleteDecisionInstanceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteDecisionInstance>>;
   deleteDecisionInstance(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { decisionEvaluationKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { decisionEvaluationKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('deleteDecisionInstance', _schemas.zDeleteDecisionInstanceBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('deleteDecisionInstance', _schemas.zDeleteDecisionInstancePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.deleteDecisionInstance(opts);
-        let data = this._evaluateResponse(_raw, 'deleteDecisionInstance', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zDeleteDecisionInstanceResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zDeleteDecisionInstanceResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('deleteDecisionInstance', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteDecisionInstance', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.deleteDecisionInstance(this, arg, options);
   }
 
   /**
@@ -5559,56 +1462,7 @@ export class CamundaClientBase {
    */
   deleteDecisionInstancesBatchOperation(input: deleteDecisionInstancesBatchOperationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteDecisionInstancesBatchOperation>>;
   deleteDecisionInstancesBatchOperation(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('deleteDecisionInstancesBatchOperation', _schemas.zDeleteDecisionInstancesBatchOperationBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.deleteDecisionInstancesBatchOperation(opts);
-        let data = this._evaluateResponse(_raw, 'deleteDecisionInstancesBatchOperation', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zDeleteDecisionInstancesBatchOperationResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zDeleteDecisionInstancesBatchOperationResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('deleteDecisionInstancesBatchOperation', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteDecisionInstancesBatchOperation', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.deleteDecisionInstancesBatchOperation(this, arg, options);
   }
 
   /**
@@ -5632,62 +1486,7 @@ export class CamundaClientBase {
    */
   deleteDocument(input: deleteDocumentInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteDocument>>;
   deleteDocument(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { documentId, storeId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { documentId };
-      envelope.query = { storeId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('deleteDocument', _schemas.zDeleteDocumentPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('deleteDocument', _schemas.zDeleteDocumentQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.query) opts.query = envelope.query;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.deleteDocument(opts);
-        let data = this._evaluateResponse(_raw, 'deleteDocument', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zDeleteDocumentResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zDeleteDocumentResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('deleteDocument', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteDocument', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.deleteDocument(this, arg, options);
   }
 
   /**
@@ -5708,56 +1507,7 @@ export class CamundaClientBase {
    */
   deleteGlobalClusterVariable(input: deleteGlobalClusterVariableInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteGlobalClusterVariable>>;
   deleteGlobalClusterVariable(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { name } = arg || {};
-      let envelope: any = {};
-      envelope.path = { name };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('deleteGlobalClusterVariable', _schemas.zDeleteGlobalClusterVariablePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.deleteGlobalClusterVariable(opts);
-        let data = this._evaluateResponse(_raw, 'deleteGlobalClusterVariable', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zDeleteGlobalClusterVariableResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zDeleteGlobalClusterVariableResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('deleteGlobalClusterVariable', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteGlobalClusterVariable', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.deleteGlobalClusterVariable(this, arg, options);
   }
 
   /**
@@ -5780,56 +1530,7 @@ export class CamundaClientBase {
    */
   deleteGlobalTaskListener(input: deleteGlobalTaskListenerInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteGlobalTaskListener>>;
   deleteGlobalTaskListener(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { id } = arg || {};
-      let envelope: any = {};
-      envelope.path = { id };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('deleteGlobalTaskListener', _schemas.zDeleteGlobalTaskListenerPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.deleteGlobalTaskListener(opts);
-        let data = this._evaluateResponse(_raw, 'deleteGlobalTaskListener', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zDeleteGlobalTaskListenerResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zDeleteGlobalTaskListenerResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('deleteGlobalTaskListener', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteGlobalTaskListener', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.deleteGlobalTaskListener(this, arg, options);
   }
 
   /**
@@ -5850,56 +1551,7 @@ export class CamundaClientBase {
    */
   deleteGroup(input: deleteGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteGroup>>;
   deleteGroup(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { groupId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { groupId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('deleteGroup', _schemas.zDeleteGroupPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.deleteGroup(opts);
-        let data = this._evaluateResponse(_raw, 'deleteGroup', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zDeleteGroupResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zDeleteGroupResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('deleteGroup', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteGroup', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.deleteGroup(this, arg, options);
   }
 
   /**
@@ -5924,56 +1576,7 @@ export class CamundaClientBase {
    */
   deleteHistoryBackup(input: deleteHistoryBackupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteHistoryBackup>>;
   deleteHistoryBackup(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { backupId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { backupId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('deleteHistoryBackup', _schemas.zDeleteHistoryBackupPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.deleteHistoryBackup(opts);
-        let data = this._evaluateResponse(_raw, 'deleteHistoryBackup', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zDeleteHistoryBackupResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zDeleteHistoryBackupResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('deleteHistoryBackup', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteHistoryBackup', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.deleteHistoryBackup(this, arg, options);
   }
 
   /**
@@ -6000,62 +1603,7 @@ export class CamundaClientBase {
    */
   deleteHistoryBackupAsClusterAdmin(input: deleteHistoryBackupAsClusterAdminInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteHistoryBackupAsClusterAdmin>>;
   deleteHistoryBackupAsClusterAdmin(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { backupId, physicalTenantId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { backupId };
-      envelope.query = { physicalTenantId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('deleteHistoryBackupAsClusterAdmin', _schemas.zDeleteHistoryBackupAsClusterAdminPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('deleteHistoryBackupAsClusterAdmin', _schemas.zDeleteHistoryBackupAsClusterAdminQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.query) opts.query = envelope.query;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.deleteHistoryBackupAsClusterAdmin(opts);
-        let data = this._evaluateResponse(_raw, 'deleteHistoryBackupAsClusterAdmin', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zDeleteHistoryBackupAsClusterAdminResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zDeleteHistoryBackupAsClusterAdminResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('deleteHistoryBackupAsClusterAdmin', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteHistoryBackupAsClusterAdmin', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.deleteHistoryBackupAsClusterAdmin(this, arg, options);
   }
 
   /**
@@ -6077,56 +1625,7 @@ export class CamundaClientBase {
    */
   deleteMappingRule(input: deleteMappingRuleInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteMappingRule>>;
   deleteMappingRule(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { mappingRuleId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { mappingRuleId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('deleteMappingRule', _schemas.zDeleteMappingRulePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.deleteMappingRule(opts);
-        let data = this._evaluateResponse(_raw, 'deleteMappingRule', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zDeleteMappingRuleResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zDeleteMappingRuleResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('deleteMappingRule', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteMappingRule', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.deleteMappingRule(this, arg, options);
   }
 
   /**
@@ -6147,62 +1646,7 @@ export class CamundaClientBase {
    */
   deleteProcessInstance(input: deleteProcessInstanceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteProcessInstance>>;
   deleteProcessInstance(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { processInstanceKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { processInstanceKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('deleteProcessInstance', _schemas.zDeleteProcessInstanceBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('deleteProcessInstance', _schemas.zDeleteProcessInstancePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.deleteProcessInstance(opts);
-        let data = this._evaluateResponse(_raw, 'deleteProcessInstance', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zDeleteProcessInstanceResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zDeleteProcessInstanceResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('deleteProcessInstance', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteProcessInstance', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.deleteProcessInstance(this, arg, options);
   }
 
   /**
@@ -6234,56 +1678,7 @@ export class CamundaClientBase {
    */
   deleteProcessInstancesBatchOperation(input: deleteProcessInstancesBatchOperationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteProcessInstancesBatchOperation>>;
   deleteProcessInstancesBatchOperation(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('deleteProcessInstancesBatchOperation', _schemas.zDeleteProcessInstancesBatchOperationBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.deleteProcessInstancesBatchOperation(opts);
-        let data = this._evaluateResponse(_raw, 'deleteProcessInstancesBatchOperation', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zDeleteProcessInstancesBatchOperationResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zDeleteProcessInstancesBatchOperationResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('deleteProcessInstancesBatchOperation', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteProcessInstancesBatchOperation', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.deleteProcessInstancesBatchOperation(this, arg, options);
   }
 
   /**
@@ -6327,62 +1722,7 @@ export class CamundaClientBase {
    */
   deleteResource(input: deleteResourceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteResource>>;
   deleteResource(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { resourceKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { resourceKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('deleteResource', _schemas.zDeleteResourceBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('deleteResource', _schemas.zDeleteResourcePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.deleteResource(opts);
-        let data = this._evaluateResponse(_raw, 'deleteResource', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zDeleteResourceResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zDeleteResourceResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('deleteResource', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteResource', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.deleteResource(this, arg, options);
   }
 
   /**
@@ -6403,56 +1743,7 @@ export class CamundaClientBase {
    */
   deleteRole(input: deleteRoleInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteRole>>;
   deleteRole(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { roleId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { roleId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('deleteRole', _schemas.zDeleteRolePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.deleteRole(opts);
-        let data = this._evaluateResponse(_raw, 'deleteRole', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zDeleteRoleResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zDeleteRoleResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('deleteRole', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteRole', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.deleteRole(this, arg, options);
   }
 
   /**
@@ -6473,56 +1764,7 @@ export class CamundaClientBase {
    */
   deleteRuntimeBackup(input: deleteRuntimeBackupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteRuntimeBackup>>;
   deleteRuntimeBackup(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { backupId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { backupId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('deleteRuntimeBackup', _schemas.zDeleteRuntimeBackupPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.deleteRuntimeBackup(opts);
-        let data = this._evaluateResponse(_raw, 'deleteRuntimeBackup', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zDeleteRuntimeBackupResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zDeleteRuntimeBackupResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('deleteRuntimeBackup', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteRuntimeBackup', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.deleteRuntimeBackup(this, arg, options);
   }
 
   /**
@@ -6549,62 +1791,7 @@ export class CamundaClientBase {
    */
   deleteRuntimeBackupAsClusterAdmin(input: deleteRuntimeBackupAsClusterAdminInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteRuntimeBackupAsClusterAdmin>>;
   deleteRuntimeBackupAsClusterAdmin(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { backupId, physicalTenantId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { backupId };
-      envelope.query = { physicalTenantId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('deleteRuntimeBackupAsClusterAdmin', _schemas.zDeleteRuntimeBackupAsClusterAdminPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('deleteRuntimeBackupAsClusterAdmin', _schemas.zDeleteRuntimeBackupAsClusterAdminQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.query) opts.query = envelope.query;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.deleteRuntimeBackupAsClusterAdmin(opts);
-        let data = this._evaluateResponse(_raw, 'deleteRuntimeBackupAsClusterAdmin', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zDeleteRuntimeBackupAsClusterAdminResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zDeleteRuntimeBackupAsClusterAdminResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('deleteRuntimeBackupAsClusterAdmin', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteRuntimeBackupAsClusterAdmin', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.deleteRuntimeBackupAsClusterAdmin(this, arg, options);
   }
 
   /**
@@ -6630,44 +1817,7 @@ export class CamundaClientBase {
    */
   deleteRuntimeBackupState(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteRuntimeBackupState>>;
   deleteRuntimeBackupState(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      const call = async () => {
-        try {
-        const _raw = await Sdk.deleteRuntimeBackupState(opts as any);
-        let data = this._evaluateResponse(_raw, 'deleteRuntimeBackupState', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zDeleteRuntimeBackupStateResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zDeleteRuntimeBackupStateResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('deleteRuntimeBackupState', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteRuntimeBackupState', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.deleteRuntimeBackupState(this, options);
   }
 
   /**
@@ -6695,56 +1845,7 @@ export class CamundaClientBase {
    */
   deleteRuntimeBackupStateAsClusterAdmin(input: deleteRuntimeBackupStateAsClusterAdminInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteRuntimeBackupStateAsClusterAdmin>>;
   deleteRuntimeBackupStateAsClusterAdmin(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { physicalTenantId } = arg || {};
-      let envelope: any = {};
-      envelope.query = { physicalTenantId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('deleteRuntimeBackupStateAsClusterAdmin', _schemas.zDeleteRuntimeBackupStateAsClusterAdminQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.query) opts.query = envelope.query;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.deleteRuntimeBackupStateAsClusterAdmin(opts);
-        let data = this._evaluateResponse(_raw, 'deleteRuntimeBackupStateAsClusterAdmin', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zDeleteRuntimeBackupStateAsClusterAdminResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zDeleteRuntimeBackupStateAsClusterAdminResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('deleteRuntimeBackupStateAsClusterAdmin', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteRuntimeBackupStateAsClusterAdmin', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.deleteRuntimeBackupStateAsClusterAdmin(this, arg, options);
   }
 
   /**
@@ -6765,56 +1866,7 @@ export class CamundaClientBase {
    */
   deleteTenant(input: deleteTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteTenant>>;
   deleteTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { tenantId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { tenantId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('deleteTenant', _schemas.zDeleteTenantPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.deleteTenant(opts);
-        let data = this._evaluateResponse(_raw, 'deleteTenant', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zDeleteTenantResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zDeleteTenantResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('deleteTenant', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteTenant', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.deleteTenant(this, arg, options);
   }
 
   /**
@@ -6838,56 +1890,7 @@ export class CamundaClientBase {
    */
   deleteTenantClusterVariable(input: deleteTenantClusterVariableInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteTenantClusterVariable>>;
   deleteTenantClusterVariable(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { tenantId, name } = arg || {};
-      let envelope: any = {};
-      envelope.path = { tenantId, name };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('deleteTenantClusterVariable', _schemas.zDeleteTenantClusterVariablePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.deleteTenantClusterVariable(opts);
-        let data = this._evaluateResponse(_raw, 'deleteTenantClusterVariable', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zDeleteTenantClusterVariableResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zDeleteTenantClusterVariableResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('deleteTenantClusterVariable', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteTenantClusterVariable', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.deleteTenantClusterVariable(this, arg, options);
   }
 
   /**
@@ -6908,56 +1911,7 @@ export class CamundaClientBase {
    */
   deleteUser(input: deleteUserInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteUser>>;
   deleteUser(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { username } = arg || {};
-      let envelope: any = {};
-      envelope.path = { username };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('deleteUser', _schemas.zDeleteUserPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.deleteUser(opts);
-        let data = this._evaluateResponse(_raw, 'deleteUser', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zDeleteUserResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zDeleteUserResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('deleteUser', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteUser', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.deleteUser(this, arg, options);
   }
 
   /**
@@ -6986,60 +1940,7 @@ export class CamundaClientBase {
    */
   evaluateConditionals(input: evaluateConditionalsInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.evaluateConditionals>>;
   evaluateConditionals(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-        envelope.body.tenantId = this._config.defaultTenantId;
-        this._log.trace(() => ['tenant.default.inject', { op: 'evaluateConditionals', tenant: this._config.defaultTenantId }]);
-      }
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('evaluateConditionals', _schemas.zEvaluateConditionalsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.evaluateConditionals(opts);
-        let data = this._evaluateResponse(_raw, 'evaluateConditionals', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zEvaluateConditionalsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zEvaluateConditionalsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('evaluateConditionals', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'evaluateConditionals', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.evaluateConditionals(this, arg, options);
   }
 
   /**
@@ -7089,60 +1990,7 @@ export class CamundaClientBase {
    */
   evaluateDecision(input: evaluateDecisionInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.evaluateDecision>>;
   evaluateDecision(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-        envelope.body.tenantId = this._config.defaultTenantId;
-        this._log.trace(() => ['tenant.default.inject', { op: 'evaluateDecision', tenant: this._config.defaultTenantId }]);
-      }
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('evaluateDecision', _schemas.zEvaluateDecisionBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.evaluateDecision(opts);
-        let data = this._evaluateResponse(_raw, 'evaluateDecision', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zEvaluateDecisionResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zEvaluateDecisionResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('evaluateDecision', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'evaluateDecision', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.evaluateDecision(this, arg, options);
   }
 
   /**
@@ -7172,60 +2020,7 @@ export class CamundaClientBase {
    */
   evaluateExpression(input: evaluateExpressionInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.evaluateExpression>>;
   evaluateExpression(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-        envelope.body.tenantId = this._config.defaultTenantId;
-        this._log.trace(() => ['tenant.default.inject', { op: 'evaluateExpression', tenant: this._config.defaultTenantId }]);
-      }
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('evaluateExpression', _schemas.zEvaluateExpressionBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.evaluateExpression(opts);
-        let data = this._evaluateResponse(_raw, 'evaluateExpression', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zEvaluateExpressionResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zEvaluateExpressionResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('evaluateExpression', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'evaluateExpression', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.evaluateExpression(this, arg, options);
   }
 
   /**
@@ -7252,62 +2047,7 @@ export class CamundaClientBase {
    */
   failJob(input: failJobInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.failJob>>;
   failJob(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { jobKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { jobKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('failJob', _schemas.zFailJobBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('failJob', _schemas.zFailJobPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.failJob(opts);
-        let data = this._evaluateResponse(_raw, 'failJob', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zFailJobResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zFailJobResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('failJob', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'failJob', exempt: true, retryOverride: options?.retry });
-    });
+    return Ops.failJob(this, arg, options);
   }
 
   /**
@@ -7336,60 +2076,7 @@ export class CamundaClientBase {
    */
   getAgentDefinition(input: getAgentDefinitionInput, /** Management of eventual consistency **/ consistencyManagement: getAgentDefinitionConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getAgentDefinition>>;
   getAgentDefinition(arg: any, /** Management of eventual consistency **/ consistencyManagement: getAgentDefinitionConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { agentDefinitionKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { agentDefinitionKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getAgentDefinition', _schemas.zGetAgentDefinitionPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getAgentDefinition(opts);
-        let data = this._evaluateResponse(_raw, 'getAgentDefinition', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetAgentDefinitionResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetAgentDefinitionResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getAgentDefinition', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getAgentDefinition', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getAgentDefinition(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -7417,60 +2104,7 @@ export class CamundaClientBase {
    */
   getAgentInstance(input: getAgentInstanceInput, /** Management of eventual consistency **/ consistencyManagement: getAgentInstanceConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getAgentInstance>>;
   getAgentInstance(arg: any, /** Management of eventual consistency **/ consistencyManagement: getAgentInstanceConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { agentInstanceKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { agentInstanceKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getAgentInstance', _schemas.zGetAgentInstancePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getAgentInstance(opts);
-        let data = this._evaluateResponse(_raw, 'getAgentInstance', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetAgentInstanceResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetAgentInstanceResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getAgentInstance', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getAgentInstance', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getAgentInstance(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -7494,60 +2128,7 @@ export class CamundaClientBase {
    */
   getAuditLog(input: getAuditLogInput, /** Management of eventual consistency **/ consistencyManagement: getAuditLogConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getAuditLog>>;
   getAuditLog(arg: any, /** Management of eventual consistency **/ consistencyManagement: getAuditLogConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { auditLogKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { auditLogKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getAuditLog', _schemas.zGetAuditLogPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getAuditLog(opts);
-        let data = this._evaluateResponse(_raw, 'getAuditLog', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetAuditLogResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetAuditLogResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getAuditLog', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getAuditLog', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getAuditLog(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -7570,44 +2151,7 @@ export class CamundaClientBase {
    */
   getAuthentication(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getAuthentication>>;
   getAuthentication(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getAuthentication(opts as any);
-        let data = this._evaluateResponse(_raw, 'getAuthentication', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetAuthenticationResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetAuthenticationResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getAuthentication', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'getAuthentication', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.getAuthentication(this, options);
   }
 
   /**
@@ -7634,60 +2178,7 @@ export class CamundaClientBase {
    */
   getAuthorization(input: getAuthorizationInput, /** Management of eventual consistency **/ consistencyManagement: getAuthorizationConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getAuthorization>>;
   getAuthorization(arg: any, /** Management of eventual consistency **/ consistencyManagement: getAuthorizationConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { authorizationKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { authorizationKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getAuthorization', _schemas.zGetAuthorizationPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getAuthorization(opts);
-        let data = this._evaluateResponse(_raw, 'getAuthorization', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetAuthorizationResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetAuthorizationResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getAuthorization', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getAuthorization', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getAuthorization(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -7714,60 +2205,7 @@ export class CamundaClientBase {
    */
   getBatchOperation(input: getBatchOperationInput, /** Management of eventual consistency **/ consistencyManagement: getBatchOperationConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getBatchOperation>>;
   getBatchOperation(arg: any, /** Management of eventual consistency **/ consistencyManagement: getBatchOperationConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { batchOperationKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { batchOperationKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getBatchOperation', _schemas.zGetBatchOperationPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getBatchOperation(opts);
-        let data = this._evaluateResponse(_raw, 'getBatchOperation', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetBatchOperationResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetBatchOperationResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getBatchOperation', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getBatchOperation', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getBatchOperation(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -7793,44 +2231,7 @@ export class CamundaClientBase {
    */
   getClusterExportingStatus(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getClusterExportingStatus>>;
   getClusterExportingStatus(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getClusterExportingStatus(opts as any);
-        let data = this._evaluateResponse(_raw, 'getClusterExportingStatus', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetClusterExportingStatusResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetClusterExportingStatusResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getClusterExportingStatus', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'getClusterExportingStatus', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.getClusterExportingStatus(this, options);
   }
 
   /**
@@ -7863,44 +2264,7 @@ export class CamundaClientBase {
    */
   getClusterRebalance(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getClusterRebalance>>;
   getClusterRebalance(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getClusterRebalance(opts as any);
-        let data = this._evaluateResponse(_raw, 'getClusterRebalance', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetClusterRebalanceResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetClusterRebalanceResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getClusterRebalance', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'getClusterRebalance', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.getClusterRebalance(this, options);
   }
 
   /**
@@ -7925,44 +2289,7 @@ export class CamundaClientBase {
    */
   getClusterStatus(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getClusterStatus>>;
   getClusterStatus(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getClusterStatus(opts as any);
-        let data = this._evaluateResponse(_raw, 'getClusterStatus', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetClusterStatusResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetClusterStatusResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getClusterStatus', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'getClusterStatus', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.getClusterStatus(this, options);
   }
 
   /**
@@ -7999,44 +2326,7 @@ export class CamundaClientBase {
    */
   getClusterTopology(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getClusterTopology>>;
   getClusterTopology(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getClusterTopology(opts as any);
-        let data = this._evaluateResponse(_raw, 'getClusterTopology', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetClusterTopologyResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetClusterTopologyResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getClusterTopology', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'getClusterTopology', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.getClusterTopology(this, options);
   }
 
   /**
@@ -8059,44 +2349,7 @@ export class CamundaClientBase {
    */
   getClusterUpgradeStatus(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getClusterUpgradeStatus>>;
   getClusterUpgradeStatus(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getClusterUpgradeStatus(opts as any);
-        let data = this._evaluateResponse(_raw, 'getClusterUpgradeStatus', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetClusterUpgradeStatusResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetClusterUpgradeStatusResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getClusterUpgradeStatus', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'getClusterUpgradeStatus', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.getClusterUpgradeStatus(this, options);
   }
 
   /**
@@ -8124,60 +2377,7 @@ export class CamundaClientBase {
    */
   getDecisionDefinition(input: getDecisionDefinitionInput, /** Management of eventual consistency **/ consistencyManagement: getDecisionDefinitionConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getDecisionDefinition>>;
   getDecisionDefinition(arg: any, /** Management of eventual consistency **/ consistencyManagement: getDecisionDefinitionConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { decisionDefinitionKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { decisionDefinitionKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getDecisionDefinition', _schemas.zGetDecisionDefinitionPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getDecisionDefinition(opts);
-        let data = this._evaluateResponse(_raw, 'getDecisionDefinition', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetDecisionDefinitionResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetDecisionDefinitionResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getDecisionDefinition', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getDecisionDefinition', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getDecisionDefinition(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -8204,60 +2404,7 @@ export class CamundaClientBase {
    */
   getDecisionDefinitionXml(input: getDecisionDefinitionXmlInput, /** Management of eventual consistency **/ consistencyManagement: getDecisionDefinitionXmlConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getDecisionDefinitionXml>>;
   getDecisionDefinitionXml(arg: any, /** Management of eventual consistency **/ consistencyManagement: getDecisionDefinitionXmlConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { decisionDefinitionKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { decisionDefinitionKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getDecisionDefinitionXML', _schemas.zGetDecisionDefinitionXmlPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getDecisionDefinitionXml(opts);
-        let data = this._evaluateResponse(_raw, 'getDecisionDefinitionXML', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetDecisionDefinitionXmlResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetDecisionDefinitionXmlResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getDecisionDefinitionXML', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getDecisionDefinitionXML', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getDecisionDefinitionXml(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -8286,60 +2433,7 @@ export class CamundaClientBase {
    */
   getDecisionInstance(input: getDecisionInstanceInput, /** Management of eventual consistency **/ consistencyManagement: getDecisionInstanceConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getDecisionInstance>>;
   getDecisionInstance(arg: any, /** Management of eventual consistency **/ consistencyManagement: getDecisionInstanceConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { decisionEvaluationInstanceKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { decisionEvaluationInstanceKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getDecisionInstance', _schemas.zGetDecisionInstancePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getDecisionInstance(opts);
-        let data = this._evaluateResponse(_raw, 'getDecisionInstance', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetDecisionInstanceResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetDecisionInstanceResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getDecisionInstance', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getDecisionInstance', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getDecisionInstance(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -8366,60 +2460,7 @@ export class CamundaClientBase {
    */
   getDecisionRequirements(input: getDecisionRequirementsInput, /** Management of eventual consistency **/ consistencyManagement: getDecisionRequirementsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getDecisionRequirements>>;
   getDecisionRequirements(arg: any, /** Management of eventual consistency **/ consistencyManagement: getDecisionRequirementsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { decisionRequirementsKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { decisionRequirementsKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getDecisionRequirements', _schemas.zGetDecisionRequirementsPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getDecisionRequirements(opts);
-        let data = this._evaluateResponse(_raw, 'getDecisionRequirements', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetDecisionRequirementsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetDecisionRequirementsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getDecisionRequirements', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getDecisionRequirements', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getDecisionRequirements(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -8446,60 +2487,7 @@ export class CamundaClientBase {
    */
   getDecisionRequirementsXml(input: getDecisionRequirementsXmlInput, /** Management of eventual consistency **/ consistencyManagement: getDecisionRequirementsXmlConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getDecisionRequirementsXml>>;
   getDecisionRequirementsXml(arg: any, /** Management of eventual consistency **/ consistencyManagement: getDecisionRequirementsXmlConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { decisionRequirementsKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { decisionRequirementsKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getDecisionRequirementsXML', _schemas.zGetDecisionRequirementsXmlPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getDecisionRequirementsXml(opts);
-        let data = this._evaluateResponse(_raw, 'getDecisionRequirementsXML', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetDecisionRequirementsXmlResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetDecisionRequirementsXmlResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getDecisionRequirementsXML', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getDecisionRequirementsXML', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getDecisionRequirementsXml(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -8525,62 +2513,7 @@ export class CamundaClientBase {
    */
   getDocument(input: getDocumentInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getDocument>>;
   getDocument(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { documentId, storeId, contentHash } = arg || {};
-      let envelope: any = {};
-      envelope.path = { documentId };
-      envelope.query = { storeId, contentHash };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getDocument', _schemas.zGetDocumentPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('getDocument', _schemas.zGetDocumentQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.query) opts.query = envelope.query;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getDocument(opts);
-        let data = this._evaluateResponse(_raw, 'getDocument', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetDocumentResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetDocumentResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getDocument', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'getDocument', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.getDocument(this, arg, options);
   }
 
   /**
@@ -8607,60 +2540,7 @@ export class CamundaClientBase {
    */
   getElementInstance(input: getElementInstanceInput, /** Management of eventual consistency **/ consistencyManagement: getElementInstanceConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getElementInstance>>;
   getElementInstance(arg: any, /** Management of eventual consistency **/ consistencyManagement: getElementInstanceConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { elementInstanceKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { elementInstanceKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getElementInstance', _schemas.zGetElementInstancePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getElementInstance(opts);
-        let data = this._evaluateResponse(_raw, 'getElementInstance', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetElementInstanceResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetElementInstanceResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getElementInstance', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getElementInstance', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getElementInstance(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -8692,44 +2572,7 @@ export class CamundaClientBase {
    */
   getExportingStatus(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getExportingStatus>>;
   getExportingStatus(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getExportingStatus(opts as any);
-        let data = this._evaluateResponse(_raw, 'getExportingStatus', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetExportingStatusResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetExportingStatusResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getExportingStatus', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'getExportingStatus', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.getExportingStatus(this, options);
   }
 
   /**
@@ -8759,60 +2602,7 @@ export class CamundaClientBase {
    */
   getFormByKey(input: getFormByKeyInput, /** Management of eventual consistency **/ consistencyManagement: getFormByKeyConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getFormByKey>>;
   getFormByKey(arg: any, /** Management of eventual consistency **/ consistencyManagement: getFormByKeyConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { formKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { formKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getFormByKey', _schemas.zGetFormByKeyPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getFormByKey(opts);
-        let data = this._evaluateResponse(_raw, 'getFormByKey', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetFormByKeyResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetFormByKeyResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getFormByKey', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getFormByKey', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getFormByKey(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -8839,60 +2629,7 @@ export class CamundaClientBase {
    */
   getGlobalClusterVariable(input: getGlobalClusterVariableInput, /** Management of eventual consistency **/ consistencyManagement: getGlobalClusterVariableConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getGlobalClusterVariable>>;
   getGlobalClusterVariable(arg: any, /** Management of eventual consistency **/ consistencyManagement: getGlobalClusterVariableConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { name } = arg || {};
-      let envelope: any = {};
-      envelope.path = { name };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getGlobalClusterVariable', _schemas.zGetGlobalClusterVariablePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getGlobalClusterVariable(opts);
-        let data = this._evaluateResponse(_raw, 'getGlobalClusterVariable', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetGlobalClusterVariableResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetGlobalClusterVariableResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getGlobalClusterVariable', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getGlobalClusterVariable', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getGlobalClusterVariable(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -8923,60 +2660,7 @@ export class CamundaClientBase {
    */
   getGlobalJobStatistics(input: getGlobalJobStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getGlobalJobStatisticsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getGlobalJobStatistics>>;
   getGlobalJobStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getGlobalJobStatisticsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { from, to, jobType } = arg || {};
-      let envelope: any = {};
-      envelope.query = { from, to, jobType };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('getGlobalJobStatistics', _schemas.zGetGlobalJobStatisticsQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.query) opts.query = envelope.query;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getGlobalJobStatistics(opts);
-        let data = this._evaluateResponse(_raw, 'getGlobalJobStatistics', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetGlobalJobStatisticsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetGlobalJobStatisticsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getGlobalJobStatistics', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getGlobalJobStatistics', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getGlobalJobStatistics(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -9003,60 +2687,7 @@ export class CamundaClientBase {
    */
   getGlobalTaskListener(input: getGlobalTaskListenerInput, /** Management of eventual consistency **/ consistencyManagement: getGlobalTaskListenerConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getGlobalTaskListener>>;
   getGlobalTaskListener(arg: any, /** Management of eventual consistency **/ consistencyManagement: getGlobalTaskListenerConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { id } = arg || {};
-      let envelope: any = {};
-      envelope.path = { id };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getGlobalTaskListener', _schemas.zGetGlobalTaskListenerPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getGlobalTaskListener(opts);
-        let data = this._evaluateResponse(_raw, 'getGlobalTaskListener', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetGlobalTaskListenerResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetGlobalTaskListenerResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getGlobalTaskListener', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getGlobalTaskListener', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getGlobalTaskListener(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -9080,60 +2711,7 @@ export class CamundaClientBase {
    */
   getGroup(input: getGroupInput, /** Management of eventual consistency **/ consistencyManagement: getGroupConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getGroup>>;
   getGroup(arg: any, /** Management of eventual consistency **/ consistencyManagement: getGroupConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { groupId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { groupId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getGroup', _schemas.zGetGroupPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getGroup(opts);
-        let data = this._evaluateResponse(_raw, 'getGroup', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetGroupResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetGroupResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getGroup', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getGroup', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getGroup(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -9160,56 +2738,7 @@ export class CamundaClientBase {
    */
   getHistoryBackup(input: getHistoryBackupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getHistoryBackup>>;
   getHistoryBackup(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { backupId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { backupId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getHistoryBackup', _schemas.zGetHistoryBackupPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getHistoryBackup(opts);
-        let data = this._evaluateResponse(_raw, 'getHistoryBackup', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetHistoryBackupResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetHistoryBackupResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getHistoryBackup', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'getHistoryBackup', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.getHistoryBackup(this, arg, options);
   }
 
   /**
@@ -9242,62 +2771,7 @@ export class CamundaClientBase {
    */
   getHistoryBackupAsClusterAdmin(input: getHistoryBackupAsClusterAdminInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getHistoryBackupAsClusterAdmin>>;
   getHistoryBackupAsClusterAdmin(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { backupId, physicalTenantId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { backupId };
-      envelope.query = { physicalTenantId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getHistoryBackupAsClusterAdmin', _schemas.zGetHistoryBackupAsClusterAdminPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('getHistoryBackupAsClusterAdmin', _schemas.zGetHistoryBackupAsClusterAdminQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.query) opts.query = envelope.query;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getHistoryBackupAsClusterAdmin(opts);
-        let data = this._evaluateResponse(_raw, 'getHistoryBackupAsClusterAdmin', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetHistoryBackupAsClusterAdminResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetHistoryBackupAsClusterAdminResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getHistoryBackupAsClusterAdmin', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'getHistoryBackupAsClusterAdmin', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.getHistoryBackupAsClusterAdmin(this, arg, options);
   }
 
   /**
@@ -9327,60 +2801,7 @@ export class CamundaClientBase {
    */
   getIncident(input: getIncidentInput, /** Management of eventual consistency **/ consistencyManagement: getIncidentConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getIncident>>;
   getIncident(arg: any, /** Management of eventual consistency **/ consistencyManagement: getIncidentConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { incidentKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { incidentKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getIncident', _schemas.zGetIncidentPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getIncident(opts);
-        let data = this._evaluateResponse(_raw, 'getIncident', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetIncidentResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetIncidentResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getIncident', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getIncident', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getIncident(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -9416,60 +2837,7 @@ export class CamundaClientBase {
    */
   getJobErrorStatistics(input: getJobErrorStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getJobErrorStatisticsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getJobErrorStatistics>>;
   getJobErrorStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getJobErrorStatisticsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('getJobErrorStatistics', _schemas.zGetJobErrorStatisticsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getJobErrorStatistics(opts);
-        let data = this._evaluateResponse(_raw, 'getJobErrorStatistics', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetJobErrorStatisticsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetJobErrorStatisticsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getJobErrorStatistics', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getJobErrorStatistics', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getJobErrorStatistics(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -9507,60 +2875,7 @@ export class CamundaClientBase {
    */
   getJobTimeSeriesStatistics(input: getJobTimeSeriesStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getJobTimeSeriesStatisticsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getJobTimeSeriesStatistics>>;
   getJobTimeSeriesStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getJobTimeSeriesStatisticsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('getJobTimeSeriesStatistics', _schemas.zGetJobTimeSeriesStatisticsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getJobTimeSeriesStatistics(opts);
-        let data = this._evaluateResponse(_raw, 'getJobTimeSeriesStatistics', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetJobTimeSeriesStatisticsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetJobTimeSeriesStatisticsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getJobTimeSeriesStatistics', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getJobTimeSeriesStatistics', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getJobTimeSeriesStatistics(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -9587,60 +2902,7 @@ export class CamundaClientBase {
    */
   getJobTypeStatistics(input: getJobTypeStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getJobTypeStatisticsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getJobTypeStatistics>>;
   getJobTypeStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getJobTypeStatisticsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('getJobTypeStatistics', _schemas.zGetJobTypeStatisticsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getJobTypeStatistics(opts);
-        let data = this._evaluateResponse(_raw, 'getJobTypeStatistics', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetJobTypeStatisticsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetJobTypeStatisticsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getJobTypeStatistics', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getJobTypeStatistics', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getJobTypeStatistics(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -9676,60 +2938,7 @@ export class CamundaClientBase {
    */
   getJobWorkerStatistics(input: getJobWorkerStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getJobWorkerStatisticsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getJobWorkerStatistics>>;
   getJobWorkerStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getJobWorkerStatisticsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('getJobWorkerStatistics', _schemas.zGetJobWorkerStatisticsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getJobWorkerStatistics(opts);
-        let data = this._evaluateResponse(_raw, 'getJobWorkerStatistics', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetJobWorkerStatisticsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetJobWorkerStatisticsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getJobWorkerStatistics', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getJobWorkerStatistics', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getJobWorkerStatistics(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -9752,44 +2961,7 @@ export class CamundaClientBase {
    */
   getLicense(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getLicense>>;
   getLicense(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getLicense(opts as any);
-        let data = this._evaluateResponse(_raw, 'getLicense', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetLicenseResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetLicenseResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getLicense', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'getLicense', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.getLicense(this, options);
   }
 
   /**
@@ -9817,60 +2989,7 @@ export class CamundaClientBase {
    */
   getMappingRule(input: getMappingRuleInput, /** Management of eventual consistency **/ consistencyManagement: getMappingRuleConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getMappingRule>>;
   getMappingRule(arg: any, /** Management of eventual consistency **/ consistencyManagement: getMappingRuleConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { mappingRuleId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { mappingRuleId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getMappingRule', _schemas.zGetMappingRulePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getMappingRule(opts);
-        let data = this._evaluateResponse(_raw, 'getMappingRule', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetMappingRuleResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetMappingRuleResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getMappingRule', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getMappingRule', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getMappingRule(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -9897,60 +3016,7 @@ export class CamundaClientBase {
    */
   getProcessDefinition(input: getProcessDefinitionInput, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessDefinition>>;
   getProcessDefinition(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { processDefinitionKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { processDefinitionKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getProcessDefinition', _schemas.zGetProcessDefinitionPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getProcessDefinition(opts);
-        let data = this._evaluateResponse(_raw, 'getProcessDefinition', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetProcessDefinitionResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetProcessDefinitionResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getProcessDefinition', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getProcessDefinition', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getProcessDefinition(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -9982,60 +3048,7 @@ export class CamundaClientBase {
    */
   getProcessDefinitionInstanceStatistics(input: getProcessDefinitionInstanceStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionInstanceStatisticsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessDefinitionInstanceStatistics>>;
   getProcessDefinitionInstanceStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionInstanceStatisticsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('getProcessDefinitionInstanceStatistics', _schemas.zGetProcessDefinitionInstanceStatisticsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getProcessDefinitionInstanceStatistics(opts);
-        let data = this._evaluateResponse(_raw, 'getProcessDefinitionInstanceStatistics', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetProcessDefinitionInstanceStatisticsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetProcessDefinitionInstanceStatisticsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getProcessDefinitionInstanceStatistics', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getProcessDefinitionInstanceStatistics', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getProcessDefinitionInstanceStatistics(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -10074,60 +3087,7 @@ export class CamundaClientBase {
    */
   getProcessDefinitionInstanceVersionStatistics(input: getProcessDefinitionInstanceVersionStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionInstanceVersionStatisticsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessDefinitionInstanceVersionStatistics>>;
   getProcessDefinitionInstanceVersionStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionInstanceVersionStatisticsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('getProcessDefinitionInstanceVersionStatistics', _schemas.zGetProcessDefinitionInstanceVersionStatisticsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getProcessDefinitionInstanceVersionStatistics(opts);
-        let data = this._evaluateResponse(_raw, 'getProcessDefinitionInstanceVersionStatistics', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetProcessDefinitionInstanceVersionStatisticsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetProcessDefinitionInstanceVersionStatisticsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getProcessDefinitionInstanceVersionStatistics', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getProcessDefinitionInstanceVersionStatistics', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getProcessDefinitionInstanceVersionStatistics(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -10159,60 +3119,7 @@ export class CamundaClientBase {
    */
   getProcessDefinitionMessageSubscriptionStatistics(input: getProcessDefinitionMessageSubscriptionStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionMessageSubscriptionStatisticsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessDefinitionMessageSubscriptionStatistics>>;
   getProcessDefinitionMessageSubscriptionStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionMessageSubscriptionStatisticsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('getProcessDefinitionMessageSubscriptionStatistics', _schemas.zGetProcessDefinitionMessageSubscriptionStatisticsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getProcessDefinitionMessageSubscriptionStatistics(opts);
-        let data = this._evaluateResponse(_raw, 'getProcessDefinitionMessageSubscriptionStatistics', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetProcessDefinitionMessageSubscriptionStatisticsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetProcessDefinitionMessageSubscriptionStatisticsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getProcessDefinitionMessageSubscriptionStatistics', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getProcessDefinitionMessageSubscriptionStatistics', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getProcessDefinitionMessageSubscriptionStatistics(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -10241,66 +3148,7 @@ export class CamundaClientBase {
    */
   getProcessDefinitionStatistics(input: getProcessDefinitionStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionStatisticsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessDefinitionStatistics>>;
   getProcessDefinitionStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionStatisticsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { processDefinitionKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { processDefinitionKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('getProcessDefinitionStatistics', _schemas.zGetProcessDefinitionStatisticsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getProcessDefinitionStatistics', _schemas.zGetProcessDefinitionStatisticsPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getProcessDefinitionStatistics(opts);
-        let data = this._evaluateResponse(_raw, 'getProcessDefinitionStatistics', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetProcessDefinitionStatisticsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetProcessDefinitionStatisticsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getProcessDefinitionStatistics', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getProcessDefinitionStatistics', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getProcessDefinitionStatistics(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -10327,60 +3175,7 @@ export class CamundaClientBase {
    */
   getProcessDefinitionXml(input: getProcessDefinitionXmlInput, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionXmlConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessDefinitionXml>>;
   getProcessDefinitionXml(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionXmlConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { processDefinitionKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { processDefinitionKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getProcessDefinitionXML', _schemas.zGetProcessDefinitionXmlPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getProcessDefinitionXml(opts);
-        let data = this._evaluateResponse(_raw, 'getProcessDefinitionXML', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetProcessDefinitionXmlResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetProcessDefinitionXmlResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getProcessDefinitionXML', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getProcessDefinitionXML', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getProcessDefinitionXml(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -10408,60 +3203,7 @@ export class CamundaClientBase {
    */
   getProcessInstance(input: getProcessInstanceInput, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessInstance>>;
   getProcessInstance(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { processInstanceKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { processInstanceKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getProcessInstance', _schemas.zGetProcessInstancePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getProcessInstance(opts);
-        let data = this._evaluateResponse(_raw, 'getProcessInstance', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetProcessInstanceResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetProcessInstanceResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getProcessInstance', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getProcessInstance', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getProcessInstance(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -10488,60 +3230,7 @@ export class CamundaClientBase {
    */
   getProcessInstanceCallHierarchy(input: getProcessInstanceCallHierarchyInput, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceCallHierarchyConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessInstanceCallHierarchy>>;
   getProcessInstanceCallHierarchy(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceCallHierarchyConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { processInstanceKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { processInstanceKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getProcessInstanceCallHierarchy', _schemas.zGetProcessInstanceCallHierarchyPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getProcessInstanceCallHierarchy(opts);
-        let data = this._evaluateResponse(_raw, 'getProcessInstanceCallHierarchy', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetProcessInstanceCallHierarchyResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetProcessInstanceCallHierarchyResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getProcessInstanceCallHierarchy', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getProcessInstanceCallHierarchy', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getProcessInstanceCallHierarchy(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -10570,60 +3259,7 @@ export class CamundaClientBase {
    */
   getProcessInstanceSequenceFlows(input: getProcessInstanceSequenceFlowsInput, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceSequenceFlowsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessInstanceSequenceFlows>>;
   getProcessInstanceSequenceFlows(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceSequenceFlowsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { processInstanceKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { processInstanceKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getProcessInstanceSequenceFlows', _schemas.zGetProcessInstanceSequenceFlowsPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getProcessInstanceSequenceFlows(opts);
-        let data = this._evaluateResponse(_raw, 'getProcessInstanceSequenceFlows', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetProcessInstanceSequenceFlowsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetProcessInstanceSequenceFlowsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getProcessInstanceSequenceFlows', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getProcessInstanceSequenceFlows', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getProcessInstanceSequenceFlows(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -10652,60 +3288,7 @@ export class CamundaClientBase {
    */
   getProcessInstanceStatistics(input: getProcessInstanceStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceStatisticsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessInstanceStatistics>>;
   getProcessInstanceStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceStatisticsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { processInstanceKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { processInstanceKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getProcessInstanceStatistics', _schemas.zGetProcessInstanceStatisticsPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getProcessInstanceStatistics(opts);
-        let data = this._evaluateResponse(_raw, 'getProcessInstanceStatistics', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetProcessInstanceStatisticsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetProcessInstanceStatisticsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getProcessInstanceStatistics', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getProcessInstanceStatistics', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getProcessInstanceStatistics(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -10743,60 +3326,7 @@ export class CamundaClientBase {
    */
   getProcessInstanceStatisticsByDefinition(input: getProcessInstanceStatisticsByDefinitionInput, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceStatisticsByDefinitionConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessInstanceStatisticsByDefinition>>;
   getProcessInstanceStatisticsByDefinition(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceStatisticsByDefinitionConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('getProcessInstanceStatisticsByDefinition', _schemas.zGetProcessInstanceStatisticsByDefinitionBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getProcessInstanceStatisticsByDefinition(opts);
-        let data = this._evaluateResponse(_raw, 'getProcessInstanceStatisticsByDefinition', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetProcessInstanceStatisticsByDefinitionResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetProcessInstanceStatisticsByDefinitionResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getProcessInstanceStatisticsByDefinition', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getProcessInstanceStatisticsByDefinition', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getProcessInstanceStatisticsByDefinition(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -10827,60 +3357,7 @@ export class CamundaClientBase {
    */
   getProcessInstanceStatisticsByError(input: getProcessInstanceStatisticsByErrorInput, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceStatisticsByErrorConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessInstanceStatisticsByError>>;
   getProcessInstanceStatisticsByError(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceStatisticsByErrorConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('getProcessInstanceStatisticsByError', _schemas.zGetProcessInstanceStatisticsByErrorBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getProcessInstanceStatisticsByError(opts);
-        let data = this._evaluateResponse(_raw, 'getProcessInstanceStatisticsByError', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetProcessInstanceStatisticsByErrorResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetProcessInstanceStatisticsByErrorResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getProcessInstanceStatisticsByError', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getProcessInstanceStatisticsByError', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getProcessInstanceStatisticsByError(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -10911,60 +3388,7 @@ export class CamundaClientBase {
    */
   getProcessInstanceWaitStateStatistics(input: getProcessInstanceWaitStateStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceWaitStateStatisticsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessInstanceWaitStateStatistics>>;
   getProcessInstanceWaitStateStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceWaitStateStatisticsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { processInstanceKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { processInstanceKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getProcessInstanceWaitStateStatistics', _schemas.zGetProcessInstanceWaitStateStatisticsPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getProcessInstanceWaitStateStatistics(opts);
-        let data = this._evaluateResponse(_raw, 'getProcessInstanceWaitStateStatistics', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetProcessInstanceWaitStateStatisticsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetProcessInstanceWaitStateStatisticsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getProcessInstanceWaitStateStatistics', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getProcessInstanceWaitStateStatistics', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getProcessInstanceWaitStateStatistics(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -10999,60 +3423,7 @@ export class CamundaClientBase {
    */
   getResource(input: getResourceInput, /** Management of eventual consistency **/ consistencyManagement: getResourceConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getResource>>;
   getResource(arg: any, /** Management of eventual consistency **/ consistencyManagement: getResourceConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { resourceKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { resourceKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getResource', _schemas.zGetResourcePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getResource(opts);
-        let data = this._evaluateResponse(_raw, 'getResource', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetResourceResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetResourceResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getResource', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getResource', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getResource(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -11091,60 +3462,7 @@ export class CamundaClientBase {
    */
   getResourceContent(input: getResourceContentInput, /** Management of eventual consistency **/ consistencyManagement: getResourceContentConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getResourceContent>>;
   getResourceContent(arg: any, /** Management of eventual consistency **/ consistencyManagement: getResourceContentConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { resourceKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { resourceKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getResourceContent', _schemas.zGetResourceContentPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getResourceContent(opts);
-        let data = this._evaluateResponse(_raw, 'getResourceContent', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetResourceContentResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetResourceContentResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getResourceContent', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getResourceContent', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getResourceContent(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -11179,60 +3497,7 @@ export class CamundaClientBase {
    */
   getResourceContentBinary(input: getResourceContentBinaryInput, /** Management of eventual consistency **/ consistencyManagement: getResourceContentBinaryConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getResourceContentBinary>>;
   getResourceContentBinary(arg: any, /** Management of eventual consistency **/ consistencyManagement: getResourceContentBinaryConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { resourceKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { resourceKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getResourceContentBinary', _schemas.zGetResourceContentBinaryPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getResourceContentBinary(opts);
-        let data = this._evaluateResponse(_raw, 'getResourceContentBinary', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetResourceContentBinaryResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetResourceContentBinaryResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getResourceContentBinary', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getResourceContentBinary', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getResourceContentBinary(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -11260,44 +3525,7 @@ export class CamundaClientBase {
    */
   getRestoreStatus(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getRestoreStatus>>;
   getRestoreStatus(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getRestoreStatus(opts as any);
-        let data = this._evaluateResponse(_raw, 'getRestoreStatus', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetRestoreStatusResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetRestoreStatusResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getRestoreStatus', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'getRestoreStatus', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.getRestoreStatus(this, options);
   }
 
   /**
@@ -11321,60 +3549,7 @@ export class CamundaClientBase {
    */
   getRole(input: getRoleInput, /** Management of eventual consistency **/ consistencyManagement: getRoleConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getRole>>;
   getRole(arg: any, /** Management of eventual consistency **/ consistencyManagement: getRoleConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { roleId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { roleId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getRole', _schemas.zGetRolePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getRole(opts);
-        let data = this._evaluateResponse(_raw, 'getRole', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetRoleResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetRoleResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getRole', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getRole', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getRole(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -11400,56 +3575,7 @@ export class CamundaClientBase {
    */
   getRuntimeBackup(input: getRuntimeBackupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getRuntimeBackup>>;
   getRuntimeBackup(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { backupId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { backupId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getRuntimeBackup', _schemas.zGetRuntimeBackupPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getRuntimeBackup(opts);
-        let data = this._evaluateResponse(_raw, 'getRuntimeBackup', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetRuntimeBackupResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetRuntimeBackupResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getRuntimeBackup', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'getRuntimeBackup', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.getRuntimeBackup(this, arg, options);
   }
 
   /**
@@ -11482,62 +3608,7 @@ export class CamundaClientBase {
    */
   getRuntimeBackupAsClusterAdmin(input: getRuntimeBackupAsClusterAdminInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getRuntimeBackupAsClusterAdmin>>;
   getRuntimeBackupAsClusterAdmin(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { backupId, physicalTenantId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { backupId };
-      envelope.query = { physicalTenantId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getRuntimeBackupAsClusterAdmin', _schemas.zGetRuntimeBackupAsClusterAdminPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('getRuntimeBackupAsClusterAdmin', _schemas.zGetRuntimeBackupAsClusterAdminQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.query) opts.query = envelope.query;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getRuntimeBackupAsClusterAdmin(opts);
-        let data = this._evaluateResponse(_raw, 'getRuntimeBackupAsClusterAdmin', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetRuntimeBackupAsClusterAdminResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetRuntimeBackupAsClusterAdminResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getRuntimeBackupAsClusterAdmin', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'getRuntimeBackupAsClusterAdmin', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.getRuntimeBackupAsClusterAdmin(this, arg, options);
   }
 
   /**
@@ -11573,44 +3644,7 @@ export class CamundaClientBase {
    */
   getRuntimeBackupState(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getRuntimeBackupState>>;
   getRuntimeBackupState(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getRuntimeBackupState(opts as any);
-        let data = this._evaluateResponse(_raw, 'getRuntimeBackupState', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetRuntimeBackupStateResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetRuntimeBackupStateResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getRuntimeBackupState', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'getRuntimeBackupState', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.getRuntimeBackupState(this, options);
   }
 
   /**
@@ -11642,56 +3676,7 @@ export class CamundaClientBase {
    */
   getRuntimeBackupStateAsClusterAdmin(input: getRuntimeBackupStateAsClusterAdminInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getRuntimeBackupStateAsClusterAdmin>>;
   getRuntimeBackupStateAsClusterAdmin(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { physicalTenantId } = arg || {};
-      let envelope: any = {};
-      envelope.query = { physicalTenantId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('getRuntimeBackupStateAsClusterAdmin', _schemas.zGetRuntimeBackupStateAsClusterAdminQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.query) opts.query = envelope.query;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getRuntimeBackupStateAsClusterAdmin(opts);
-        let data = this._evaluateResponse(_raw, 'getRuntimeBackupStateAsClusterAdmin', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetRuntimeBackupStateAsClusterAdminResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetRuntimeBackupStateAsClusterAdminResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getRuntimeBackupStateAsClusterAdmin', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'getRuntimeBackupStateAsClusterAdmin', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.getRuntimeBackupStateAsClusterAdmin(this, arg, options);
   }
 
   /**
@@ -11722,60 +3707,7 @@ export class CamundaClientBase {
    */
   getStartProcessForm(input: getStartProcessFormInput, /** Management of eventual consistency **/ consistencyManagement: getStartProcessFormConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getStartProcessForm>>;
   getStartProcessForm(arg: any, /** Management of eventual consistency **/ consistencyManagement: getStartProcessFormConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { processDefinitionKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { processDefinitionKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getStartProcessForm', _schemas.zGetStartProcessFormPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getStartProcessForm(opts);
-        let data = this._evaluateResponse(_raw, 'getStartProcessForm', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetStartProcessFormResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetStartProcessFormResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getStartProcessForm', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getStartProcessForm', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getStartProcessForm(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -11798,44 +3730,7 @@ export class CamundaClientBase {
    */
   getStatus(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getStatus>>;
   getStatus(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getStatus(opts as any);
-        let data = this._evaluateResponse(_raw, 'getStatus', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetStatusResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetStatusResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getStatus', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'getStatus', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.getStatus(this, options);
   }
 
   /**
@@ -11863,44 +3758,7 @@ export class CamundaClientBase {
    */
   getSystemConfiguration(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getSystemConfiguration>>;
   getSystemConfiguration(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getSystemConfiguration(opts as any);
-        let data = this._evaluateResponse(_raw, 'getSystemConfiguration', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetSystemConfigurationResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetSystemConfigurationResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getSystemConfiguration', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'getSystemConfiguration', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.getSystemConfiguration(this, options);
   }
 
   /**
@@ -11924,60 +3782,7 @@ export class CamundaClientBase {
    */
   getTenant(input: getTenantInput, /** Management of eventual consistency **/ consistencyManagement: getTenantConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getTenant>>;
   getTenant(arg: any, /** Management of eventual consistency **/ consistencyManagement: getTenantConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { tenantId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { tenantId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getTenant', _schemas.zGetTenantPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getTenant(opts);
-        let data = this._evaluateResponse(_raw, 'getTenant', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetTenantResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetTenantResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getTenant', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getTenant', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getTenant(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -12007,60 +3812,7 @@ export class CamundaClientBase {
    */
   getTenantClusterVariable(input: getTenantClusterVariableInput, /** Management of eventual consistency **/ consistencyManagement: getTenantClusterVariableConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getTenantClusterVariable>>;
   getTenantClusterVariable(arg: any, /** Management of eventual consistency **/ consistencyManagement: getTenantClusterVariableConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { tenantId, name } = arg || {};
-      let envelope: any = {};
-      envelope.path = { tenantId, name };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getTenantClusterVariable', _schemas.zGetTenantClusterVariablePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getTenantClusterVariable(opts);
-        let data = this._evaluateResponse(_raw, 'getTenantClusterVariable', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetTenantClusterVariableResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetTenantClusterVariableResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getTenantClusterVariable', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getTenantClusterVariable', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getTenantClusterVariable(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -12087,44 +3839,7 @@ export class CamundaClientBase {
    */
   getTopology(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getTopology>>;
   getTopology(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getTopology(opts as any);
-        let data = this._evaluateResponse(_raw, 'getTopology', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetTopologyResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetTopologyResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getTopology', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'getTopology', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.getTopology(this, options);
   }
 
   /**
@@ -12154,60 +3869,7 @@ export class CamundaClientBase {
    */
   getUsageMetrics(input: getUsageMetricsInput, /** Management of eventual consistency **/ consistencyManagement: getUsageMetricsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getUsageMetrics>>;
   getUsageMetrics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getUsageMetricsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { startTime, endTime, tenantId, withTenants } = arg || {};
-      let envelope: any = {};
-      envelope.query = { startTime, endTime, tenantId, withTenants };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('getUsageMetrics', _schemas.zGetUsageMetricsQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.query) opts.query = envelope.query;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getUsageMetrics(opts);
-        let data = this._evaluateResponse(_raw, 'getUsageMetrics', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetUsageMetricsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetUsageMetricsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getUsageMetrics', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getUsageMetrics', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getUsageMetrics(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -12231,60 +3893,7 @@ export class CamundaClientBase {
    */
   getUser(input: getUserInput, /** Management of eventual consistency **/ consistencyManagement: getUserConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getUser>>;
   getUser(arg: any, /** Management of eventual consistency **/ consistencyManagement: getUserConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { username } = arg || {};
-      let envelope: any = {};
-      envelope.path = { username };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getUser', _schemas.zGetUserPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getUser(opts);
-        let data = this._evaluateResponse(_raw, 'getUser', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetUserResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetUserResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getUser', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getUser', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getUser(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -12308,60 +3917,7 @@ export class CamundaClientBase {
    */
   getUserTask(input: getUserTaskInput, /** Management of eventual consistency **/ consistencyManagement: getUserTaskConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getUserTask>>;
   getUserTask(arg: any, /** Management of eventual consistency **/ consistencyManagement: getUserTaskConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { userTaskKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { userTaskKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getUserTask', _schemas.zGetUserTaskPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getUserTask(opts);
-        let data = this._evaluateResponse(_raw, 'getUserTask', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetUserTaskResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetUserTaskResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getUserTask', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getUserTask', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getUserTask(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -12392,60 +3948,7 @@ export class CamundaClientBase {
    */
   getUserTaskForm(input: getUserTaskFormInput, /** Management of eventual consistency **/ consistencyManagement: getUserTaskFormConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getUserTaskForm>>;
   getUserTaskForm(arg: any, /** Management of eventual consistency **/ consistencyManagement: getUserTaskFormConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { userTaskKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { userTaskKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getUserTaskForm', _schemas.zGetUserTaskFormPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getUserTaskForm(opts);
-        let data = this._evaluateResponse(_raw, 'getUserTaskForm', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetUserTaskFormResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetUserTaskFormResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getUserTaskForm', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getUserTaskForm', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getUserTaskForm(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -12476,60 +3979,7 @@ export class CamundaClientBase {
    */
   getVariable(input: getVariableInput, /** Management of eventual consistency **/ consistencyManagement: getVariableConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getVariable>>;
   getVariable(arg: any, /** Management of eventual consistency **/ consistencyManagement: getVariableConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { variableKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { variableKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('getVariable', _schemas.zGetVariablePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getVariable(opts);
-        let data = this._evaluateResponse(_raw, 'getVariable', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetVariableResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zGetVariableResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getVariable', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getVariable', true, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.getVariable(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -12559,56 +4009,7 @@ export class CamundaClientBase {
    */
   listHistoryBackups(input: listHistoryBackupsInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.listHistoryBackups>>;
   listHistoryBackups(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { prefix, verbose } = arg || {};
-      let envelope: any = {};
-      envelope.query = { prefix, verbose };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('listHistoryBackups', _schemas.zListHistoryBackupsQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.query) opts.query = envelope.query;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.listHistoryBackups(opts);
-        let data = this._evaluateResponse(_raw, 'listHistoryBackups', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zListHistoryBackupsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zListHistoryBackupsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('listHistoryBackups', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'listHistoryBackups', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.listHistoryBackups(this, arg, options);
   }
 
   /**
@@ -12643,56 +4044,7 @@ export class CamundaClientBase {
    */
   listHistoryBackupsAsClusterAdmin(input: listHistoryBackupsAsClusterAdminInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.listHistoryBackupsAsClusterAdmin>>;
   listHistoryBackupsAsClusterAdmin(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { physicalTenantId, prefix, verbose } = arg || {};
-      let envelope: any = {};
-      envelope.query = { physicalTenantId, prefix, verbose };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('listHistoryBackupsAsClusterAdmin', _schemas.zListHistoryBackupsAsClusterAdminQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.query) opts.query = envelope.query;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.listHistoryBackupsAsClusterAdmin(opts);
-        let data = this._evaluateResponse(_raw, 'listHistoryBackupsAsClusterAdmin', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zListHistoryBackupsAsClusterAdminResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zListHistoryBackupsAsClusterAdminResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('listHistoryBackupsAsClusterAdmin', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'listHistoryBackupsAsClusterAdmin', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.listHistoryBackupsAsClusterAdmin(this, arg, options);
   }
 
   /**
@@ -12720,56 +4072,7 @@ export class CamundaClientBase {
    */
   listRuntimeBackups(input: listRuntimeBackupsInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.listRuntimeBackups>>;
   listRuntimeBackups(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { prefix } = arg || {};
-      let envelope: any = {};
-      envelope.query = { prefix };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('listRuntimeBackups', _schemas.zListRuntimeBackupsQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.query) opts.query = envelope.query;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.listRuntimeBackups(opts);
-        let data = this._evaluateResponse(_raw, 'listRuntimeBackups', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zListRuntimeBackupsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zListRuntimeBackupsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('listRuntimeBackups', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'listRuntimeBackups', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.listRuntimeBackups(this, arg, options);
   }
 
   /**
@@ -12805,56 +4108,7 @@ export class CamundaClientBase {
    */
   listRuntimeBackupsAsClusterAdmin(input: listRuntimeBackupsAsClusterAdminInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.listRuntimeBackupsAsClusterAdmin>>;
   listRuntimeBackupsAsClusterAdmin(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { physicalTenantId, prefix } = arg || {};
-      let envelope: any = {};
-      envelope.query = { physicalTenantId, prefix };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('listRuntimeBackupsAsClusterAdmin', _schemas.zListRuntimeBackupsAsClusterAdminQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.query) opts.query = envelope.query;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.listRuntimeBackupsAsClusterAdmin(opts);
-        let data = this._evaluateResponse(_raw, 'listRuntimeBackupsAsClusterAdmin', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zListRuntimeBackupsAsClusterAdminResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zListRuntimeBackupsAsClusterAdminResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('listRuntimeBackupsAsClusterAdmin', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'listRuntimeBackupsAsClusterAdmin', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.listRuntimeBackupsAsClusterAdmin(this, arg, options);
   }
 
   /**
@@ -12897,56 +4151,7 @@ export class CamundaClientBase {
    */
   listSecrets(input: listSecretsInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.listSecrets>>;
   listSecrets(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('listSecrets', _schemas.zListSecretsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.listSecrets(opts);
-        let data = this._evaluateResponse(_raw, 'listSecrets', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zListSecretsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zListSecretsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('listSecrets', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'listSecrets', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.listSecrets(this, arg, options);
   }
 
   /**
@@ -12988,62 +4193,7 @@ export class CamundaClientBase {
    */
   migrateProcessInstance(input: migrateProcessInstanceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.migrateProcessInstance>>;
   migrateProcessInstance(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { processInstanceKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { processInstanceKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('migrateProcessInstance', _schemas.zMigrateProcessInstanceBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('migrateProcessInstance', _schemas.zMigrateProcessInstancePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.migrateProcessInstance(opts);
-        let data = this._evaluateResponse(_raw, 'migrateProcessInstance', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zMigrateProcessInstanceResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zMigrateProcessInstanceResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('migrateProcessInstance', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'migrateProcessInstance', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.migrateProcessInstance(this, arg, options);
   }
 
   /**
@@ -13088,56 +4238,7 @@ export class CamundaClientBase {
    */
   migrateProcessInstancesBatchOperation(input: migrateProcessInstancesBatchOperationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.migrateProcessInstancesBatchOperation>>;
   migrateProcessInstancesBatchOperation(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('migrateProcessInstancesBatchOperation', _schemas.zMigrateProcessInstancesBatchOperationBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.migrateProcessInstancesBatchOperation(opts);
-        let data = this._evaluateResponse(_raw, 'migrateProcessInstancesBatchOperation', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zMigrateProcessInstancesBatchOperationResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zMigrateProcessInstancesBatchOperationResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('migrateProcessInstancesBatchOperation', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'migrateProcessInstancesBatchOperation', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.migrateProcessInstancesBatchOperation(this, arg, options);
   }
 
   /**
@@ -13172,62 +4273,7 @@ export class CamundaClientBase {
    */
   modifyProcessInstance(input: modifyProcessInstanceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.modifyProcessInstance>>;
   modifyProcessInstance(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { processInstanceKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { processInstanceKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('modifyProcessInstance', _schemas.zModifyProcessInstanceBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('modifyProcessInstance', _schemas.zModifyProcessInstancePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.modifyProcessInstance(opts);
-        let data = this._evaluateResponse(_raw, 'modifyProcessInstance', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zModifyProcessInstanceResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zModifyProcessInstanceResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('modifyProcessInstance', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'modifyProcessInstance', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.modifyProcessInstance(this, arg, options);
   }
 
   /**
@@ -13270,56 +4316,7 @@ export class CamundaClientBase {
    */
   modifyProcessInstancesBatchOperation(input: modifyProcessInstancesBatchOperationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.modifyProcessInstancesBatchOperation>>;
   modifyProcessInstancesBatchOperation(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('modifyProcessInstancesBatchOperation', _schemas.zModifyProcessInstancesBatchOperationBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.modifyProcessInstancesBatchOperation(opts);
-        let data = this._evaluateResponse(_raw, 'modifyProcessInstancesBatchOperation', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zModifyProcessInstancesBatchOperationResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zModifyProcessInstancesBatchOperationResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('modifyProcessInstancesBatchOperation', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'modifyProcessInstancesBatchOperation', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.modifyProcessInstancesBatchOperation(this, arg, options);
   }
 
   /**
@@ -13345,56 +4342,7 @@ export class CamundaClientBase {
    */
   pauseClusterExporting(input: pauseClusterExportingInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.pauseClusterExporting>>;
   pauseClusterExporting(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { soft } = arg || {};
-      let envelope: any = {};
-      envelope.query = { soft };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('pauseClusterExporting', _schemas.zPauseClusterExportingQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.query) opts.query = envelope.query;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.pauseClusterExporting(opts);
-        let data = this._evaluateResponse(_raw, 'pauseClusterExporting', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zPauseClusterExportingResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zPauseClusterExportingResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('pauseClusterExporting', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'pauseClusterExporting', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.pauseClusterExporting(this, arg, options);
   }
 
   /**
@@ -13425,56 +4373,7 @@ export class CamundaClientBase {
    */
   pauseExporting(input: pauseExportingInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.pauseExporting>>;
   pauseExporting(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { soft } = arg || {};
-      let envelope: any = {};
-      envelope.query = { soft };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('pauseExporting', _schemas.zPauseExportingQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.query) opts.query = envelope.query;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.pauseExporting(opts);
-        let data = this._evaluateResponse(_raw, 'pauseExporting', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zPauseExportingResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zPauseExportingResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('pauseExporting', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'pauseExporting', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.pauseExporting(this, arg, options);
   }
 
   /**
@@ -13505,56 +4404,7 @@ export class CamundaClientBase {
    */
   pinClock(input: pinClockInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.pinClock>>;
   pinClock(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('pinClock', _schemas.zPinClockBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.pinClock(opts);
-        let data = this._evaluateResponse(_raw, 'pinClock', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zPinClockResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zPinClockResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('pinClock', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'pinClock', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.pinClock(this, arg, options);
   }
 
   /**
@@ -13587,60 +4437,7 @@ export class CamundaClientBase {
    */
   publishMessage(input: publishMessageInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.publishMessage>>;
   publishMessage(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-        envelope.body.tenantId = this._config.defaultTenantId;
-        this._log.trace(() => ['tenant.default.inject', { op: 'publishMessage', tenant: this._config.defaultTenantId }]);
-      }
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('publishMessage', _schemas.zPublishMessageBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.publishMessage(opts);
-        let data = this._evaluateResponse(_raw, 'publishMessage', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zPublishMessageResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zPublishMessageResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('publishMessage', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'publishMessage', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.publishMessage(this, arg, options);
   }
 
   /**
@@ -13669,44 +4466,7 @@ export class CamundaClientBase {
    */
   resetClock(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.resetClock>>;
   resetClock(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      const call = async () => {
-        try {
-        const _raw = await Sdk.resetClock(opts as any);
-        let data = this._evaluateResponse(_raw, 'resetClock', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zResetClockResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zResetClockResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('resetClock', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'resetClock', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.resetClock(this, options);
   }
 
   /**
@@ -13729,62 +4489,7 @@ export class CamundaClientBase {
    */
   resolveIncident(input: resolveIncidentInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.resolveIncident>>;
   resolveIncident(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { incidentKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { incidentKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('resolveIncident', _schemas.zResolveIncidentBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('resolveIncident', _schemas.zResolveIncidentPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.resolveIncident(opts);
-        let data = this._evaluateResponse(_raw, 'resolveIncident', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zResolveIncidentResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zResolveIncidentResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('resolveIncident', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'resolveIncident', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.resolveIncident(this, arg, options);
   }
 
   /**
@@ -13815,56 +4520,7 @@ export class CamundaClientBase {
    */
   resolveIncidentsBatchOperation(input: resolveIncidentsBatchOperationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.resolveIncidentsBatchOperation>>;
   resolveIncidentsBatchOperation(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('resolveIncidentsBatchOperation', _schemas.zResolveIncidentsBatchOperationBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.resolveIncidentsBatchOperation(opts);
-        let data = this._evaluateResponse(_raw, 'resolveIncidentsBatchOperation', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zResolveIncidentsBatchOperationResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zResolveIncidentsBatchOperationResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('resolveIncidentsBatchOperation', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'resolveIncidentsBatchOperation', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.resolveIncidentsBatchOperation(this, arg, options);
   }
 
   /**
@@ -13887,56 +4543,7 @@ export class CamundaClientBase {
    */
   resolveProcessInstanceIncidents(input: resolveProcessInstanceIncidentsInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.resolveProcessInstanceIncidents>>;
   resolveProcessInstanceIncidents(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { processInstanceKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { processInstanceKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('resolveProcessInstanceIncidents', _schemas.zResolveProcessInstanceIncidentsPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.resolveProcessInstanceIncidents(opts);
-        let data = this._evaluateResponse(_raw, 'resolveProcessInstanceIncidents', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zResolveProcessInstanceIncidentsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zResolveProcessInstanceIncidentsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('resolveProcessInstanceIncidents', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'resolveProcessInstanceIncidents', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.resolveProcessInstanceIncidents(this, arg, options);
   }
 
   /**
@@ -13988,56 +4595,7 @@ export class CamundaClientBase {
    */
   resolveSecrets(input: resolveSecretsInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.resolveSecrets>>;
   resolveSecrets(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('resolveSecrets', _schemas.zResolveSecretsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.resolveSecrets(opts);
-        let data = this._evaluateResponse(_raw, 'resolveSecrets', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zResolveSecretsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zResolveSecretsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('resolveSecrets', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'resolveSecrets', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.resolveSecrets(this, arg, options);
   }
 
   /**
@@ -14072,62 +4630,7 @@ export class CamundaClientBase {
    */
   restore(input: restoreInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.restore>>;
   restore(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { dryRun, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.query = { dryRun };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('restore', _schemas.zRestoreBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('restore', _schemas.zRestoreQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.query) opts.query = envelope.query;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.restore(opts);
-        let data = this._evaluateResponse(_raw, 'restore', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zRestoreResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zRestoreResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('restore', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'restore', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.restore(this, arg, options);
   }
 
   /**
@@ -14171,62 +4674,7 @@ export class CamundaClientBase {
    */
   restoreAsClusterAdmin(input: restoreAsClusterAdminInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.restoreAsClusterAdmin>>;
   restoreAsClusterAdmin(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { physicalTenantId, dryRun, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.query = { physicalTenantId, dryRun };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('restoreAsClusterAdmin', _schemas.zRestoreAsClusterAdminBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('restoreAsClusterAdmin', _schemas.zRestoreAsClusterAdminQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.query) opts.query = envelope.query;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.restoreAsClusterAdmin(opts);
-        let data = this._evaluateResponse(_raw, 'restoreAsClusterAdmin', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zRestoreAsClusterAdminResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zRestoreAsClusterAdminResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('restoreAsClusterAdmin', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'restoreAsClusterAdmin', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.restoreAsClusterAdmin(this, arg, options);
   }
 
   /**
@@ -14249,62 +4697,7 @@ export class CamundaClientBase {
    */
   resumeBatchOperation(input: resumeBatchOperationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.resumeBatchOperation>>;
   resumeBatchOperation(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { batchOperationKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { batchOperationKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('resumeBatchOperation', _schemas.zResumeBatchOperationBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('resumeBatchOperation', _schemas.zResumeBatchOperationPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.resumeBatchOperation(opts);
-        let data = this._evaluateResponse(_raw, 'resumeBatchOperation', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zResumeBatchOperationResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zResumeBatchOperationResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('resumeBatchOperation', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'resumeBatchOperation', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.resumeBatchOperation(this, arg, options);
   }
 
   /**
@@ -14327,44 +4720,7 @@ export class CamundaClientBase {
    */
   resumeClusterExporting(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.resumeClusterExporting>>;
   resumeClusterExporting(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      const call = async () => {
-        try {
-        const _raw = await Sdk.resumeClusterExporting(opts as any);
-        let data = this._evaluateResponse(_raw, 'resumeClusterExporting', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zResumeClusterExportingResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zResumeClusterExportingResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('resumeClusterExporting', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'resumeClusterExporting', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.resumeClusterExporting(this, options);
   }
 
   /**
@@ -14386,44 +4742,7 @@ export class CamundaClientBase {
    */
   resumeExporting(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.resumeExporting>>;
   resumeExporting(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      const call = async () => {
-        try {
-        const _raw = await Sdk.resumeExporting(opts as any);
-        let data = this._evaluateResponse(_raw, 'resumeExporting', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zResumeExportingResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zResumeExportingResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('resumeExporting', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'resumeExporting', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.resumeExporting(this, options);
   }
 
   /**
@@ -14448,62 +4767,7 @@ export class CamundaClientBase {
    */
   resumeProcessInstance(input: resumeProcessInstanceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.resumeProcessInstance>>;
   resumeProcessInstance(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { processInstanceKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { processInstanceKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('resumeProcessInstance', _schemas.zResumeProcessInstanceBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('resumeProcessInstance', _schemas.zResumeProcessInstancePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.resumeProcessInstance(opts);
-        let data = this._evaluateResponse(_raw, 'resumeProcessInstance', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zResumeProcessInstanceResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zResumeProcessInstanceResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('resumeProcessInstance', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'resumeProcessInstance', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.resumeProcessInstance(this, arg, options);
   }
 
   /**
@@ -14538,56 +4802,7 @@ export class CamundaClientBase {
    */
   resumeProcessInstancesBatchOperation(input: resumeProcessInstancesBatchOperationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.resumeProcessInstancesBatchOperation>>;
   resumeProcessInstancesBatchOperation(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('resumeProcessInstancesBatchOperation', _schemas.zResumeProcessInstancesBatchOperationBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.resumeProcessInstancesBatchOperation(opts);
-        let data = this._evaluateResponse(_raw, 'resumeProcessInstancesBatchOperation', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zResumeProcessInstancesBatchOperationResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zResumeProcessInstancesBatchOperationResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('resumeProcessInstancesBatchOperation', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'resumeProcessInstancesBatchOperation', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.resumeProcessInstancesBatchOperation(this, arg, options);
   }
 
   /**
@@ -14621,60 +4836,7 @@ export class CamundaClientBase {
    */
   searchAgentDefinitions(input: searchAgentDefinitionsInput, /** Management of eventual consistency **/ consistencyManagement: searchAgentDefinitionsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchAgentDefinitions>>;
   searchAgentDefinitions(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchAgentDefinitionsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchAgentDefinitions', _schemas.zSearchAgentDefinitionsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchAgentDefinitions(opts);
-        let data = this._evaluateResponse(_raw, 'searchAgentDefinitions', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchAgentDefinitionsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchAgentDefinitionsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchAgentDefinitions', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchAgentDefinitions', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchAgentDefinitions(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -14711,66 +4873,7 @@ export class CamundaClientBase {
    */
   searchAgentInstanceHistory(input: searchAgentInstanceHistoryInput, /** Management of eventual consistency **/ consistencyManagement: searchAgentInstanceHistoryConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchAgentInstanceHistory>>;
   searchAgentInstanceHistory(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchAgentInstanceHistoryConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { agentInstanceKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { agentInstanceKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchAgentInstanceHistory', _schemas.zSearchAgentInstanceHistoryBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('searchAgentInstanceHistory', _schemas.zSearchAgentInstanceHistoryPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchAgentInstanceHistory(opts);
-        let data = this._evaluateResponse(_raw, 'searchAgentInstanceHistory', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchAgentInstanceHistoryResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchAgentInstanceHistoryResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchAgentInstanceHistory', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchAgentInstanceHistory', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchAgentInstanceHistory(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -14804,60 +4907,7 @@ export class CamundaClientBase {
    */
   searchAgentInstances(input: searchAgentInstancesInput, /** Management of eventual consistency **/ consistencyManagement: searchAgentInstancesConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchAgentInstances>>;
   searchAgentInstances(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchAgentInstancesConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchAgentInstances', _schemas.zSearchAgentInstancesBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchAgentInstances(opts);
-        let data = this._evaluateResponse(_raw, 'searchAgentInstances', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchAgentInstancesResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchAgentInstancesResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchAgentInstances', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchAgentInstances', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchAgentInstances(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -14888,60 +4938,7 @@ export class CamundaClientBase {
    */
   searchAuditLogs(input: searchAuditLogsInput, /** Management of eventual consistency **/ consistencyManagement: searchAuditLogsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchAuditLogs>>;
   searchAuditLogs(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchAuditLogsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchAuditLogs', _schemas.zSearchAuditLogsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchAuditLogs(opts);
-        let data = this._evaluateResponse(_raw, 'searchAuditLogs', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchAuditLogsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchAuditLogsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchAuditLogs', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchAuditLogs', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchAuditLogs(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -14973,60 +4970,7 @@ export class CamundaClientBase {
    */
   searchAuthorizations(input: searchAuthorizationsInput, /** Management of eventual consistency **/ consistencyManagement: searchAuthorizationsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchAuthorizations>>;
   searchAuthorizations(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchAuthorizationsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchAuthorizations', _schemas.zSearchAuthorizationsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchAuthorizations(opts);
-        let data = this._evaluateResponse(_raw, 'searchAuthorizations', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchAuthorizationsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchAuthorizationsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchAuthorizations', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchAuthorizations', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchAuthorizations(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -15057,60 +5001,7 @@ export class CamundaClientBase {
    */
   searchBatchOperationItems(input: searchBatchOperationItemsInput, /** Management of eventual consistency **/ consistencyManagement: searchBatchOperationItemsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchBatchOperationItems>>;
   searchBatchOperationItems(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchBatchOperationItemsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchBatchOperationItems', _schemas.zSearchBatchOperationItemsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchBatchOperationItems(opts);
-        let data = this._evaluateResponse(_raw, 'searchBatchOperationItems', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchBatchOperationItemsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchBatchOperationItemsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchBatchOperationItems', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchBatchOperationItems', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchBatchOperationItems(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -15141,60 +5032,7 @@ export class CamundaClientBase {
    */
   searchBatchOperations(input: searchBatchOperationsInput, /** Management of eventual consistency **/ consistencyManagement: searchBatchOperationsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchBatchOperations>>;
   searchBatchOperations(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchBatchOperationsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchBatchOperations', _schemas.zSearchBatchOperationsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchBatchOperations(opts);
-        let data = this._evaluateResponse(_raw, 'searchBatchOperations', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchBatchOperationsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchBatchOperationsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchBatchOperations', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchBatchOperations', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchBatchOperations(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -15223,66 +5061,7 @@ export class CamundaClientBase {
    */
   searchClientsForGroup(input: searchClientsForGroupInput, /** Management of eventual consistency **/ consistencyManagement: searchClientsForGroupConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchClientsForGroup>>;
   searchClientsForGroup(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchClientsForGroupConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { groupId, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { groupId };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchClientsForGroup', _schemas.zSearchClientsForGroupBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('searchClientsForGroup', _schemas.zSearchClientsForGroupPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchClientsForGroup(opts);
-        let data = this._evaluateResponse(_raw, 'searchClientsForGroup', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchClientsForGroupResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchClientsForGroupResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchClientsForGroup', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchClientsForGroup', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchClientsForGroup(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -15311,66 +5090,7 @@ export class CamundaClientBase {
    */
   searchClientsForRole(input: searchClientsForRoleInput, /** Management of eventual consistency **/ consistencyManagement: searchClientsForRoleConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchClientsForRole>>;
   searchClientsForRole(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchClientsForRoleConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { roleId, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { roleId };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchClientsForRole', _schemas.zSearchClientsForRoleBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('searchClientsForRole', _schemas.zSearchClientsForRolePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchClientsForRole(opts);
-        let data = this._evaluateResponse(_raw, 'searchClientsForRole', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchClientsForRoleResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchClientsForRoleResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchClientsForRole', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchClientsForRole', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchClientsForRole(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -15399,66 +5119,7 @@ export class CamundaClientBase {
    */
   searchClientsForTenant(input: searchClientsForTenantInput, /** Management of eventual consistency **/ consistencyManagement: searchClientsForTenantConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchClientsForTenant>>;
   searchClientsForTenant(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchClientsForTenantConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { tenantId, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { tenantId };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchClientsForTenant', _schemas.zSearchClientsForTenantBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('searchClientsForTenant', _schemas.zSearchClientsForTenantPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchClientsForTenant(opts);
-        let data = this._evaluateResponse(_raw, 'searchClientsForTenant', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchClientsForTenantResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchClientsForTenantResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchClientsForTenant', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchClientsForTenant', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchClientsForTenant(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -15487,66 +5148,7 @@ export class CamundaClientBase {
    */
   searchClusterVariables(input: searchClusterVariablesInput, /** Management of eventual consistency **/ consistencyManagement: searchClusterVariablesConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchClusterVariables>>;
   searchClusterVariables(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchClusterVariablesConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { truncateValues, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.query = { truncateValues };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchClusterVariables', _schemas.zSearchClusterVariablesBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('searchClusterVariables', _schemas.zSearchClusterVariablesQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.query) opts.query = envelope.query;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchClusterVariables(opts);
-        let data = this._evaluateResponse(_raw, 'searchClusterVariables', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchClusterVariablesResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchClusterVariablesResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchClusterVariables', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchClusterVariables', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchClusterVariables(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -15577,60 +5179,7 @@ export class CamundaClientBase {
    */
   searchCorrelatedMessageSubscriptions(input: searchCorrelatedMessageSubscriptionsInput, /** Management of eventual consistency **/ consistencyManagement: searchCorrelatedMessageSubscriptionsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchCorrelatedMessageSubscriptions>>;
   searchCorrelatedMessageSubscriptions(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchCorrelatedMessageSubscriptionsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchCorrelatedMessageSubscriptions', _schemas.zSearchCorrelatedMessageSubscriptionsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchCorrelatedMessageSubscriptions(opts);
-        let data = this._evaluateResponse(_raw, 'searchCorrelatedMessageSubscriptions', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchCorrelatedMessageSubscriptionsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchCorrelatedMessageSubscriptionsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchCorrelatedMessageSubscriptions', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchCorrelatedMessageSubscriptions', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchCorrelatedMessageSubscriptions(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -15661,60 +5210,7 @@ export class CamundaClientBase {
    */
   searchDecisionDefinitions(input: searchDecisionDefinitionsInput, /** Management of eventual consistency **/ consistencyManagement: searchDecisionDefinitionsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchDecisionDefinitions>>;
   searchDecisionDefinitions(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchDecisionDefinitionsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchDecisionDefinitions', _schemas.zSearchDecisionDefinitionsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchDecisionDefinitions(opts);
-        let data = this._evaluateResponse(_raw, 'searchDecisionDefinitions', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchDecisionDefinitionsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchDecisionDefinitionsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchDecisionDefinitions', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchDecisionDefinitions', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchDecisionDefinitions(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -15745,60 +5241,7 @@ export class CamundaClientBase {
    */
   searchDecisionInstances(input: searchDecisionInstancesInput, /** Management of eventual consistency **/ consistencyManagement: searchDecisionInstancesConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchDecisionInstances>>;
   searchDecisionInstances(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchDecisionInstancesConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchDecisionInstances', _schemas.zSearchDecisionInstancesBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchDecisionInstances(opts);
-        let data = this._evaluateResponse(_raw, 'searchDecisionInstances', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchDecisionInstancesResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchDecisionInstancesResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchDecisionInstances', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchDecisionInstances', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchDecisionInstances(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -15829,60 +5272,7 @@ export class CamundaClientBase {
    */
   searchDecisionRequirements(input: searchDecisionRequirementsInput, /** Management of eventual consistency **/ consistencyManagement: searchDecisionRequirementsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchDecisionRequirements>>;
   searchDecisionRequirements(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchDecisionRequirementsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchDecisionRequirements', _schemas.zSearchDecisionRequirementsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchDecisionRequirements(opts);
-        let data = this._evaluateResponse(_raw, 'searchDecisionRequirements', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchDecisionRequirementsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchDecisionRequirementsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchDecisionRequirements', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchDecisionRequirements', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchDecisionRequirements(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -15918,66 +5308,7 @@ export class CamundaClientBase {
    */
   searchElementInstanceIncidents(input: searchElementInstanceIncidentsInput, /** Management of eventual consistency **/ consistencyManagement: searchElementInstanceIncidentsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchElementInstanceIncidents>>;
   searchElementInstanceIncidents(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchElementInstanceIncidentsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { elementInstanceKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { elementInstanceKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchElementInstanceIncidents', _schemas.zSearchElementInstanceIncidentsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('searchElementInstanceIncidents', _schemas.zSearchElementInstanceIncidentsPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchElementInstanceIncidents(opts);
-        let data = this._evaluateResponse(_raw, 'searchElementInstanceIncidents', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchElementInstanceIncidentsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchElementInstanceIncidentsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchElementInstanceIncidents', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchElementInstanceIncidents', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchElementInstanceIncidents(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -16011,60 +5342,7 @@ export class CamundaClientBase {
    */
   searchElementInstances(input: searchElementInstancesInput, /** Management of eventual consistency **/ consistencyManagement: searchElementInstancesConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchElementInstances>>;
   searchElementInstances(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchElementInstancesConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchElementInstances', _schemas.zSearchElementInstancesBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchElementInstances(opts);
-        let data = this._evaluateResponse(_raw, 'searchElementInstances', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchElementInstancesResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchElementInstancesResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchElementInstances', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchElementInstances', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchElementInstances(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -16108,60 +5386,7 @@ export class CamundaClientBase {
    */
   searchElementInstanceWaitStates(input: searchElementInstanceWaitStatesInput, /** Management of eventual consistency **/ consistencyManagement: searchElementInstanceWaitStatesConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchElementInstanceWaitStates>>;
   searchElementInstanceWaitStates(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchElementInstanceWaitStatesConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchElementInstanceWaitStates', _schemas.zSearchElementInstanceWaitStatesBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchElementInstanceWaitStates(opts);
-        let data = this._evaluateResponse(_raw, 'searchElementInstanceWaitStates', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchElementInstanceWaitStatesResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchElementInstanceWaitStatesResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchElementInstanceWaitStates', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchElementInstanceWaitStates', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchElementInstanceWaitStates(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -16192,60 +5417,7 @@ export class CamundaClientBase {
    */
   searchGlobalTaskListeners(input: searchGlobalTaskListenersInput, /** Management of eventual consistency **/ consistencyManagement: searchGlobalTaskListenersConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchGlobalTaskListeners>>;
   searchGlobalTaskListeners(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchGlobalTaskListenersConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchGlobalTaskListeners', _schemas.zSearchGlobalTaskListenersBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchGlobalTaskListeners(opts);
-        let data = this._evaluateResponse(_raw, 'searchGlobalTaskListeners', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchGlobalTaskListenersResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchGlobalTaskListenersResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchGlobalTaskListeners', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchGlobalTaskListeners', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchGlobalTaskListeners(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -16274,66 +5446,7 @@ export class CamundaClientBase {
    */
   searchGroupIdsForTenant(input: searchGroupIdsForTenantInput, /** Management of eventual consistency **/ consistencyManagement: searchGroupIdsForTenantConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchGroupIdsForTenant>>;
   searchGroupIdsForTenant(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchGroupIdsForTenantConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { tenantId, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { tenantId };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchGroupIdsForTenant', _schemas.zSearchGroupIdsForTenantBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('searchGroupIdsForTenant', _schemas.zSearchGroupIdsForTenantPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchGroupIdsForTenant(opts);
-        let data = this._evaluateResponse(_raw, 'searchGroupIdsForTenant', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchGroupIdsForTenantResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchGroupIdsForTenantResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchGroupIdsForTenant', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchGroupIdsForTenant', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchGroupIdsForTenant(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -16364,60 +5477,7 @@ export class CamundaClientBase {
    */
   searchGroups(input: searchGroupsInput, /** Management of eventual consistency **/ consistencyManagement: searchGroupsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchGroups>>;
   searchGroups(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchGroupsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchGroups', _schemas.zSearchGroupsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchGroups(opts);
-        let data = this._evaluateResponse(_raw, 'searchGroups', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchGroupsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchGroupsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchGroups', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchGroups', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchGroups(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -16446,66 +5506,7 @@ export class CamundaClientBase {
    */
   searchGroupsForRole(input: searchGroupsForRoleInput, /** Management of eventual consistency **/ consistencyManagement: searchGroupsForRoleConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchGroupsForRole>>;
   searchGroupsForRole(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchGroupsForRoleConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { roleId, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { roleId };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchGroupsForRole', _schemas.zSearchGroupsForRoleBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('searchGroupsForRole', _schemas.zSearchGroupsForRolePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchGroupsForRole(opts);
-        let data = this._evaluateResponse(_raw, 'searchGroupsForRole', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchGroupsForRoleResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchGroupsForRoleResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchGroupsForRole', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchGroupsForRole', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchGroupsForRole(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -16540,60 +5541,7 @@ export class CamundaClientBase {
    */
   searchIncidents(input: searchIncidentsInput, /** Management of eventual consistency **/ consistencyManagement: searchIncidentsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchIncidents>>;
   searchIncidents(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchIncidentsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchIncidents', _schemas.zSearchIncidentsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchIncidents(opts);
-        let data = this._evaluateResponse(_raw, 'searchIncidents', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchIncidentsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchIncidentsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchIncidents', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchIncidents', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchIncidents(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -16625,60 +5573,7 @@ export class CamundaClientBase {
    */
   searchJobs(input: searchJobsInput, /** Management of eventual consistency **/ consistencyManagement: searchJobsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchJobs>>;
   searchJobs(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchJobsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchJobs', _schemas.zSearchJobsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchJobs(opts);
-        let data = this._evaluateResponse(_raw, 'searchJobs', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchJobsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchJobsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchJobs', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchJobs', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchJobs(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -16710,60 +5605,7 @@ export class CamundaClientBase {
    */
   searchMappingRule(input: searchMappingRuleInput, /** Management of eventual consistency **/ consistencyManagement: searchMappingRuleConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchMappingRule>>;
   searchMappingRule(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchMappingRuleConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchMappingRule', _schemas.zSearchMappingRuleBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchMappingRule(opts);
-        let data = this._evaluateResponse(_raw, 'searchMappingRule', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchMappingRuleResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchMappingRuleResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchMappingRule', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchMappingRule', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchMappingRule(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -16792,66 +5634,7 @@ export class CamundaClientBase {
    */
   searchMappingRulesForGroup(input: searchMappingRulesForGroupInput, /** Management of eventual consistency **/ consistencyManagement: searchMappingRulesForGroupConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchMappingRulesForGroup>>;
   searchMappingRulesForGroup(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchMappingRulesForGroupConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { groupId, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { groupId };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchMappingRulesForGroup', _schemas.zSearchMappingRulesForGroupBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('searchMappingRulesForGroup', _schemas.zSearchMappingRulesForGroupPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchMappingRulesForGroup(opts);
-        let data = this._evaluateResponse(_raw, 'searchMappingRulesForGroup', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchMappingRulesForGroupResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchMappingRulesForGroupResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchMappingRulesForGroup', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchMappingRulesForGroup', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchMappingRulesForGroup(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -16880,66 +5663,7 @@ export class CamundaClientBase {
    */
   searchMappingRulesForRole(input: searchMappingRulesForRoleInput, /** Management of eventual consistency **/ consistencyManagement: searchMappingRulesForRoleConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchMappingRulesForRole>>;
   searchMappingRulesForRole(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchMappingRulesForRoleConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { roleId, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { roleId };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchMappingRulesForRole', _schemas.zSearchMappingRulesForRoleBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('searchMappingRulesForRole', _schemas.zSearchMappingRulesForRolePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchMappingRulesForRole(opts);
-        let data = this._evaluateResponse(_raw, 'searchMappingRulesForRole', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchMappingRulesForRoleResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchMappingRulesForRoleResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchMappingRulesForRole', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchMappingRulesForRole', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchMappingRulesForRole(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -16968,66 +5692,7 @@ export class CamundaClientBase {
    */
   searchMappingRulesForTenant(input: searchMappingRulesForTenantInput, /** Management of eventual consistency **/ consistencyManagement: searchMappingRulesForTenantConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchMappingRulesForTenant>>;
   searchMappingRulesForTenant(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchMappingRulesForTenantConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { tenantId, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { tenantId };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchMappingRulesForTenant', _schemas.zSearchMappingRulesForTenantBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('searchMappingRulesForTenant', _schemas.zSearchMappingRulesForTenantPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchMappingRulesForTenant(opts);
-        let data = this._evaluateResponse(_raw, 'searchMappingRulesForTenant', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchMappingRulesForTenantResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchMappingRulesForTenantResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchMappingRulesForTenant', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchMappingRulesForTenant', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchMappingRulesForTenant(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -17071,60 +5736,7 @@ export class CamundaClientBase {
    */
   searchMessageSubscriptions(input: searchMessageSubscriptionsInput, /** Management of eventual consistency **/ consistencyManagement: searchMessageSubscriptionsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchMessageSubscriptions>>;
   searchMessageSubscriptions(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchMessageSubscriptionsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchMessageSubscriptions', _schemas.zSearchMessageSubscriptionsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchMessageSubscriptions(opts);
-        let data = this._evaluateResponse(_raw, 'searchMessageSubscriptions', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchMessageSubscriptionsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchMessageSubscriptionsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchMessageSubscriptions', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchMessageSubscriptions', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchMessageSubscriptions(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -17156,60 +5768,7 @@ export class CamundaClientBase {
    */
   searchOwnAuthorizations(input: searchOwnAuthorizationsInput, /** Management of eventual consistency **/ consistencyManagement: searchOwnAuthorizationsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchOwnAuthorizations>>;
   searchOwnAuthorizations(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchOwnAuthorizationsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchOwnAuthorizations', _schemas.zSearchOwnAuthorizationsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchOwnAuthorizations(opts);
-        let data = this._evaluateResponse(_raw, 'searchOwnAuthorizations', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchOwnAuthorizationsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchOwnAuthorizationsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchOwnAuthorizations', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchOwnAuthorizations', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchOwnAuthorizations(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -17240,60 +5799,7 @@ export class CamundaClientBase {
    */
   searchProcessDefinitions(input: searchProcessDefinitionsInput, /** Management of eventual consistency **/ consistencyManagement: searchProcessDefinitionsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchProcessDefinitions>>;
   searchProcessDefinitions(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchProcessDefinitionsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchProcessDefinitions', _schemas.zSearchProcessDefinitionsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchProcessDefinitions(opts);
-        let data = this._evaluateResponse(_raw, 'searchProcessDefinitions', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchProcessDefinitionsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchProcessDefinitionsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchProcessDefinitions', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchProcessDefinitions', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchProcessDefinitions(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -17324,66 +5830,7 @@ export class CamundaClientBase {
    */
   searchProcessDefinitionVariableNames(input: searchProcessDefinitionVariableNamesInput, /** Management of eventual consistency **/ consistencyManagement: searchProcessDefinitionVariableNamesConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchProcessDefinitionVariableNames>>;
   searchProcessDefinitionVariableNames(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchProcessDefinitionVariableNamesConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { processDefinitionKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { processDefinitionKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchProcessDefinitionVariableNames', _schemas.zSearchProcessDefinitionVariableNamesBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('searchProcessDefinitionVariableNames', _schemas.zSearchProcessDefinitionVariableNamesPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchProcessDefinitionVariableNames(opts);
-        let data = this._evaluateResponse(_raw, 'searchProcessDefinitionVariableNames', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchProcessDefinitionVariableNamesResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchProcessDefinitionVariableNamesResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchProcessDefinitionVariableNames', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchProcessDefinitionVariableNames', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchProcessDefinitionVariableNames(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -17420,66 +5867,7 @@ export class CamundaClientBase {
    */
   searchProcessInstanceIncidents(input: searchProcessInstanceIncidentsInput, /** Management of eventual consistency **/ consistencyManagement: searchProcessInstanceIncidentsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchProcessInstanceIncidents>>;
   searchProcessInstanceIncidents(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchProcessInstanceIncidentsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { processInstanceKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { processInstanceKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchProcessInstanceIncidents', _schemas.zSearchProcessInstanceIncidentsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('searchProcessInstanceIncidents', _schemas.zSearchProcessInstanceIncidentsPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchProcessInstanceIncidents(opts);
-        let data = this._evaluateResponse(_raw, 'searchProcessInstanceIncidents', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchProcessInstanceIncidentsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchProcessInstanceIncidentsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchProcessInstanceIncidents', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchProcessInstanceIncidents', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchProcessInstanceIncidents(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -17513,60 +5901,7 @@ export class CamundaClientBase {
    */
   searchProcessInstances(input: searchProcessInstancesInput, /** Management of eventual consistency **/ consistencyManagement: searchProcessInstancesConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchProcessInstances>>;
   searchProcessInstances(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchProcessInstancesConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchProcessInstances', _schemas.zSearchProcessInstancesBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchProcessInstances(opts);
-        let data = this._evaluateResponse(_raw, 'searchProcessInstances', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchProcessInstancesResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchProcessInstancesResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchProcessInstances', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchProcessInstances', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchProcessInstances(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -17601,60 +5936,7 @@ export class CamundaClientBase {
    */
   searchResources(input: searchResourcesInput, /** Management of eventual consistency **/ consistencyManagement: searchResourcesConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchResources>>;
   searchResources(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchResourcesConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchResources', _schemas.zSearchResourcesBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchResources(opts);
-        let data = this._evaluateResponse(_raw, 'searchResources', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchResourcesResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchResourcesResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchResources', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchResources', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchResources(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -17685,60 +5967,7 @@ export class CamundaClientBase {
    */
   searchRoles(input: searchRolesInput, /** Management of eventual consistency **/ consistencyManagement: searchRolesConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchRoles>>;
   searchRoles(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchRolesConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchRoles', _schemas.zSearchRolesBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchRoles(opts);
-        let data = this._evaluateResponse(_raw, 'searchRoles', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchRolesResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchRolesResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchRoles', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchRoles', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchRoles(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -17767,66 +5996,7 @@ export class CamundaClientBase {
    */
   searchRolesForGroup(input: searchRolesForGroupInput, /** Management of eventual consistency **/ consistencyManagement: searchRolesForGroupConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchRolesForGroup>>;
   searchRolesForGroup(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchRolesForGroupConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { groupId, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { groupId };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchRolesForGroup', _schemas.zSearchRolesForGroupBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('searchRolesForGroup', _schemas.zSearchRolesForGroupPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchRolesForGroup(opts);
-        let data = this._evaluateResponse(_raw, 'searchRolesForGroup', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchRolesForGroupResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchRolesForGroupResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchRolesForGroup', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchRolesForGroup', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchRolesForGroup(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -17855,66 +6025,7 @@ export class CamundaClientBase {
    */
   searchRolesForTenant(input: searchRolesForTenantInput, /** Management of eventual consistency **/ consistencyManagement: searchRolesForTenantConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchRolesForTenant>>;
   searchRolesForTenant(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchRolesForTenantConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { tenantId, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { tenantId };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchRolesForTenant', _schemas.zSearchRolesForTenantBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('searchRolesForTenant', _schemas.zSearchRolesForTenantPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchRolesForTenant(opts);
-        let data = this._evaluateResponse(_raw, 'searchRolesForTenant', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchRolesForTenantResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchRolesForTenantResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchRolesForTenant', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchRolesForTenant', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchRolesForTenant(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -17945,60 +6056,7 @@ export class CamundaClientBase {
    */
   searchTenants(input: searchTenantsInput, /** Management of eventual consistency **/ consistencyManagement: searchTenantsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchTenants>>;
   searchTenants(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchTenantsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchTenants', _schemas.zSearchTenantsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchTenants(opts);
-        let data = this._evaluateResponse(_raw, 'searchTenants', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchTenantsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchTenantsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchTenants', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchTenants', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchTenants(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -18030,60 +6088,7 @@ export class CamundaClientBase {
    */
   searchUsers(input: searchUsersInput, /** Management of eventual consistency **/ consistencyManagement: searchUsersConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchUsers>>;
   searchUsers(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUsersConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchUsers', _schemas.zSearchUsersBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchUsers(opts);
-        let data = this._evaluateResponse(_raw, 'searchUsers', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchUsersResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchUsersResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchUsers', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchUsers', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchUsers(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -18112,66 +6117,7 @@ export class CamundaClientBase {
    */
   searchUsersForGroup(input: searchUsersForGroupInput, /** Management of eventual consistency **/ consistencyManagement: searchUsersForGroupConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchUsersForGroup>>;
   searchUsersForGroup(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUsersForGroupConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { groupId, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { groupId };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchUsersForGroup', _schemas.zSearchUsersForGroupBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('searchUsersForGroup', _schemas.zSearchUsersForGroupPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchUsersForGroup(opts);
-        let data = this._evaluateResponse(_raw, 'searchUsersForGroup', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchUsersForGroupResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchUsersForGroupResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchUsersForGroup', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchUsersForGroup', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchUsersForGroup(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -18200,66 +6146,7 @@ export class CamundaClientBase {
    */
   searchUsersForRole(input: searchUsersForRoleInput, /** Management of eventual consistency **/ consistencyManagement: searchUsersForRoleConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchUsersForRole>>;
   searchUsersForRole(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUsersForRoleConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { roleId, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { roleId };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchUsersForRole', _schemas.zSearchUsersForRoleBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('searchUsersForRole', _schemas.zSearchUsersForRolePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchUsersForRole(opts);
-        let data = this._evaluateResponse(_raw, 'searchUsersForRole', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchUsersForRoleResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchUsersForRoleResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchUsersForRole', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchUsersForRole', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchUsersForRole(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -18288,66 +6175,7 @@ export class CamundaClientBase {
    */
   searchUsersForTenant(input: searchUsersForTenantInput, /** Management of eventual consistency **/ consistencyManagement: searchUsersForTenantConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchUsersForTenant>>;
   searchUsersForTenant(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUsersForTenantConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { tenantId, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { tenantId };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchUsersForTenant', _schemas.zSearchUsersForTenantBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('searchUsersForTenant', _schemas.zSearchUsersForTenantPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchUsersForTenant(opts);
-        let data = this._evaluateResponse(_raw, 'searchUsersForTenant', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchUsersForTenantResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchUsersForTenantResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchUsersForTenant', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchUsersForTenant', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchUsersForTenant(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -18376,66 +6204,7 @@ export class CamundaClientBase {
    */
   searchUserTaskAuditLogs(input: searchUserTaskAuditLogsInput, /** Management of eventual consistency **/ consistencyManagement: searchUserTaskAuditLogsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchUserTaskAuditLogs>>;
   searchUserTaskAuditLogs(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUserTaskAuditLogsConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { userTaskKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { userTaskKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchUserTaskAuditLogs', _schemas.zSearchUserTaskAuditLogsBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('searchUserTaskAuditLogs', _schemas.zSearchUserTaskAuditLogsPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchUserTaskAuditLogs(opts);
-        let data = this._evaluateResponse(_raw, 'searchUserTaskAuditLogs', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchUserTaskAuditLogsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchUserTaskAuditLogsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchUserTaskAuditLogs', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchUserTaskAuditLogs', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchUserTaskAuditLogs(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -18470,72 +6239,7 @@ export class CamundaClientBase {
    */
   searchUserTaskEffectiveVariables(input: searchUserTaskEffectiveVariablesInput, /** Management of eventual consistency **/ consistencyManagement: searchUserTaskEffectiveVariablesConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchUserTaskEffectiveVariables>>;
   searchUserTaskEffectiveVariables(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUserTaskEffectiveVariablesConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { userTaskKey, truncateValues, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { userTaskKey };
-      envelope.query = { truncateValues };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchUserTaskEffectiveVariables', _schemas.zSearchUserTaskEffectiveVariablesBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('searchUserTaskEffectiveVariables', _schemas.zSearchUserTaskEffectiveVariablesPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('searchUserTaskEffectiveVariables', _schemas.zSearchUserTaskEffectiveVariablesQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.query) opts.query = envelope.query;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchUserTaskEffectiveVariables(opts);
-        let data = this._evaluateResponse(_raw, 'searchUserTaskEffectiveVariables', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchUserTaskEffectiveVariablesResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchUserTaskEffectiveVariablesResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchUserTaskEffectiveVariables', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchUserTaskEffectiveVariables', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchUserTaskEffectiveVariables(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -18568,60 +6272,7 @@ export class CamundaClientBase {
    */
   searchUserTasks(input: searchUserTasksInput, /** Management of eventual consistency **/ consistencyManagement: searchUserTasksConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchUserTasks>>;
   searchUserTasks(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUserTasksConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchUserTasks', _schemas.zSearchUserTasksBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchUserTasks(opts);
-        let data = this._evaluateResponse(_raw, 'searchUserTasks', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchUserTasksResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchUserTasksResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchUserTasks', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchUserTasks', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchUserTasks(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -18657,72 +6308,7 @@ export class CamundaClientBase {
    */
   searchUserTaskVariables(input: searchUserTaskVariablesInput, /** Management of eventual consistency **/ consistencyManagement: searchUserTaskVariablesConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchUserTaskVariables>>;
   searchUserTaskVariables(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUserTaskVariablesConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { userTaskKey, truncateValues, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { userTaskKey };
-      envelope.query = { truncateValues };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchUserTaskVariables', _schemas.zSearchUserTaskVariablesBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('searchUserTaskVariables', _schemas.zSearchUserTaskVariablesPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('searchUserTaskVariables', _schemas.zSearchUserTaskVariablesQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.query) opts.query = envelope.query;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchUserTaskVariables(opts);
-        let data = this._evaluateResponse(_raw, 'searchUserTaskVariables', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchUserTaskVariablesResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchUserTaskVariablesResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchUserTaskVariables', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchUserTaskVariables', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchUserTaskVariables(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -18764,66 +6350,7 @@ export class CamundaClientBase {
    */
   searchVariables(input: searchVariablesInput, /** Management of eventual consistency **/ consistencyManagement: searchVariablesConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchVariables>>;
   searchVariables(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchVariablesConsistency, options?: OperationOptions): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const { truncateValues, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.query = { truncateValues };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('searchVariables', _schemas.zSearchVariablesBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('searchVariables', _schemas.zSearchVariablesQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.query) opts.query = envelope.query;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.searchVariables(opts);
-        let data = this._evaluateResponse(_raw, 'searchVariables', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSearchVariablesResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSearchVariablesResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchVariables', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchVariables', false, invoke, { ...useConsistency, logger: this._log, clock: this._clock });
-      return invoke();
-    });
+    return Ops.searchVariables(this, arg, consistencyManagement, options);
   }
 
   /**
@@ -18846,62 +6373,7 @@ export class CamundaClientBase {
    */
   suspendBatchOperation(input: suspendBatchOperationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.suspendBatchOperation>>;
   suspendBatchOperation(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { batchOperationKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { batchOperationKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('suspendBatchOperation', _schemas.zSuspendBatchOperationBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('suspendBatchOperation', _schemas.zSuspendBatchOperationPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.suspendBatchOperation(opts);
-        let data = this._evaluateResponse(_raw, 'suspendBatchOperation', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSuspendBatchOperationResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSuspendBatchOperationResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('suspendBatchOperation', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'suspendBatchOperation', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.suspendBatchOperation(this, arg, options);
   }
 
   /**
@@ -18926,62 +6398,7 @@ export class CamundaClientBase {
    */
   suspendProcessInstance(input: suspendProcessInstanceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.suspendProcessInstance>>;
   suspendProcessInstance(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { processInstanceKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { processInstanceKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('suspendProcessInstance', _schemas.zSuspendProcessInstanceBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('suspendProcessInstance', _schemas.zSuspendProcessInstancePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.suspendProcessInstance(opts);
-        let data = this._evaluateResponse(_raw, 'suspendProcessInstance', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSuspendProcessInstanceResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSuspendProcessInstanceResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('suspendProcessInstance', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'suspendProcessInstance', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.suspendProcessInstance(this, arg, options);
   }
 
   /**
@@ -19016,56 +6433,7 @@ export class CamundaClientBase {
    */
   suspendProcessInstancesBatchOperation(input: suspendProcessInstancesBatchOperationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.suspendProcessInstancesBatchOperation>>;
   suspendProcessInstancesBatchOperation(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('suspendProcessInstancesBatchOperation', _schemas.zSuspendProcessInstancesBatchOperationBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.suspendProcessInstancesBatchOperation(opts);
-        let data = this._evaluateResponse(_raw, 'suspendProcessInstancesBatchOperation', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSuspendProcessInstancesBatchOperationResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSuspendProcessInstancesBatchOperationResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('suspendProcessInstancesBatchOperation', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'suspendProcessInstancesBatchOperation', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.suspendProcessInstancesBatchOperation(this, arg, options);
   }
 
   /**
@@ -19093,44 +6461,7 @@ export class CamundaClientBase {
    */
   syncRuntimeBackupState(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.syncRuntimeBackupState>>;
   syncRuntimeBackupState(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      const call = async () => {
-        try {
-        const _raw = await Sdk.syncRuntimeBackupState(opts as any);
-        let data = this._evaluateResponse(_raw, 'syncRuntimeBackupState', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSyncRuntimeBackupStateResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSyncRuntimeBackupStateResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('syncRuntimeBackupState', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'syncRuntimeBackupState', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.syncRuntimeBackupState(this, options);
   }
 
   /**
@@ -19160,56 +6491,7 @@ export class CamundaClientBase {
    */
   syncRuntimeBackupStateAsClusterAdmin(input: syncRuntimeBackupStateAsClusterAdminInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.syncRuntimeBackupStateAsClusterAdmin>>;
   syncRuntimeBackupStateAsClusterAdmin(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { physicalTenantId } = arg || {};
-      let envelope: any = {};
-      envelope.query = { physicalTenantId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('syncRuntimeBackupStateAsClusterAdmin', _schemas.zSyncRuntimeBackupStateAsClusterAdminQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.query) opts.query = envelope.query;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.syncRuntimeBackupStateAsClusterAdmin(opts);
-        let data = this._evaluateResponse(_raw, 'syncRuntimeBackupStateAsClusterAdmin', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zSyncRuntimeBackupStateAsClusterAdminResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zSyncRuntimeBackupStateAsClusterAdminResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('syncRuntimeBackupStateAsClusterAdmin', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'syncRuntimeBackupStateAsClusterAdmin', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.syncRuntimeBackupStateAsClusterAdmin(this, arg, options);
   }
 
   /**
@@ -19244,56 +6526,7 @@ export class CamundaClientBase {
    */
   takeHistoryBackup(input: takeHistoryBackupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.takeHistoryBackup>>;
   takeHistoryBackup(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('takeHistoryBackup', _schemas.zTakeHistoryBackupBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.takeHistoryBackup(opts);
-        let data = this._evaluateResponse(_raw, 'takeHistoryBackup', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zTakeHistoryBackupResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zTakeHistoryBackupResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('takeHistoryBackup', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'takeHistoryBackup', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.takeHistoryBackup(this, arg, options);
   }
 
   /**
@@ -19329,62 +6562,7 @@ export class CamundaClientBase {
    */
   takeHistoryBackupAsClusterAdmin(input: takeHistoryBackupAsClusterAdminInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.takeHistoryBackupAsClusterAdmin>>;
   takeHistoryBackupAsClusterAdmin(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { physicalTenantId, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.query = { physicalTenantId };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('takeHistoryBackupAsClusterAdmin', _schemas.zTakeHistoryBackupAsClusterAdminBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('takeHistoryBackupAsClusterAdmin', _schemas.zTakeHistoryBackupAsClusterAdminQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.query) opts.query = envelope.query;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.takeHistoryBackupAsClusterAdmin(opts);
-        let data = this._evaluateResponse(_raw, 'takeHistoryBackupAsClusterAdmin', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zTakeHistoryBackupAsClusterAdminResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zTakeHistoryBackupAsClusterAdminResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('takeHistoryBackupAsClusterAdmin', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'takeHistoryBackupAsClusterAdmin', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.takeHistoryBackupAsClusterAdmin(this, arg, options);
   }
 
   /**
@@ -19415,56 +6593,7 @@ export class CamundaClientBase {
    */
   takeRuntimeBackup(input: takeRuntimeBackupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.takeRuntimeBackup>>;
   takeRuntimeBackup(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('takeRuntimeBackup', _schemas.zTakeRuntimeBackupBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.takeRuntimeBackup(opts);
-        let data = this._evaluateResponse(_raw, 'takeRuntimeBackup', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zTakeRuntimeBackupResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zTakeRuntimeBackupResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('takeRuntimeBackup', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'takeRuntimeBackup', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.takeRuntimeBackup(this, arg, options);
   }
 
   /**
@@ -19502,62 +6631,7 @@ export class CamundaClientBase {
    */
   takeRuntimeBackupAsClusterAdmin(input: takeRuntimeBackupAsClusterAdminInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.takeRuntimeBackupAsClusterAdmin>>;
   takeRuntimeBackupAsClusterAdmin(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { physicalTenantId, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.query = { physicalTenantId };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('takeRuntimeBackupAsClusterAdmin', _schemas.zTakeRuntimeBackupAsClusterAdminBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('takeRuntimeBackupAsClusterAdmin', _schemas.zTakeRuntimeBackupAsClusterAdminQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.query) opts.query = envelope.query;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.takeRuntimeBackupAsClusterAdmin(opts);
-        let data = this._evaluateResponse(_raw, 'takeRuntimeBackupAsClusterAdmin', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zTakeRuntimeBackupAsClusterAdminResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zTakeRuntimeBackupAsClusterAdminResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('takeRuntimeBackupAsClusterAdmin', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'takeRuntimeBackupAsClusterAdmin', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.takeRuntimeBackupAsClusterAdmin(this, arg, options);
   }
 
   /**
@@ -19583,62 +6657,7 @@ export class CamundaClientBase {
    */
   throwJobError(input: throwJobErrorInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.throwJobError>>;
   throwJobError(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { jobKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { jobKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('throwJobError', _schemas.zThrowJobErrorBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('throwJobError', _schemas.zThrowJobErrorPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.throwJobError(opts);
-        let data = this._evaluateResponse(_raw, 'throwJobError', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zThrowJobErrorResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zThrowJobErrorResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('throwJobError', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'throwJobError', exempt: true, retryOverride: options?.retry });
-    });
+    return Ops.throwJobError(this, arg, options);
   }
 
   /**
@@ -19671,62 +6690,7 @@ export class CamundaClientBase {
    */
   triggerClusterRebalance(input: triggerClusterRebalanceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.triggerClusterRebalance>>;
   triggerClusterRebalance(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { dryRun, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.query = { dryRun };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('triggerClusterRebalance', _schemas.zTriggerClusterRebalanceBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.query !== undefined) {
-          const maybeQuery = await this._validation.gateRequest('triggerClusterRebalance', _schemas.zTriggerClusterRebalanceQuery, envelope.query);
-          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.query) opts.query = envelope.query;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.triggerClusterRebalance(opts);
-        let data = this._evaluateResponse(_raw, 'triggerClusterRebalance', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zTriggerClusterRebalanceResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zTriggerClusterRebalanceResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('triggerClusterRebalance', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'triggerClusterRebalance', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.triggerClusterRebalance(this, arg, options);
   }
 
   /**
@@ -19752,56 +6716,7 @@ export class CamundaClientBase {
    */
   unassignClientFromGroup(input: unassignClientFromGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignClientFromGroup>>;
   unassignClientFromGroup(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { groupId, clientId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { groupId, clientId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('unassignClientFromGroup', _schemas.zUnassignClientFromGroupPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.unassignClientFromGroup(opts);
-        let data = this._evaluateResponse(_raw, 'unassignClientFromGroup', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUnassignClientFromGroupResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUnassignClientFromGroupResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('unassignClientFromGroup', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignClientFromGroup', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.unassignClientFromGroup(this, arg, options);
   }
 
   /**
@@ -19827,56 +6742,7 @@ export class CamundaClientBase {
    */
   unassignClientFromTenant(input: unassignClientFromTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignClientFromTenant>>;
   unassignClientFromTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { tenantId, clientId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { tenantId, clientId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('unassignClientFromTenant', _schemas.zUnassignClientFromTenantPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.unassignClientFromTenant(opts);
-        let data = this._evaluateResponse(_raw, 'unassignClientFromTenant', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUnassignClientFromTenantResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUnassignClientFromTenantResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('unassignClientFromTenant', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignClientFromTenant', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.unassignClientFromTenant(this, arg, options);
   }
 
   /**
@@ -19902,56 +6768,7 @@ export class CamundaClientBase {
    */
   unassignGroupFromTenant(input: unassignGroupFromTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignGroupFromTenant>>;
   unassignGroupFromTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { tenantId, groupId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { tenantId, groupId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('unassignGroupFromTenant', _schemas.zUnassignGroupFromTenantPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.unassignGroupFromTenant(opts);
-        let data = this._evaluateResponse(_raw, 'unassignGroupFromTenant', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUnassignGroupFromTenantResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUnassignGroupFromTenantResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('unassignGroupFromTenant', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignGroupFromTenant', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.unassignGroupFromTenant(this, arg, options);
   }
 
   /**
@@ -19975,56 +6792,7 @@ export class CamundaClientBase {
    */
   unassignMappingRuleFromGroup(input: unassignMappingRuleFromGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignMappingRuleFromGroup>>;
   unassignMappingRuleFromGroup(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { groupId, mappingRuleId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { groupId, mappingRuleId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('unassignMappingRuleFromGroup', _schemas.zUnassignMappingRuleFromGroupPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.unassignMappingRuleFromGroup(opts);
-        let data = this._evaluateResponse(_raw, 'unassignMappingRuleFromGroup', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUnassignMappingRuleFromGroupResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUnassignMappingRuleFromGroupResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('unassignMappingRuleFromGroup', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignMappingRuleFromGroup', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.unassignMappingRuleFromGroup(this, arg, options);
   }
 
   /**
@@ -20051,56 +6819,7 @@ export class CamundaClientBase {
    */
   unassignMappingRuleFromTenant(input: unassignMappingRuleFromTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignMappingRuleFromTenant>>;
   unassignMappingRuleFromTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { tenantId, mappingRuleId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { tenantId, mappingRuleId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('unassignMappingRuleFromTenant', _schemas.zUnassignMappingRuleFromTenantPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.unassignMappingRuleFromTenant(opts);
-        let data = this._evaluateResponse(_raw, 'unassignMappingRuleFromTenant', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUnassignMappingRuleFromTenantResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUnassignMappingRuleFromTenantResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('unassignMappingRuleFromTenant', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignMappingRuleFromTenant', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.unassignMappingRuleFromTenant(this, arg, options);
   }
 
   /**
@@ -20124,56 +6843,7 @@ export class CamundaClientBase {
    */
   unassignRoleFromClient(input: unassignRoleFromClientInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignRoleFromClient>>;
   unassignRoleFromClient(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { roleId, clientId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { roleId, clientId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('unassignRoleFromClient', _schemas.zUnassignRoleFromClientPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.unassignRoleFromClient(opts);
-        let data = this._evaluateResponse(_raw, 'unassignRoleFromClient', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUnassignRoleFromClientResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUnassignRoleFromClientResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('unassignRoleFromClient', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignRoleFromClient', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.unassignRoleFromClient(this, arg, options);
   }
 
   /**
@@ -20197,56 +6867,7 @@ export class CamundaClientBase {
    */
   unassignRoleFromGroup(input: unassignRoleFromGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignRoleFromGroup>>;
   unassignRoleFromGroup(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { roleId, groupId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { roleId, groupId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('unassignRoleFromGroup', _schemas.zUnassignRoleFromGroupPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.unassignRoleFromGroup(opts);
-        let data = this._evaluateResponse(_raw, 'unassignRoleFromGroup', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUnassignRoleFromGroupResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUnassignRoleFromGroupResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('unassignRoleFromGroup', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignRoleFromGroup', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.unassignRoleFromGroup(this, arg, options);
   }
 
   /**
@@ -20270,56 +6891,7 @@ export class CamundaClientBase {
    */
   unassignRoleFromMappingRule(input: unassignRoleFromMappingRuleInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignRoleFromMappingRule>>;
   unassignRoleFromMappingRule(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { roleId, mappingRuleId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { roleId, mappingRuleId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('unassignRoleFromMappingRule', _schemas.zUnassignRoleFromMappingRulePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.unassignRoleFromMappingRule(opts);
-        let data = this._evaluateResponse(_raw, 'unassignRoleFromMappingRule', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUnassignRoleFromMappingRuleResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUnassignRoleFromMappingRuleResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('unassignRoleFromMappingRule', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignRoleFromMappingRule', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.unassignRoleFromMappingRule(this, arg, options);
   }
 
   /**
@@ -20346,56 +6918,7 @@ export class CamundaClientBase {
    */
   unassignRoleFromTenant(input: unassignRoleFromTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignRoleFromTenant>>;
   unassignRoleFromTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { tenantId, roleId } = arg || {};
-      let envelope: any = {};
-      envelope.path = { tenantId, roleId };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('unassignRoleFromTenant', _schemas.zUnassignRoleFromTenantPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.unassignRoleFromTenant(opts);
-        let data = this._evaluateResponse(_raw, 'unassignRoleFromTenant', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUnassignRoleFromTenantResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUnassignRoleFromTenantResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('unassignRoleFromTenant', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignRoleFromTenant', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.unassignRoleFromTenant(this, arg, options);
   }
 
   /**
@@ -20419,56 +6942,7 @@ export class CamundaClientBase {
    */
   unassignRoleFromUser(input: unassignRoleFromUserInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignRoleFromUser>>;
   unassignRoleFromUser(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { roleId, username } = arg || {};
-      let envelope: any = {};
-      envelope.path = { roleId, username };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('unassignRoleFromUser', _schemas.zUnassignRoleFromUserPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.unassignRoleFromUser(opts);
-        let data = this._evaluateResponse(_raw, 'unassignRoleFromUser', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUnassignRoleFromUserResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUnassignRoleFromUserResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('unassignRoleFromUser', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignRoleFromUser', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.unassignRoleFromUser(this, arg, options);
   }
 
   /**
@@ -20494,56 +6968,7 @@ export class CamundaClientBase {
    */
   unassignUserFromGroup(input: unassignUserFromGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignUserFromGroup>>;
   unassignUserFromGroup(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { groupId, username } = arg || {};
-      let envelope: any = {};
-      envelope.path = { groupId, username };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('unassignUserFromGroup', _schemas.zUnassignUserFromGroupPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.unassignUserFromGroup(opts);
-        let data = this._evaluateResponse(_raw, 'unassignUserFromGroup', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUnassignUserFromGroupResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUnassignUserFromGroupResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('unassignUserFromGroup', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignUserFromGroup', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.unassignUserFromGroup(this, arg, options);
   }
 
   /**
@@ -20569,56 +6994,7 @@ export class CamundaClientBase {
    */
   unassignUserFromTenant(input: unassignUserFromTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignUserFromTenant>>;
   unassignUserFromTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { tenantId, username } = arg || {};
-      let envelope: any = {};
-      envelope.path = { tenantId, username };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('unassignUserFromTenant', _schemas.zUnassignUserFromTenantPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.unassignUserFromTenant(opts);
-        let data = this._evaluateResponse(_raw, 'unassignUserFromTenant', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUnassignUserFromTenantResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUnassignUserFromTenantResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('unassignUserFromTenant', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignUserFromTenant', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.unassignUserFromTenant(this, arg, options);
   }
 
   /**
@@ -20640,56 +7016,7 @@ export class CamundaClientBase {
    */
   unassignUserTask(input: unassignUserTaskInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignUserTask>>;
   unassignUserTask(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { userTaskKey } = arg || {};
-      let envelope: any = {};
-      envelope.path = { userTaskKey };
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('unassignUserTask', _schemas.zUnassignUserTaskPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.unassignUserTask(opts);
-        let data = this._evaluateResponse(_raw, 'unassignUserTask', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUnassignUserTaskResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUnassignUserTaskResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('unassignUserTask', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignUserTask', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.unassignUserTask(this, arg, options);
   }
 
   /**
@@ -20736,62 +7063,7 @@ export class CamundaClientBase {
    */
   updateAgentInstance(input: updateAgentInstanceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateAgentInstance>>;
   updateAgentInstance(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { agentInstanceKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { agentInstanceKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('updateAgentInstance', _schemas.zUpdateAgentInstanceBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('updateAgentInstance', _schemas.zUpdateAgentInstancePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.updateAgentInstance(opts);
-        let data = this._evaluateResponse(_raw, 'updateAgentInstance', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUpdateAgentInstanceResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUpdateAgentInstanceResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('updateAgentInstance', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'updateAgentInstance', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.updateAgentInstance(this, arg, options);
   }
 
   /**
@@ -20823,62 +7095,7 @@ export class CamundaClientBase {
    */
   updateAuthorization(input: updateAuthorizationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateAuthorization>>;
   updateAuthorization(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { authorizationKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { authorizationKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('updateAuthorization', _schemas.zUpdateAuthorizationBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('updateAuthorization', _schemas.zUpdateAuthorizationPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.updateAuthorization(opts);
-        let data = this._evaluateResponse(_raw, 'updateAuthorization', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUpdateAuthorizationResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUpdateAuthorizationResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('updateAuthorization', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'updateAuthorization', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.updateAuthorization(this, arg, options);
   }
 
   /**
@@ -20904,62 +7121,7 @@ export class CamundaClientBase {
    */
   updateGlobalClusterVariable(input: updateGlobalClusterVariableInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateGlobalClusterVariable>>;
   updateGlobalClusterVariable(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { name, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { name };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('updateGlobalClusterVariable', _schemas.zUpdateGlobalClusterVariableBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('updateGlobalClusterVariable', _schemas.zUpdateGlobalClusterVariablePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.updateGlobalClusterVariable(opts);
-        let data = this._evaluateResponse(_raw, 'updateGlobalClusterVariable', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUpdateGlobalClusterVariableResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUpdateGlobalClusterVariableResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('updateGlobalClusterVariable', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'updateGlobalClusterVariable', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.updateGlobalClusterVariable(this, arg, options);
   }
 
   /**
@@ -20984,62 +7146,7 @@ export class CamundaClientBase {
    */
   updateGlobalTaskListener(input: updateGlobalTaskListenerInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateGlobalTaskListener>>;
   updateGlobalTaskListener(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { id, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { id };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('updateGlobalTaskListener', _schemas.zUpdateGlobalTaskListenerBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('updateGlobalTaskListener', _schemas.zUpdateGlobalTaskListenerPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.updateGlobalTaskListener(opts);
-        let data = this._evaluateResponse(_raw, 'updateGlobalTaskListener', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUpdateGlobalTaskListenerResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUpdateGlobalTaskListenerResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('updateGlobalTaskListener', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'updateGlobalTaskListener', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.updateGlobalTaskListener(this, arg, options);
   }
 
   /**
@@ -21063,62 +7170,7 @@ export class CamundaClientBase {
    */
   updateGroup(input: updateGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateGroup>>;
   updateGroup(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { groupId, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { groupId };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('updateGroup', _schemas.zUpdateGroupBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('updateGroup', _schemas.zUpdateGroupPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.updateGroup(opts);
-        let data = this._evaluateResponse(_raw, 'updateGroup', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUpdateGroupResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUpdateGroupResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('updateGroup', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'updateGroup', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.updateGroup(this, arg, options);
   }
 
   /**
@@ -21142,62 +7194,7 @@ export class CamundaClientBase {
    */
   updateJob(input: updateJobInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateJob>>;
   updateJob(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { jobKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { jobKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('updateJob', _schemas.zUpdateJobBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('updateJob', _schemas.zUpdateJobPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.updateJob(opts);
-        let data = this._evaluateResponse(_raw, 'updateJob', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUpdateJobResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUpdateJobResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('updateJob', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'updateJob', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.updateJob(this, arg, options);
   }
 
   /**
@@ -21229,56 +7226,7 @@ export class CamundaClientBase {
    */
   updateJobsBatchOperation(input: updateJobsBatchOperationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateJobsBatchOperation>>;
   updateJobsBatchOperation(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('updateJobsBatchOperation', _schemas.zUpdateJobsBatchOperationBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.updateJobsBatchOperation(opts);
-        let data = this._evaluateResponse(_raw, 'updateJobsBatchOperation', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUpdateJobsBatchOperationResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUpdateJobsBatchOperationResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('updateJobsBatchOperation', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'updateJobsBatchOperation', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.updateJobsBatchOperation(this, arg, options);
   }
 
   /**
@@ -21305,62 +7253,7 @@ export class CamundaClientBase {
    */
   updateMappingRule(input: updateMappingRuleInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateMappingRule>>;
   updateMappingRule(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { mappingRuleId, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { mappingRuleId };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('updateMappingRule', _schemas.zUpdateMappingRuleBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('updateMappingRule', _schemas.zUpdateMappingRulePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.updateMappingRule(opts);
-        let data = this._evaluateResponse(_raw, 'updateMappingRule', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUpdateMappingRuleResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUpdateMappingRuleResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('updateMappingRule', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'updateMappingRule', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.updateMappingRule(this, arg, options);
   }
 
   /**
@@ -21384,62 +7277,7 @@ export class CamundaClientBase {
    */
   updateRole(input: updateRoleInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateRole>>;
   updateRole(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { roleId, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { roleId };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('updateRole', _schemas.zUpdateRoleBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('updateRole', _schemas.zUpdateRolePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.updateRole(opts);
-        let data = this._evaluateResponse(_raw, 'updateRole', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUpdateRoleResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUpdateRoleResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('updateRole', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'updateRole', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.updateRole(this, arg, options);
   }
 
   /**
@@ -21463,62 +7301,7 @@ export class CamundaClientBase {
    */
   updateTenant(input: updateTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateTenant>>;
   updateTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { tenantId, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { tenantId };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('updateTenant', _schemas.zUpdateTenantBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('updateTenant', _schemas.zUpdateTenantPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.updateTenant(opts);
-        let data = this._evaluateResponse(_raw, 'updateTenant', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUpdateTenantResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUpdateTenantResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('updateTenant', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'updateTenant', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.updateTenant(this, arg, options);
   }
 
   /**
@@ -21545,62 +7328,7 @@ export class CamundaClientBase {
    */
   updateTenantClusterVariable(input: updateTenantClusterVariableInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateTenantClusterVariable>>;
   updateTenantClusterVariable(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { tenantId, name, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { tenantId, name };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('updateTenantClusterVariable', _schemas.zUpdateTenantClusterVariableBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('updateTenantClusterVariable', _schemas.zUpdateTenantClusterVariablePath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.updateTenantClusterVariable(opts);
-        let data = this._evaluateResponse(_raw, 'updateTenantClusterVariable', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUpdateTenantClusterVariableResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUpdateTenantClusterVariableResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('updateTenantClusterVariable', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'updateTenantClusterVariable', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.updateTenantClusterVariable(this, arg, options);
   }
 
   /**
@@ -21625,62 +7353,7 @@ export class CamundaClientBase {
    */
   updateUser(input: updateUserInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateUser>>;
   updateUser(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { username, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { username };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('updateUser', _schemas.zUpdateUserBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('updateUser', _schemas.zUpdateUserPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.updateUser(opts);
-        let data = this._evaluateResponse(_raw, 'updateUser', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUpdateUserResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUpdateUserResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('updateUser', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'updateUser', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.updateUser(this, arg, options);
   }
 
   /**
@@ -21709,62 +7382,7 @@ export class CamundaClientBase {
    */
   updateUserTask(input: updateUserTaskInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateUserTask>>;
   updateUserTask(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { userTaskKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { userTaskKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('updateUserTask', _schemas.zUpdateUserTaskBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('updateUserTask', _schemas.zUpdateUserTaskPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.updateUserTask(opts);
-        let data = this._evaluateResponse(_raw, 'updateUserTask', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zUpdateUserTaskResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zUpdateUserTaskResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('updateUserTask', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'updateUserTask', exempt: false, retryOverride: options?.retry });
-    });
+    return Ops.updateUserTask(this, arg, options);
   }
 
 // === AUTO-GENERATED CAMUNDA METHODS END ===
