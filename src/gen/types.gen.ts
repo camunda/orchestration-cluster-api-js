@@ -19376,6 +19376,13 @@ export type CancelProcessInstanceErrors = {
      */
     404: ProblemDetail;
     /**
+     * The process instance cannot be canceled, for example because it is already being
+     * terminated or because it is a child process instance.
+     * More details are provided in the response body.
+     *
+     */
+    409: ProblemDetail;
+    /**
      * An internal error occurred while processing the request.
      */
     500: ProblemDetail;
@@ -23920,7 +23927,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:39641c369e00946870689517f5bcbfad75e68c9f86ff99032bf1d0d73767c942
+// specHash=sha256:cd3a6bc273e10d952cf4c4827ff9babd9b13d8cabea400f7ed8be56e7cba9969
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
