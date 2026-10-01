@@ -1,4 +1,5 @@
 // @generated from CamundaClient.template.ts - DO NOT EDIT DIRECTLY
+import { node } from '#platform';
 import { createClient } from '../gen/client/client.gen';
 import * as Sdk from '../gen/sdk.gen';
 import { createAuthFacade } from '../runtime/auth';
@@ -21900,14 +21901,14 @@ export class CamundaClientBase {
         throw new Error('resourceFilenames must be a non-empty string[]');
       }
       // Basic environment guard (avoid accidental browser usage)
-      if (typeof process === 'undefined' || !process.versions?.node) {
+      if (!node || typeof process === 'undefined' || !process.versions?.node) {
         throw new Error('deployResourcesFromFiles is only available in Node.js environments');
       }
-      // Dynamic imports so that bundlers can tree-shake for browser builds
-      const [{ readFile }, pathMod] = await Promise.all([
-        import('node:fs/promises'),
-        import('node:path'),
-      ]);
+      // Node built-ins come from the #platform seam (undefined in browser builds)
+      const {
+        fsPromises: { readFile },
+        path: pathMod,
+      } = node;
       // Best-effort MIME inference
       const mimeFor = (filename: string): string => {
         const ext = filename.toLowerCase().split('.').pop() || '';
