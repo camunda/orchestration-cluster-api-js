@@ -18,7 +18,7 @@
  *      constructor, not the async `_init`), and `deployResourcesFromFiles()`
  *      rejects with an unsupported-runtime error.
  */
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -64,8 +64,23 @@ const SANDBOX_JS = `
 const { parentPort, workerData } = require('node:worker_threads');
 
 (async () => {
-  // Simulate a browser runtime: no Node version fingerprint.
-  process.versions = {};
+  // Warm up Node's lazily-initialised \`fetch\` (undici) BEFORE stripping the
+  // version fingerprint: undici reads \`process.versions.node.split('.')\` on
+  // first use, so it must initialise while the real version is still present.
+  // The browser bundle relies on the global \`fetch\`, so we must keep it usable.
+  await fetch('http://127.0.0.1:1').catch(() => {});
+
+  // Simulate a browser runtime: no Node version fingerprint. \`process.versions\`
+  // is a non-writable (but configurable) own property, so a plain assignment is
+  // silently ignored in non-strict code and \`process.versions.node\` would
+  // survive. Redefine the property so the SDK's \`process.versions?.node\`
+  // environment probes genuinely report a non-Node runtime.
+  Object.defineProperty(process, 'versions', {
+    value: {},
+    writable: true,
+    configurable: true,
+    enumerable: true,
+  });
   const sdk = await import(workerData.bundleUrl);
   const report = { checks: {}, log: [] };
   const record = (name, fn) => {
@@ -232,7 +247,7 @@ describe('browser platform runtime behavior', () => {
   it('skips the OAuth disk token cache', () => {
     expect(sandboxReport.checks['oauth disk token cache is skipped']).toEqual({ ok: true });
     // The cache directory must not have been created by the browser build.
-    expect(() => readFileSync(join(cacheDir, 'anything'))).toThrow();
+    expect(existsSync(cacheDir)).toBe(false);
   });
 
   it('throws synchronously from createThreadedJobWorker', () => {
