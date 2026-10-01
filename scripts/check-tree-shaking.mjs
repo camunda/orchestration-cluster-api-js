@@ -33,6 +33,10 @@ const DEFAULT_BUDGET = 8 * 1024;
  */
 const CLIENT_BUDGET = 600 * 1024;
 const HEAVY = {
+  // Issue #537's headline acceptance criterion: importing only `isSdkError` must
+  // cost about 0.2 KB, not 24 KB. Pin it well under the default budget so the
+  // gate trips long before it drifts back toward the pre-fix size.
+  '. isSdkError': 1024,
   '. default': CLIENT_BUDGET,
   '. CamundaClient': CLIENT_BUDGET,
   '. CamundaClientBase': CLIENT_BUDGET,
