@@ -1348,6 +1348,12 @@ For bundle-size-sensitive apps (browsers, edge functions), the
 function that takes a shared core as its first argument. Bundlers keep only the operations
 you import, and each operation lazily loads only its own validation schemas.
 
+> **esbuild code-splitting caveat:** this holds for bundlers that tree-shake dead `import()`
+> targets (e.g. Rollup, and esbuild without code splitting). esbuild's `splitting: true` mode
+> retains the dynamic-import targets of unimported operation functions, so a code-split esbuild
+> build may still pull in schema chunks for operations you did not import. The size figures below
+> are measured unsplit; prefer an unsplit build (or Rollup) when minimal `./fn` bundles matter.
+
 <!-- snippet-source: examples/readme.ts | regions: ReadmePerOperationFunctionsImport+ReadmePerOperationFunctions -->
 
 ```ts
