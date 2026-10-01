@@ -11,6 +11,9 @@
 // Heavy exports that genuinely carry a lot of code (the client classes) get an
 // explicit, reviewed budget in HEAVY below. Everything else gets DEFAULT_BUDGET.
 //
+// The per-operation entry point (`./fn`, issue #537 phase 2b) is measured
+// differently — see FN below: what a consumer of one operation actually ships.
+//
 // Usage: node scripts/check-tree-shaking.mjs [--report]
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -43,10 +46,79 @@ const HEAVY = {
   './effect createCamundaEffectClient': CLIENT_BUDGET,
 };
 
+/**
+ * `./fn`: standalone per-operation functions over a shared core. Measured as a
+ * consumer bundle WITHOUT code splitting, so it counts everything the operation can
+ * ever load — including its lazily imported zod schemas — and none of the
+ * operations it does not use:
+ *
+ *  - the core (`createCamundaCore` / `CamundaCore`) against FN.coreBudget;
+ *  - every operation as the increment of `{ createCamundaCore, op }` over the
+ *    core, against FN.opBudget. An operation that reached the whole schema module
+ *    (or another operation's code) would add ~700 KB and trip this.
+ *
+ * Measured on introduction: core ~138 KB; operations add 4–60 KB (median ~31 KB,
+ * activateJobs largest: it carries job-action enrichment); all 244 operations
+ * together ~863 KB.
+ */
+const FN = {
+  subpath: './fn',
+  coreExports: ['createCamundaCore', 'CamundaCore'],
+  coreBudget: 160 * 1024,
+  opBudget: 96 * 1024,
+};
+
 const require = createRequire(import.meta.url);
 let failed = false;
 const rows = [];
+
+/** Minified size of a consumer bundle importing `names` from `entryFile` (no splitting). */
+async function unsplitSize(entryFile, names) {
+  const contents = `import { ${names.join(', ')} } from ${JSON.stringify(entryFile)}; console.log(${names.join(', ')});`;
+  const r = await build({
+    absWorkingDir: root,
+    stdin: { contents, resolveDir: root, loader: 'js' },
+    bundle: true,
+    minify: true,
+    write: false,
+    format: 'esm',
+    platform: 'browser',
+    tsconfigRaw: '{}',
+    external: Object.keys(pkg.peerDependencies ?? {}),
+    logLevel: 'silent',
+  });
+  return r.outputFiles[0].contents;
+}
+
+if (!pkg.exports[FN.subpath]) {
+  console.log(`✗ missing per-operation entry point: package.json exports["${FN.subpath}"]`);
+  failed = true;
+}
+
 for (const [subpath, target] of Object.entries(pkg.exports)) {
+  if (subpath === FN.subpath) {
+    const entryFile = join(root, target.import);
+    const names = Object.keys(await import(pathToFileURL(entryFile).href)).sort();
+    for (const c of FN.coreExports) {
+      if (!names.includes(c)) {
+        console.log(`✗ ${FN.subpath} does not export ${c}`);
+        failed = true;
+      }
+    }
+    const core = await unsplitSize(entryFile, [FN.coreExports[0]]);
+    for (const name of names) {
+      const isCore = FN.coreExports.includes(name);
+      const bytes = await unsplitSize(entryFile, isCore ? [name] : [FN.coreExports[0], name]);
+      const size = isCore ? bytes.length : bytes.length - core.length;
+      const budget = isCore ? FN.coreBudget : FN.opBudget;
+      const ok = size <= budget;
+      if (!ok) failed = true;
+      const label = isCore ? name : `+${name}`;
+      const gz = gzipSync(bytes).length - (isCore ? 0 : gzipSync(core).length);
+      rows.push({ key: `${subpath} ${label}`, size, gz, budget, ok });
+    }
+    continue;
+  }
   const entryFile = join(root, target.import);
   // Optional peers (e.g. `effect`) must be installed for the entry to load; skip
   // the value-export enumeration gracefully if they are not.
