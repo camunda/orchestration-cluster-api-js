@@ -55,9 +55,7 @@ export class CamundaClientBase extends CamundaCore {
   private _threadPool: ThreadPool | null = null;
 
   constructor(opts: CamundaOptions = {}) {
-    // Discriminate the full client from bare `CamundaCore` (and consumer subclasses of
-    // it) for support diagnostics — see `CamundaOptions.__camundaComponent`.
-    super({ ...opts, __camundaComponent: 'CamundaClient' });
+    super(opts);
     // Attach `.paginate` to every search* operation (issue #3). One well-known
     // wiring point; discovers search methods generically (no per-op list).
     installSearchPagination(this);
