@@ -1341,6 +1341,42 @@ Notes:
 - Cancellation classification runs first so aborted fetches are never downgraded to generic network errors.
 - Abort is immediate and idempotent; underlying fetch is signalled.
 
+## Per-Operation Functions (Tree-Shakeable Subpath)
+
+For bundle-size-sensitive apps (browsers, edge functions), the
+`@camunda8/orchestration-cluster-api/fn` subpath exports every operation as a standalone
+function that takes a shared core as its first argument. Bundlers keep only the operations
+you import, and each operation lazily loads only its own validation schemas.
+
+<!-- snippet-source: examples/readme.ts | regions: ReadmePerOperationFunctions -->
+
+```ts
+// Same options as createCamundaClient(); a CamundaClient also works as the core.
+const core = createCamundaCore();
+
+const topology = await getTopology(core);
+console.log(topology.brokers?.length);
+
+const instance = await createProcessInstance(core, {
+  processDefinitionKey: defKey,
+  variables: { orderId: 'A-1' },
+});
+console.log(instance.processInstanceKey);
+```
+
+Notes:
+
+- Each function takes the same arguments as the `CamundaClient` method of the same name and
+  behaves identically (retry, backpressure, validation, eventual consistency, cancelation) —
+  the client methods delegate to these functions.
+- `createCamundaCore()` accepts the same options as `createCamundaClient()`. It does not
+  include job workers, the thread pool, or the deployment/search convenience helpers; use the
+  client for those. Jobs returned by `activateJobs(core, …)` still have `complete()`,
+  `fail()` and the other job actions.
+- Measured with esbuild (minified, browser, everything that can load including validation
+  schemas): the core is ~135 KB and each operation adds ~4–60 KB, versus ~930 KB for the full
+  client.
+
 ## Effect Surface (Opt-In Subpath)
 
 The main entry stays Promise-based and pulls in **zero** Effect at runtime. Opt in to a
