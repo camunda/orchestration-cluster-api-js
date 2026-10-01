@@ -1,11 +1,4 @@
-import {
-  type ZodError,
-  type ZodIssue,
-  ZodObject,
-  type ZodRawShape,
-  type ZodTypeAny,
-  type ZodUnion,
-} from 'zod';
+import type { ZodError, ZodIssue, ZodObject, ZodRawShape, ZodTypeAny, ZodUnion } from 'zod';
 import type { Logger } from './logger';
 
 export interface FormattedValidation {
@@ -116,8 +109,9 @@ function unwrapForInspection(s: any): any {
           const leftShapeFn = left._def.shape;
           const rightShapeFn = right._def.shape;
           const merged = { ...leftShapeFn(), ...rightShapeFn() };
-          // create synthetic object for inspection only
-          return (ZodObject as any).create(merged);
+          // synthetic object-shaped value for inspection only (no zod value import:
+          // that would load zod eagerly even with validation off)
+          return { _def: { typeName: 'ZodObject', shape: () => merged }, shape: merged };
         } catch {
           /* ignore */
         }
