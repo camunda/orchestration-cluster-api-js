@@ -1,3 +1,10 @@
+# [10.0.0-alpha.51](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.50...v10.0.0-alpha.51) (2026-10-01)
+
+
+### Features
+
+* make the sdk bundleable for browsers via a #platform seam ([#538](https://github.com/camunda/orchestration-cluster-api-js/issues/538)) ([2270fd3](https://github.com/camunda/orchestration-cluster-api-js/commit/2270fd39b9fe1ad86816b95d7837faf30f162b13)), closes [#platform](https://github.com/camunda/orchestration-cluster-api-js/issues/platform) [#537](https://github.com/camunda/orchestration-cluster-api-js/issues/537) [#platform](https://github.com/camunda/orchestration-cluster-api-js/issues/platform) [#platform](https://github.com/camunda/orchestration-cluster-api-js/issues/platform) [#platform](https://github.com/camunda/orchestration-cluster-api-js/issues/platform) [#platform](https://github.com/camunda/orchestration-cluster-api-js/issues/platform) [#platform](https://github.com/camunda/orchestration-cluster-api-js/issues/platform) [#platform](https://github.com/camunda/orchestration-cluster-api-js/issues/platform)
+
 # [10.0.0-alpha.50](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.49...v10.0.0-alpha.50) (2026-09-30)
 
 
