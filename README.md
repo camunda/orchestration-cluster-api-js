@@ -1348,9 +1348,15 @@ For bundle-size-sensitive apps (browsers, edge functions), the
 function that takes a shared core as its first argument. Bundlers keep only the operations
 you import, and each operation lazily loads only its own validation schemas.
 
-<!-- snippet-source: examples/readme.ts | regions: ReadmePerOperationFunctions -->
+<!-- snippet-source: examples/readme.ts | regions: ReadmePerOperationFunctionsImport+ReadmePerOperationFunctions -->
 
 ```ts
+import {
+  createCamundaCore,
+  createProcessInstance,
+  getTopology,
+} from '@camunda8/orchestration-cluster-api/fn';
+
 // Same options as createCamundaClient(); a CamundaClient also works as the core.
 const core = createCamundaCore();
 
@@ -1368,7 +1374,11 @@ Notes:
 
 - Each function takes the same arguments as the `CamundaClient` method of the same name and
   behaves identically (retry, backpressure, validation, eventual consistency, cancelation) —
-  the client methods delegate to these functions.
+  the client methods delegate to these functions. One intentional exception: for operations
+  that take no input (e.g. `getTopology`), the standalone functions honor their `options`
+  argument (`getTopology(core, { retry: false })` disables retry), while the class methods
+  ignore an options argument passed to them (`client.getTopology({ retry: false })` retries
+  as usual) — a legacy quirk preserved for backward compatibility.
 - `createCamundaCore()` accepts the same options as `createCamundaClient()`. It does not
   include job workers, the thread pool, or the deployment/search convenience helpers; use the
   client for those. Jobs returned by `activateJobs(core, …)` still have `complete()`,

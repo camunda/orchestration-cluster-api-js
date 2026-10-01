@@ -10,7 +10,12 @@
  *
  * Each function takes the core as its first argument, then exactly the arguments of
  * the `CamundaClient` method of the same name, and behaves identically: the class
- * methods delegate to these functions. Bundlers keep only the operations you import,
+ * methods delegate to these functions. One intentional exception: for operations
+ * that take no input (e.g. `getTopology`), the standalone functions honor their
+ * `options` argument (`getTopology(core, { retry: false })` disables retry), while
+ * the legacy class methods ignore an options argument passed to them
+ * (`client.getTopology({ retry: false })` retries as usual) — a quirk preserved for
+ * backward compatibility. Bundlers keep only the operations you import,
  * plus the zod schemas those operations validate with (loaded lazily, and only when
  * validation is enabled).
  *

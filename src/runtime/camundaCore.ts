@@ -39,9 +39,9 @@ function deepFreeze<T>(obj: T): T {
   return obj;
 }
 
-// New simplified input: we only accept an already hydrated CamundaConfig. Users wanting env
-// overrides or partials should call hydrateConfig first (single source of truth) and pass
-// the resulting config.
+// Input for constructing a CamundaCore (or CamundaClient). `config` takes strongly typed
+// env-style overrides (CAMUNDA_* keys); the constructor hydrates them internally via
+// hydrateConfig (single source of truth) — callers never handle a raw CamundaConfig.
 export interface CamundaOptions {
   // Strongly typed env-style overrides (CAMUNDA_* keys). Optional.
   config?: EnvOverrides;
