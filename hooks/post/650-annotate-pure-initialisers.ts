@@ -131,6 +131,52 @@ for (const file of walk(GEN_DIR)) {
     for (let k = i; k <= end; k++) consumed[k] = true;
   }
 
+  // Fail-closed gate for NESTED calls: an eagerly evaluated call or `new`
+  // anywhere inside a reviewed initialiser must itself be reviewed — otherwise
+  // `createClient(sneakySideEffect())` would pass the gate with the side effect
+  // intact (the outer reviewed callee marks the statement consumed). Scan the
+  // whole consumed statement for every callee-shaped token and fail on any that
+  // is neither reviewed, bundler-known-pure, nor already annotated.
+  const ANY_CALL = /(?:\bnew\s+)?([\w$]+(?:\s*\.\s*[\w$]+)*)(?:<[^\n(]*>)?\s*\(/g;
+  let i = 0;
+  while (i < lines.length) {
+    if (!consumed[i]) {
+      i++;
+      continue;
+    }
+    let j = i;
+    while (j + 1 < lines.length && consumed[j + 1]) j++;
+    // Skip the outer call's own callee: everything up to its `(` was vetted by
+    // the primary pass above.
+    let parenLine = i;
+    let parenCol = -1;
+    for (let k = i; k <= j; k++) {
+      const idx = lines[k].indexOf('(', lines[k].indexOf(PURE) + PURE.length);
+      if (idx !== -1) {
+        parenLine = k;
+        parenCol = idx;
+        break;
+      }
+    }
+    for (let k = parenLine; k <= j; k++) {
+      const from = k === parenLine ? parenCol : 0;
+      const segment = lines[k].slice(from);
+      ANY_CALL.lastIndex = 0;
+      let cm: RegExpExecArray | null;
+      while ((cm = ANY_CALL.exec(segment)) !== null) {
+        const callee = cm[1].replace(/\s*\.\s*/g, '.');
+        if (PURE_CALLEES.has(callee)) continue;
+        const ctorPrefix = cm[0].slice(0, cm[0].indexOf(callee));
+        if (BUNDLER_KNOWN_PURE.has(ctorPrefix + callee)) continue;
+        if (segment.slice(Math.max(0, cm.index - PURE.length), cm.index) === PURE) continue;
+        unreviewed.push(
+          `${path.relative(root, file)}: nested call to unreviewed callee '${callee}' inside a reviewed initialiser`
+        );
+      }
+    }
+    i = j + 1;
+  }
+
   // A pure annotation lets the bundler drop the outer call, but it still keeps any
   // argument that is itself an un-annotated call (e.g. `createClient(createConfig(...))`).
   // Annotate reviewed callees nested anywhere inside the initialiser statement.
@@ -138,7 +184,7 @@ for (const file of walk(GEN_DIR)) {
     String.raw`(?<!@__PURE__ \*/ )\b(${[...PURE_CALLEES].map((c) => c.replace('.', '\\.')).join('|')})(<[^\n(]*>)?\(`,
     'g'
   );
-  let i = 0;
+  i = 0;
   while (i < lines.length) {
     if (!consumed[i]) {
       i++;

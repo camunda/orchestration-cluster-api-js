@@ -111,6 +111,27 @@ describe('650-annotate-pure-initialisers', () => {
     }
   });
 
+  it('fails the pipeline on an unreviewed call NESTED inside a reviewed initialiser', () => {
+    // Second review finding: `createClient(sneakySideEffect())` was accepted —
+    // the outer reviewed callee marked the statement consumed, and the nested
+    // pass only matched names already in PURE_CALLEES, so the unknown nested
+    // call was neither annotated nor gated. Every eagerly evaluated nested
+    // call/new with an unknown callee must fail the pipeline, in every shape.
+    for (const src of [
+      `export const client = createClient(sneakySideEffect());\n`,
+      `export const client =\n  createClient(sneakySideEffect());\n`,
+      `export const client = createClient(\n  sneakySideEffect()\n);\n`,
+      `export const client = createClient(new Sneaky());\n`,
+      `export const client = createClient(sneaky(createConfig()));\n`,
+    ]) {
+      const { result } = runHook({ 'evil.gen.ts': src });
+      expect(result.status).toBe(1);
+      expect(result.stderr.toLowerCase()).toContain('sneaky');
+    }
+    // Five hook subprocesses under full-suite load exceed the 5 s default
+    // timeout; the timeout is a safety net, not a correctness signal.
+  }, 30_000);
+
   it('is idempotent: already-annotated initialisers are left untouched', () => {
     const annotated = `export const client: Client = ${PURE} createClient(${PURE} createConfig<ClientOptions2>({ throwOnError: true }));\n`;
     const { result, read } = runHook({ 'client.gen.ts': annotated });
