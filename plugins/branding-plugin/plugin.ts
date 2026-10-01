@@ -147,13 +147,29 @@ export const handler: BrandingPlugin['Handler'] = (ctx) => {
       const valueType = aliasPrimitiveMatch?.[1] === 'number' ? 'number' : 'string';
       const emitConstraint = valueType === 'string' && doValidate && Boolean(c.length);
 
-      lines.push(`export namespace ${k.name} {`);
-      lines.push(`  export function ${lifterName}(value: ${valueType}): ${k.name} {`);
+      // Emit helpers as a typed `const` object literal whose members are all methods,
+      // rather than a TS `namespace`. A namespace compiles to an IIFE that bundlers
+      // must keep (it mutates a binding), so all ~44 helpers ended up in every
+      // consumer bundle. An object literal of methods is side-effect-free, so
+      // bundlers drop unused helpers. Call sites (`X.assumeExists(...)`) and the
+      // merged `type X` are unchanged. The `export const X: {` shape is the marker
+      // hooks and tests look for (hey-api enums are emitted as `export const X = {`).
+      const sig = {
+        lift: `${lifterName}(value: ${valueType}): ${k.name}`,
+        getValue: `getValue(key: ${k.name}): ${valueType}`,
+        isValid: `isValid(value: ${valueType}): boolean`,
+      };
+      lines.push(`export const ${k.name}: {`);
+      lines.push(`  ${sig.lift};`);
+      lines.push(`  ${sig.getValue};`);
+      lines.push(`  ${sig.isValid};`);
+      lines.push('} = {');
+      lines.push(`  ${sig.lift} {`);
       if (emitConstraint) lines.push(`    assertConstraint(value, '${k.name}', ${obj});`);
       lines.push('    return value as any;');
-      lines.push('  }');
-      lines.push(`  export function getValue(key: ${k.name}): ${valueType} { return key; }`);
-      lines.push(`  export function isValid(value: ${valueType}): boolean {`);
+      lines.push('  },');
+      lines.push(`  ${sig.getValue} { return key; },`);
+      lines.push(`  ${sig.isValid} {`);
       if (emitConstraint) {
         lines.push('    try {');
         lines.push(`      assertConstraint(value, '${k.name}', ${obj});`);
@@ -162,8 +178,8 @@ export const handler: BrandingPlugin['Handler'] = (ctx) => {
       } else {
         lines.push('    return true;');
       }
-      lines.push('  }');
-      lines.push('}');
+      lines.push('  },');
+      lines.push('};');
     }
 
     return lines.join('\n');
@@ -271,20 +287,18 @@ export const handler: BrandingPlugin['Handler'] = (ctx) => {
         } catch (e) {
           console.warn('[branding-plugin] array length transformation failed', e);
         }
-        // Apply lifter override post-generation for already appended namespaces (in case of regeneration order)
+        // Apply lifter override post-generation for already appended key helpers (in case of regeneration order)
         try {
           if (Object.keys(lifterOverrides).length) {
             for (const [typeName, methodName] of Object.entries(lifterOverrides)) {
-              const nsRegex = new RegExp(
-                `export namespace ${typeName} {[^}]*?export function (assumeExists|${methodName})\\(value: string\\): ${typeName}`,
-                's'
+              src = src.replace(
+                new RegExp(`(^export const ${typeName}: \\{[\\s\\S]*?^\\};)`, 'm'),
+                (block) =>
+                  block.replace(
+                    new RegExp(`\\bassumeExists\\(value: string\\): ${typeName}\\b`, 'g'),
+                    `${methodName}(value: string): ${typeName}`
+                  )
               );
-              if (nsRegex.test(src)) {
-                src = src.replace(
-                  new RegExp(`export function assumeExists\\(value: string\\): ${typeName}`, 'g'),
-                  `export function ${methodName}(value: string): ${typeName}`
-                );
-              }
             }
           }
         } catch {

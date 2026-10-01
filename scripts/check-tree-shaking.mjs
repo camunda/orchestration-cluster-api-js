@@ -25,8 +25,23 @@ const report = process.argv.includes('--report');
 
 /** Minified-bytes budget for an export that does not appear in HEAVY. */
 const DEFAULT_BUDGET = 8 * 1024;
-/** Reviewed budgets (minified bytes) for exports that legitimately pull in a lot. */
-const HEAVY = {};
+/**
+ * Reviewed budgets (minified bytes) for exports that legitimately pull in a lot.
+ * The client constructors carry the full typed client (~270 methods + runtime);
+ * measured ~527 KB on introduction. Zod schemas stay in a lazily loaded chunk —
+ * if they ever got eagerly pulled in, these would jump to ~930 KB and trip.
+ */
+const CLIENT_BUDGET = 600 * 1024;
+const HEAVY = {
+  '. default': CLIENT_BUDGET,
+  '. CamundaClient': CLIENT_BUDGET,
+  '. CamundaClientBase': CLIENT_BUDGET,
+  '. createCamundaClient': CLIENT_BUDGET,
+  '. createCamundaClientLoose': CLIENT_BUDGET,
+  '. createCamundaResultClient': CLIENT_BUDGET,
+  './effect layer': CLIENT_BUDGET,
+  './effect createCamundaEffectClient': CLIENT_BUDGET,
+};
 
 const require = createRequire(import.meta.url);
 let failed = false;

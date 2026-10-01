@@ -1,7 +1,7 @@
 /*
  * Guards the runtime reachability of the branded-key helper namespaces from `src/gen`.
  *
- * `types.gen.ts` declares ~40 `export namespace` blocks (ProcessInstanceKey,
+ * `types.gen.ts` declares ~40 `export const X: {` key helpers (ProcessInstanceKey,
  * ProcessDefinitionKey, TenantId, …) that carry *values* — `assumeExists`, and the
  * other key constructors. `hooks/post/100-fix-gen-index.ts` exists specifically to keep
  * those reachable from `src/gen`.
@@ -51,7 +51,7 @@ type _TenantIdIsAValue = Assert<'TenantId' extends KeyNamespaces ? true : false>
 /** Every `export namespace X` declared in types.gen.ts — i.e. every value-carrying key helper. */
 function declaredValueNamespaces(): string[] {
   const source = fs.readFileSync(TYPES_GEN, 'utf8');
-  return [...source.matchAll(/^export namespace (\w+) \{/gm)].map((m) => m[1]).sort();
+  return [...source.matchAll(/^export const (\w+): \{$/gm)].map((m) => m[1]).sort();
 }
 
 describe('src/gen re-exports the branded-key helper namespaces as values', () => {
