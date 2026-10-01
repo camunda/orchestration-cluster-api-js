@@ -15,20 +15,23 @@
  * nested calls, generics) — not just the one instance from the review.
  */
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, describe, expect, it } from 'vitest';
 
 const repoRoot = join(__dirname, '..');
 const hook = join(repoRoot, 'hooks', 'post', '650-annotate-pure-initialisers.ts');
 const PURE = '/* @__PURE__ */';
 
+/** Every temp dir this suite created — afterEach removes the whole set. */
+const created: string[] = [];
 let work: string;
 
 /** Run the hook with `cwd` = a temp dir whose src/gen contains `files`. */
 function runHook(files: Record<string, string>) {
   work = mkdtempSync(join(tmpdir(), 'annotate-pure-'));
+  created.push(work);
   for (const [name, body] of Object.entries(files)) {
     const p = join(work, 'src', 'gen', name);
     mkdirSync(dirname(p), { recursive: true });
@@ -39,7 +42,19 @@ function runHook(files: Record<string, string>) {
   return { result, read };
 }
 
-afterEach(() => rmSync(work, { recursive: true, force: true }));
+afterEach(() => {
+  for (const dir of created) rmSync(dir, { recursive: true, force: true });
+  created.length = 0;
+});
+
+// Review finding: `work` was overwritten on each runHook call, so afterEach
+// removed only the LAST temp dir — the table-driven failure tests leaked ten
+// dirs per suite run. afterEach now tracks and removes the full set; this
+// end-of-suite assertion is the regression signal that nothing leaked.
+afterAll(() => {
+  const leaked = created.filter((dir) => existsSync(dir));
+  expect(leaked).toEqual([]);
+});
 
 describe('650-annotate-pure-initialisers', () => {
   it('annotates a single-line top-level initialiser and its nested call', () => {
@@ -174,4 +189,37 @@ describe('650-annotate-pure-initialisers', () => {
     expect(result.status).toBe(0);
     expect(read('zod.gen.ts')).toBe(src);
   });
+
+  it('removes every temp dir it creates, including across table-driven loops', () => {
+    // Exercise the leak path: several runHook calls in one test, like the
+    // table-driven failure tests above. The afterAll hook asserts the suite
+    // left nothing on disk.
+    for (const src of [`export const x = a();\n`, `export const x = b();\n`]) {
+      runHook({ 'evil.gen.ts': src });
+    }
+    // Both dirs are still live (afterEach has not run yet) and both are tracked.
+    expect(created.length).toBeGreaterThanOrEqual(2);
+    for (const dir of created) expect(existsSync(dir)).toBe(true);
+  });
+
+  it('fails the pipeline on an unreviewed call wrapped in parentheses or awaited', () => {
+    // Review finding (previously missed): the fail-closed gate anchored the
+    // callee immediately after `=`, so `const x = (sneakySideEffect())` and
+    // `const x = await sneakySideEffect()` were never marked consumed and never
+    // gated — a formatting or generator change to either shape would silently
+    // bypass tree-shaking review. Both must fail like any other unreviewed call.
+    for (const src of [
+      `export const x = (sneakySideEffect());\n`,
+      `export const x = ((sneakySideEffect()));\n`,
+      `export const x = await sneakySideEffect();\n`,
+      `export const x = await (sneakySideEffect());\n`,
+      `export const x =\n  await sneakySideEffect();\n`,
+    ]) {
+      const { result } = runHook({ 'evil.gen.ts': src });
+      expect(result.status).toBe(1);
+      expect(result.stderr.toLowerCase()).toContain('sneaky');
+    }
+    // Five hook subprocesses under full-suite load exceed the 5 s default
+    // timeout; the timeout is a safety net, not a correctness signal.
+  }, 30_000);
 });

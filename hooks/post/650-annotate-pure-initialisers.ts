@@ -23,7 +23,10 @@ import path from 'node:path';
 // The callee may start on a later line than the declaration (`const x =\n
 // createClient(...)` is a shape the generator's formatter can emit), so detection
 // tolerates whitespace — including newlines — between `=` and the callee, and the
-// nested-call pass spans the whole initialiser statement. Anything else would be
+// nested-call pass spans the whole initialiser statement. It also tolerates an
+// `await` and/or wrapping parentheses before the callee (`const x = await
+// createClient(...)`, `const x = (createClient(...))`): those are the same
+// eagerly evaluated call, so they must hit the same gate. Anything else would be
 // fail-open: a formatting change would bypass both annotation and the gate.
 // Guarded end-to-end by scripts/check-tree-shaking.mjs.
 
@@ -48,8 +51,12 @@ const BUNDLER_KNOWN_PURE = new Set(['new Set', 'new Map', 'new WeakMap', 'new We
 const PURE = '/* @__PURE__ */ ';
 
 // The `=\s*` (not `= `) is load-bearing: the callee may begin on the next line.
+// `(?:await\s*)?\(*` tolerates an awaited and/or parenthesised initializer —
+// `const x = (createClient(...))` and `const x = await createClient(...)` are
+// the same eagerly evaluated call, so they must hit the same gate; anchoring
+// the callee immediately after `=` would be fail-open for those shapes.
 const TOP_LEVEL_CALL =
-  /^((?:export )?(?:const|let) [\w$]+(?:: [^=\n]+)? =\s*)(\/\* @__PURE__ \*\/ )?(new )?([\w$.]+)(?:<[^\n(]*>)?\(/gm;
+  /^((?:export )?(?:const|let) [\w$]+(?:: [^=\n]+)? =\s*(?:await\s*)?\(*)(\/\* @__PURE__ \*\/ )?(new )?([\w$.]+)(?:<[^\n(]*>)?\(/gm;
 
 function walk(dir: string): string[] {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((d) => {
