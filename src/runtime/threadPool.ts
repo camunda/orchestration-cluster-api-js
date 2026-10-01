@@ -11,6 +11,7 @@
 
 import type { CamundaClient } from '../gen/CamundaClient';
 import { installClientCallHandler } from './clientProxy';
+import type { NodeBuiltins } from './platform/types';
 import { node } from '#platform';
 
 /**
@@ -61,6 +62,13 @@ export class ThreadPool {
   private _onThreadReady?: () => void;
 
   constructor(client: CamundaClient, size?: number) {
+    // Synchronous platform guard: threaded workers are Node-only. This must
+    // throw here — not only in the async `_init` — so `createThreadedJobWorker()`
+    // rejects the unsupported runtime immediately instead of returning an
+    // unusable handle whose auto-start path merely logs the async rejection.
+    if (!node) {
+      throw new Error('Threaded job workers are only available in Node.js environments');
+    }
     this._client = client;
     this._log = client.logger().scope('thread-pool');
     this._ready = this._init(size);
@@ -238,11 +246,12 @@ export class ThreadPool {
   }
 
   private async _init(requestedSize?: number): Promise<void> {
-    if (!node) {
-      throw new Error('Threaded job workers are only available in Node.js environments');
-    }
-    const workerThreads = await node.loadWorkerThreads();
-    const { path: pathMod, crypto, fs, url } = node;
+    // The platform guard lives in the constructor (synchronous): when `node`
+    // is undefined the constructor threw before `_init` could run, so the
+    // definite presence of the Node built-ins is guaranteed here.
+    const n = node as NodeBuiltins;
+    const workerThreads = await n.loadWorkerThreads();
+    const { path: pathMod, crypto, fs, url } = n;
     this._Worker = workerThreads.Worker;
     const { join } = pathMod;
 
@@ -253,7 +262,7 @@ export class ThreadPool {
 
     const cpus = await (async () => {
       try {
-        const { os } = node;
+        const { os } = n;
         return os.availableParallelism?.() || os.cpus().length;
       } catch {
         return 4;
