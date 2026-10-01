@@ -67,4 +67,14 @@ describe('wrapSchemaInitialisers', () => {
     const src = 'export const zFoo = { a: 1 };';
     expect(() => wrapSchemaInitialisers(src)).toThrow(/initialiser kind/);
   });
+
+  it('fails fast on a non-exported const call initialiser (unreviewed internal side effect)', () => {
+    const src = 'const registry = initialize();';
+    expect(() => wrapSchemaInitialisers(src)).toThrow(/unreviewed const declaration/);
+  });
+
+  it('fails fast on an exported const whose name is not a zod schema (not z*)', () => {
+    const src = 'export const config = buildConfig();';
+    expect(() => wrapSchemaInitialisers(src)).toThrow(/unreviewed const declaration/);
+  });
 });

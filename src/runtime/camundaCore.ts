@@ -213,7 +213,12 @@ export class CamundaCore {
     // Support logger initialization (after config hydration & before major components start emitting)
     this._supportLogger = createSupportLogger(this._config, opts.supportLogger);
     try {
-      this._supportLogger.log('CamundaClient constructed');
+      // Report the component actually constructed. `CamundaClient` is a value-alias of the
+      // `CamundaClientBase` subclass, so `new.target.name` is 'CamundaClientBase' for the full
+      // client and 'CamundaCore' for a bare core — map the former to the public name so support
+      // diagnostics never attribute a bare core to a (nonexistent) client.
+      const component = new.target.name === 'CamundaCore' ? 'CamundaCore' : 'CamundaClient';
+      this._supportLogger.log(`${component} constructed`);
     } catch {
       /* ignore */
     }

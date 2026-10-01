@@ -50,7 +50,16 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
       continue;
     }
     if (ts.isVariableStatement(st) && st.declarationList.flags & ts.NodeFlags.Const) {
+      // This hook has only reviewed exported zod schema declarations (`export const zX = …`).
+      // Anything else — an internal `const registry = initialize()`, a non-`z*` export — is
+      // unreviewed: fail fast rather than silently mark a potential side effect droppable.
+      const isExported = st.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword) ?? false;
       for (const decl of st.declarationList.declarations) {
+        const name = decl.name.getText(sf);
+        if (!isExported || !name.startsWith('z')) {
+          problems.push(`unreviewed const declaration: ${st.getText(sf).slice(0, 120)}`);
+          continue;
+        }
         const init = decl.initializer;
         if (!init || ts.isIdentifier(init)) continue; // alias: no side effect
         if (ts.isCallExpression(init)) {
@@ -63,7 +72,7 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
           });
           continue;
         }
-        problems.push(`${decl.name.getText(sf)}: initialiser kind ${ts.SyntaxKind[init.kind]}`);
+        problems.push(`${name}: initialiser kind ${ts.SyntaxKind[init.kind]}`);
       }
       continue;
     }

@@ -106,12 +106,26 @@ describe('./fn entry point — behaviour', () => {
   });
 
   it('no-input operations take options directly', async () => {
-    const rec = recordingFetch(() => ({ brokers: [] }));
-    const core = Fn.createCamundaCore({ config: baseConfig, fetch: rec.fetch });
-    await Fn.getTopology(core, { retry: false });
-    expect(rec.calls.map((c) => [c.method, new URL(c.url).pathname])).toEqual([
-      ['GET', '/v2/topology'],
-    ]);
+    // Return a retryable 429 first: if `retry: false` were ignored the client would
+    // re-attempt and succeed on the second call, so a single-attempt assertion would
+    // fail. With retry honoured there is exactly one attempt and the 429 surfaces.
+    let n = 0;
+    const fetch = (async () => {
+      n++;
+      if (n === 1) {
+        return new Response(JSON.stringify({ title: 'rate limited' }), {
+          status: 429,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+      return new Response(JSON.stringify({ brokers: [] }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }) as typeof globalThis.fetch;
+    const core = Fn.createCamundaCore({ config: baseConfig, fetch });
+    await expect(Fn.getTopology(core, { retry: false })).rejects.toMatchObject({ status: 429 });
+    expect(n).toBe(1);
   });
 
   it('eventually consistent operations take consistency management like the client', async () => {
@@ -130,6 +144,24 @@ describe('./fn entry point — behaviour', () => {
     const client = createCamundaClient({ config: baseConfig, fetch: rec.fetch });
     await Fn.getTopology(client);
     expect(rec.calls).toHaveLength(1);
+  });
+
+  it('support logger names the constructed component (core vs client)', () => {
+    // A bare core must not be attributed to a (nonexistent) client in support diagnostics.
+    const coreMsgs: string[] = [];
+    Fn.createCamundaCore({
+      config: baseConfig,
+      supportLogger: { log: (m: string) => void coreMsgs.push(m) } as any,
+    });
+    expect(coreMsgs.some((m) => m.includes('CamundaCore constructed'))).toBe(true);
+    expect(coreMsgs.some((m) => m.includes('CamundaClient constructed'))).toBe(false);
+
+    const clientMsgs: string[] = [];
+    createCamundaClient({
+      config: baseConfig,
+      supportLogger: { log: (m: string) => void clientMsgs.push(m) } as any,
+    });
+    expect(clientMsgs.some((m) => m.includes('CamundaClient constructed'))).toBe(true);
   });
 
   it('jobs activated through a bare core can complete themselves', async () => {
