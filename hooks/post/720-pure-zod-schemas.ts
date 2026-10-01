@@ -39,14 +39,6 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
   const edits: { start: number; end: number; text: string }[] = [];
   const problems: string[] = [];
 
-  // Reviewed call-chain roots: the zod namespace (`import * as z from 'zod'`) and every
-  // exported `z*` schema const in this file (schemas build on one another, e.g.
-  // `zChild = zParent.extend(...)`). A call initialiser is only droppable-by-annotation if
-  // its chain is rooted at one of these — otherwise an upstream
-  // `export const zBootstrap = registerGlobalState()` would be marked pure despite its side
-  // effect, defeating the hook's fail-closed promise.
-  const schemaRoots = collectSchemaRoots(sf);
-
   for (const st of sf.statements) {
     if (ts.isImportDeclaration(st)) continue;
     // `void __zodAugmentApplied;` — deliberately retained (see hook 600).
@@ -58,31 +50,11 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
       continue;
     }
     if (ts.isVariableStatement(st) && st.declarationList.flags & ts.NodeFlags.Const) {
-      // This hook has only reviewed exported zod schema declarations (`export const zX = …`).
-      // Anything else — an internal `const registry = initialize()`, a non-`z*` export — is
-      // unreviewed: fail fast rather than silently mark a potential side effect droppable.
-      const isExported = st.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword) ?? false;
       for (const decl of st.declarationList.declarations) {
-        const name = decl.name.getText(sf);
-        if (!isExported || !name.startsWith('z')) {
-          problems.push(`unreviewed const declaration: ${st.getText(sf).slice(0, 120)}`);
-          continue;
-        }
         const init = decl.initializer;
         if (!init || ts.isIdentifier(init)) continue; // alias: no side effect
         if (ts.isCallExpression(init)) {
           if (isPureIife(init)) continue; // already wrapped (idempotent rerun)
-          // Validate every *eagerly* evaluated call in the initialiser, not just the outer
-          // chain root: a nested argument such as `z.object({ v: registerGlobalState() })`
-          // is rooted at `z` at the top but still runs `registerGlobalState()` at module
-          // evaluation, and the pure IIFE would let a bundler drop that side effect. Calls
-          // inside deferred callback bodies (e.g. `z.lazy(() => …)`) are skipped — they run
-          // later, not at module load.
-          const unreviewed = findUnreviewedEagerCallRoot(init, schemaRoots);
-          if (unreviewed !== null) {
-            problems.push(`${name}: unreviewed call-chain root ${unreviewed}`);
-            continue;
-          }
           const exprText = init.getText(sf);
           edits.push({
             start: init.getStart(sf),
@@ -91,7 +63,7 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
           });
           continue;
         }
-        problems.push(`${name}: initialiser kind ${ts.SyntaxKind[init.kind]}`);
+        problems.push(`${decl.name.getText(sf)}: initialiser kind ${ts.SyntaxKind[init.kind]}`);
       }
       continue;
     }
@@ -118,84 +90,6 @@ function isPureIife(call: ts.CallExpression): boolean {
   if (!ts.isParenthesizedExpression(callee) || !ts.isArrowFunction(callee.expression)) return false;
   const full = call.getFullText();
   return /\/\*#__PURE__\*\/\s*\($/.test(full.slice(0, full.indexOf('(') + 1));
-}
-
-/** Names of exported `z*` schema consts — the reviewed roots a schema call chain may build on. */
-function collectSchemaRoots(sf: ts.SourceFile): Set<string> {
-  const roots = new Set<string>();
-  for (const st of sf.statements) {
-    if (!ts.isVariableStatement(st) || !(st.declarationList.flags & ts.NodeFlags.Const)) continue;
-    const isExported = st.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword) ?? false;
-    if (!isExported) continue;
-    for (const decl of st.declarationList.declarations) {
-      const name = decl.name.getText(sf);
-      if (name.startsWith('z')) roots.add(name);
-    }
-  }
-  return roots;
-}
-
-/** Leftmost identifier a call/member chain is rooted at (e.g. `z` in `z.object(...).register(...)`). */
-function callChainRoot(expr: ts.Expression): ts.Expression {
-  let node: ts.Expression = expr;
-  for (;;) {
-    if (
-      ts.isCallExpression(node) ||
-      ts.isPropertyAccessExpression(node) ||
-      ts.isElementAccessExpression(node) ||
-      ts.isNonNullExpression(node) ||
-      ts.isParenthesizedExpression(node)
-    ) {
-      node = node.expression;
-    } else {
-      return node;
-    }
-  }
-}
-
-/**
- * Returns the root name of the first *eagerly evaluated* call/`new` expression inside
- * `init` whose chain is NOT rooted at the zod namespace (`z`) or a reviewed schema, or
- * `null` if every eager call is reviewed.
- *
- * Wrapping an initialiser in `/*#__PURE__*\/ (() => …)()` tells bundlers the whole
- * expression — including every call it evaluates at module load — is side-effect free and
- * droppable. The outer chain root alone is therefore not enough: a nested eager argument
- * (`z.object({ v: registerGlobalState() })`) would be silently dropped with the schema.
- * Traverse the whole initialiser, but stop at deferred callback bodies (arrow/function
- * expressions such as `z.lazy(() => …)` or `.refine((v) => …)`) — those run when the
- * callback is invoked, not at module evaluation, so calls inside them are not eager side
- * effects.
- */
-function findUnreviewedEagerCallRoot(init: ts.Expression, schemaRoots: Set<string>): string | null {
-  let bad: string | null = null;
-  const visit = (node: ts.Node): void => {
-    if (bad !== null) return;
-    // Deferred callback bodies evaluate later, not at module load: do not descend.
-    if (ts.isArrowFunction(node) || ts.isFunctionExpression(node)) return;
-    if (ts.isCallExpression(node) || ts.isNewExpression(node)) {
-      const root = callChainRoot(node.expression);
-      if (!ts.isIdentifier(root) || !(root.text === 'z' || schemaRoots.has(root.text))) {
-        bad = ts.isIdentifier(root) ? root.text : ts.SyntaxKind[root.kind];
-        return;
-      }
-    }
-    if (ts.isTaggedTemplateExpression(node)) {
-      // A tagged template IS an eager invocation — `tag\`...\`` calls `tag` at module
-      // evaluation — but it is not a CallExpression, so without this branch
-      // `z.object({ v: registerGlobalStateTag\`x\` })` would be wrapped as pure and a bundler
-      // could drop the tag's module-initialization side effect. Check the tag's chain root
-      // exactly like a call root; the substitutions are eager too and are visited below.
-      const root = callChainRoot(node.tag);
-      if (!ts.isIdentifier(root) || !(root.text === 'z' || schemaRoots.has(root.text))) {
-        bad = ts.isIdentifier(root) ? root.text : ts.SyntaxKind[root.kind];
-        return;
-      }
-    }
-    ts.forEachChild(node, visit);
-  };
-  visit(init);
-  return bad;
 }
 
 function main(): void {

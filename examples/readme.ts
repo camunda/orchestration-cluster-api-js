@@ -19,13 +19,11 @@ import createCamundaClient, {
   type ProcessInstanceKey,
   RoleId,
 } from '@camunda8/orchestration-cluster-api';
-//#region ReadmePerOperationFunctionsImport
 import {
   createCamundaCore,
   createProcessInstance,
   getTopology,
 } from '@camunda8/orchestration-cluster-api/fn';
-//#endregion ReadmePerOperationFunctionsImport
 import { z } from 'zod';
 
 // ---------------------------------------------------------------------------

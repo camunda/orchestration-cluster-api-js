@@ -39,9 +39,9 @@ function deepFreeze<T>(obj: T): T {
   return obj;
 }
 
-// Input for constructing a CamundaCore (or CamundaClient). `config` takes strongly typed
-// env-style overrides (CAMUNDA_* keys); the constructor hydrates them internally via
-// hydrateConfig (single source of truth) — callers never handle a raw CamundaConfig.
+// New simplified input: we only accept an already hydrated CamundaConfig. Users wanting env
+// overrides or partials should call hydrateConfig first (single source of truth) and pass
+// the resulting config.
 export interface CamundaOptions {
   // Strongly typed env-style overrides (CAMUNDA_* keys). Optional.
   config?: EnvOverrides;
@@ -66,14 +66,6 @@ export interface CamundaOptions {
   // to drive those loops in tests without waiting for real time. Defaults to the live clock.
   // Liveness bounds — shutdown drains and request timeouts — deliberately do not use it.
   clock?: Clock;
-  /**
-   * Explicit component discriminator for support diagnostics. Set only by SDK-internal
-   * subclasses: `CamundaClientBase` passes `'CamundaClient'` so the construction log names
-   * the real component even when a consumer subclasses the public `CamundaCore` (where
-   * `new.target !== CamundaCore` alone could not distinguish core-subclass from client).
-   * @internal
-   */
-  __camundaComponent?: 'CamundaCore' | 'CamundaClient';
 }
 
 /**
@@ -132,16 +124,6 @@ export class CamundaCore {
   protected _supportLogger: SupportLogger = new (class implements SupportLogger {
     log() {}
   })();
-  /**
-   * Stable delegating sink handed to `wrapFetch`. The wrapped fetch captures this object
-   * once, but every `log()` forwards to the *current* `_supportLogger` — so a support
-   * logger assigned (or injected) after fetch is wrapped still receives http end/error
-   * events. Passing `_supportLogger` directly would permanently capture whatever instance
-   * existed at wrap time (the initial no-op), silently dropping those events.
-   */
-  protected readonly _supportLogSink: SupportLogger = {
-    log: (message, addTimestamp) => this._supportLogger.log(message, addTimestamp),
-  };
 
   // Internal fixed error mode for eventual consistency ('throw' | 'result'). Not user mutable after construction.
   protected readonly _errorMode: 'throw' | 'result';
@@ -168,7 +150,7 @@ export class CamundaCore {
         hooks: opts.telemetry.hooks,
         correlation: opts.telemetry.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
-        supportLogger: this._supportLogSink,
+        supportLogger: this._supportLogger,
         mirrorToLog: opts.telemetry.mirrorToLog,
       });
     } else if (this._config.telemetry?.log) {
@@ -176,7 +158,7 @@ export class CamundaCore {
         hooks: undefined,
         correlation: this._config.telemetry.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
-        supportLogger: this._supportLogSink,
+        supportLogger: this._supportLogger,
         mirrorToLog: true,
       });
     } else if (
@@ -194,7 +176,7 @@ export class CamundaCore {
         hooks: undefined,
         correlation: this._config.telemetry?.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
-        supportLogger: this._supportLogSink,
+        supportLogger: this._supportLogger,
         mirrorToLog: true,
       });
     }
@@ -231,15 +213,7 @@ export class CamundaCore {
     // Support logger initialization (after config hydration & before major components start emitting)
     this._supportLogger = createSupportLogger(this._config, opts.supportLogger);
     try {
-      // Report the component actually constructed. The `__camundaComponent` discriminator is
-      // authoritative: `CamundaCore` defaults to `'CamundaCore'` and `CamundaClientBase` passes
-      // `'CamundaClient'`. An explicit marker (not `new.target`) is required because a consumer
-      // may subclass the now-public `CamundaCore` — `new.target !== CamundaCore` for such a
-      // subclass, so a `new.target`-based check would mislabel it "CamundaClient" in support
-      // diagnostics even though it has no client operation surface. The marker is also immune to
-      // minifiers renaming class identifiers and to test-transform (SSR) class re-instantiation.
-      const component = opts.__camundaComponent ?? 'CamundaCore';
-      this._supportLogger.log(`${component} constructed`);
+      this._supportLogger.log('CamundaClient constructed');
     } catch {
       /* ignore */
     }
@@ -307,7 +281,7 @@ export class CamundaCore {
         hooks: next.telemetry.hooks,
         correlation: next.telemetry.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
-        supportLogger: this._supportLogSink,
+        supportLogger: this._supportLogger,
         mirrorToLog: next.telemetry.mirrorToLog,
       });
     } else if (this._config.telemetry?.log) {
@@ -315,7 +289,7 @@ export class CamundaCore {
         hooks: undefined,
         correlation: this._config.telemetry.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
-        supportLogger: this._supportLogSink,
+        supportLogger: this._supportLogger,
         mirrorToLog: true,
       });
     } else if (
@@ -330,7 +304,7 @@ export class CamundaCore {
         hooks: undefined,
         correlation: this._config.telemetry?.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
-        supportLogger: this._supportLogSink,
+        supportLogger: this._supportLogger,
         mirrorToLog: true,
       });
     }
