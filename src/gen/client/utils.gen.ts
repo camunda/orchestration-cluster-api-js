@@ -289,7 +289,7 @@ export const createInterceptors = <Req, Res, Err, Options>(): Middleware<
   response: new Interceptors<ResInterceptor<Res, Req, Options>>(),
 });
 
-const defaultQuerySerializer = createQuerySerializer({
+const defaultQuerySerializer = /* @__PURE__ */ createQuerySerializer({
   allowReserved: false,
   array: {
     explode: true,

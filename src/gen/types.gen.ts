@@ -23936,601 +23936,777 @@ export function assertConstraint(value: string, label: string, c: { pattern?: st
   if (typeof c.maxLength === "number" && value.length > c.maxLength) throw new Error(`Value too long for ${label}`);
 }
 // System-generated key for an agent definition.
-export namespace AgentDefinitionKey {
-  export function assumeExists(value: string): AgentDefinitionKey {
+export const AgentDefinitionKey: {
+  assumeExists(value: string): AgentDefinitionKey;
+  getValue(key: AgentDefinitionKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): AgentDefinitionKey {
     assertConstraint(value, 'AgentDefinitionKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
-  }
-  export function getValue(key: AgentDefinitionKey): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: AgentDefinitionKey): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'AgentDefinitionKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // System-generated key for an agent history item.
-export namespace AgentHistoryItemKey {
-  export function assumeExists(value: string): AgentHistoryItemKey {
+export const AgentHistoryItemKey: {
+  assumeExists(value: string): AgentHistoryItemKey;
+  getValue(key: AgentHistoryItemKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): AgentHistoryItemKey {
     assertConstraint(value, 'AgentHistoryItemKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
-  }
-  export function getValue(key: AgentHistoryItemKey): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: AgentHistoryItemKey): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'AgentHistoryItemKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // System-generated key for an agent instance.
-export namespace AgentInstanceKey {
-  export function assumeExists(value: string): AgentInstanceKey {
+export const AgentInstanceKey: {
+  assumeExists(value: string): AgentInstanceKey;
+  getValue(key: AgentInstanceKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): AgentInstanceKey {
     assertConstraint(value, 'AgentInstanceKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
-  }
-  export function getValue(key: AgentInstanceKey): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: AgentInstanceKey): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'AgentInstanceKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // System-generated entity key for an audit log entry.
-export namespace AuditLogEntityKey {
-  export function assumeExists(value: string): AuditLogEntityKey {
+export const AuditLogEntityKey: {
+  assumeExists(value: string): AuditLogEntityKey;
+  getValue(key: AuditLogEntityKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): AuditLogEntityKey {
     return value as any;
-  }
-  export function getValue(key: AuditLogEntityKey): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: AuditLogEntityKey): string { return key; },
+  isValid(value: string): boolean {
     return true;
-  }
-}
+  },
+};
 // System-generated key for an audit log entry.
-export namespace AuditLogKey {
-  export function assumeExists(value: string): AuditLogKey {
+export const AuditLogKey: {
+  assumeExists(value: string): AuditLogKey;
+  getValue(key: AuditLogKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): AuditLogKey {
     assertConstraint(value, 'AuditLogKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
-  }
-  export function getValue(key: AuditLogKey): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: AuditLogKey): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'AuditLogKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // System-generated key for an authorization.
-export namespace AuthorizationKey {
-  export function assumeExists(value: string): AuthorizationKey {
+export const AuthorizationKey: {
+  assumeExists(value: string): AuthorizationKey;
+  getValue(key: AuthorizationKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): AuthorizationKey {
     assertConstraint(value, 'AuthorizationKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
-  }
-  export function getValue(key: AuthorizationKey): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: AuthorizationKey): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'AuthorizationKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // System-generated key for an batch operation.
-export namespace BatchOperationKey {
-  export function assumeExists(value: string): BatchOperationKey {
+export const BatchOperationKey: {
+  assumeExists(value: string): BatchOperationKey;
+  getValue(key: BatchOperationKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): BatchOperationKey {
     return value as any;
-  }
-  export function getValue(key: BatchOperationKey): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: BatchOperationKey): string { return key; },
+  isValid(value: string): boolean {
     return true;
-  }
-}
+  },
+};
 // An optional, user-defined string identifier that identifies the process instance within the scope of a process definition (scoped by tenant). If provided and uniqueness enforcement is enabled, the engine will reject creation if another root process instance with the same business id is already active for the same process definition. Note that any active child process instances with the same business id are not taken into account. 
-export namespace BusinessId {
-  export function assumeExists(value: string): BusinessId {
+export const BusinessId: {
+  assumeExists(value: string): BusinessId;
+  getValue(key: BusinessId): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): BusinessId {
     assertConstraint(value, 'BusinessId', { minLength: 1, maxLength: 256 });
     return value as any;
-  }
-  export function getValue(key: BusinessId): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: BusinessId): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'BusinessId', { minLength: 1, maxLength: 256 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // The unique identifier of an OAuth client. Minted outside the Camunda REST API: in SaaS by Console, in Self-Managed with OIDC by the external identity provider (e.g. EntraID, Keycloak, Okta). In Self-Managed with Basic authentication, machine-to-machine applications are modelled as users instead — see the user identifier. 
-export namespace ClientId {
-  export function assumeExists(value: string): ClientId {
+export const ClientId: {
+  assumeExists(value: string): ClientId;
+  getValue(key: ClientId): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): ClientId {
     assertConstraint(value, 'ClientId', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
     return value as any;
-  }
-  export function getValue(key: ClientId): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: ClientId): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'ClientId', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // The name of a cluster variable. Unique within its scope (global or tenant-specific).
-export namespace ClusterVariableName {
-  export function assumeExists(value: string): ClusterVariableName {
+export const ClusterVariableName: {
+  assumeExists(value: string): ClusterVariableName;
+  getValue(key: ClusterVariableName): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): ClusterVariableName {
     assertConstraint(value, 'ClusterVariableName', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
     return value as any;
-  }
-  export function getValue(key: ClusterVariableName): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: ClusterVariableName): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'ClusterVariableName', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // System-generated key for a conditional evaluation.
-export namespace ConditionalEvaluationKey {
-  export function assumeExists(value: string): ConditionalEvaluationKey {
+export const ConditionalEvaluationKey: {
+  assumeExists(value: string): ConditionalEvaluationKey;
+  getValue(key: ConditionalEvaluationKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): ConditionalEvaluationKey {
     assertConstraint(value, 'ConditionalEvaluationKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
-  }
-  export function getValue(key: ConditionalEvaluationKey): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: ConditionalEvaluationKey): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'ConditionalEvaluationKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // Id of a decision definition, from the model. Only ids of decision definitions that are deployed are useful.
-export namespace DecisionDefinitionId {
-  export function assumeExists(value: string): DecisionDefinitionId {
+export const DecisionDefinitionId: {
+  assumeExists(value: string): DecisionDefinitionId;
+  getValue(key: DecisionDefinitionId): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): DecisionDefinitionId {
     assertConstraint(value, 'DecisionDefinitionId', { pattern: "^[\\p{L}_][\\p{L}\\p{N}_\\-\\.]*$", minLength: 1 });
     return value as any;
-  }
-  export function getValue(key: DecisionDefinitionId): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: DecisionDefinitionId): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'DecisionDefinitionId', { pattern: "^[\\p{L}_][\\p{L}\\p{N}_\\-\\.]*$", minLength: 1 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // System-generated key for a decision definition.
-export namespace DecisionDefinitionKey {
-  export function assumeExists(value: string): DecisionDefinitionKey {
+export const DecisionDefinitionKey: {
+  assumeExists(value: string): DecisionDefinitionKey;
+  getValue(key: DecisionDefinitionKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): DecisionDefinitionKey {
     assertConstraint(value, 'DecisionDefinitionKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
-  }
-  export function getValue(key: DecisionDefinitionKey): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: DecisionDefinitionKey): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'DecisionDefinitionKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // System-generated identifier for a decision evaluation instance. It is composed of the parent decision evaluation key and the 1-based index of the evaluated decision within that evaluation, joined by a hyphen (format: `<decisionEvaluationKey>-<index>`). 
-export namespace DecisionEvaluationInstanceKey {
-  export function assumeExists(value: string): DecisionEvaluationInstanceKey {
+export const DecisionEvaluationInstanceKey: {
+  assumeExists(value: string): DecisionEvaluationInstanceKey;
+  getValue(key: DecisionEvaluationInstanceKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): DecisionEvaluationInstanceKey {
     assertConstraint(value, 'DecisionEvaluationInstanceKey', { pattern: "^[0-9]+-[0-9]+$", minLength: 3, maxLength: 30 });
     return value as any;
-  }
-  export function getValue(key: DecisionEvaluationInstanceKey): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: DecisionEvaluationInstanceKey): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'DecisionEvaluationInstanceKey', { pattern: "^[0-9]+-[0-9]+$", minLength: 3, maxLength: 30 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // System-generated key for a decision evaluation.
-export namespace DecisionEvaluationKey {
-  export function assumeExists(value: string): DecisionEvaluationKey {
+export const DecisionEvaluationKey: {
+  assumeExists(value: string): DecisionEvaluationKey;
+  getValue(key: DecisionEvaluationKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): DecisionEvaluationKey {
     assertConstraint(value, 'DecisionEvaluationKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
-  }
-  export function getValue(key: DecisionEvaluationKey): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: DecisionEvaluationKey): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'DecisionEvaluationKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // System-generated key for a deployed decision instance.
-export namespace DecisionInstanceKey {
-  export function assumeExists(value: string): DecisionInstanceKey {
+export const DecisionInstanceKey: {
+  assumeExists(value: string): DecisionInstanceKey;
+  getValue(key: DecisionInstanceKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): DecisionInstanceKey {
     assertConstraint(value, 'DecisionInstanceKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
-  }
-  export function getValue(key: DecisionInstanceKey): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: DecisionInstanceKey): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'DecisionInstanceKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // System-generated key for a deployed decision requirements definition.
-export namespace DecisionRequirementsKey {
-  export function assumeExists(value: string): DecisionRequirementsKey {
+export const DecisionRequirementsKey: {
+  assumeExists(value: string): DecisionRequirementsKey;
+  getValue(key: DecisionRequirementsKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): DecisionRequirementsKey {
     assertConstraint(value, 'DecisionRequirementsKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
-  }
-  export function getValue(key: DecisionRequirementsKey): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: DecisionRequirementsKey): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'DecisionRequirementsKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // Key for a deployment.
-export namespace DeploymentKey {
-  export function assumeExists(value: string): DeploymentKey {
+export const DeploymentKey: {
+  assumeExists(value: string): DeploymentKey;
+  getValue(key: DeploymentKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): DeploymentKey {
     assertConstraint(value, 'DeploymentKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
-  }
-  export function getValue(key: DeploymentKey): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: DeploymentKey): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'DeploymentKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // Document Id that uniquely identifies a document.
-export namespace DocumentId {
-  export function assumeExists(value: string): DocumentId {
+export const DocumentId: {
+  assumeExists(value: string): DocumentId;
+  getValue(key: DocumentId): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): DocumentId {
     return value as any;
-  }
-  export function getValue(key: DocumentId): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: DocumentId): string { return key; },
+  isValid(value: string): boolean {
     return true;
-  }
-}
+  },
+};
 // The model-defined id of an element.
-export namespace ElementId {
-  export function assumeExists(value: string): ElementId {
+export const ElementId: {
+  assumeExists(value: string): ElementId;
+  getValue(key: ElementId): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): ElementId {
     return value as any;
-  }
-  export function getValue(key: ElementId): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: ElementId): string { return key; },
+  isValid(value: string): boolean {
     return true;
-  }
-}
+  },
+};
 // System-generated key for a element instance.
-export namespace ElementInstanceKey {
-  export function assumeExists(value: string): ElementInstanceKey {
+export const ElementInstanceKey: {
+  assumeExists(value: string): ElementInstanceKey;
+  getValue(key: ElementInstanceKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): ElementInstanceKey {
     assertConstraint(value, 'ElementInstanceKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
-  }
-  export function getValue(key: ElementInstanceKey): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: ElementInstanceKey): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'ElementInstanceKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // The end cursor in a search query result set.
-export namespace EndCursor {
-  export function assumeExists(value: string): EndCursor {
+export const EndCursor: {
+  assumeExists(value: string): EndCursor;
+  getValue(key: EndCursor): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): EndCursor {
     assertConstraint(value, 'EndCursor', { pattern: "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}(?:==)?|[A-Za-z0-9+/]{3}=)?$" });
     return value as any;
-  }
-  export function getValue(key: EndCursor): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: EndCursor): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'EndCursor', { pattern: "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}(?:==)?|[A-Za-z0-9+/]{3}=)?$" });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // The user-defined id for the form
-export namespace FormId {
-  export function assumeExists(value: string): FormId {
+export const FormId: {
+  assumeExists(value: string): FormId;
+  getValue(key: FormId): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): FormId {
     return value as any;
-  }
-  export function getValue(key: FormId): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: FormId): string { return key; },
+  isValid(value: string): boolean {
     return true;
-  }
-}
+  },
+};
 // System-generated key for a deployed form.
-export namespace FormKey {
-  export function assumeExists(value: string): FormKey {
+export const FormKey: {
+  assumeExists(value: string): FormKey;
+  getValue(key: FormKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): FormKey {
     assertConstraint(value, 'FormKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
-  }
-  export function getValue(key: FormKey): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: FormKey): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'FormKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // The user-defined id for the global listener
-export namespace GlobalListenerId {
-  export function assumeExists(value: string): GlobalListenerId {
+export const GlobalListenerId: {
+  assumeExists(value: string): GlobalListenerId;
+  getValue(key: GlobalListenerId): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): GlobalListenerId {
     assertConstraint(value, 'GlobalListenerId', { pattern: "^[a-zA-Z0-9_~@.+\\-]+$", minLength: 1, maxLength: 256 });
     return value as any;
-  }
-  export function getValue(key: GlobalListenerId): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: GlobalListenerId): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'GlobalListenerId', { pattern: "^[a-zA-Z0-9_~@.+\\-]+$", minLength: 1, maxLength: 256 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // The unique identifier of a group.
-export namespace GroupId {
-  export function assumeExists(value: string): GroupId {
+export const GroupId: {
+  assumeExists(value: string): GroupId;
+  getValue(key: GroupId): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): GroupId {
     assertConstraint(value, 'GroupId', { minLength: 1, maxLength: 256 });
     return value as any;
-  }
-  export function getValue(key: GroupId): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: GroupId): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'GroupId', { minLength: 1, maxLength: 256 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // The client-supplied identifier this item was created with.
-export namespace HistoryItemId {
-  export function assumeExists(value: string): HistoryItemId {
+export const HistoryItemId: {
+  assumeExists(value: string): HistoryItemId;
+  getValue(key: HistoryItemId): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): HistoryItemId {
     assertConstraint(value, 'HistoryItemId', { minLength: 1, maxLength: 256 });
     return value as any;
-  }
-  export function getValue(key: HistoryItemId): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: HistoryItemId): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'HistoryItemId', { minLength: 1, maxLength: 256 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // System-generated key for a incident.
-export namespace IncidentKey {
-  export function assumeExists(value: string): IncidentKey {
+export const IncidentKey: {
+  assumeExists(value: string): IncidentKey;
+  getValue(key: IncidentKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): IncidentKey {
     assertConstraint(value, 'IncidentKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
-  }
-  export function getValue(key: IncidentKey): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: IncidentKey): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'IncidentKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // System-generated key for a job.
-export namespace JobKey {
-  export function assumeExists(value: string): JobKey {
+export const JobKey: {
+  assumeExists(value: string): JobKey;
+  getValue(key: JobKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): JobKey {
     assertConstraint(value, 'JobKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
-  }
-  export function getValue(key: JobKey): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: JobKey): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'JobKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // An opaque, engine-minted fencing token identifying a single activation of a job. Returned by Activate Jobs as `ActivatedJobResult.jobLeaseToken` when the job is activated with a lease, and passed back under the same name on fenced job commands and on agent-instance creation/updates, to prove the caller holds the current lease. The token is opaque: clients may rely on its presence and equality only, and must never construct, parse, or otherwise interpret it beyond equality checks. It cannot be minted client-side; only the engine produces it, exactly once per leased activation, and clients must not depend on any particular internal format. 
-export namespace JobLeaseToken {
-  export function assumeExists(value: string): JobLeaseToken {
+export const JobLeaseToken: {
+  assumeExists(value: string): JobLeaseToken;
+  getValue(key: JobLeaseToken): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): JobLeaseToken {
     assertConstraint(value, 'JobLeaseToken', { minLength: 1 });
     return value as any;
-  }
-  export function getValue(key: JobLeaseToken): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: JobLeaseToken): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'JobLeaseToken', { minLength: 1 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // The unique identifier of a mapping rule.
-export namespace MappingRuleId {
-  export function assumeExists(value: string): MappingRuleId {
+export const MappingRuleId: {
+  assumeExists(value: string): MappingRuleId;
+  getValue(key: MappingRuleId): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): MappingRuleId {
     assertConstraint(value, 'MappingRuleId', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
     return value as any;
-  }
-  export function getValue(key: MappingRuleId): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: MappingRuleId): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'MappingRuleId', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // System-generated key for an message.
-export namespace MessageKey {
-  export function assumeExists(value: string): MessageKey {
+export const MessageKey: {
+  assumeExists(value: string): MessageKey;
+  getValue(key: MessageKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): MessageKey {
     assertConstraint(value, 'MessageKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
-  }
-  export function getValue(key: MessageKey): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: MessageKey): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'MessageKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // System-generated key for a message subscription.
-export namespace MessageSubscriptionKey {
-  export function assumeExists(value: string): MessageSubscriptionKey {
+export const MessageSubscriptionKey: {
+  assumeExists(value: string): MessageSubscriptionKey;
+  getValue(key: MessageSubscriptionKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): MessageSubscriptionKey {
     assertConstraint(value, 'MessageSubscriptionKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
-  }
-  export function getValue(key: MessageSubscriptionKey): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: MessageSubscriptionKey): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'MessageSubscriptionKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // Id of a process definition, from the model. Only ids of process definitions that are deployed are useful.
-export namespace ProcessDefinitionId {
-  export function assumeExists(value: string): ProcessDefinitionId {
+export const ProcessDefinitionId: {
+  assumeExists(value: string): ProcessDefinitionId;
+  getValue(key: ProcessDefinitionId): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): ProcessDefinitionId {
     assertConstraint(value, 'ProcessDefinitionId', { pattern: "^[\\p{L}_][\\p{L}\\p{N}_\\-\\.]*$", minLength: 1 });
     return value as any;
-  }
-  export function getValue(key: ProcessDefinitionId): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: ProcessDefinitionId): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'ProcessDefinitionId', { pattern: "^[\\p{L}_][\\p{L}\\p{N}_\\-\\.]*$", minLength: 1 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // System-generated key for a deployed process definition.
-export namespace ProcessDefinitionKey {
-  export function assumeExists(value: string): ProcessDefinitionKey {
+export const ProcessDefinitionKey: {
+  assumeExists(value: string): ProcessDefinitionKey;
+  getValue(key: ProcessDefinitionKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): ProcessDefinitionKey {
     assertConstraint(value, 'ProcessDefinitionKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
-  }
-  export function getValue(key: ProcessDefinitionKey): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: ProcessDefinitionKey): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'ProcessDefinitionKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // System-generated key for a process instance.
-export namespace ProcessInstanceKey {
-  export function assumeExists(value: string): ProcessInstanceKey {
+export const ProcessInstanceKey: {
+  assumeExists(value: string): ProcessInstanceKey;
+  getValue(key: ProcessInstanceKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): ProcessInstanceKey {
     assertConstraint(value, 'ProcessInstanceKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
-  }
-  export function getValue(key: ProcessInstanceKey): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: ProcessInstanceKey): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'ProcessInstanceKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // The unique identifier of a role.
-export namespace RoleId {
-  export function assumeExists(value: string): RoleId {
+export const RoleId: {
+  assumeExists(value: string): RoleId;
+  getValue(key: RoleId): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): RoleId {
     assertConstraint(value, 'RoleId', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
     return value as any;
-  }
-  export function getValue(key: RoleId): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: RoleId): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'RoleId', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // System-generated key for an signal.
-export namespace SignalKey {
-  export function assumeExists(value: string): SignalKey {
+export const SignalKey: {
+  assumeExists(value: string): SignalKey;
+  getValue(key: SignalKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): SignalKey {
     assertConstraint(value, 'SignalKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
-  }
-  export function getValue(key: SignalKey): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: SignalKey): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'SignalKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // The start cursor in a search query result set.
-export namespace StartCursor {
-  export function assumeExists(value: string): StartCursor {
+export const StartCursor: {
+  assumeExists(value: string): StartCursor;
+  getValue(key: StartCursor): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): StartCursor {
     assertConstraint(value, 'StartCursor', { pattern: "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}(?:==)?|[A-Za-z0-9+/]{3}=)?$" });
     return value as any;
-  }
-  export function getValue(key: StartCursor): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: StartCursor): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'StartCursor', { pattern: "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}(?:==)?|[A-Za-z0-9+/]{3}=)?$" });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // A tag. Needs to start with a letter; then alphanumerics, `_`, `-`, `:`, or `.`; length ≤ 100.
-export namespace Tag {
-  export function fromString(value: string): Tag {
+export const Tag: {
+  fromString(value: string): Tag;
+  getValue(key: Tag): string;
+  isValid(value: string): boolean;
+} = {
+  fromString(value: string): Tag {
     assertConstraint(value, 'Tag', { pattern: "^[A-Za-z][A-Za-z0-9_\\-:.]{0,99}$", minLength: 1, maxLength: 100 });
     return value as any;
-  }
-  export function getValue(key: Tag): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: Tag): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'Tag', { pattern: "^[A-Za-z][A-Za-z0-9_\\-:.]{0,99}$", minLength: 1, maxLength: 100 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // The unique identifier of the tenant.
-export namespace TenantId {
-  export function assumeExists(value: string): TenantId {
+export const TenantId: {
+  assumeExists(value: string): TenantId;
+  getValue(key: TenantId): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): TenantId {
     assertConstraint(value, 'TenantId', { pattern: "^(<default>|[\\w\\.\\-]{1,31})$", minLength: 1, maxLength: 31 });
     return value as any;
-  }
-  export function getValue(key: TenantId): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: TenantId): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'TenantId', { pattern: "^(<default>|[\\w\\.\\-]{1,31})$", minLength: 1, maxLength: 31 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // The unique name of a user.
-export namespace Username {
-  export function assumeExists(value: string): Username {
+export const Username: {
+  assumeExists(value: string): Username;
+  getValue(key: Username): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): Username {
     assertConstraint(value, 'Username', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
     return value as any;
-  }
-  export function getValue(key: Username): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: Username): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'Username', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // System-generated key for a user task.
-export namespace UserTaskKey {
-  export function assumeExists(value: string): UserTaskKey {
+export const UserTaskKey: {
+  assumeExists(value: string): UserTaskKey;
+  getValue(key: UserTaskKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): UserTaskKey {
     assertConstraint(value, 'UserTaskKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
-  }
-  export function getValue(key: UserTaskKey): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: UserTaskKey): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'UserTaskKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 // System-generated key for a variable.
-export namespace VariableKey {
-  export function assumeExists(value: string): VariableKey {
+export const VariableKey: {
+  assumeExists(value: string): VariableKey;
+  getValue(key: VariableKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): VariableKey {
     assertConstraint(value, 'VariableKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
-  }
-  export function getValue(key: VariableKey): string { return key; }
-  export function isValid(value: string): boolean {
+  },
+  getValue(key: VariableKey): string { return key; },
+  isValid(value: string): boolean {
     try {
       assertConstraint(value, 'VariableKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
-  }
-}
+  },
+};
 
 // ---- x-present-when dependent-presence projections (generated) ----
 /** `ActivatedJobResult` when `withLease === true`: `jobLeaseToken` is present (required, non-null). */
