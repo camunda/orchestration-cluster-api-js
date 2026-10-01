@@ -132,6 +132,28 @@ describe('650-annotate-pure-initialisers', () => {
     // timeout; the timeout is a safety net, not a correctness signal.
   }, 30_000);
 
+  it('fails the pipeline on an unreviewed nested callee that is already /* @__PURE__ */-annotated', () => {
+    // Third review finding: the gate trusted a pre-existing `/* @__PURE__ */`
+    // annotation on a nested callee, so `createClient(/* @__PURE__ */ sneakySideEffect())`
+    // passed even though `sneakySideEffect` was never reviewed. A bundler hint
+    // emitted upstream is not the promised human review — reviewed and
+    // bundler-known callees are already exempt above, so any OTHER annotated
+    // callee must still fail, in every shape.
+    for (const src of [
+      `export const client = createClient(${PURE} sneakySideEffect());\n`,
+      `export const client =\n  createClient(${PURE} sneakySideEffect());\n`,
+      `export const client = createClient(\n  ${PURE} sneakySideEffect()\n);\n`,
+      `export const client = createClient(${PURE} new Sneaky());\n`,
+      `export const client = createClient(createConfig(${PURE} sneaky()));\n`,
+    ]) {
+      const { result } = runHook({ 'evil.gen.ts': src });
+      expect(result.status).toBe(1);
+      expect(result.stderr.toLowerCase()).toContain('sneaky');
+    }
+    // Five hook subprocesses under full-suite load exceed the 5 s default
+    // timeout; the timeout is a safety net, not a correctness signal.
+  }, 30_000);
+
   it('is idempotent: already-annotated initialisers are left untouched', () => {
     const annotated = `export const client: Client = ${PURE} createClient(${PURE} createConfig<ClientOptions2>({ throwOnError: true }));\n`;
     const { result, read } = runHook({ 'client.gen.ts': annotated });

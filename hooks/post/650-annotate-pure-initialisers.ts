@@ -168,7 +168,11 @@ for (const file of walk(GEN_DIR)) {
         if (PURE_CALLEES.has(callee)) continue;
         const ctorPrefix = cm[0].slice(0, cm[0].indexOf(callee));
         if (BUNDLER_KNOWN_PURE.has(ctorPrefix + callee)) continue;
-        if (segment.slice(Math.max(0, cm.index - PURE.length), cm.index) === PURE) continue;
+        // Do NOT exempt a callee just because the generated source already
+        // carries a `/* @__PURE__ */` on it: a bundler hint emitted upstream is
+        // not the promised human review, so `createClient(/* @__PURE__ */
+        // sneakySideEffect())` must still fail. Reviewed and bundler-known
+        // callees are the only exemptions, and both are handled above.
         unreviewed.push(
           `${path.relative(root, file)}: nested call to unreviewed callee '${callee}' inside a reviewed initialiser`
         );
