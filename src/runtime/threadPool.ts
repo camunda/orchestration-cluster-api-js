@@ -5,11 +5,13 @@
  * Each thread is generic — the handler module path is sent with each job message,
  * and threads cache loaded handlers by module path.
  *
- * All node: imports are dynamic to keep the module tree browser-safe.
+ * Node built-ins come from the `#platform` seam, so browser bundles never see a
+ * `node:` specifier (the browser build resolves `node` to `undefined`).
  */
 
 import type { CamundaClient } from '../gen/CamundaClient';
 import { installClientCallHandler } from './clientProxy';
+import { node } from '#platform';
 
 /**
  * Minimal structural view of a `node:worker_threads` Worker — only the members the pool
@@ -236,11 +238,11 @@ export class ThreadPool {
   }
 
   private async _init(requestedSize?: number): Promise<void> {
-    const [workerThreads, pathMod, crypto] = await Promise.all([
-      import('node:worker_threads'),
-      import('node:path'),
-      import('node:crypto'),
-    ]);
+    if (!node) {
+      throw new Error('Threaded job workers are only available in Node.js environments');
+    }
+    const workerThreads = await node.loadWorkerThreads();
+    const { path: pathMod, crypto, fs, url } = node;
     this._Worker = workerThreads.Worker;
     const { join } = pathMod;
 
@@ -251,7 +253,7 @@ export class ThreadPool {
 
     const cpus = await (async () => {
       try {
-        const os = await import('node:os');
+        const { os } = node;
         return os.availableParallelism?.() || os.cpus().length;
       } catch {
         return 4;
@@ -259,8 +261,6 @@ export class ThreadPool {
     })();
     const size = requestedSize ?? cpus;
 
-    const fs = await import('node:fs');
-    const url = await import('node:url');
     // __dirname works in CJS and vitest/tsx, but not in native ESM dist output.
     // Derive directory from import.meta.url when available, falling back to __dirname.
     const dir =

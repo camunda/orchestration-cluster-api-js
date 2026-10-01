@@ -4,6 +4,7 @@
 
 import { packageVersion } from '../runtime/version';
 import type { CamundaConfig } from './unifiedConfiguration';
+import { node } from '#platform';
 
 export interface SupportLogger {
   log(message: string | number | boolean | object, addTimestamp?: boolean): void;
@@ -71,11 +72,11 @@ export class CamundaSupportLogger implements SupportLogger {
     this.enabled = enabled;
     this.filepath =
       config.supportLog?.filePath ||
-      (typeof process !== 'undefined'
-        ? require('node:path').join(process.cwd(), 'camunda-support.log')
+      (node && typeof process !== 'undefined'
+        ? node.path.join(process.cwd(), 'camunda-support.log')
         : 'camunda-support.log');
-    if (!this.enabled || !isNode()) return;
-    const fs = require('node:fs') as typeof import('node:fs');
+    if (!this.enabled || !isNode() || !node) return;
+    const { fs } = node;
     if (fs.existsSync(this.filepath)) {
       // ensure uniqueness; append numeric suffix, with upper bound to avoid infinite loop
       let n = 1;
@@ -96,8 +97,8 @@ export class CamundaSupportLogger implements SupportLogger {
   }
 
   log(message: string | number | boolean | object, addTimestamp = true): void {
-    if (!this.enabled || !isNode()) return;
-    const fs = require('node:fs') as typeof import('node:fs');
+    if (!this.enabled || !isNode() || !node) return;
+    const { fs } = node;
     const msg = typeof message === 'object' ? safeStringify(message) : String(message);
     // biome-ignore lint/plugin: support-log timestamp: must be real wall-clock so the bundle correlates with external logs
     const line = addTimestamp ? `[${new Date().toISOString()}]: ${msg}\n` : `${msg}\n`;
@@ -149,7 +150,9 @@ export function writeSupportLogPreamble(logger: SupportLogger, config: CamundaCo
     );
     logger.log(`Camunda SDK version: ${packageVersion}`, false);
     try {
-      const os = require('node:os') as typeof import('node:os');
+      // Throw into the surrounding catch when Node built-ins are unavailable (browser).
+      if (!node) throw new Error('node:os unavailable');
+      const { os } = node;
       const osInfo = {
         platform: os.platform(),
         release: os.release(),

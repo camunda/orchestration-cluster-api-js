@@ -3,8 +3,6 @@
 // Responsibilities kept: precedence, conditional requirements, validation grammar,
 // strict parsing (booleans, ints), secrets redaction, aggregated errors.
 
-// Static import for path placed before other module imports to satisfy lint ordering
-import path from 'node:path';
 import { createEnv } from 'typed-env';
 import { liveClock } from './clock';
 import {
@@ -18,6 +16,7 @@ import {
   SCHEMA,
   schemaEntry,
 } from './configSchema';
+import { node } from '#platform';
 
 export type AuthStrategy = 'NONE' | 'OAUTH' | 'BASIC';
 export type ValidationMode = 'none' | 'warn' | 'strict' | 'fanatical';
@@ -747,8 +746,8 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
       enabled: reqBool('CAMUNDA_SUPPORT_LOG_ENABLED'),
       filePath:
         rawMap.CAMUNDA_SUPPORT_LOG_FILE_PATH ||
-        (typeof process !== 'undefined' && typeof process.cwd === 'function'
-          ? path.join(process.cwd(), 'camunda-support.log')
+        (node && typeof process !== 'undefined' && typeof process.cwd === 'function'
+          ? node.path.join(process.cwd(), 'camunda-support.log')
           : 'camunda-support.log'),
     },
     workerDefaults:
