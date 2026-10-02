@@ -42,7 +42,11 @@ import ts from 'typescript';
 // in lexicographic order). A gate that runs before those hooks would validate a
 // tree that later hooks then rewrite, letting an eager initializer they introduce
 // bypass the allowlist. Any FUTURE hook that writes under src/gen must be
-// numbered below 715 (the regression suite asserts this ordering).
+// numbered below 715 (the regression suite asserts this ordering) — UNLESS it
+// rewrites ONLY a file this gate EXCLUDEs (today: zod.gen.ts). Hook
+// 720-pure-zod-schemas is the one reviewed exception: it rewrites zod.gen.ts
+// (which this gate skips) into pure IIFEs, so it sorts after the gate and is
+// allowlisted in tests/annotate-pure-initialisers.test.ts.
 
 // zod.gen.ts is excluded: it is only ever loaded lazily via `import()`, and its
 // schema definitions call `.register(...)` into a global registry (a real side

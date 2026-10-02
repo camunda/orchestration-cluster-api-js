@@ -556,16 +556,36 @@ describe('715-annotate-pure-initialisers', () => {
     // assertion was tautological — an always-empty GEN_MUTATORS_AFTER_GATE list
     // satisfies `not.toContain` for EVERY later hook, including a future src/gen
     // mutator. The invariant is now fail-closed: every hook that runs after the
-    // gate must be on this ALLOWLIST of reviewed, verified non-mutators, so a
-    // newly added hook after the gate fails here until a human reviews whether
-    // it writes src/gen (if it does, it must be renumbered BEFORE the gate).
+    // gate must be on an ALLOWLIST of reviewed hooks, so a newly added hook after
+    // the gate fails here until a human reviews whether it writes src/gen (if it
+    // writes a file the gate covers, it must be renumbered BEFORE the gate).
+    //
+    // Two distinct reviewed categories sort after the gate:
+    //
+    // (1) Verified NON-MUTATORS — they never write under src/gen:
     const REVIEWED_NON_MUTATORS_AFTER_GATE = [
       '800-generate-test-scaffolds.ts', // writes tests/gen-scaffolds/, never src/gen
       '900-validate-test-scaffolds.ts', // reads scaffolds; runs tsc, writes nothing
       '950-typecheck-examples.ts', // reads examples/; runs tsc, writes nothing
     ];
+    // (2) Reviewed mutators of a gate-EXCLUDED file only. The gate skips
+    // `zod.gen.ts` (EXCLUDE) because its schemas `.register(...)` into a global
+    // registry — a deliberate side effect that must NOT be marked pure. Hook 720
+    // rewrites exactly that one file (wrapping each schema initialiser in a
+    // /*#__PURE__*/ IIFE so bundlers drop unreferenced schemas). It must run
+    // AFTER hook 600 (which emits the zod-augment retention statement 720
+    // special-cases) and it can never be gated by 715, so it sorts after the
+    // gate. Because its writes are confined to the file the gate ignores, it
+    // cannot let an eager call bypass the allowlist in any file the gate covers.
+    // A future hook that mutates any OTHER src/gen file still fails here.
+    const REVIEWED_EXCLUDED_FILE_MUTATORS_AFTER_GATE = [
+      '720-pure-zod-schemas.ts', // rewrites ONLY src/gen/zod.gen.ts, which the gate EXCLUDEs
+    ];
     const later = hooks.slice(gateIdx + 1);
-    expect(later).toEqual(REVIEWED_NON_MUTATORS_AFTER_GATE);
+    expect(later).toEqual([
+      ...REVIEWED_EXCLUDED_FILE_MUTATORS_AFTER_GATE,
+      ...REVIEWED_NON_MUTATORS_AFTER_GATE,
+    ]);
     // And the two known mutators must sort BEFORE the gate.
     expect(hooks.indexOf('700-enrich-activate-jobs.ts')).toBeLessThan(gateIdx);
     expect(hooks.indexOf('710-derive-present-when.ts')).toBeLessThan(gateIdx);
