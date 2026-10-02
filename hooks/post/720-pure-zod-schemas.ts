@@ -180,6 +180,18 @@ function findUnreviewedEagerCallRoot(init: ts.Expression, schemaRoots: Set<strin
         return;
       }
     }
+    if (ts.isTaggedTemplateExpression(node)) {
+      // A tagged template IS an eager invocation — `tag\`...\`` calls `tag` at module
+      // evaluation — but it is not a CallExpression, so without this branch
+      // `z.object({ v: registerGlobalStateTag\`x\` })` would be wrapped as pure and a bundler
+      // could drop the tag's module-initialization side effect. Check the tag's chain root
+      // exactly like a call root; the substitutions are eager too and are visited below.
+      const root = callChainRoot(node.tag);
+      if (!ts.isIdentifier(root) || !(root.text === 'z' || schemaRoots.has(root.text))) {
+        bad = ts.isIdentifier(root) ? root.text : ts.SyntaxKind[root.kind];
+        return;
+      }
+    }
     ts.forEachChild(node, visit);
   };
   visit(init);

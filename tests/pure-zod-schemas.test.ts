@@ -113,6 +113,24 @@ describe('wrapSchemaInitialisers', () => {
     expect(() => wrapSchemaInitialisers(src)).toThrow(/unreviewed call-chain root computeDefault/);
   });
 
+  it('fails fast on an eager tagged-template invocation (tag is an unreviewed call)', () => {
+    // A tagged template IS an eager invocation — `tag\`...\`` calls `tag` at module
+    // evaluation — but it is not a CallExpression, so a visitor that only checks calls and
+    // `new` would accept and wrap it as pure, letting a bundler drop the tag's
+    // module-initialization side effect. The fail-closed traversal must reject it.
+    const src = 'export const zFoo = z.object({ value: registerGlobalStateTag`x` });';
+    expect(() => wrapSchemaInitialisers(src)).toThrow(
+      /unreviewed call-chain root registerGlobalStateTag/
+    );
+  });
+
+  it('fails fast on an eager side-effecting call inside a tagged-template substitution', () => {
+    // Substitutions in a tagged template are eager too: even a reviewed tag must not hide an
+    // unreviewed eager call in `${...}`.
+    const src = 'export const zFoo = z.object({ value: z.tag`${evilFactory()}` });';
+    expect(() => wrapSchemaInitialisers(src)).toThrow(/unreviewed call-chain root evilFactory/);
+  });
+
   it('allows unreviewed calls inside deferred callback bodies (lazy / refine / transform)', () => {
     // Calls inside arrow/function bodies run when the callback is invoked, not at module
     // evaluation, so they are not eager side effects and must not fail the fail-closed check.
