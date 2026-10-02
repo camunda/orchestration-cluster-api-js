@@ -87,7 +87,13 @@ function alreadyAnnotated(src: string, node: ts.Node): boolean {
 }
 
 type EagerCall = {
-  node: ts.CallExpression | ts.NewExpression | ts.TaggedTemplateExpression | ts.Decorator;
+  node:
+    | ts.CallExpression
+    | ts.NewExpression
+    | ts.TaggedTemplateExpression
+    | ts.Decorator
+    | ts.EnumDeclaration
+    | ts.ModuleDeclaration;
   key: string;
   pure: boolean;
 };
@@ -158,6 +164,23 @@ function collectEagerCalls(init: ts.Node, out: EagerCall[]): void {
       // every substitution are eager; descend into both.
       const tag = calleeText(node.tag);
       out.push({ node, key: tag, pure: PURE_CALLEES.has(tag) });
+      ts.forEachChild(node, visit);
+      return;
+    }
+    if (ts.isEnumDeclaration(node) || ts.isModuleDeclaration(node)) {
+      // A runtime `enum` or `namespace`/`module` declaration contains NO
+      // CallExpression in source, so the walk above collects nothing — yet
+      // TypeScript emits a top-level IIFE for it
+      // (`var E; (function (E) { ... })(E || (E = {}));`), an eagerly-evaluated
+      // side effect that defeats tree-shaking exactly like an unreviewed call.
+      // Reached in an eager position it must fail the fail-closed gate (it can
+      // never be a reviewed pure callee). An AMBIENT (`declare`) declaration
+      // emits nothing, but rejecting it too keeps the gate simple and is
+      // harmless: generated code has no ambient enums/namespaces, and a human
+      // can allowlist one if that ever changes.
+      const kind = ts.isEnumDeclaration(node) ? 'enum' : 'namespace';
+      out.push({ node, key: `${kind} ${node.name.getText()}`, pure: false });
+      // Still descend: a namespace body can hold nested eager constructs.
       ts.forEachChild(node, visit);
       return;
     }

@@ -428,6 +428,49 @@ describe('715-annotate-pure-initialisers', () => {
     expect(read('client.gen.ts')).toBe(`${PURE} @createClient class C {}\n`);
   });
 
+  it('fails the pipeline on a top-level ENUM or NAMESPACE (transpiles to an eager IIFE)', () => {
+    // Review finding (PR #539, review 5387500668, previously-missed): a runtime
+    // `enum` or `namespace`/`module` declaration contains NO CallExpression in
+    // source, so the eager-call walk collected nothing — yet TypeScript emits a
+    // top-level IIFE for it (`var E; (function (E) { ... })(E || (E = {}));`),
+    // an eagerly-evaluated side effect that defeats tree-shaking exactly like an
+    // unreviewed call. A generator change could reintroduce the namespace-shaped
+    // blocker this PR removes and still pass the gate (a small one stays under
+    // the 8 KiB budget). Every runtime enum/namespace shape must now fail the
+    // fail-closed gate — not only the one `enum E { A }` instance.
+    for (const src of [
+      `enum E { A }\n`,
+      `export enum E { A, B, C }\n`,
+      `const enum E { A }\n`,
+      `export const enum E { A }\n`,
+      `namespace N { export const x = 1; }\n`,
+      `export namespace N { export const x = 1; }\n`,
+      `module M { export const x = 1; }\n`,
+      `namespace Outer { export namespace Inner { export const x = 1; } }\n`,
+      `declare enum E { A }\n`,
+      `declare namespace N { export const x: number; }\n`,
+    ]) {
+      const { result } = runHook({ 'evil.gen.ts': src });
+      expect(result.status).toBe(1);
+      expect(result.stderr.toLowerCase()).toMatch(/enum|namespace|module/);
+    }
+  });
+
+  it('fails the pipeline on an enum/namespace NESTED in an eager top-level position', () => {
+    // The defect class is not only a bare top-level declaration: an enum or
+    // namespace reached while evaluating ANY eager top-level construct (e.g. a
+    // static block, which runs at class definition) emits the same import-time
+    // IIFE and must fail too.
+    for (const src of [
+      `class C { static { enum E { A } } }\n`,
+      `class C { static { namespace N { export const x = 1; } } }\n`,
+    ]) {
+      const { result } = runHook({ 'evil.gen.ts': src });
+      expect(result.status).toBe(1);
+      expect(result.stderr.toLowerCase()).toMatch(/enum|namespace|module/);
+    }
+  });
+
   it('fails the pipeline on an unreviewed TAGGED TEMPLATE (an eager invocation that is not a CallExpression)', () => {
     // Review finding (PR #539, review 5387082968, previously-missed): a tagged
     // template IS an eager function invocation — `tag\`...\`` calls `tag` at
