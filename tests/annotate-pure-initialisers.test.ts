@@ -424,6 +424,39 @@ describe('715-annotate-pure-initialisers', () => {
     );
   });
 
+  it('fails the pipeline on an eager call in an OBJECT-LITERAL computed member name', () => {
+    // Review finding (PR #539, review 5387200925, previously-missed): a computed
+    // name on an object-literal method/accessor is evaluated when the literal is
+    // constructed, but the visitor returned on the MethodDeclaration BEFORE
+    // looking at its name — so `export const x = { [sneakySideEffect()]() {} }`
+    // bypassed the gate. The fix visits a method/accessor's computed name before
+    // skipping its deferred body.
+    for (const src of [
+      `export const x = { [sneakySideEffect()]() {} };\n`,
+      `export const x = { get [sneakySideEffect()]() { return 1; } };\n`,
+      `export const x = { set [sneakySideEffect()](v: number) {} };\n`,
+      `export const x = { async *[sneakySideEffect()]() {} };\n`,
+      `export const x = { [{ [sneakySideEffect()]: 1 }[sneakySideEffect()]]() {} };\n`,
+    ]) {
+      const { result } = runHook({ 'evil.gen.ts': src });
+      expect(result.status).toBe(1);
+      expect(result.stderr.toLowerCase()).toContain('sneaky');
+    }
+  });
+
+  it('does NOT reject a call in an object-literal method/accessor BODY (deferred)', () => {
+    // The dual: an object-literal method's BODY runs when invoked, not when the
+    // literal is constructed — a call there is lazy and must stay untouched.
+    const lazy = [
+      `export const x = { m() { return sneakySideEffect(); } };\n`,
+      `export const y = { get g() { return sneakySideEffect(); } };\n`,
+      `export const z = { set s(v: number) { sneakySideEffect(); } };\n`,
+    ].join('');
+    const { result, read } = runHook({ 'sdk.gen.ts': lazy });
+    expect(result.status).toBe(0);
+    expect(read('sdk.gen.ts')).toBe(lazy); // left byte-for-byte untouched
+  });
+
   it('runs AFTER the last generated-source mutator in the post-hook ordering', () => {
     // Review finding (PR #539, review 5387082968): the gate ran as
     // 650-annotate-pure-initialisers.ts, but post hooks execute in lexicographic
@@ -439,16 +472,37 @@ describe('715-annotate-pure-initialisers', () => {
       .filter((f) => f.endsWith('.ts'))
       .sort();
     expect(hooks).toContain(gate);
-    // Hooks that only READ src/gen (test scaffolds, example typecheck) may run
-    // after the gate; hooks that WRITE src/gen must run before it. Keep this
-    // list empty: any new src/gen mutator must be numbered before the gate.
-    const GEN_MUTATORS_AFTER_GATE: string[] = [];
     const gateIdx = hooks.indexOf(gate);
-    for (const later of hooks.slice(gateIdx + 1)) {
-      expect(GEN_MUTATORS_AFTER_GATE).not.toContain(later);
-    }
+    // Follow-up review finding (review 5387200925): the first version of this
+    // assertion was tautological — an always-empty GEN_MUTATORS_AFTER_GATE list
+    // satisfies `not.toContain` for EVERY later hook, including a future src/gen
+    // mutator. The invariant is now fail-closed: every hook that runs after the
+    // gate must be on this ALLOWLIST of reviewed, verified non-mutators, so a
+    // newly added hook after the gate fails here until a human reviews whether
+    // it writes src/gen (if it does, it must be renumbered BEFORE the gate).
+    const REVIEWED_NON_MUTATORS_AFTER_GATE = [
+      '800-generate-test-scaffolds.ts', // writes tests/gen-scaffolds/, never src/gen
+      '900-validate-test-scaffolds.ts', // reads scaffolds; runs tsc, writes nothing
+      '950-typecheck-examples.ts', // reads examples/; runs tsc, writes nothing
+    ];
+    const later = hooks.slice(gateIdx + 1);
+    expect(later).toEqual(REVIEWED_NON_MUTATORS_AFTER_GATE);
     // And the two known mutators must sort BEFORE the gate.
     expect(hooks.indexOf('700-enrich-activate-jobs.ts')).toBeLessThan(gateIdx);
     expect(hooks.indexOf('710-derive-present-when.ts')).toBeLessThan(gateIdx);
+  });
+
+  it('documents a direct-execution command that names the REAL hook file', () => {
+    // Review finding (PR #539, review 5387200925): the direct-execution example
+    // in the hook's trailing comment still named the removed `650` file after
+    // the rename to 715, so the documented command pointed at a nonexistent
+    // file. Assert the documented command matches a file that actually exists.
+    const hookSrc = readFileSync(
+      join(__dirname, '..', 'hooks', 'post', '715-annotate-pure-initialisers.ts'),
+      'utf8'
+    );
+    const documented = hookSrc.match(/tsx hooks\/post\/(\d+-[\w-]+\.ts)/);
+    expect(documented).not.toBeNull();
+    expect(readdirSync(join(__dirname, '..', 'hooks', 'post'))).toContain(documented![1]);
   });
 });

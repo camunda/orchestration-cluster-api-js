@@ -97,7 +97,10 @@ type EagerCall = {
  * running `init` as a module-level construct — i.e. reachable without crossing a
  * function, arrow, method, accessor, or constructor boundary, or a deferred
  * (instance / body) part of a class (those defer evaluation to call /
- * construction time). The arguments of an eager call are themselves eager, so we
+ * construction time). A method/accessor's COMPUTED NAME is still eager — it is
+ * evaluated when the containing object literal or class is defined — so the
+ * name is visited before the deferred body is skipped. The arguments of an
+ * eager call are themselves eager, so we
  * descend into them, and so are a class's decorators (including PARAMETER
  * decorators), `extends` expression, computed member names, static field
  * initialisers and static blocks. A tagged template is an eager invocation too —
@@ -105,17 +108,24 @@ type EagerCall = {
  */
 function collectEagerCalls(init: ts.Node, out: EagerCall[]): void {
   const visit = (node: ts.Node): void => {
-    // Stop at any construct whose BODY is not evaluated at module-init time.
-    // A class is deliberately NOT in this list: it is only PARTLY deferred (see
-    // visitClassEagerParts below).
+    // Stop at any construct whose BODY is not evaluated at module-init time —
+    // but a method/accessor/constructor's COMPUTED NAME is evaluated eagerly
+    // (when the containing object literal or class is defined), so visit the
+    // name before skipping the deferred body. Without this,
+    // `export const x = { [sneakySideEffect()]() {} }` bypassed the gate.
     if (
-      ts.isFunctionExpression(node) ||
-      ts.isArrowFunction(node) ||
-      ts.isFunctionDeclaration(node) ||
       ts.isMethodDeclaration(node) ||
       ts.isConstructorDeclaration(node) ||
       ts.isGetAccessorDeclaration(node) ||
       ts.isSetAccessorDeclaration(node)
+    ) {
+      if (node.name && ts.isComputedPropertyName(node.name)) visit(node.name.expression);
+      return;
+    }
+    if (
+      ts.isFunctionExpression(node) ||
+      ts.isArrowFunction(node) ||
+      ts.isFunctionDeclaration(node)
     ) {
       return;
     }
@@ -269,9 +279,9 @@ function main(): void {
   console.log(`[annotate-pure] Annotated ${annotated} top-level initialisers as /* @__PURE__ */`);
 }
 
-// Run only when executed directly (tsx hooks/post/650-...ts), not when imported
-// by the test suite — which calls annotatePureInitialisers() in-process so it
-// never pays the tsx + TypeScript-compiler startup cost per case.
+// Run only when executed directly (tsx hooks/post/715-annotate-pure-initialisers.ts),
+// not when imported by the test suite — which calls annotatePureInitialisers()
+// in-process so it never pays the tsx + TypeScript-compiler startup cost per case.
 const invokedDirectly =
   process.argv[1] !== undefined && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (invokedDirectly) main();
