@@ -1379,7 +1379,7 @@ console.log(instance.processInstanceKey);
 Notes:
 
 - Each function takes the same arguments as the `CamundaClient` method of the same name and
-  behaves identically (retry, backpressure, validation, eventual consistency, cancelation) —
+  behaves identically (retry, backpressure, validation, eventual consistency, cancellation) —
   the client methods delegate to these functions. One intentional exception: for operations
   that take no input (e.g. `getTopology`), the standalone functions honor their `options`
   argument (`getTopology(core, { retry: false })` disables retry), while the class methods
