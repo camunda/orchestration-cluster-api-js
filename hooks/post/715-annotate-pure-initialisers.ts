@@ -87,7 +87,7 @@ function alreadyAnnotated(src: string, node: ts.Node): boolean {
 }
 
 type EagerCall = {
-  node: ts.CallExpression | ts.NewExpression | ts.TaggedTemplateExpression;
+  node: ts.CallExpression | ts.NewExpression | ts.TaggedTemplateExpression | ts.Decorator;
   key: string;
   pure: boolean;
 };
@@ -166,7 +166,22 @@ function collectEagerCalls(init: ts.Node, out: EagerCall[]): void {
 
   const visitDecorators = (node: ts.Node): void => {
     if (ts.canHaveDecorators(node)) {
-      for (const d of ts.getDecorators(node) ?? []) visit(d.expression);
+      for (const d of ts.getDecorators(node) ?? []) {
+        // A BARE decorator (`@dec`, `@ns.dec`) is itself an eager invocation:
+        // the decorator function is CALLED with the decorated target when the
+        // class is defined. Its expression is an Identifier / PropertyAccess,
+        // not a CallExpression, so `visit(d.expression)` alone would collect
+        // nothing and the import-time side effect would bypass the fail-closed
+        // gate. Treat the decorator application as an eager call keyed on the
+        // decorator expression (annotated when reviewed, rejected otherwise).
+        // A CALL decorator (`@dec()`) already IS a CallExpression, so leave it
+        // to `visit` below to avoid double-counting.
+        if (!ts.isCallExpression(d.expression)) {
+          const key = calleeText(d.expression);
+          out.push({ node: d, key, pure: PURE_CALLEES.has(key) });
+        }
+        visit(d.expression);
+      }
     }
   };
 

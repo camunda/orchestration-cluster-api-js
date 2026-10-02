@@ -392,6 +392,42 @@ describe('715-annotate-pure-initialisers', () => {
     }
   });
 
+  it('fails the pipeline on a BARE decorator (the decorator application is itself an eager invocation)', () => {
+    // Review finding (PR #539, review 5387328580, previously-missed): a bare
+    // decorator such as `@sneakyDecorator class C {}` IS an eager invocation —
+    // the decorator function is CALLED with the decorated target when the class
+    // is defined — but its expression is an Identifier / PropertyAccess, not a
+    // CallExpression, so `visitDecorators` (which only walked `d.expression`)
+    // collected nothing and the unreviewed import-time side effect bypassed the
+    // fail-closed gate. Bare class, member (method / property), static-member
+    // and parameter decorators, plus property-access decorators, must all now
+    // reach the gate — not only the one `@sneakyDecorator class` instance.
+    for (const src of [
+      `@sneakyDecorator class C {}\n`,
+      `@ns.sneakyDecorator class C {}\n`,
+      `class C { @sneakyDecorator method() {} }\n`,
+      `class C { @sneakyDecorator field = 1; }\n`,
+      `class C { @sneakyDecorator static field = 1; }\n`,
+      `class C { m(@sneakyDecorator v: string) {} }\n`,
+      `export const C = class { @sneakyDecorator method() {} };\n`,
+    ]) {
+      const { result } = runHook({ 'evil.gen.ts': src });
+      expect(result.status).toBe(1);
+      expect(result.stderr.toLowerCase()).toContain('sneaky');
+    }
+  });
+
+  it('annotates a REVIEWED bare decorator before the @', () => {
+    // The pure counterpart: a reviewed bare decorator is annotated like any
+    // other reviewed eager invocation, with the hint spliced before the `@` so
+    // the whole decorator application is marked side-effect-free.
+    const { result, read } = runHook({
+      'client.gen.ts': `@createClient class C {}\n`,
+    });
+    expect(result.status).toBe(0);
+    expect(read('client.gen.ts')).toBe(`${PURE} @createClient class C {}\n`);
+  });
+
   it('fails the pipeline on an unreviewed TAGGED TEMPLATE (an eager invocation that is not a CallExpression)', () => {
     // Review finding (PR #539, review 5387082968, previously-missed): a tagged
     // template IS an eager function invocation — `tag\`...\`` calls `tag` at
