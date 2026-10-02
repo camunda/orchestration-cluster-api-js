@@ -214,10 +214,11 @@ export class CamundaCore {
     this._supportLogger = createSupportLogger(this._config, opts.supportLogger);
     try {
       // Report the component actually constructed. `CamundaClient` is a value-alias of the
-      // `CamundaClientBase` subclass, so `new.target.name` is 'CamundaClientBase' for the full
-      // client and 'CamundaCore' for a bare core — map the former to the public name so support
-      // diagnostics never attribute a bare core to a (nonexistent) client.
-      const component = new.target.name === 'CamundaCore' ? 'CamundaCore' : 'CamundaClient';
+      // `CamundaClientBase` subclass, so `new.target` is `CamundaClientBase` for the full client
+      // and `CamundaCore` for a bare core. Compare constructor *identity* (not `new.target.name`):
+      // a consumer minifier may rename the class identifiers, but identity survives minification,
+      // so a bare core is never misattributed to a (nonexistent) client in support diagnostics.
+      const component = new.target === CamundaCore ? 'CamundaCore' : 'CamundaClient';
       this._supportLogger.log(`${component} constructed`);
     } catch {
       /* ignore */
