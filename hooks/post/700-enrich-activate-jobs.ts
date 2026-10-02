@@ -97,7 +97,20 @@ function patchFile(
 /** Client view used by enriched jobs' action methods (complete, fail, error, cancel, update). */
 function _jobActionsClient(core: CamundaCore): any {
   const c = core as any;
-  if (typeof c.completeJob === 'function') return c;
+  // Pass a client through unchanged ONLY when it implements every job action an
+  // enriched job may call (complete, fail, error, cancel, update). A partial
+  // CamundaCore — a subclass or test double that defines only some of them — must
+  // fall through to the adapter, which routes each action to the standalone
+  // function, so an enriched job never invokes a missing method.
+  if (
+    typeof c.completeJob === 'function' &&
+    typeof c.failJob === 'function' &&
+    typeof c.throwJobError === 'function' &&
+    typeof c.cancelProcessInstance === 'function' &&
+    typeof c.updateJob === 'function'
+  ) {
+    return c;
+  }
   return {
     clock: core.clock,
     logger: (scope?: string) => core.logger(scope),
