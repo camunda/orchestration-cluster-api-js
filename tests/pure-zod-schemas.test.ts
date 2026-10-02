@@ -92,6 +92,43 @@ describe('wrapSchemaInitialisers', () => {
     expect(() => wrapSchemaInitialisers(src)).toThrow(/unreviewed call-chain root zMystery/);
   });
 
+  it('fails fast on a nested eager side-effecting call even when the outer root is reviewed', () => {
+    // Outer chain is rooted at `z` (reviewed), but a nested argument eagerly calls an
+    // unreviewed factory. Wrapping the initialiser in a pure IIFE would let a bundler drop
+    // the whole schema — and with it the eager `registerGlobalState()` side effect. The
+    // fail-closed guarantee must reject this.
+    const src = 'export const zFoo = z.object({ value: registerGlobalState() });';
+    expect(() => wrapSchemaInitialisers(src)).toThrow(
+      /unreviewed call-chain root registerGlobalState/
+    );
+  });
+
+  it('fails fast on a deeply nested eager side-effecting call', () => {
+    const src = 'export const zFoo = z.object({ a: z.object({ b: evilFactory() }) });';
+    expect(() => wrapSchemaInitialisers(src)).toThrow(/unreviewed call-chain root evilFactory/);
+  });
+
+  it('fails fast on an eager side-effecting default-value argument', () => {
+    const src = 'export const zFoo = z.string().default(computeDefault());';
+    expect(() => wrapSchemaInitialisers(src)).toThrow(/unreviewed call-chain root computeDefault/);
+  });
+
+  it('allows unreviewed calls inside deferred callback bodies (lazy / refine / transform)', () => {
+    // Calls inside arrow/function bodies run when the callback is invoked, not at module
+    // evaluation, so they are not eager side effects and must not fail the fail-closed check.
+    const src = [
+      'export const zLazy = z.lazy(() => deferredFactory());',
+      'export const zRefined = z.string().refine((v) => sideEffect(v));',
+    ].join('\n');
+    const out = wrapSchemaInitialisers(src);
+    expect(out).toBe(
+      [
+        'export const zLazy = /*#__PURE__*/ (() => z.lazy(() => deferredFactory()))();',
+        'export const zRefined = /*#__PURE__*/ (() => z.string().refine((v) => sideEffect(v)))();',
+      ].join('\n')
+    );
+  });
+
   it('wraps a chain rooted at another declared z* schema (schema composition)', () => {
     const src = [
       'export const zParent = z.object({ a: z.string() });',

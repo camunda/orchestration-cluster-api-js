@@ -72,14 +72,15 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
         if (!init || ts.isIdentifier(init)) continue; // alias: no side effect
         if (ts.isCallExpression(init)) {
           if (isPureIife(init)) continue; // already wrapped (idempotent rerun)
-          const root = callChainRoot(init);
-          if (!ts.isIdentifier(root) || !(root.text === 'z' || schemaRoots.has(root.text))) {
-            // A `z*` export whose call chain is NOT rooted at the zod namespace or another
-            // reviewed schema (e.g. `export const zBootstrap = registerGlobalState()`): the
-            // call may have side effects, so refuse to mark it pure.
-            problems.push(
-              `${name}: unreviewed call-chain root ${ts.isIdentifier(root) ? root.text : ts.SyntaxKind[root.kind]}`
-            );
+          // Validate every *eagerly* evaluated call in the initialiser, not just the outer
+          // chain root: a nested argument such as `z.object({ v: registerGlobalState() })`
+          // is rooted at `z` at the top but still runs `registerGlobalState()` at module
+          // evaluation, and the pure IIFE would let a bundler drop that side effect. Calls
+          // inside deferred callback bodies (e.g. `z.lazy(() => …)`) are skipped — they run
+          // later, not at module load.
+          const unreviewed = findUnreviewedEagerCallRoot(init, schemaRoots);
+          if (unreviewed !== null) {
+            problems.push(`${name}: unreviewed call-chain root ${unreviewed}`);
             continue;
           }
           const exprText = init.getText(sf);
@@ -150,6 +151,39 @@ function callChainRoot(expr: ts.Expression): ts.Expression {
       return node;
     }
   }
+}
+
+/**
+ * Returns the root name of the first *eagerly evaluated* call/`new` expression inside
+ * `init` whose chain is NOT rooted at the zod namespace (`z`) or a reviewed schema, or
+ * `null` if every eager call is reviewed.
+ *
+ * Wrapping an initialiser in `/*#__PURE__*\/ (() => …)()` tells bundlers the whole
+ * expression — including every call it evaluates at module load — is side-effect free and
+ * droppable. The outer chain root alone is therefore not enough: a nested eager argument
+ * (`z.object({ v: registerGlobalState() })`) would be silently dropped with the schema.
+ * Traverse the whole initialiser, but stop at deferred callback bodies (arrow/function
+ * expressions such as `z.lazy(() => …)` or `.refine((v) => …)`) — those run when the
+ * callback is invoked, not at module evaluation, so calls inside them are not eager side
+ * effects.
+ */
+function findUnreviewedEagerCallRoot(init: ts.Expression, schemaRoots: Set<string>): string | null {
+  let bad: string | null = null;
+  const visit = (node: ts.Node): void => {
+    if (bad !== null) return;
+    // Deferred callback bodies evaluate later, not at module load: do not descend.
+    if (ts.isArrowFunction(node) || ts.isFunctionExpression(node)) return;
+    if (ts.isCallExpression(node) || ts.isNewExpression(node)) {
+      const root = callChainRoot(node.expression);
+      if (!ts.isIdentifier(root) || !(root.text === 'z' || schemaRoots.has(root.text))) {
+        bad = ts.isIdentifier(root) ? root.text : ts.SyntaxKind[root.kind];
+        return;
+      }
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(init);
+  return bad;
 }
 
 function main(): void {
