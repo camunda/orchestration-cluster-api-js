@@ -83,23 +83,37 @@ type EagerCall = { node: ts.CallExpression | ts.NewExpression; key: string; pure
 
 /**
  * Collect every call / `new` that is EAGERLY evaluated while running `init` as a
- * module-level initialiser — i.e. reachable without crossing a function, arrow,
- * class, or accessor boundary (those defer evaluation to call time). The
- * arguments of an eager call are themselves eager, so we descend into them.
+ * module-level construct — i.e. reachable without crossing a function, arrow,
+ * method, accessor, or constructor boundary, or a deferred (instance / body)
+ * part of a class (those defer evaluation to call / construction time). The
+ * arguments of an eager call are themselves eager, so we descend into them, and
+ * so are a class's decorators, `extends` expression, computed member names,
+ * static field initialisers and static blocks.
  */
 function collectEagerCalls(init: ts.Node, out: EagerCall[]): void {
   const visit = (node: ts.Node): void => {
-    // Stop at any construct whose body is not evaluated at module-init time.
+    // Stop at any construct whose BODY is not evaluated at module-init time.
+    // A class is deliberately NOT in this list: it is only PARTLY deferred (see
+    // visitClassEagerParts below).
     if (
       ts.isFunctionExpression(node) ||
       ts.isArrowFunction(node) ||
-      ts.isClassExpression(node) ||
       ts.isFunctionDeclaration(node) ||
-      ts.isClassDeclaration(node) ||
       ts.isMethodDeclaration(node) ||
+      ts.isConstructorDeclaration(node) ||
       ts.isGetAccessorDeclaration(node) ||
       ts.isSetAccessorDeclaration(node)
     ) {
+      return;
+    }
+    // Defining a class EAGERLY evaluates its decorators, `extends` expression,
+    // computed member names, static field initialisers, and static blocks, so a
+    // call there still runs at import time: `const C = class { static v = sneaky() }`
+    // must not bypass the gate. Instance-field initialisers and method/accessor/
+    // constructor bodies run later, so those stay deferred. Visit only the eager
+    // parts rather than returning (which would skip the whole class).
+    if (ts.isClassDeclaration(node) || ts.isClassExpression(node)) {
+      visitClassEagerParts(node);
       return;
     }
     if (ts.isCallExpression(node) || ts.isNewExpression(node)) {
@@ -116,6 +130,41 @@ function collectEagerCalls(init: ts.Node, out: EagerCall[]): void {
     }
     ts.forEachChild(node, visit);
   };
+
+  const visitDecorators = (node: ts.Node): void => {
+    if (ts.canHaveDecorators(node)) {
+      for (const d of ts.getDecorators(node) ?? []) visit(d.expression);
+    }
+  };
+
+  // Visit the eagerly-evaluated parts of a class, descending into nested
+  // expressions via `visit` while leaving deferred bodies (method/accessor/
+  // constructor bodies and instance-field initialisers) untouched.
+  const visitClassEagerParts = (node: ts.ClassLikeDeclaration): void => {
+    visitDecorators(node);
+    for (const clause of node.heritageClauses ?? []) {
+      // `extends X` evaluates X at definition time; `implements` is type-only.
+      if (clause.token === ts.SyntaxKind.ExtendsKeyword) {
+        for (const type of clause.types) visit(type.expression);
+      }
+    }
+    for (const member of node.members) {
+      visitDecorators(member);
+      // A computed member name is evaluated eagerly whether or not it is static.
+      if (member.name && ts.isComputedPropertyName(member.name)) {
+        visit(member.name.expression);
+      }
+      const isStatic =
+        ts.canHaveModifiers(member) &&
+        (ts.getModifiers(member) ?? []).some((m) => m.kind === ts.SyntaxKind.StaticKeyword);
+      if (ts.isPropertyDeclaration(member) && isStatic && member.initializer) {
+        visit(member.initializer); // static field initialiser: eager
+      } else if (ts.isClassStaticBlockDeclaration(member)) {
+        for (const stmt of member.body.statements) visit(stmt); // static block: eager
+      }
+    }
+  };
+
   visit(init);
 }
 
@@ -135,24 +184,25 @@ export function annotatePureInitialisers(root: string): AnnotateResult {
     const sf = ts.createSourceFile(file, src, ts.ScriptTarget.Latest, /* setParentNodes */ true);
 
     const inserts: number[] = []; // offsets at which to splice in a @__PURE__ hint
+    // Walk EVERY top-level statement, not just `const/let/var`. An eager call can
+    // run at import time from an expression statement (`registerPlugin();`), an
+    // `export default createClient()`, or an `export =` just as much as from a
+    // variable initialiser — collectEagerCalls stops at deferred bodies, so a
+    // statement that is itself a function/class declaration contributes nothing.
     for (const stmt of sf.statements) {
-      if (!ts.isVariableStatement(stmt)) continue; // only top-level const/let/var
-      for (const decl of stmt.declarationList.declarations) {
-        if (!decl.initializer) continue;
-        const eager: EagerCall[] = [];
-        collectEagerCalls(decl.initializer, eager);
-        for (const { node, key, pure } of eager) {
-          if (BUNDLER_KNOWN_PURE.has(key)) continue; // bundlers already drop these
-          if (pure) {
-            if (!alreadyAnnotated(src, node)) inserts.push(node.getStart());
-            continue;
-          }
-          // A pre-existing @__PURE__ hint on an unreviewed callee is a bundler
-          // annotation, not the promised human review, so it still fails.
-          unreviewed.push(
-            `${path.relative(root, file)}: eagerly-evaluated unreviewed call '${key}(...)' in a top-level initialiser`
-          );
+      const eager: EagerCall[] = [];
+      collectEagerCalls(stmt, eager);
+      for (const { node, key, pure } of eager) {
+        if (BUNDLER_KNOWN_PURE.has(key)) continue; // bundlers already drop these
+        if (pure) {
+          if (!alreadyAnnotated(src, node)) inserts.push(node.getStart());
+          continue;
         }
+        // A pre-existing @__PURE__ hint on an unreviewed callee is a bundler
+        // annotation, not the promised human review, so it still fails.
+        unreviewed.push(
+          `${path.relative(root, file)}: eagerly-evaluated unreviewed call '${key}(...)' in a top-level initialiser`
+        );
       }
     }
 

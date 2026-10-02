@@ -282,4 +282,83 @@ describe('650-annotate-pure-initialisers', () => {
     expect(result.status).toBe(0);
     expect(read('sdk.gen.ts')).toBe(lazy); // left byte-for-byte untouched
   });
+
+  it('fails the pipeline on an eager call in a class EAGER part (extends, computed name, static field, static block, decorator)', () => {
+    // Review finding (previously missed): the gate returned on any class, but
+    // defining a class eagerly evaluates its `extends` expression, computed
+    // member names, static field initialisers, static blocks and decorators, so
+    // `const C = class { static v = sneaky() }` ran an unreviewed call at import
+    // time yet passed. Every eager class part must now reach the gate.
+    for (const src of [
+      `export const C = class extends sneakySideEffect() {};\n`,
+      `export const C = class { static value = sneakySideEffect(); };\n`,
+      `export const C = class { static { sneakySideEffect(); } };\n`,
+      `export const C = class { [sneakySideEffect()] = 1; };\n`,
+      `export const C = class { [sneakySideEffect()]() {} };\n`,
+      `class C { static value = sneakySideEffect(); }\n`,
+      `@sneakySideEffect() class C {}\n`,
+      `class C { @sneakySideEffect() method() {} }\n`,
+    ]) {
+      const { result } = runHook({ 'evil.gen.ts': src });
+      expect(result.status).toBe(1);
+      expect(result.stderr.toLowerCase()).toContain('sneaky');
+    }
+  });
+
+  it('does NOT reject a call in a class DEFERRED part (instance-field initialiser or method/accessor/constructor body)', () => {
+    // The dual of the class fix: instance-field initialisers run at construction
+    // and method/accessor/constructor bodies run when invoked, so a call there is
+    // lazy and must be left untouched — otherwise the gate false-positives on
+    // ordinary generated classes.
+    const lazy = [
+      `export const A = class { field = sneakySideEffect(); };\n`,
+      `export const B = class { m() { return sneakySideEffect(); } };\n`,
+      `export const D = class { get g() { return sneakySideEffect(); } };\n`,
+      `export const E = class { constructor() { sneakySideEffect(); } };\n`,
+      `class F { field = sneakySideEffect(); }\n`,
+    ].join('');
+    const { result, read } = runHook({ 'sdk.gen.ts': lazy });
+    expect(result.status).toBe(0);
+    expect(read('sdk.gen.ts')).toBe(lazy); // left byte-for-byte untouched
+  });
+
+  it('gates eager calls in top-level statements that are NOT variable declarations', () => {
+    // Review finding (previously missed): the loop only scanned variable
+    // statements, so an eager call in a bare expression statement
+    // (`registerPlugin();`), an `export default createClient()`, or an `export =`
+    // never reached the gate. Unreviewed eager callees in those statement forms
+    // must fail just like a variable initialiser.
+    for (const src of [
+      `sneakySideEffect();\n`,
+      `export default sneakySideEffect();\n`,
+      `export = sneakySideEffect();\n`,
+      `(sneakySideEffect());\n`,
+      `new Sneaky();\n`,
+    ]) {
+      const { result } = runHook({ 'evil.gen.ts': src });
+      expect(result.status).toBe(1);
+      expect(result.stderr.toLowerCase()).toContain('sneaky');
+    }
+  });
+
+  it('annotates a reviewed eager call in a non-variable top-level statement', () => {
+    // The pure counterpart: a reviewed callee in an `export default` is annotated
+    // just like one in a variable initialiser.
+    const { result, read } = runHook({
+      'client.gen.ts': `export default createClient(createConfig({ throwOnError: true }));\n`,
+    });
+    expect(result.status).toBe(0);
+    expect(read('client.gen.ts')).toBe(
+      `export default ${PURE} createClient(${PURE} createConfig({ throwOnError: true }));\n`
+    );
+  });
+
+  it('leaves top-level function and lazy class declarations untouched', () => {
+    // A top-level `function`/`class` declaration is itself deferred; only its
+    // eager parts (handled above) matter. A plain declaration must pass clean.
+    const src = `export function f() { return sneakySideEffect(); }\nexport class C { m() { return sneakySideEffect(); } }\n`;
+    const { result, read } = runHook({ 'decls.gen.ts': src });
+    expect(result.status).toBe(0);
+    expect(read('decls.gen.ts')).toBe(src);
+  });
 });
