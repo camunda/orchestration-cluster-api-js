@@ -95,6 +95,9 @@ describe('x-present-when marker derivation (class-scoped)', () => {
 
   it('rewrites the owning client operation into literal-keyed overloads with a runtime guard', () => {
     const client = load('src/gen/CamundaClient.ts');
+    // The implementation (and so the runtime guard) lives in the standalone function
+    // the class method delegates to; the function carries the same overloads.
+    const fns = load('src/gen/operations.gen.ts');
     for (const m of markers) {
       // Find the operation(s) whose response carries the marked schema as an array
       // and whose request has the marker field. Only these are wired by the hook.
@@ -104,6 +107,9 @@ describe('x-present-when marker derivation (class-scoped)', () => {
         // present overload keyed on the literal
         expect(client, `missing present overload for ${opId}`).toMatch(
           new RegExp(`${opId}\\(input: ${opId}Input & \\{ ${m.request}: `)
+        );
+        expect(fns, `missing present overload for function ${opId}`).toMatch(
+          new RegExp(`${opId}\\(core: CamundaCore, input: ${opId}Input & \\{ ${m.request}: `)
         );
         expect(client).toContain(present);
         // absent overload: only enumerable for a boolean matcher — the
@@ -120,7 +126,7 @@ describe('x-present-when marker derivation (class-scoped)', () => {
         // that a second marker on the SAME operation cannot be skipped by the
         // first marker's idempotence marker — assert that marker-specific form.
         const litKey = typeof m.equals === 'string' ? JSON.stringify(m.equals) : String(m.equals);
-        expect(client, `missing marker-specific runtime guard for ${opId}`).toContain(
+        expect(fns, `missing marker-specific runtime guard for ${opId}`).toContain(
           `present-when-guard:${opId}:${m.request}=${litKey}:${m.prop}`
         );
       }
@@ -133,7 +139,8 @@ describe('x-present-when marker derivation (class-scoped)', () => {
     // marker, so two markers binding one operation both get wired. Assert the
     // guard marker embeds the request field, literal and property — the parts
     // that distinguish co-located markers — rather than only the operation id.
-    const client = load('src/gen/CamundaClient.ts');
+    // Guards live in the standalone functions (the class methods delegate).
+    const client = load('src/gen/operations.gen.ts');
     for (const m of markers) {
       for (const opId of findOwningOperations(spec, m)) {
         const litKey = typeof m.equals === 'string' ? JSON.stringify(m.equals) : String(m.equals);
@@ -261,9 +268,13 @@ describe('x-present-when marker derivation (class-scoped)', () => {
 
 /** Extract a `z<schemaName>` object body (up to the next top-level export). */
 function zodSchemaBlock(zod: string, schemaName: string): string {
-  const decl = `export const z${schemaName} = z.object({`;
-  const start = zod.indexOf(decl);
-  if (start === -1) return '';
+  // Hook 720 wraps each initialiser in a pure IIFE: `= /*#__PURE__*/ (() => z.object({`.
+  const m = new RegExp(
+    `export const z${schemaName} = (?:/\\*#__PURE__\\*/ \\(\\(\\) => )?z\\.object\\(\\{`
+  ).exec(zod);
+  if (!m) return '';
+  const start = m.index;
+  const decl = m[0];
   const rest = zod.slice(start + decl.length);
   const next = rest.indexOf('\nexport const ');
   const end = next === -1 ? zod.length : start + decl.length + next;
