@@ -23,6 +23,7 @@ const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 const ENTRIES: Record<string, string> = {
   '.': 'src/index.ts',
   './logger': 'src/logger.ts',
+  './fn': 'src/fn/index.ts',
   './effect': 'src/effect/index.ts',
 };
 

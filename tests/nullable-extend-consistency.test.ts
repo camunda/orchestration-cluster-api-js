@@ -14,6 +14,12 @@
  * `.extend` on a nullable base). Under the currently pinned generator (0.86)
  * nullable schemas are unions and no `.extend()` calls exist, so this passes
  * trivially; it becomes an active guard once the generator is bumped to 0.96+.
+ *
+ * The 720 hook wraps every schema initialiser in a pure-annotated IIFE
+ * (`/*#__PURE__...` + `(() => ...)()`), so the extractor accepts both the bare
+ * form and the IIFE-wrapped form. It also asserts a non-zero candidate count: a
+ * guard whose regex matches nothing passes vacuously, which is exactly the
+ * failure mode the IIFE wrap would otherwise introduce.
  */
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -27,10 +33,19 @@ describe('nullable schema .extend() consistency', () => {
 
     // Collect top-level schema consts whose value chain ends in `.nullable()`.
     // Property lines inside object bodies end with `,`, so the first `;`-terminated
-    // line is the whole statement (matches the detection in the 615 hook).
+    // line is the whole statement (matches the detection in the 615 hook). The 720
+    // hook wraps each initialiser in a pure-annotated IIFE, so unwrap that wrapper
+    // before inspecting the chain's trailing call.
     const nullableNames = new Set<string>();
+    let schemaConstCount = 0;
     for (const match of source.matchAll(/^export const (z\w+) = ([\s\S]*?);$/gm)) {
-      const [, name, value] = match;
+      schemaConstCount++;
+      const [, name, rawValue] = match;
+      let value = rawValue.trim();
+      const iifePrefix = '/*#__PURE__*/ (() => ';
+      if (value.startsWith(iifePrefix)) {
+        value = value.slice(iifePrefix.length).replace(/\)\(\)$/, '');
+      }
       if (/\.nullable\(\)$/.test(value.trim())) nullableNames.add(name);
     }
 
@@ -43,6 +58,11 @@ describe('nullable schema .extend() consistency', () => {
       if (count > 0) violations.push(`${name} (${count})`);
     }
 
+    expect(
+      schemaConstCount,
+      'The schema-const extractor matched zero declarations — the guard is vacuous. ' +
+        'Update the extractor to the current zod.gen.ts declaration shape (see hooks/post/720-pure-zod-schemas.ts).'
+    ).toBeGreaterThan(0);
     expect(
       violations.length,
       `Found .extend() called directly on nullable schema const(s): ${violations.join(', ')}. ` +

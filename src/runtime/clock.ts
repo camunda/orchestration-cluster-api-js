@@ -185,7 +185,8 @@ function requireDuration(ms: number, label: string): void {
 }
 
 /** The clock used when none is injected. */
-export const liveClock: Clock = createLiveClock();
+// Pure: construction only reads the time source. Annotated so bundlers drop it when unused.
+export const liveClock: Clock = /* @__PURE__ */ createLiveClock();
 
 /**
  * A `Clock` whose time only moves when the test says so, plus the counters a test needs to

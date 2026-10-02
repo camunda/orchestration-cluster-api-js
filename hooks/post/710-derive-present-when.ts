@@ -28,6 +28,7 @@ const ROOT = process.cwd();
 const SPEC_PATH = path.join(ROOT, 'external-spec/bundled/rest-api.bundle.json');
 const TYPES_PATH = path.join(ROOT, 'src/gen/types.gen.ts');
 const CLIENT_PATH = path.join(ROOT, 'src/gen/CamundaClient.ts');
+const OPS_PATH = path.join(ROOT, 'src/gen/operations.gen.ts');
 const ZOD_PATH = path.join(ROOT, 'src/gen/zod.gen.ts');
 const JOBACTIONS_PATH = path.join(ROOT, 'src/runtime/jobActions.ts');
 
@@ -207,8 +208,13 @@ function emitProjectionTypes(markers: PresentWhenMarker[]): void {
  * overloads, and inject a runtime guard that fails loudly when a lease was
  * requested but the server (an older version) returned no token.
  */
-function patchClient(markers: PresentWhenMarker[], spec: Json): number {
-  let src = fs.readFileSync(CLIENT_PATH, 'utf8');
+function patchClient(
+  markers: PresentWhenMarker[],
+  spec: Json,
+  filePath: string,
+  declHead: (method: string) => string
+): number {
+  let src = fs.readFileSync(filePath, 'utf8');
   let patched = 0;
   const usedTypes = new Set<string>();
   // Narrowing companions (`<Element>Of`) this hook references in the overloads it
@@ -253,10 +259,14 @@ function patchClient(markers: PresentWhenMarker[], spec: Json): number {
 
   for (const g of groups.values()) {
     const { method, arr } = g;
+    // Declaration prefix up to the input parameter: `  activateJobs(` for the class
+    // method, `export function activateJobs(core: CamundaCore, ` for the function.
+    const head = declHead(method);
+    const headRe = head.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     // The enriched single declaration emitted by hook 700, e.g.:
     //   activateJobs(input: activateJobsInput, options?: OperationOptions): CancelablePromise<{ jobs: EnrichedActivatedJob[] }>;
     const declRe = new RegExp(
-      `  ${method}\\(input: (${method}Input), options\\?: OperationOptions\\): CancelablePromise<\\{ ${arr}: (\\w+)\\[\\] \\}>;`
+      `${headRe}input: (${method}Input), options\\?: OperationOptions\\): CancelablePromise<\\{ ${arr}: (\\w+)\\[\\] \\}>;`
     );
     const declMatch = src.match(declRe);
     if (!declMatch) continue;
@@ -315,7 +325,7 @@ function patchClient(markers: PresentWhenMarker[], spec: Json): number {
           return t;
         })
         .join(' & ');
-      return `  ${method}(input: ${inputType} & { ${constraint} }, options?: OperationOptions): CancelablePromise<{ ${arr}: ${element}Of<${projection}>[] }>;`;
+      return `${head}input: ${inputType} & { ${constraint} }, options?: OperationOptions): CancelablePromise<{ ${arr}: ${element}Of<${projection}>[] }>;`;
     });
 
     // Idempotence (group-specific): if the most-specific present overload is
@@ -339,7 +349,7 @@ function patchClient(markers: PresentWhenMarker[], spec: Json): number {
     // it is re-appended below as the dynamic default. Idempotent: a pure rerun
     // short-circuits above, so this only runs when the group genuinely changed.
     const staleOverloadRe = new RegExp(
-      `^  ${method}\\(input: ${inputType} & \\{[^\\n]*\\}, options\\?: OperationOptions\\): CancelablePromise<\\{ ${arr}: \\w+Of<[^\\n]*>\\[\\] \\}>;\\n`,
+      `^${headRe}input: ${inputType} & \\{[^\\n]*\\}, options\\?: OperationOptions\\): CancelablePromise<\\{ ${arr}: \\w+Of<[^\\n]*>\\[\\] \\}>;\\n`,
       'gm'
     );
     src = src.replace(staleOverloadRe, '');
@@ -353,7 +363,7 @@ function patchClient(markers: PresentWhenMarker[], spec: Json): number {
       const absent = absentTypeName(m);
       usedTypes.add(absent);
       overloads.push(
-        `  ${method}(input: ${inputType} & { ${m.requestField}?: ${scalarLiteral(
+        `${head}input: ${inputType} & { ${m.requestField}?: ${scalarLiteral(
           !m.equals
         )} | null | undefined }, options?: OperationOptions): CancelablePromise<{ ${arr}: ${element}Of<${absent}>[] }>;`
       );
@@ -467,7 +477,7 @@ function patchClient(markers: PresentWhenMarker[], spec: Json): number {
     }
   }
 
-  fs.writeFileSync(CLIENT_PATH, src, 'utf8');
+  fs.writeFileSync(filePath, src, 'utf8');
   return patched;
 }
 
@@ -496,9 +506,14 @@ function relaxMarkedPropsInZod(markers: PresentWhenMarker[]): void {
   let src = fs.readFileSync(ZOD_PATH, 'utf8');
   let changed = false;
   for (const m of markers) {
-    const constDecl = `export const z${m.schemaName} = z.object({`;
-    const start = src.indexOf(constDecl);
-    if (start === -1) continue;
+    // Hook 720 later wraps initialisers in a pure IIFE; accept both shapes so an
+    // incremental rerun over already-wrapped output still finds the schema.
+    const declMatch = new RegExp(
+      `export const z${m.schemaName} = (?:/\\*#__PURE__\\*/ \\(\\(\\) => )?z\\.object\\(\\{`
+    ).exec(src);
+    if (!declMatch) continue;
+    const start = declMatch.index;
+    const constDecl = declMatch[0];
     // Scope the replacement to THIS schema's object body (up to the next
     // top-level `export const`), so a same-named property on another schema
     // (e.g. request schemas that already use `.nullish()`) is untouched.
@@ -534,8 +549,18 @@ function main(): void {
   );
   emitProjectionTypes(markers);
   relaxMarkedPropsInZod(markers);
-  const patched = patchClient(markers, spec);
-  console.log(`[present-when] emitted projections; patched ${patched} client operation(s)`);
+  // The standalone functions carry the implementation (runtime guards) and their own
+  // overloads; the class methods delegate to them and carry the same overloads.
+  const patchedFns = patchClient(
+    markers,
+    spec,
+    OPS_PATH,
+    (m) => `export function ${m}(core: CamundaCore, `
+  );
+  const patched = patchClient(markers, spec, CLIENT_PATH, (m) => `  ${m}(`);
+  console.log(
+    `[present-when] emitted projections; patched ${patched} client operation(s), ${patchedFns} function(s)`
+  );
 }
 
 main();

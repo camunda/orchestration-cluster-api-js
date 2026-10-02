@@ -7,18 +7,18 @@ void __zodAugmentApplied; // ensure module retained for prototype patch // brand
 /**
  * The kind of agent an agent definition describes.
  */
-export const zAgentDefinitionTypeEnum = z.enum([
+export const zAgentDefinitionTypeEnum = /*#__PURE__*/ (() => z.enum([
     'AI_AGENT_SUB_PROCESS',
     'AI_AGENT_TASK',
     'EXTERNAL_AGENT'
 ]).register(z.globalRegistry, {
     description: 'The kind of agent an agent definition describes.'
-});
+}))();
 
 /**
  * Aggregated metrics for an agent instance across all model calls.
  */
-export const zAgentInstanceMetrics = z.object({
+export const zAgentInstanceMetrics = /*#__PURE__*/ (() => z.object({
     inputTokens: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
         description: 'Total input tokens consumed across all model calls.'
     }),
@@ -42,12 +42,12 @@ export const zAgentInstanceMetrics = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Aggregated metrics for an agent instance across all model calls.'
-});
+}))();
 
 /**
  * The configured limits for an agent instance, set once at creation.
  */
-export const zAgentInstanceLimits = z.object({
+export const zAgentInstanceLimits = /*#__PURE__*/ (() => z.object({
     maxModelCalls: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'Maximum LLM calls allowed. -1 if no limit is configured.'
     }),
@@ -59,12 +59,12 @@ export const zAgentInstanceLimits = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'The configured limits for an agent instance, set once at creation.'
-});
+}))();
 
 /**
  * The current status of an agent instance.
  */
-export const zAgentInstanceStatusEnum = z.enum([
+export const zAgentInstanceStatusEnum = /*#__PURE__*/ (() => z.enum([
     'UNKNOWN',
     'COMPLETED',
     'IDLE',
@@ -74,32 +74,32 @@ export const zAgentInstanceStatusEnum = z.enum([
     'TOOL_DISCOVERY'
 ]).register(z.globalRegistry, {
     description: 'The current status of an agent instance.'
-});
+}))();
 
 /**
  * The status values that can be set on an agent instance via an update request.
  *
  */
-export const zAgentInstanceUpdateStatusEnum = z.enum([
+export const zAgentInstanceUpdateStatusEnum = /*#__PURE__*/ (() => z.enum([
     'IDLE',
     'THINKING',
     'TOOL_CALLING',
     'TOOL_DISCOVERY'
 ]).register(z.globalRegistry, {
     description: 'The status values that can be set on an agent instance via an update request.\n'
-});
+}))();
 
 /**
  * The role of a history item in the agent conversation.
  */
-export const zAgentInstanceHistoryRoleEnum = z.enum([
+export const zAgentInstanceHistoryRoleEnum = /*#__PURE__*/ (() => z.enum([
     'USER',
     'ASSISTANT',
     'TOOL_RESULT',
     'CONFIGURATION'
 ]).register(z.globalRegistry, {
     description: 'The role of a history item in the agent conversation.'
-});
+}))();
 
 /**
  * The commit status of a history item.
@@ -108,20 +108,20 @@ export const zAgentInstanceHistoryRoleEnum = z.enum([
  * DISCARDED: the producing job failed; this item was superseded by a later activation.
  *
  */
-export const zAgentInstanceHistoryCommitStatusEnum = z.enum([
+export const zAgentInstanceHistoryCommitStatusEnum = /*#__PURE__*/ (() => z.enum([
     'COMMITTED',
     'PENDING',
     'DISCARDED'
 ]).register(z.globalRegistry, {
     description: 'The commit status of a history item.\nCOMMITTED: the producing job completed successfully.\nPENDING: the producing job is still active (in-flight).\nDISCARDED: the producing job failed; this item was superseded by a later activation.\n'
-});
+}))();
 
 /**
  * Text content
  *
  * A plain-text content block.
  */
-export const zAgentInstanceTextContent = z.object({
+export const zAgentInstanceTextContent = /*#__PURE__*/ (() => z.object({
     contentType: z.string().register(z.globalRegistry, {
         description: 'The content type discriminator.'
     }),
@@ -130,7 +130,7 @@ export const zAgentInstanceTextContent = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'A plain-text content block.'
-});
+}))();
 
 /**
  * Object content
@@ -141,7 +141,7 @@ export const zAgentInstanceTextContent = z.object({
  * use OBJECT content for machine-readable structured data.
  *
  */
-export const zAgentInstanceObjectContent = z.object({
+export const zAgentInstanceObjectContent = /*#__PURE__*/ (() => z.object({
     contentType: z.string().register(z.globalRegistry, {
         description: 'The content type discriminator.'
     }),
@@ -150,18 +150,18 @@ export const zAgentInstanceObjectContent = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'An arbitrary structured content block. Accepts any valid JSON value:\nobjects, arrays, numbers, booleans, or strings.\nUse TEXT content for human-readable natural language;\nuse OBJECT content for machine-readable structured data.\n'
-});
+}))();
 
 /**
  * The content type discriminator for a history item content block.
  */
-export const zAgentInstanceMessageContentTypeEnum = z.enum([
+export const zAgentInstanceMessageContentTypeEnum = /*#__PURE__*/ (() => z.enum([
     'TEXT',
     'DOCUMENT',
     'OBJECT'
 ]).register(z.globalRegistry, {
     description: 'The content type discriminator for a history item content block.'
-});
+}))();
 
 /**
  * Per-call token and latency metrics for an ASSISTANT history item, as submitted on a
@@ -169,7 +169,7 @@ export const zAgentInstanceMessageContentTypeEnum = z.enum([
  * for rather than sending it as an explicit null.
  *
  */
-export const zAgentInstanceHistoryItemMetricsRequest = z.object({
+export const zAgentInstanceHistoryItemMetricsRequest = /*#__PURE__*/ (() => z.object({
     inputTokens: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullish(),
     outputTokens: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullish(),
     reasoningTokenCount: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullish(),
@@ -178,12 +178,12 @@ export const zAgentInstanceHistoryItemMetricsRequest = z.object({
     durationMs: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullish()
 }).register(z.globalRegistry, {
     description: 'Per-call token and latency metrics for an ASSISTANT history item, as submitted on a\ncreate/update request. All fields are optional: omit a field the caller has no value\nfor rather than sending it as an explicit null.\n'
-});
+}))();
 
 /**
  * Per-call token and latency metrics for an ASSISTANT history item.
  */
-export const zAgentInstanceHistoryItemMetrics = z.object({
+export const zAgentInstanceHistoryItemMetrics = /*#__PURE__*/ (() => z.object({
     inputTokens: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullable(),
     outputTokens: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullable(),
     reasoningTokenCount: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullable(),
@@ -192,14 +192,14 @@ export const zAgentInstanceHistoryItemMetrics = z.object({
     durationMs: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullable()
 }).register(z.globalRegistry, {
     description: 'Per-call token and latency metrics for an ASSISTANT history item.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced AgentInstanceHistoryRoleEnum filter.
  */
-export const zAdvancedAgentInstanceHistoryRoleFilter = z.object({
+export const zAdvancedAgentInstanceHistoryRoleFilter = /*#__PURE__*/ (() => z.object({
     $eq: zAgentInstanceHistoryRoleEnum.optional(),
     $neq: zAgentInstanceHistoryRoleEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -210,14 +210,14 @@ export const zAdvancedAgentInstanceHistoryRoleFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced AgentInstanceHistoryRoleEnum filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced AgentInstanceHistoryCommitStatusEnum filter.
  */
-export const zAdvancedAgentInstanceHistoryCommitStatusFilter = z.object({
+export const zAdvancedAgentInstanceHistoryCommitStatusFilter = /*#__PURE__*/ (() => z.object({
     $eq: zAgentInstanceHistoryCommitStatusEnum.optional(),
     $neq: zAgentInstanceHistoryCommitStatusEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -228,19 +228,19 @@ export const zAdvancedAgentInstanceHistoryCommitStatusFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced AgentInstanceHistoryCommitStatusEnum filter.'
-});
+}))();
 
 /**
  * System-generated entity key for an audit log entry.
  */
-export const zAuditLogEntityKey = z.string().register(z.globalRegistry, {
+export const zAuditLogEntityKey = /*#__PURE__*/ (() => z.string().register(z.globalRegistry, {
     description: 'System-generated entity key for an audit log entry.'
-});
+}))();
 
 /**
  * The type of entity affected by the operation.
  */
-export const zAuditLogEntityTypeEnum = z.enum([
+export const zAuditLogEntityTypeEnum = /*#__PURE__*/ (() => z.enum([
     'AUTHORIZATION',
     'BATCH',
     'DECISION',
@@ -258,12 +258,12 @@ export const zAuditLogEntityTypeEnum = z.enum([
     'CLIENT'
 ]).register(z.globalRegistry, {
     description: 'The type of entity affected by the operation.'
-});
+}))();
 
 /**
  * The type of operation performed.
  */
-export const zAuditLogOperationTypeEnum = z.enum([
+export const zAuditLogOperationTypeEnum = /*#__PURE__*/ (() => z.enum([
     'ASSIGN',
     'CANCEL',
     'COMPLETE',
@@ -280,44 +280,44 @@ export const zAuditLogOperationTypeEnum = z.enum([
     'UPDATE'
 ]).register(z.globalRegistry, {
     description: 'The type of operation performed.'
-});
+}))();
 
 /**
  * The type of actor who performed the operation.
  */
-export const zAuditLogActorTypeEnum = z.enum([
+export const zAuditLogActorTypeEnum = /*#__PURE__*/ (() => z.enum([
     'ANONYMOUS',
     'CLIENT',
     'UNKNOWN',
     'USER'
 ]).register(z.globalRegistry, {
     description: 'The type of actor who performed the operation.'
-});
+}))();
 
 /**
  * The result status of the operation.
  */
-export const zAuditLogResultEnum = z.enum(['FAIL', 'SUCCESS']).register(z.globalRegistry, {
+export const zAuditLogResultEnum = /*#__PURE__*/ (() => z.enum(['FAIL', 'SUCCESS']).register(z.globalRegistry, {
     description: 'The result status of the operation.'
-});
+}))();
 
 /**
  * The category of the audit log operation.
  */
-export const zAuditLogCategoryEnum = z.enum([
+export const zAuditLogCategoryEnum = /*#__PURE__*/ (() => z.enum([
     'ADMIN',
     'DEPLOYED_RESOURCES',
     'USER_TASKS'
 ]).register(z.globalRegistry, {
     description: 'The category of the audit log operation.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced entityKey filter.
  */
-export const zAdvancedAuditLogEntityKeyFilter = z.object({
+export const zAdvancedAuditLogEntityKeyFilter = /*#__PURE__*/ (() => z.object({
     $eq: zAuditLogEntityKey.optional(),
     $neq: zAuditLogEntityKey.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -331,12 +331,12 @@ export const zAdvancedAuditLogEntityKeyFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced entityKey filter.'
-});
+}))();
 
 /**
  * Specifies the type of permissions.
  */
-export const zPermissionTypeEnum = z.enum([
+export const zPermissionTypeEnum = /*#__PURE__*/ (() => z.enum([
     'ACCESS',
     'CANCEL_PROCESS_INSTANCE',
     'CLAIM',
@@ -386,12 +386,12 @@ export const zPermissionTypeEnum = z.enum([
     'UPDATE_TASK_LISTENER'
 ]).register(z.globalRegistry, {
     description: 'Specifies the type of permissions.'
-});
+}))();
 
 /**
  * The type of resource to add/remove permissions to/from.
  */
-export const zResourceTypeEnum = z.enum([
+export const zResourceTypeEnum = /*#__PURE__*/ (() => z.enum([
     'AUDIT_LOG',
     'AUTHORIZATION',
     'BACKUP',
@@ -417,12 +417,12 @@ export const zResourceTypeEnum = z.enum([
     'USER_TASK'
 ]).register(z.globalRegistry, {
     description: 'The type of resource to add/remove permissions to/from.'
-});
+}))();
 
 /**
  * The type of the owner of permissions.
  */
-export const zOwnerTypeEnum = z.enum([
+export const zOwnerTypeEnum = /*#__PURE__*/ (() => z.enum([
     'USER',
     'CLIENT',
     'ROLE',
@@ -431,9 +431,9 @@ export const zOwnerTypeEnum = z.enum([
     'UNSPECIFIED'
 ]).register(z.globalRegistry, {
     description: 'The type of the owner of permissions.'
-});
+}))();
 
-export const zAuthorizationIdBasedRequest = z.object({
+export const zAuthorizationIdBasedRequest = /*#__PURE__*/ (() => z.object({
     ownerId: z.string().register(z.globalRegistry, {
         description: 'The ID of the owner of the permissions.'
     }),
@@ -445,9 +445,9 @@ export const zAuthorizationIdBasedRequest = z.object({
     permissionTypes: z.array(zPermissionTypeEnum).register(z.globalRegistry, {
         description: 'The permission types to add.'
     })
-});
+}))();
 
-export const zAuthorizationPropertyBasedRequest = z.object({
+export const zAuthorizationPropertyBasedRequest = /*#__PURE__*/ (() => z.object({
     ownerId: z.string().register(z.globalRegistry, {
         description: 'The ID of the owner of the permissions.'
     }),
@@ -459,22 +459,22 @@ export const zAuthorizationPropertyBasedRequest = z.object({
     permissionTypes: z.array(zPermissionTypeEnum).register(z.globalRegistry, {
         description: 'The permission types to add.'
     })
-});
+}))();
 
 /**
  * Defines an authorization request.
  * Either an id-based or a property-based authorization can be provided.
  *
  */
-export const zAuthorizationRequest = z.union([
+export const zAuthorizationRequest = /*#__PURE__*/ (() => z.union([
     zAuthorizationIdBasedRequest,
     zAuthorizationPropertyBasedRequest
-]);
+]))();
 
 /**
  * Authorization search filter.
  */
-export const zAuthorizationFilter = z.object({
+export const zAuthorizationFilter = /*#__PURE__*/ (() => z.object({
     ownerId: z.string().register(z.globalRegistry, {
         description: 'The ID of the owner of permissions.'
     }).optional(),
@@ -488,7 +488,7 @@ export const zAuthorizationFilter = z.object({
     resourceType: zResourceTypeEnum.optional()
 }).register(z.globalRegistry, {
     description: 'Authorization search filter.'
-});
+}))();
 
 /**
  * Backup ID
@@ -498,9 +498,9 @@ export const zAuthorizationFilter = z.object({
  * previous one.
  *
  */
-export const zBackupId = z.coerce.number().int().gte(1).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
+export const zBackupId = /*#__PURE__*/ (() => z.coerce.number().int().gte(1).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
     description: 'The id of the backup. Must be a positive numerical value. As backups are logically\nordered by their ids (ascending), each successive backup must use a higher id than the\nprevious one.\n'
-});
+}))();
 
 /**
  * Backup ID Prefix
@@ -509,25 +509,25 @@ export const zBackupId = z.coerce.number().int().gte(1).max(9223372036854775807,
  * starting with the given prefix.
  *
  */
-export const zBackupIdPrefix = z.string().regex(/^\d*\*$/).register(z.globalRegistry, {
+export const zBackupIdPrefix = /*#__PURE__*/ (() => z.string().regex(/^\d*\*$/).register(z.globalRegistry, {
     description: 'A prefix of a backup id, followed by a single \'*\' as a wildcard, matching any backup id\nstarting with the given prefix.\n'
-});
+}))();
 
 /**
  * Partition ID
  *
  * The id of a partition. Always a positive number greater than or equal to 1.
  */
-export const zPartitionId = z.int().gte(1).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+export const zPartitionId = /*#__PURE__*/ (() => z.int().gte(1).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
     description: 'The id of a partition. Always a positive number greater than or equal to 1.'
-});
+}))();
 
 /**
  * Runtime Backup State
  *
  * The aggregated state of the backup, computed from the state of each partition.
  */
-export const zStateCode = z.enum([
+export const zStateCode = /*#__PURE__*/ (() => z.enum([
     'DOES_NOT_EXIST',
     'IN_PROGRESS',
     'COMPLETED',
@@ -536,36 +536,36 @@ export const zStateCode = z.enum([
     'DELETED'
 ]).register(z.globalRegistry, {
     description: 'The aggregated state of the backup, computed from the state of each partition.'
-});
+}))();
 
 /**
  * TakeRuntimeBackupRequest
  *
  * Request body for taking a runtime backup.
  */
-export const zTakeRuntimeBackupRequest = z.object({
+export const zTakeRuntimeBackupRequest = /*#__PURE__*/ (() => z.object({
     backupId: zBackupId.nullish()
 }).register(z.globalRegistry, {
     description: 'Request body for taking a runtime backup.'
-});
+}))();
 
 /**
  * TakeRuntimeBackupResponse
  *
  * Response body for taking a runtime backup.
  */
-export const zTakeRuntimeBackupResponse = z.object({
+export const zTakeRuntimeBackupResponse = /*#__PURE__*/ (() => z.object({
     backupId: zBackupId
 }).register(z.globalRegistry, {
     description: 'Response body for taking a runtime backup.'
-});
+}))();
 
 /**
  * Partition Backup Info
  *
  * Detailed info of the backup for a given partition.
  */
-export const zPartitionBackupInfo = z.object({
+export const zPartitionBackupInfo = /*#__PURE__*/ (() => z.object({
     partitionId: zPartitionId,
     state: zStateCode,
     failureReason: z.string().nullable(),
@@ -578,7 +578,7 @@ export const zPartitionBackupInfo = z.object({
     brokerVersion: z.string().readonly().nullable()
 }).register(z.globalRegistry, {
     description: 'Detailed info of the backup for a given partition.'
-});
+}))();
 
 /**
  * Backup Info
@@ -591,7 +591,7 @@ export const zPartitionBackupInfo = z.object({
  * - Otherwise, if one partition is 'IN_PROGRESS', the overall state is 'IN_PROGRESS'.
  *
  */
-export const zBackupInfo = z.object({
+export const zBackupInfo = /*#__PURE__*/ (() => z.object({
     backupId: zBackupId,
     state: zStateCode,
     failureReason: z.string().nullable(),
@@ -600,29 +600,29 @@ export const zBackupInfo = z.object({
     }).readonly()
 }).register(z.globalRegistry, {
     description: 'Detailed status of a runtime backup. The aggregated state is computed from the backup\nstate of each partition as:\n- If the backup of all partitions is \'COMPLETED\', the overall state is \'COMPLETED\'.\n- If one partition is \'FAILED\', the overall state is \'FAILED\'.\n- Otherwise, if one partition is \'DOES_NOT_EXIST\', the overall state is \'INCOMPLETE\'.\n- Otherwise, if one partition is \'IN_PROGRESS\', the overall state is \'IN_PROGRESS\'.\n'
-});
+}))();
 
 /**
  * Checkpoint Type
  *
  * The type of the checkpoint.
  */
-export const zCheckpointType = z.enum([
+export const zCheckpointType = /*#__PURE__*/ (() => z.enum([
     'MARKER',
     'SCHEDULED_BACKUP',
     'MANUAL_BACKUP'
 ]).register(z.globalRegistry, {
     description: 'The type of the checkpoint.'
-});
+}))();
 
 /**
  * Backup Type
  *
  * The type of the backup.
  */
-export const zBackupType = z.enum(['MANUAL_BACKUP', 'SCHEDULED_BACKUP']).register(z.globalRegistry, {
+export const zBackupType = /*#__PURE__*/ (() => z.enum(['MANUAL_BACKUP', 'SCHEDULED_BACKUP']).register(z.globalRegistry, {
     description: 'The type of the backup.'
-});
+}))();
 
 /**
  * Checkpoint ID
@@ -632,16 +632,16 @@ export const zBackupType = z.enum(['MANUAL_BACKUP', 'SCHEDULED_BACKUP']).registe
  * higher id than the previous one.
  *
  */
-export const zCheckpointId = z.coerce.number().int().gte(0).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
+export const zCheckpointId = /*#__PURE__*/ (() => z.coerce.number().int().gte(0).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
     description: 'The id of the checkpoint. Must be a non-negative numerical value. As checkpoints are\nlogically ordered by their ids (ascending), each successive checkpoint must use a\nhigher id than the previous one.\n'
-});
+}))();
 
 /**
  * Partition Checkpoint State
  *
  * Detailed information about the checkpoint state for a given partition.
  */
-export const zPartitionCheckpointState = z.object({
+export const zPartitionCheckpointState = /*#__PURE__*/ (() => z.object({
     checkpointId: zCheckpointId,
     checkpointType: zCheckpointType,
     partitionId: zPartitionId,
@@ -653,14 +653,14 @@ export const zPartitionCheckpointState = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Detailed information about the checkpoint state for a given partition.'
-});
+}))();
 
 /**
  * Partition Backup State
  *
  * Detailed information about the backup state for a given partition.
  */
-export const zPartitionBackupState = z.object({
+export const zPartitionBackupState = /*#__PURE__*/ (() => z.object({
     checkpointId: zCheckpointId,
     checkpointType: zBackupType,
     partitionId: zPartitionId.nullable(),
@@ -675,27 +675,27 @@ export const zPartitionBackupState = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Detailed information about the backup state for a given partition.'
-});
+}))();
 
 /**
  * Partition Backup Range
  *
  * Information about one backup range for a partition.
  */
-export const zPartitionBackupRange = z.object({
+export const zPartitionBackupRange = /*#__PURE__*/ (() => z.object({
     partitionId: zPartitionId,
     start: zPartitionBackupState.nullable(),
     end: zPartitionBackupState.nullable()
 }).register(z.globalRegistry, {
     description: 'Information about one backup range for a partition.'
-});
+}))();
 
 /**
  * Runtime Backup State
  *
  * Information about the checkpoint and backup state of the physical tenant.
  */
-export const zRuntimeBackupState = z.object({
+export const zRuntimeBackupState = /*#__PURE__*/ (() => z.object({
     checkpointStates: z.array(zPartitionCheckpointState).register(z.globalRegistry, {
         description: 'List of partition checkpoint states.'
     }),
@@ -707,7 +707,7 @@ export const zRuntimeBackupState = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Information about the checkpoint and backup state of the physical tenant.'
-});
+}))();
 
 /**
  * History Backup State
@@ -716,7 +716,7 @@ export const zRuntimeBackupState = z.object({
  * snapshots.
  *
  */
-export const zHistoryBackupStateCode = z.enum([
+export const zHistoryBackupStateCode = /*#__PURE__*/ (() => z.enum([
     'IN_PROGRESS',
     'COMPLETED',
     'FAILED',
@@ -724,25 +724,25 @@ export const zHistoryBackupStateCode = z.enum([
     'INCOMPATIBLE'
 ]).register(z.globalRegistry, {
     description: 'The aggregated state of a history backup, computed from the state of each of its\nsnapshots.\n'
-});
+}))();
 
 /**
  * TakeHistoryBackupRequest
  *
  * Request body for taking a history backup.
  */
-export const zTakeHistoryBackupRequest = z.object({
+export const zTakeHistoryBackupRequest = /*#__PURE__*/ (() => z.object({
     backupId: zBackupId
 }).register(z.globalRegistry, {
     description: 'Request body for taking a history backup.'
-});
+}))();
 
 /**
  * TakeHistoryBackupResponse
  *
  * Response body for taking a history backup.
  */
-export const zTakeHistoryBackupResponse = z.object({
+export const zTakeHistoryBackupResponse = /*#__PURE__*/ (() => z.object({
     backupId: zBackupId,
     scheduledSnapshots: z.array(z.string().register(z.globalRegistry, {
         description: 'The name of a scheduled snapshot.'
@@ -751,14 +751,14 @@ export const zTakeHistoryBackupResponse = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Response body for taking a history backup.'
-});
+}))();
 
 /**
  * History Backup Snapshot Info
  *
  * Detailed info of a single snapshot making up a history backup.
  */
-export const zHistoryBackupSnapshotInfo = z.object({
+export const zHistoryBackupSnapshotInfo = /*#__PURE__*/ (() => z.object({
     snapshotName: z.string().register(z.globalRegistry, {
         description: 'The name of the snapshot.'
     }).readonly(),
@@ -771,7 +771,7 @@ export const zHistoryBackupSnapshotInfo = z.object({
     }).readonly()
 }).register(z.globalRegistry, {
     description: 'Detailed info of a single snapshot making up a history backup.'
-});
+}))();
 
 /**
  * History Backup Info
@@ -787,7 +787,7 @@ export const zHistoryBackupSnapshotInfo = z.object({
  * configured timeout, the overall state is 'INCOMPLETE'.
  *
  */
-export const zHistoryBackupInfo = z.object({
+export const zHistoryBackupInfo = /*#__PURE__*/ (() => z.object({
     backupId: zBackupId,
     state: zHistoryBackupStateCode,
     failureReason: z.string().nullable(),
@@ -796,9 +796,9 @@ export const zHistoryBackupInfo = z.object({
     }).readonly()
 }).register(z.globalRegistry, {
     description: 'Detailed status of a history backup. The aggregated state is computed from the state of\neach of its snapshots as:\n- If every expected snapshot exists and all are complete, the overall state is\n  \'COMPLETED\'.\n- If one snapshot failed or is partial, the overall state is \'FAILED\'.\n- Otherwise, if one snapshot is incompatible, the overall state is \'INCOMPATIBLE\'.\n- Otherwise, if one snapshot is still running, the overall state is \'IN_PROGRESS\'.\n- Otherwise, if snapshots are missing and the backup has not progressed within the\n  configured timeout, the overall state is \'INCOMPLETE\'.\n'
-});
+}))();
 
-export const zBatchOperationError = z.object({
+export const zBatchOperationError = /*#__PURE__*/ (() => z.object({
     partitionId: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'The partition ID where the error occurred.'
     }),
@@ -808,24 +808,24 @@ export const zBatchOperationError = z.object({
     message: z.string().register(z.globalRegistry, {
         description: 'The error message that occurred during the batch operation.'
     })
-});
+}))();
 
 /**
  * The batch operation item state.
  */
-export const zBatchOperationItemStateEnum = z.enum([
+export const zBatchOperationItemStateEnum = /*#__PURE__*/ (() => z.enum([
     'ACTIVE',
     'COMPLETED',
     'CANCELED',
     'FAILED'
 ]).register(z.globalRegistry, {
     description: 'The batch operation item state.'
-});
+}))();
 
 /**
  * The batch operation state.
  */
-export const zBatchOperationStateEnum = z.enum([
+export const zBatchOperationStateEnum = /*#__PURE__*/ (() => z.enum([
     'ACTIVE',
     'CANCELED',
     'COMPLETED',
@@ -835,12 +835,12 @@ export const zBatchOperationStateEnum = z.enum([
     'SUSPENDED'
 ]).register(z.globalRegistry, {
     description: 'The batch operation state.'
-});
+}))();
 
 /**
  * The type of the batch operation.
  */
-export const zBatchOperationTypeEnum = z.enum([
+export const zBatchOperationTypeEnum = /*#__PURE__*/ (() => z.enum([
     'ADD_VARIABLE',
     'CANCEL_PROCESS_INSTANCE',
     'DELETE_DECISION_DEFINITION',
@@ -856,18 +856,18 @@ export const zBatchOperationTypeEnum = z.enum([
     'UPDATE_VARIABLE'
 ]).register(z.globalRegistry, {
     description: 'The type of the batch operation.'
-});
+}))();
 
-export const zClockPinRequest = z.object({
+export const zClockPinRequest = /*#__PURE__*/ (() => z.object({
     timestamp: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
         description: 'The exact time in epoch milliseconds to which the clock should be pinned.'
     })
-});
+}))();
 
 /**
  * The aggregated status of the whole cluster.
  */
-export const zClusterStatusResponse = z.object({
+export const zClusterStatusResponse = /*#__PURE__*/ (() => z.object({
     status: z.enum([
         'HEALTHY',
         'DEGRADED',
@@ -877,12 +877,12 @@ export const zClusterStatusResponse = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'The aggregated status of the whole cluster.'
-});
+}))();
 
 /**
  * The upgrade-readiness status of the whole cluster.
  */
-export const zClusterUpgradeStatusResponse = z.object({
+export const zClusterUpgradeStatusResponse = /*#__PURE__*/ (() => z.object({
     status: z.enum([
         'MIGRATED',
         'MIGRATION_IN_PROGRESS',
@@ -892,12 +892,12 @@ export const zClusterUpgradeStatusResponse = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'The upgrade-readiness status of the whole cluster.'
-});
+}))();
 
 /**
  * Provides information on a broker node, independent of any physical tenant.
  */
-export const zClusterBrokerInfo = z.object({
+export const zClusterBrokerInfo = /*#__PURE__*/ (() => z.object({
     brokerId: z.string().register(z.globalRegistry, {
         description: 'The unique (within a cluster) broker identifier. When the cluster is not zoned, then it\'s a string that represents the nodeId (an integer). When the cluster is zoned, instead, it\'s of the form "$zoneName_$nodeId", providing uniqueness even across zones.\n'
     }),
@@ -912,25 +912,25 @@ export const zClusterBrokerInfo = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Provides information on a broker node, independent of any physical tenant.'
-});
+}))();
 
 /**
  * Cluster Runtime Backup Take Outcome
  *
  * What a physical tenant did with the trigger. `TRIGGERED` says the backup is running, not that it completed — poll `GET /cluster/v2/backups/runtime/{backupId}` for that. A `FAILED` tenant is running no backup for this request and needs no cleanup. `UNKNOWN` means the broker may or may not have accepted the request — the connection was cut mid-flight, or the gateway timed out waiting — so that tenant's backups have to be checked before retrying; it is reported separately from `FAILED` precisely because calling it failed would claim nothing is running there. Tenants that were triggered are never rolled back.
  */
-export const zClusterRuntimeBackupTakeOutcome = z.enum([
+export const zClusterRuntimeBackupTakeOutcome = /*#__PURE__*/ (() => z.enum([
     'TRIGGERED',
     'FAILED',
     'UNKNOWN'
 ]).register(z.globalRegistry, {
     description: 'What a physical tenant did with the trigger. `TRIGGERED` says the backup is running, not that it completed — poll `GET /cluster/v2/backups/runtime/{backupId}` for that. A `FAILED` tenant is running no backup for this request and needs no cleanup. `UNKNOWN` means the broker may or may not have accepted the request — the connection was cut mid-flight, or the gateway timed out waiting — so that tenant\'s backups have to be checked before retrying; it is reported separately from `FAILED` precisely because calling it failed would claim nothing is running there. Tenants that were triggered are never rolled back.'
-});
+}))();
 
 /**
  * Whether one physical tenant's runtime backup was triggered, and under which id it can be monitored and deleted.
  */
-export const zClusterRuntimeBackupTakeResult = z.object({
+export const zClusterRuntimeBackupTakeResult = /*#__PURE__*/ (() => z.object({
     physicalTenantId: z.string().register(z.globalRegistry, {
         description: 'The id of the physical tenant.'
     }),
@@ -939,23 +939,23 @@ export const zClusterRuntimeBackupTakeResult = z.object({
     reason: z.string().nullable()
 }).register(z.globalRegistry, {
     description: 'Whether one physical tenant\'s runtime backup was triggered, and under which id it can be monitored and deleted.'
-});
+}))();
 
 /**
  * The outcome of triggering a runtime backup on every targeted physical tenant. Returned both when every tenant was triggered and when only some were, so a partial trigger is never silent: the status code says whether the request succeeded, the body says what is running.
  */
-export const zClusterTakeRuntimeBackupResponse = z.object({
+export const zClusterTakeRuntimeBackupResponse = /*#__PURE__*/ (() => z.object({
     physicalTenants: z.array(zClusterRuntimeBackupTakeResult).register(z.globalRegistry, {
         description: 'The outcome for each targeted physical tenant, ordered by physical tenant id. Carries no cluster-level backup id: in generated-id mode each tenant generates its own.'
     })
 }).register(z.globalRegistry, {
     description: 'The outcome of triggering a runtime backup on every targeted physical tenant. Returned both when every tenant was triggered and when only some were, so a partial trigger is never silent: the status code says whether the request succeeded, the body says what is running.'
-});
+}))();
 
 /**
  * What a single physical tenant reports for a runtime backup id.
  */
-export const zClusterRuntimeBackupTenantInfo = z.object({
+export const zClusterRuntimeBackupTenantInfo = /*#__PURE__*/ (() => z.object({
     physicalTenantId: z.string().register(z.globalRegistry, {
         description: 'The id of the physical tenant.'
     }),
@@ -966,12 +966,12 @@ export const zClusterRuntimeBackupTenantInfo = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'What a single physical tenant reports for a runtime backup id.'
-});
+}))();
 
 /**
  * A runtime backup id, what each physical tenant reports for it, and the state aggregated over every targeted tenant — folded from the per-tenant states by the same rules a per-tenant state is folded from its partitions.
  */
-export const zClusterRuntimeBackupInfo = z.object({
+export const zClusterRuntimeBackupInfo = /*#__PURE__*/ (() => z.object({
     backupId: zBackupId,
     state: zStateCode,
     failureReason: z.string().nullable(),
@@ -980,35 +980,35 @@ export const zClusterRuntimeBackupInfo = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'A runtime backup id, what each physical tenant reports for it, and the state aggregated over every targeted tenant — folded from the per-tenant states by the same rules a per-tenant state is folded from its partitions.'
-});
+}))();
 
 /**
  * The checkpoint and backup state of one physical tenant.
  */
-export const zClusterRuntimeBackupTenantState = z.object({
+export const zClusterRuntimeBackupTenantState = /*#__PURE__*/ (() => z.object({
     physicalTenantId: z.string().register(z.globalRegistry, {
         description: 'The id of the physical tenant.'
     }),
     state: zRuntimeBackupState
 }).register(z.globalRegistry, {
     description: 'The checkpoint and backup state of one physical tenant.'
-});
+}))();
 
 /**
  * The checkpoint and backup state of each physical tenant. Nothing is aggregated across tenants: checkpoint ids and log positions only mean anything within one tenant's partitions.
  */
-export const zClusterRuntimeBackupState = z.object({
+export const zClusterRuntimeBackupState = /*#__PURE__*/ (() => z.object({
     physicalTenants: z.array(zClusterRuntimeBackupTenantState).register(z.globalRegistry, {
         description: 'The runtime backup state of each targeted physical tenant, ordered by physical tenant id.'
     })
 }).register(z.globalRegistry, {
     description: 'The checkpoint and backup state of each physical tenant. Nothing is aggregated across tenants: checkpoint ids and log positions only mean anything within one tenant\'s partitions.'
-});
+}))();
 
 /**
  * The snapshots scheduled on a single physical tenant. Only successfully scheduled tenants are reported: the request fails as a whole if any targeted tenant could not schedule the backup.
  */
-export const zClusterHistoryBackupTakeResult = z.object({
+export const zClusterHistoryBackupTakeResult = /*#__PURE__*/ (() => z.object({
     physicalTenantId: z.string().register(z.globalRegistry, {
         description: 'The id of the physical tenant.'
     }),
@@ -1019,26 +1019,26 @@ export const zClusterHistoryBackupTakeResult = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'The snapshots scheduled on a single physical tenant. Only successfully scheduled tenants are reported: the request fails as a whole if any targeted tenant could not schedule the backup.'
-});
+}))();
 
 /**
  * The snapshots scheduled on every targeted physical tenant. No cluster-level state is aggregated from the per-tenant outcomes.
  */
-export const zClusterTakeHistoryBackupResponse = z.object({
+export const zClusterTakeHistoryBackupResponse = /*#__PURE__*/ (() => z.object({
     backupId: zBackupId,
     physicalTenants: z.array(zClusterHistoryBackupTakeResult).register(z.globalRegistry, {
         description: 'The outcome for each targeted physical tenant, ordered by physical tenant id.'
     })
 }).register(z.globalRegistry, {
     description: 'The snapshots scheduled on every targeted physical tenant. No cluster-level state is aggregated from the per-tenant outcomes.'
-});
+}))();
 
 /**
  * Cluster History Backup Tenant State
  *
  * What a physical tenant reports for a history backup id: the per-tenant `HistoryBackupStateCode` extended with `NOT_FOUND` for a tenant that was read and does not hold the backup. `NOT_FOUND` is a successful observation, not a failure — a backup that only some physical tenants hold is a supported outcome. There is no state for a tenant that could not be read at all, because such a tenant fails the whole request.
  */
-export const zClusterHistoryBackupTenantState = z.enum([
+export const zClusterHistoryBackupTenantState = /*#__PURE__*/ (() => z.enum([
     'IN_PROGRESS',
     'COMPLETED',
     'FAILED',
@@ -1047,12 +1047,12 @@ export const zClusterHistoryBackupTenantState = z.enum([
     'NOT_FOUND'
 ]).register(z.globalRegistry, {
     description: 'What a physical tenant reports for a history backup id: the per-tenant `HistoryBackupStateCode` extended with `NOT_FOUND` for a tenant that was read and does not hold the backup. `NOT_FOUND` is a successful observation, not a failure — a backup that only some physical tenants hold is a supported outcome. There is no state for a tenant that could not be read at all, because such a tenant fails the whole request.'
-});
+}))();
 
 /**
  * What a single physical tenant reports for a history backup id.
  */
-export const zClusterHistoryBackupTenantInfo = z.object({
+export const zClusterHistoryBackupTenantInfo = /*#__PURE__*/ (() => z.object({
     physicalTenantId: z.string().register(z.globalRegistry, {
         description: 'The id of the physical tenant.'
     }),
@@ -1063,24 +1063,24 @@ export const zClusterHistoryBackupTenantInfo = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'What a single physical tenant reports for a history backup id.'
-});
+}))();
 
 /**
  * A history backup id and what each physical tenant reports for it. No cluster-level state is aggregated from the per-tenant states.
  */
-export const zClusterHistoryBackupInfo = z.object({
+export const zClusterHistoryBackupInfo = /*#__PURE__*/ (() => z.object({
     backupId: zBackupId,
     physicalTenants: z.array(zClusterHistoryBackupTenantInfo).register(z.globalRegistry, {
         description: 'What each physical tenant reports for this backup id, ordered by physical tenant id. When looking a backup id up directly, every targeted tenant is listed, including the ones reporting `NOT_FOUND`. Within a listing, only the tenants that hold the id are listed.'
     })
 }).register(z.globalRegistry, {
     description: 'A history backup id and what each physical tenant reports for it. No cluster-level state is aggregated from the per-tenant states.'
-});
+}))();
 
 /**
  * The settings to run a given rebalance with. Every setting is optional; an absent request body is equivalent to a body with every field absent, and means "use the configured settings".
  */
-export const zClusterRebalanceRequest = z.object({
+export const zClusterRebalanceRequest = /*#__PURE__*/ (() => z.object({
     replicationLagThreshold: z.coerce.number().int().gte(0).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
         description: 'The highest replication lag (in bytes) that a desired leader may have for its transfer to be accepted.'
     }).optional(),
@@ -1095,12 +1095,12 @@ export const zClusterRebalanceRequest = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'The settings to run a given rebalance with. Every setting is optional; an absent request body is equivalent to a body with every field absent, and means "use the configured settings".'
-});
+}))();
 
 /**
  * One partition's leadership/balance status - its current leader, its desired leader, and whether a rebalance is currently moving it.
  */
-export const zClusterRebalancePartition = z.object({
+export const zClusterRebalancePartition = /*#__PURE__*/ (() => z.object({
     partitionId: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'The unique ID of this partition, within its physical tenant.'
     }),
@@ -1120,12 +1120,12 @@ export const zClusterRebalancePartition = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'One partition\'s leadership/balance status - its current leader, its desired leader, and whether a rebalance is currently moving it.'
-});
+}))();
 
 /**
  * One partition's plan, progress, and outcome within a rebalance.
  */
-export const zClusterRebalanceOperationPartition = z.object({
+export const zClusterRebalanceOperationPartition = /*#__PURE__*/ (() => z.object({
     partitionId: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'The unique ID of this partition, within its physical tenant.'
     }),
@@ -1169,12 +1169,12 @@ export const zClusterRebalanceOperationPartition = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'One partition\'s plan, progress, and outcome within a rebalance.'
-});
+}))();
 
 /**
  * The fields common to a running and a completed rebalance.
  */
-export const zClusterRebalance = z.object({
+export const zClusterRebalance = /*#__PURE__*/ (() => z.object({
     rebalanceId: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
         description: 'The ID of this rebalance.'
     }),
@@ -1186,24 +1186,24 @@ export const zClusterRebalance = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'The fields common to a running and a completed rebalance.'
-});
+}))();
 
 /**
  * The rebalance currently running.
  */
-export const zClusterRunningRebalance = zClusterRebalance.and(z.object({
+export const zClusterRunningRebalance = /*#__PURE__*/ (() => zClusterRebalance.and(z.object({
     dryRun: z.boolean().register(z.globalRegistry, {
         description: 'Whether this rebalance is a dry run.'
     }),
     cancelRequested: z.boolean().register(z.globalRegistry, {
         description: 'Whether cancellation has been requested.'
     })
-}));
+})))();
 
 /**
  * The last completed rebalance.
  */
-export const zClusterCompletedRebalance = zClusterRebalance.and(z.object({
+export const zClusterCompletedRebalance = /*#__PURE__*/ (() => zClusterRebalance.and(z.object({
     finishedAt: z.iso.datetime().register(z.globalRegistry, {
         description: 'When this rebalance finished.'
     }),
@@ -1214,12 +1214,12 @@ export const zClusterCompletedRebalance = zClusterRebalance.and(z.object({
     ]).register(z.globalRegistry, {
         description: 'How the rebalance ended.'
     })
-}));
+})))();
 
 /**
  * The cluster's current per-partition balance state, the running rebalance, and the last completed rebalance.
  */
-export const zClusterBalanceResponse = z.object({
+export const zClusterBalanceResponse = /*#__PURE__*/ (() => z.object({
     state: z.enum([
         'BALANCED',
         'BALANCING',
@@ -1234,34 +1234,34 @@ export const zClusterBalanceResponse = z.object({
     lastCompletedRebalance: zClusterCompletedRebalance.nullable()
 }).register(z.globalRegistry, {
     description: 'The cluster\'s current per-partition balance state, the running rebalance, and the last completed rebalance.'
-});
+}))();
 
 /**
  * Response to a rebalance cancellation request.
  */
-export const zRebalanceCancellationResponse = z.object({
+export const zRebalanceCancellationResponse = /*#__PURE__*/ (() => z.object({
     wasRunning: z.boolean().register(z.globalRegistry, {
         description: 'Whether there was a rebalance to stop.'
     })
 }).register(z.globalRegistry, {
     description: 'Response to a rebalance cancellation request.'
-});
+}))();
 
 /**
  * The kind of a cluster variable. JSON is the default. SECRET_REFERENCE allows the value to contain camunda.secrets.X references that are resolved at job activation time.
  */
-export const zClusterVariableKindEnum = z.enum(['JSON', 'SECRET_REFERENCE']).register(z.globalRegistry, {
+export const zClusterVariableKindEnum = /*#__PURE__*/ (() => z.enum(['JSON', 'SECRET_REFERENCE']).register(z.globalRegistry, {
     description: 'The kind of a cluster variable. JSON is the default. SECRET_REFERENCE allows the value to contain camunda.secrets.X references that are resolved at job activation time.'
-});
+}))();
 
 /**
  * The scope of a cluster variable.
  */
-export const zClusterVariableScopeEnum = z.enum(['GLOBAL', 'TENANT']).register(z.globalRegistry, {
+export const zClusterVariableScopeEnum = /*#__PURE__*/ (() => z.enum(['GLOBAL', 'TENANT']).register(z.globalRegistry, {
     description: 'The scope of a cluster variable.'
-});
+}))();
 
-export const zUpdateClusterVariableRequest = z.object({
+export const zUpdateClusterVariableRequest = /*#__PURE__*/ (() => z.object({
     value: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
         description: 'The new value of the cluster variable. Can be any JSON object or primitive value. Will be serialized as a JSON string in responses.'
     }),
@@ -1271,19 +1271,19 @@ export const zUpdateClusterVariableRequest = z.object({
     ])).register(z.globalRegistry, {
         description: 'A generic key-value metadata bag attached to the cluster variable. Values must be strings or numbers. Limited to 100 entries and a configurable maximum serialized size (default: 100 entries at max key length of a cluster variable name (256 chars) plus the maximum value length, 8192 characters).'
     }).optional()
-});
+}))();
 
 /**
  * The operating mode of a cluster's partitions.
  */
-export const zMode = z.enum(['PROCESSING', 'RECOVERING']).register(z.globalRegistry, {
+export const zMode = /*#__PURE__*/ (() => z.enum(['PROCESSING', 'RECOVERING']).register(z.globalRegistry, {
     description: 'The operating mode of a cluster\'s partitions.'
-});
+}))();
 
 /**
  * Provides information on a partition within a broker node.
  */
-export const zPartition = z.object({
+export const zPartition = /*#__PURE__*/ (() => z.object({
     partitionId: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'The unique ID of this partition.'
     }),
@@ -1313,12 +1313,12 @@ export const zPartition = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Provides information on a partition within a broker node.'
-});
+}))();
 
 /**
  * The partitions of one physical tenant that one broker manages or replicates.
  */
-export const zPhysicalTenantBrokerTopology = z.object({
+export const zPhysicalTenantBrokerTopology = /*#__PURE__*/ (() => z.object({
     brokerId: z.string().register(z.globalRegistry, {
         description: 'The unique (within a cluster) identifier of the broker, as reported in the cluster-level broker list.\n'
     }),
@@ -1327,12 +1327,12 @@ export const zPhysicalTenantBrokerTopology = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'The partitions of one physical tenant that one broker manages or replicates.'
-});
+}))();
 
 /**
  * The topology of a single physical tenant.
  */
-export const zPhysicalTenantTopology = z.object({
+export const zPhysicalTenantTopology = /*#__PURE__*/ (() => z.object({
     physicalTenantId: z.string().register(z.globalRegistry, {
         description: 'The id of the physical tenant.'
     }),
@@ -1350,12 +1350,12 @@ export const zPhysicalTenantTopology = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'The topology of a single physical tenant.'
-});
+}))();
 
 /**
  * The topology of the whole cluster, aggregated over all physical tenants.
  */
-export const zClusterTopologyResponse = z.object({
+export const zClusterTopologyResponse = /*#__PURE__*/ (() => z.object({
     brokers: z.array(zClusterBrokerInfo).register(z.globalRegistry, {
         description: 'The brokers that are part of this cluster, across all physical tenants.'
     }),
@@ -1369,12 +1369,12 @@ export const zClusterTopologyResponse = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'The topology of the whole cluster, aggregated over all physical tenants.'
-});
+}))();
 
 /**
  * Provides information on a broker node.
  */
-export const zBrokerInfo = z.object({
+export const zBrokerInfo = /*#__PURE__*/ (() => z.object({
     nodeId: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'The node ID for the broker. The uniqueness of this identifier depends if the cluster is zone-aware or not. - non zone-aware: (default) nodeId is unique across the cluster - zone-aware:  (opt-in) nodeId is unique only within its zone. If you are migrating to a zone aware cluster, you must use `brokerId` instead. This property is deprecated, as it\'s been replaced by `brokerId`.\n'
     }),
@@ -1395,12 +1395,12 @@ export const zBrokerInfo = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Provides information on a broker node.'
-});
+}))();
 
 /**
  * The response of a topology request.
  */
-export const zTopologyResponse = z.object({
+export const zTopologyResponse = /*#__PURE__*/ (() => z.object({
     brokers: z.array(zBrokerInfo).register(z.globalRegistry, {
         description: 'A list of brokers that are part of this cluster.'
     }),
@@ -1422,36 +1422,36 @@ export const zTopologyResponse = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'The response of a topology request.'
-});
+}))();
 
 /**
  * A single operation that is part of a cluster mode change.
  */
-export const zClusterModeChangeOperation = z.object({
+export const zClusterModeChangeOperation = /*#__PURE__*/ (() => z.object({
     operation: z.string().register(z.globalRegistry, {
         description: 'The type of the operation.'
     }),
     mode: z.string().nullable()
 }).register(z.globalRegistry, {
     description: 'A single operation that is part of a cluster mode change.'
-});
+}))();
 
 /**
  * The operations of a cluster mode change that apply to one physical tenant.
  */
-export const zClusterModeChangePlannedChange = z.object({
+export const zClusterModeChangePlannedChange = /*#__PURE__*/ (() => z.object({
     physicalTenantId: z.string().nullable(),
     operations: z.array(zClusterModeChangeOperation).register(z.globalRegistry, {
         description: 'The ordered list of operations that will be applied to the physical tenant.'
     })
 }).register(z.globalRegistry, {
     description: 'The operations of a cluster mode change that apply to one physical tenant.'
-});
+}))();
 
 /**
  * The planned changes resulting from a cluster mode transition request.
  */
-export const zClusterModeChangeResponse = z.object({
+export const zClusterModeChangeResponse = /*#__PURE__*/ (() => z.object({
     changeId: z.string().register(z.globalRegistry, {
         description: 'The ID of the cluster change that was triggered by the request.'
     }),
@@ -1460,12 +1460,12 @@ export const zClusterModeChangeResponse = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'The planned changes resulting from a cluster mode transition request.'
-});
+}))();
 
 /**
  * A restore operation that applies to a broker as a whole, such as the one that updates its incarnation number.
  */
-export const zClusterRestoreBrokerOperation = z.object({
+export const zClusterRestoreBrokerOperation = /*#__PURE__*/ (() => z.object({
     operation: z.string().register(z.globalRegistry, {
         description: 'The type of the operation.'
     }),
@@ -1474,12 +1474,12 @@ export const zClusterRestoreBrokerOperation = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'A restore operation that applies to a broker as a whole, such as the one that updates its incarnation number.'
-});
+}))();
 
 /**
  * A restore operation that targets a single partition without restoring it, such as the one that prepares the partition for its restore.
  */
-export const zClusterRestorePartitionOperation = z.object({
+export const zClusterRestorePartitionOperation = /*#__PURE__*/ (() => z.object({
     operation: z.string().register(z.globalRegistry, {
         description: 'The type of the operation.'
     }),
@@ -1491,12 +1491,12 @@ export const zClusterRestorePartitionOperation = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'A restore operation that targets a single partition without restoring it, such as the one that prepares the partition for its restore.'
-});
+}))();
 
 /**
  * The operation that restores a single partition from the backups resolved for it.
  */
-export const zClusterRestorePartitionRestoreOperation = z.object({
+export const zClusterRestorePartitionRestoreOperation = /*#__PURE__*/ (() => z.object({
     operation: z.string().register(z.globalRegistry, {
         description: 'The type of the operation.'
     }),
@@ -1511,12 +1511,12 @@ export const zClusterRestorePartitionRestoreOperation = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'The operation that restores a single partition from the backups resolved for it.'
-});
+}))();
 
 /**
  * The operation that transitions a broker to a mode once its partitions are restored.
  */
-export const zClusterRestoreModeChangeOperation = z.object({
+export const zClusterRestoreModeChangeOperation = /*#__PURE__*/ (() => z.object({
     operation: z.string().register(z.globalRegistry, {
         description: 'The type of the operation.'
     }),
@@ -1528,12 +1528,12 @@ export const zClusterRestoreModeChangeOperation = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'The operation that transitions a broker to a mode once its partitions are restored.'
-});
+}))();
 
 /**
  * The operation that awaits the transition of a broker to a mode.
  */
-export const zClusterRestoreAwaitModeChangeOperation = z.object({
+export const zClusterRestoreAwaitModeChangeOperation = /*#__PURE__*/ (() => z.object({
     operation: z.string().register(z.globalRegistry, {
         description: 'The type of the operation.'
     }),
@@ -1545,35 +1545,35 @@ export const zClusterRestoreAwaitModeChangeOperation = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'The operation that awaits the transition of a broker to a mode.'
-});
+}))();
 
 /**
  * A single operation that is part of a restore. Every operation names the broker that applies it; the rest of its properties depend on what the operation does, so it is reported as one of the variants below, distinguished by `operation`. A property a variant does not declare is absent from the response rather than reported as null.
  */
-export const zClusterRestoreOperation = z.discriminatedUnion('operation', [
+export const zClusterRestoreOperation = /*#__PURE__*/ (() => z.discriminatedUnion('operation', [
     zClusterRestoreBrokerOperation.extend({ operation: z.literal('UpdateIncarnationNumberOperation') }),
     zClusterRestorePartitionOperation.extend({ operation: z.literal('PartitionPreRestoreOperation') }),
     zClusterRestorePartitionRestoreOperation.extend({ operation: z.literal('PartitionRestoreOperation') }),
     zClusterRestoreModeChangeOperation.extend({ operation: z.literal('ModeChangeOperation') }),
     zClusterRestoreAwaitModeChangeOperation.extend({ operation: z.literal('AwaitModeChangeOperation') })
-]);
+]))();
 
 /**
  * The operations of a restore that apply to one physical tenant.
  */
-export const zClusterRestorePlannedChange = z.object({
+export const zClusterRestorePlannedChange = /*#__PURE__*/ (() => z.object({
     physicalTenantId: z.string().nullable(),
     operations: z.array(zClusterRestoreOperation).register(z.globalRegistry, {
         description: 'The ordered list of operations that will be applied to the physical tenant.'
     })
 }).register(z.globalRegistry, {
     description: 'The operations of a restore that apply to one physical tenant.'
-});
+}))();
 
 /**
  * The planned changes resulting from a restore request.
  */
-export const zClusterRestoreResponse = z.object({
+export const zClusterRestoreResponse = /*#__PURE__*/ (() => z.object({
     changeId: z.string().register(z.globalRegistry, {
         description: 'The ID of the cluster change that was triggered by the request.'
     }),
@@ -1582,32 +1582,32 @@ export const zClusterRestoreResponse = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'The planned changes resulting from a restore request.'
-});
+}))();
 
 /**
  * Describes a restore request. Provide either a list of backup IDs or a time range (`from`/`to`) that selects the backups to restore; the two are mutually exclusive.
  */
-export const zRestoreRequest = z.object({
+export const zRestoreRequest = /*#__PURE__*/ (() => z.object({
     from: z.iso.datetime().nullish(),
     to: z.iso.datetime().nullish(),
     backupIds: z.array(z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' })).nullish()
 }).register(z.globalRegistry, {
     description: 'Describes a restore request. Provide either a list of backup IDs or a time range (`from`/`to`) that selects the backups to restore; the two are mutually exclusive.'
-});
+}))();
 
 /**
  * Describes a restore request issued by a cluster admin. The backup selection at the top level applies to every targeted physical tenant, except for the ones listed in `overrides`.
  */
-export const zClusterRestoreRequest = zRestoreRequest.and(z.object({
+export const zClusterRestoreRequest = /*#__PURE__*/ (() => zRestoreRequest.and(z.object({
     overrides: z.record(z.string(), zRestoreRequest).nullish()
 })).register(z.globalRegistry, {
     description: 'Describes a restore request issued by a cluster admin. The backup selection at the top level applies to every targeted physical tenant, except for the ones listed in `overrides`.'
-});
+}))();
 
 /**
  * The restore status of a single partition on a broker.
  */
-export const zRestorePartitionStatus = z.object({
+export const zRestorePartitionStatus = /*#__PURE__*/ (() => z.object({
     partitionId: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'The ID of the partition.'
     }),
@@ -1624,12 +1624,12 @@ export const zRestorePartitionStatus = z.object({
     completedAt: z.iso.datetime().nullable()
 }).register(z.globalRegistry, {
     description: 'The restore status of a single partition on a broker.'
-});
+}))();
 
 /**
  * The restore status of a single broker.
  */
-export const zRestoreBrokerStatus = z.object({
+export const zRestoreBrokerStatus = /*#__PURE__*/ (() => z.object({
     brokerId: z.string().register(z.globalRegistry, {
         description: 'The ID of the broker, including its zone if it belongs to one.'
     }),
@@ -1644,12 +1644,12 @@ export const zRestoreBrokerStatus = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'The restore status of a single broker.'
-});
+}))();
 
 /**
  * The status of the restore that is currently in progress.
  */
-export const zRestoreStatusResponse = z.object({
+export const zRestoreStatusResponse = /*#__PURE__*/ (() => z.object({
     status: z.enum([
         'IN_PROGRESS',
         'COMPLETED',
@@ -1667,26 +1667,26 @@ export const zRestoreStatusResponse = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'The status of the restore that is currently in progress.'
-});
+}))();
 
 /**
  * The start cursor in a search query result set.
  */
-export const zStartCursor = z.string().regex(/^(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}(?:==)?|[A-Za-z0-9+\/]{3}=)?$/).register(z.globalRegistry, {
+export const zStartCursor = /*#__PURE__*/ (() => z.string().regex(/^(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}(?:==)?|[A-Za-z0-9+\/]{3}=)?$/).register(z.globalRegistry, {
     description: 'The start cursor in a search query result set.'
-});
+}))();
 
 /**
  * The end cursor in a search query result set.
  */
-export const zEndCursor = z.string().regex(/^(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}(?:==)?|[A-Za-z0-9+\/]{3}=)?$/).register(z.globalRegistry, {
+export const zEndCursor = /*#__PURE__*/ (() => z.string().regex(/^(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}(?:==)?|[A-Za-z0-9+\/]{3}=)?$/).register(z.globalRegistry, {
     description: 'The end cursor in a search query result set.'
-});
+}))();
 
 /**
  * A decision input that was evaluated within this decision evaluation.
  */
-export const zEvaluatedDecisionInputItem = z.object({
+export const zEvaluatedDecisionInputItem = /*#__PURE__*/ (() => z.object({
     inputId: z.string().register(z.globalRegistry, {
         description: 'The identifier of the decision input.'
     }),
@@ -1698,12 +1698,12 @@ export const zEvaluatedDecisionInputItem = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'A decision input that was evaluated within this decision evaluation.'
-});
+}))();
 
 /**
  * The evaluated decision outputs.
  */
-export const zEvaluatedDecisionOutputItem = z.object({
+export const zEvaluatedDecisionOutputItem = /*#__PURE__*/ (() => z.object({
     outputId: z.string().register(z.globalRegistry, {
         description: 'The ID of the evaluated decison output item.'
     }),
@@ -1717,12 +1717,12 @@ export const zEvaluatedDecisionOutputItem = z.object({
     ruleIndex: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).nullable()
 }).register(z.globalRegistry, {
     description: 'The evaluated decision outputs.'
-});
+}))();
 
 /**
  * A decision rule that matched within this decision evaluation.
  */
-export const zMatchedDecisionRuleItem = z.object({
+export const zMatchedDecisionRuleItem = /*#__PURE__*/ (() => z.object({
     ruleId: z.string().register(z.globalRegistry, {
         description: 'The ID of the matched rule.'
     }),
@@ -1734,33 +1734,33 @@ export const zMatchedDecisionRuleItem = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'A decision rule that matched within this decision evaluation.'
-});
+}))();
 
 /**
  * The type of the decision. UNSPECIFIED is deprecated and should not be used anymore, for removal in 8.10
  */
-export const zDecisionDefinitionTypeEnum = z.enum([
+export const zDecisionDefinitionTypeEnum = /*#__PURE__*/ (() => z.enum([
     'DECISION_TABLE',
     'LITERAL_EXPRESSION',
     'UNSPECIFIED',
     'UNKNOWN'
 ]).register(z.globalRegistry, {
     description: 'The type of the decision. UNSPECIFIED is deprecated and should not be used anymore, for removal in 8.10'
-});
+}))();
 
 /**
  * The state of the decision instance. UNSPECIFIED and UNKNOWN are deprecated and should not be used anymore, for removal in 8.10
  */
-export const zDecisionInstanceStateEnum = z.enum([
+export const zDecisionInstanceStateEnum = /*#__PURE__*/ (() => z.enum([
     'EVALUATED',
     'FAILED',
     'UNSPECIFIED',
     'UNKNOWN'
 ]).register(z.globalRegistry, {
     description: 'The state of the decision instance. UNSPECIFIED and UNKNOWN are deprecated and should not be used anymore, for removal in 8.10'
-});
+}))();
 
-export const zDocumentCreationFailureDetail = z.object({
+export const zDocumentCreationFailureDetail = /*#__PURE__*/ (() => z.object({
     fileName: z.string().register(z.globalRegistry, {
         description: 'The name of the file that failed to upload.'
     }),
@@ -1773,45 +1773,45 @@ export const zDocumentCreationFailureDetail = z.object({
     detail: z.string().register(z.globalRegistry, {
         description: 'A human-readable explanation specific to this occurrence of the problem.'
     })
-});
+}))();
 
-export const zDocumentLinkRequest = z.object({
+export const zDocumentLinkRequest = /*#__PURE__*/ (() => z.object({
     timeToLive: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
         description: 'The time-to-live of the document link in ms.'
     }).optional().default(3600000)
-});
+}))();
 
-export const zDocumentLink = z.object({
+export const zDocumentLink = /*#__PURE__*/ (() => z.object({
     url: z.string().register(z.globalRegistry, {
         description: 'The link to the document.'
     }),
     expiresAt: z.iso.datetime().register(z.globalRegistry, {
         description: 'The date and time when the link expires.'
     })
-});
+}))();
 
 /**
  * Document Id that uniquely identifies a document.
  */
-export const zDocumentId = z.string().register(z.globalRegistry, {
+export const zDocumentId = /*#__PURE__*/ (() => z.string().register(z.globalRegistry, {
     description: 'Document Id that uniquely identifies a document.'
-});
+}))();
 
 /**
  * Element states
  */
-export const zElementInstanceStateEnum = z.enum([
+export const zElementInstanceStateEnum = /*#__PURE__*/ (() => z.enum([
     'ACTIVE',
     'COMPLETED',
     'TERMINATED'
 ]).register(z.globalRegistry, {
     description: 'Element states'
-});
+}))();
 
 /**
  * The BPMN element type of a waiting element instance.
  */
-export const zWaitStateElementTypeEnum = z.enum([
+export const zWaitStateElementTypeEnum = /*#__PURE__*/ (() => z.enum([
     'AD_HOC_SUB_PROCESS',
     'AD_HOC_SUB_PROCESS_INNER_INSTANCE',
     'BOUNDARY_EVENT',
@@ -1841,12 +1841,12 @@ export const zWaitStateElementTypeEnum = z.enum([
     'USER_TASK'
 ]).register(z.globalRegistry, {
     description: 'The BPMN element type of a waiting element instance.'
-});
+}))();
 
 /**
  * The type of waiting state an element instance is in.
  */
-export const zWaitStateTypeEnum = z.enum([
+export const zWaitStateTypeEnum = /*#__PURE__*/ (() => z.enum([
     'JOB',
     'MESSAGE',
     'USER_TASK',
@@ -1855,20 +1855,20 @@ export const zWaitStateTypeEnum = z.enum([
     'CONDITION'
 ]).register(z.globalRegistry, {
     description: 'The type of waiting state an element instance is in.'
-});
+}))();
 
 /**
  * Common fields shared by all wait-state details variants.
  */
-export const zBaseWaitStateDetails = z.object({
+export const zBaseWaitStateDetails = /*#__PURE__*/ (() => z.object({
     waitStateType: z.string().register(z.globalRegistry, {
         description: 'The wait state type discriminator.'
     })
 }).register(z.globalRegistry, {
     description: 'Common fields shared by all wait-state details variants.'
-});
+}))();
 
-export const zMessageWaitStateDetails = zBaseWaitStateDetails.and(z.object({
+export const zMessageWaitStateDetails = /*#__PURE__*/ (() => zBaseWaitStateDetails.and(z.object({
     messageName: z.string().register(z.globalRegistry, {
         description: 'The name of the message being awaited.'
     }),
@@ -1876,26 +1876,26 @@ export const zMessageWaitStateDetails = zBaseWaitStateDetails.and(z.object({
     waitStateType: z.string().register(z.globalRegistry, {
         description: 'The wait state type discriminator.'
     })
-}));
+})))();
 
-export const zTimerWaitStateDetails = zBaseWaitStateDetails.and(z.object({
+export const zTimerWaitStateDetails = /*#__PURE__*/ (() => zBaseWaitStateDetails.and(z.object({
     dueDate: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullable(),
     repetitions: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).nullable(),
     waitStateType: z.string().register(z.globalRegistry, {
         description: 'The wait state type discriminator.'
     })
-}));
+})))();
 
-export const zSignalWaitStateDetails = zBaseWaitStateDetails.and(z.object({
+export const zSignalWaitStateDetails = /*#__PURE__*/ (() => zBaseWaitStateDetails.and(z.object({
     signalName: z.string().register(z.globalRegistry, {
         description: 'The name of the signal being awaited.'
     }),
     waitStateType: z.string().register(z.globalRegistry, {
         description: 'The wait state type discriminator.'
     })
-}));
+})))();
 
-export const zConditionWaitStateDetails = zBaseWaitStateDetails.and(z.object({
+export const zConditionWaitStateDetails = /*#__PURE__*/ (() => zBaseWaitStateDetails.and(z.object({
     expression: z.string().register(z.globalRegistry, {
         description: 'The condition expression that must evaluate to true to proceed.'
     }),
@@ -1905,7 +1905,7 @@ export const zConditionWaitStateDetails = zBaseWaitStateDetails.and(z.object({
     waitStateType: z.string().register(z.globalRegistry, {
         description: 'The wait state type discriminator.'
     })
-}));
+})))();
 
 /**
  * Exporting Status Code
@@ -1918,42 +1918,42 @@ export const zConditionWaitStateDetails = zBaseWaitStateDetails.and(z.object({
  * - `MIXED`: replicas report different phases, so the tenant is in no single phase.
  *
  */
-export const zExportingStatusCode = z.enum([
+export const zExportingStatusCode = /*#__PURE__*/ (() => z.enum([
     'EXPORTING',
     'PAUSED',
     'SOFT_PAUSED',
     'MIXED'
 ]).register(z.globalRegistry, {
     description: 'The exporting status of a physical tenant, aggregated over every replica of every one of\nits partitions:\n- `EXPORTING`: all replicas are exporting and committing their position.\n- `PAUSED`: all replicas are paused, nothing is being exported.\n- `SOFT_PAUSED`: all replicas keep exporting but do not commit their position.\n- `MIXED`: replicas report different phases, so the tenant is in no single phase.\n'
-});
+}))();
 
 /**
  * ExportingStatusResponse
  *
  * Response body for the exporting status of a physical tenant.
  */
-export const zExportingStatusResponse = z.object({
+export const zExportingStatusResponse = /*#__PURE__*/ (() => z.object({
     status: zExportingStatusCode
 }).register(z.globalRegistry, {
     description: 'Response body for the exporting status of a physical tenant.'
-});
+}))();
 
-export const zExpressionSecretReferenceItem = z.object({
+export const zExpressionSecretReferenceItem = /*#__PURE__*/ (() => z.object({
     storeId: z.string().register(z.globalRegistry, {
         description: 'The identifier of the secret store that holds the referenced secret'
     }),
     secretName: z.string().register(z.globalRegistry, {
         description: 'The secret name, e.g. "token" for "camunda.secrets.token"'
     })
-});
+}))();
 
-export const zExpressionEvaluationWarningItem = z.object({
+export const zExpressionEvaluationWarningItem = /*#__PURE__*/ (() => z.object({
     message: z.string().register(z.globalRegistry, {
         description: 'The warning message'
     })
-});
+}))();
 
-export const zExpressionEvaluationResult = z.object({
+export const zExpressionEvaluationResult = /*#__PURE__*/ (() => z.object({
     expression: z.string().register(z.globalRegistry, {
         description: 'The evaluated expression'
     }),
@@ -1966,7 +1966,7 @@ export const zExpressionEvaluationResult = z.object({
     referencedSecrets: z.array(zExpressionSecretReferenceItem).register(z.globalRegistry, {
         description: 'The secret references resolved from trusted sources while evaluating the expression: a\n`camunda.secrets.<name>` reference used directly in the expression, or a reference\ncarried by a `SECRET_REFERENCE`-kind cluster variable the expression read. References\nappearing only in request-body variables or plain cluster variables are excluded.\nCallers use this to know which `camunda.secrets.<name>` occurrences in the result they\nmay safely resolve.\n'
     })
-});
+}))();
 
 /**
  * Checks if the property matches the provided like value.
@@ -1979,16 +1979,16 @@ export const zExpressionEvaluationResult = z.object({
  * Wildcard characters can be escaped with backslash, for instance: `\*`.
  *
  */
-export const zLikeFilter = z.string().register(z.globalRegistry, {
+export const zLikeFilter = /*#__PURE__*/ (() => z.string().register(z.globalRegistry, {
     description: 'Checks if the property matches the provided like value.\n\nSupported wildcard characters are:\n\n* `*`: matches zero, one, or multiple characters.\n* `?`: matches one, single character.\n\nWildcard characters can be escaped with backslash, for instance: `\\*`.\n'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced AgentDefinitionTypeEnum filter.
  */
-export const zAdvancedAgentDefinitionTypeFilter = z.object({
+export const zAdvancedAgentDefinitionTypeFilter = /*#__PURE__*/ (() => z.object({
     $eq: zAgentDefinitionTypeEnum.optional(),
     $neq: zAgentDefinitionTypeEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -2003,14 +2003,14 @@ export const zAdvancedAgentDefinitionTypeFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced AgentDefinitionTypeEnum filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced AgentInstanceStatusEnum filter.
  */
-export const zAdvancedAgentInstanceStatusFilter = z.object({
+export const zAdvancedAgentInstanceStatusFilter = /*#__PURE__*/ (() => z.object({
     $eq: zAgentInstanceStatusEnum.optional(),
     $neq: zAgentInstanceStatusEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -2022,14 +2022,14 @@ export const zAdvancedAgentInstanceStatusFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced AgentInstanceStatusEnum filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced AuditLogEntityTypeEnum filter.
  */
-export const zAdvancedEntityTypeFilter = z.object({
+export const zAdvancedEntityTypeFilter = /*#__PURE__*/ (() => z.object({
     $eq: zAuditLogEntityTypeEnum.optional(),
     $neq: zAuditLogEntityTypeEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -2041,14 +2041,14 @@ export const zAdvancedEntityTypeFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced AuditLogEntityTypeEnum filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced AuditLogOperationTypeEnum filter.
  */
-export const zAdvancedOperationTypeFilter = z.object({
+export const zAdvancedOperationTypeFilter = /*#__PURE__*/ (() => z.object({
     $eq: zAuditLogOperationTypeEnum.optional(),
     $neq: zAuditLogOperationTypeEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -2060,14 +2060,14 @@ export const zAdvancedOperationTypeFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced AuditLogOperationTypeEnum filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced AuditLogCategoryEnum filter.
  */
-export const zAdvancedCategoryFilter = z.object({
+export const zAdvancedCategoryFilter = /*#__PURE__*/ (() => z.object({
     $eq: zAuditLogCategoryEnum.optional(),
     $neq: zAuditLogCategoryEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -2079,14 +2079,14 @@ export const zAdvancedCategoryFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced AuditLogCategoryEnum filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced AuditLogResultEnum filter.
  */
-export const zAdvancedResultFilter = z.object({
+export const zAdvancedResultFilter = /*#__PURE__*/ (() => z.object({
     $eq: zAuditLogResultEnum.optional(),
     $neq: zAuditLogResultEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -2098,14 +2098,14 @@ export const zAdvancedResultFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced AuditLogResultEnum filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced AuditLogActorTypeEnum filter.
  */
-export const zAdvancedActorTypeFilter = z.object({
+export const zAdvancedActorTypeFilter = /*#__PURE__*/ (() => z.object({
     $eq: zAuditLogActorTypeEnum.optional(),
     $neq: zAuditLogActorTypeEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -2117,14 +2117,14 @@ export const zAdvancedActorTypeFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced AuditLogActorTypeEnum filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced BatchOperationTypeEnum filter.
  */
-export const zAdvancedBatchOperationTypeFilter = z.object({
+export const zAdvancedBatchOperationTypeFilter = /*#__PURE__*/ (() => z.object({
     $eq: zBatchOperationTypeEnum.optional(),
     $neq: zBatchOperationTypeEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -2136,14 +2136,14 @@ export const zAdvancedBatchOperationTypeFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced BatchOperationTypeEnum filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced BatchOperationStateEnum filter.
  */
-export const zAdvancedBatchOperationStateFilter = z.object({
+export const zAdvancedBatchOperationStateFilter = /*#__PURE__*/ (() => z.object({
     $eq: zBatchOperationStateEnum.optional(),
     $neq: zBatchOperationStateEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -2155,14 +2155,14 @@ export const zAdvancedBatchOperationStateFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced BatchOperationStateEnum filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced BatchOperationItemStateEnum filter.
  */
-export const zAdvancedBatchOperationItemStateFilter = z.object({
+export const zAdvancedBatchOperationItemStateFilter = /*#__PURE__*/ (() => z.object({
     $eq: zBatchOperationItemStateEnum.optional(),
     $neq: zBatchOperationItemStateEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -2174,14 +2174,14 @@ export const zAdvancedBatchOperationItemStateFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced BatchOperationItemStateEnum filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced filter on a metadata value (string or number).
  */
-export const zAdvancedMetadataValueFilter = z.object({
+export const zAdvancedMetadataValueFilter = /*#__PURE__*/ (() => z.object({
     $eq: z.union([
         z.string(),
         z.number()
@@ -2211,14 +2211,14 @@ export const zAdvancedMetadataValueFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced filter on a metadata value (string or number).'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced ClusterVariableScopeEnum filter.
  */
-export const zAdvancedClusterVariableScopeFilter = z.object({
+export const zAdvancedClusterVariableScopeFilter = /*#__PURE__*/ (() => z.object({
     $eq: zClusterVariableScopeEnum.optional(),
     $neq: zClusterVariableScopeEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -2230,14 +2230,14 @@ export const zAdvancedClusterVariableScopeFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced ClusterVariableScopeEnum filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced ClusterVariableKindEnum filter.
  */
-export const zAdvancedClusterVariableKindFilter = z.object({
+export const zAdvancedClusterVariableKindFilter = /*#__PURE__*/ (() => z.object({
     $eq: zClusterVariableKindEnum.optional(),
     $neq: zClusterVariableKindEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -2249,14 +2249,14 @@ export const zAdvancedClusterVariableKindFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced ClusterVariableKindEnum filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced DecisionInstanceStateEnum filter.
  */
-export const zAdvancedDecisionInstanceStateFilter = z.object({
+export const zAdvancedDecisionInstanceStateFilter = /*#__PURE__*/ (() => z.object({
     $eq: zDecisionInstanceStateEnum.optional(),
     $neq: zDecisionInstanceStateEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -2271,14 +2271,14 @@ export const zAdvancedDecisionInstanceStateFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced DecisionInstanceStateEnum filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced ElementInstanceStateEnum filter.
  */
-export const zAdvancedElementInstanceStateFilter = z.object({
+export const zAdvancedElementInstanceStateFilter = /*#__PURE__*/ (() => z.object({
     $eq: zElementInstanceStateEnum.optional(),
     $neq: zElementInstanceStateEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -2290,14 +2290,14 @@ export const zAdvancedElementInstanceStateFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced ElementInstanceStateEnum filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced element type filter.
  */
-export const zAdvancedWaitStateElementTypeFilter = z.object({
+export const zAdvancedWaitStateElementTypeFilter = /*#__PURE__*/ (() => z.object({
     $eq: zWaitStateElementTypeEnum.optional(),
     $neq: zWaitStateElementTypeEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -2309,14 +2309,14 @@ export const zAdvancedWaitStateElementTypeFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced element type filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced wait state type filter.
  */
-export const zAdvancedWaitStateTypeFilter = z.object({
+export const zAdvancedWaitStateTypeFilter = /*#__PURE__*/ (() => z.object({
     $eq: zWaitStateTypeEnum.optional(),
     $neq: zWaitStateTypeEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -2328,14 +2328,14 @@ export const zAdvancedWaitStateTypeFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced wait state type filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Basic advanced string filter.
  */
-export const zBasicStringFilter = z.object({
+export const zBasicStringFilter = /*#__PURE__*/ (() => z.object({
     $eq: z.string().register(z.globalRegistry, {
         description: 'Checks for equality with the provided value.'
     }).optional(),
@@ -2353,43 +2353,43 @@ export const zBasicStringFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Basic advanced string filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced string filter.
  */
-export const zAdvancedStringFilter = zBasicStringFilter.and(z.object({
+export const zAdvancedStringFilter = /*#__PURE__*/ (() => zBasicStringFilter.and(z.object({
     $like: zLikeFilter.optional()
-}));
+})))();
 
 /**
  * String property with basic advanced search capabilities.
  */
-export const zBasicStringFilterProperty = z.union([
+export const zBasicStringFilterProperty = /*#__PURE__*/ (() => z.union([
     z.string().register(z.globalRegistry, {
         description: 'Matches the value exactly.'
     }),
     zBasicStringFilter
-]);
+]))();
 
 /**
  * String property with full advanced search capabilities.
  */
-export const zStringFilterProperty = z.union([
+export const zStringFilterProperty = /*#__PURE__*/ (() => z.union([
     z.string().register(z.globalRegistry, {
         description: 'Matches the value exactly.'
     }),
     zAdvancedStringFilter
-]);
+]))();
 
 /**
  * Advanced filter
  *
  * Advanced integer (int32) filter.
  */
-export const zAdvancedIntegerFilter = z.object({
+export const zAdvancedIntegerFilter = /*#__PURE__*/ (() => z.object({
     $eq: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'Checks for equality with the provided value.'
     }).optional(),
@@ -2416,24 +2416,24 @@ export const zAdvancedIntegerFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced integer (int32) filter.'
-});
+}))();
 
 /**
  * Integer property with advanced search capabilities.
  */
-export const zIntegerFilterProperty = z.union([
+export const zIntegerFilterProperty = /*#__PURE__*/ (() => z.union([
     z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'Matches the value exactly.'
     }),
     zAdvancedIntegerFilter
-]);
+]))();
 
 /**
  * Advanced filter
  *
  * Advanced date-time filter.
  */
-export const zAdvancedDateTimeFilter = z.object({
+export const zAdvancedDateTimeFilter = /*#__PURE__*/ (() => z.object({
     $eq: z.iso.datetime().register(z.globalRegistry, {
         description: 'Checks for equality with the provided value.'
     }).optional(),
@@ -2460,29 +2460,29 @@ export const zAdvancedDateTimeFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced date-time filter.'
-});
+}))();
 
 /**
  * Date-time property with full advanced search capabilities.
  */
-export const zDateTimeFilterProperty = z.union([
+export const zDateTimeFilterProperty = /*#__PURE__*/ (() => z.union([
     z.iso.datetime().register(z.globalRegistry, {
         description: 'Matches the value exactly.'
     }),
     zAdvancedDateTimeFilter
-]);
+]))();
 
 /**
  * How the global listener was defined.
  */
-export const zGlobalListenerSourceEnum = z.enum(['CONFIGURATION', 'API']).register(z.globalRegistry, {
+export const zGlobalListenerSourceEnum = /*#__PURE__*/ (() => z.enum(['CONFIGURATION', 'API']).register(z.globalRegistry, {
     description: 'How the global listener was defined.'
-});
+}))();
 
 /**
  * The event type that triggers the user task listener.
  */
-export const zGlobalTaskListenerEventTypeEnum = z.enum([
+export const zGlobalTaskListenerEventTypeEnum = /*#__PURE__*/ (() => z.enum([
     'all',
     'creating',
     'assigning',
@@ -2491,9 +2491,9 @@ export const zGlobalTaskListenerEventTypeEnum = z.enum([
     'canceling'
 ]).register(z.globalRegistry, {
     description: 'The event type that triggers the user task listener.'
-});
+}))();
 
-export const zGlobalListenerBase = z.object({
+export const zGlobalListenerBase = /*#__PURE__*/ (() => z.object({
     type: z.string().register(z.globalRegistry, {
         description: 'The name of the job type, used as a reference to specify which job workers request the respective listener job.'
     }).optional(),
@@ -2506,18 +2506,18 @@ export const zGlobalListenerBase = z.object({
     priority: z.int().register(z.globalRegistry, {
         description: 'The priority of the listener. Higher priority listeners are executed before lower priority ones.'
     }).optional()
-});
+}))();
 
 /**
  * List of user task event types that trigger the listener.
  */
-export const zGlobalTaskListenerEventTypes = z.array(zGlobalTaskListenerEventTypeEnum).register(z.globalRegistry, {
+export const zGlobalTaskListenerEventTypes = /*#__PURE__*/ (() => z.array(zGlobalTaskListenerEventTypeEnum).register(z.globalRegistry, {
     description: 'List of user task event types that trigger the listener.'
-});
+}))();
 
-export const zGlobalTaskListenerBase = zGlobalListenerBase.and(z.object({
+export const zGlobalTaskListenerBase = /*#__PURE__*/ (() => zGlobalListenerBase.and(z.object({
     eventTypes: zGlobalTaskListenerEventTypes.optional()
-}));
+})))();
 
 export const zUpdateGlobalTaskListenerRequest = zGlobalTaskListenerBase;
 
@@ -2526,7 +2526,7 @@ export const zUpdateGlobalTaskListenerRequest = zGlobalTaskListenerBase;
  *
  * Advanced global listener source filter.
  */
-export const zAdvancedGlobalListenerSourceFilter = z.object({
+export const zAdvancedGlobalListenerSourceFilter = /*#__PURE__*/ (() => z.object({
     $eq: zGlobalListenerSourceEnum.optional(),
     $neq: zGlobalListenerSourceEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -2538,14 +2538,14 @@ export const zAdvancedGlobalListenerSourceFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced global listener source filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced global listener event type filter.
  */
-export const zAdvancedGlobalTaskListenerEventTypeFilter = z.object({
+export const zAdvancedGlobalTaskListenerEventTypeFilter = /*#__PURE__*/ (() => z.object({
     $eq: zGlobalTaskListenerEventTypeEnum.optional(),
     $neq: zGlobalTaskListenerEventTypeEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -2557,52 +2557,52 @@ export const zAdvancedGlobalTaskListenerEventTypeFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced global listener event type filter.'
-});
+}))();
 
-export const zGroupUpdateRequest = z.object({
+export const zGroupUpdateRequest = /*#__PURE__*/ (() => z.object({
     name: z.string().register(z.globalRegistry, {
         description: 'The new name of the group.'
     }),
     description: z.string().register(z.globalRegistry, {
         description: 'The new description of the group.'
     }).optional()
-});
+}))();
 
 /**
  * Group filter request
  */
-export const zGroupFilterFields = z.object({
+export const zGroupFilterFields = /*#__PURE__*/ (() => z.object({
     groupId: zStringFilterProperty.optional(),
     name: zStringFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'Group filter request'
-});
+}))();
 
 /**
  * Group filter request
  */
-export const zGroupFilter = zGroupFilterFields.and(z.object({
+export const zGroupFilter = /*#__PURE__*/ (() => zGroupFilterFields.and(z.object({
     $or: z.array(zGroupFilterFields).nullish()
-}));
+})))();
 
 /**
  * Id of a process definition, from the model. Only ids of process definitions that are deployed are useful.
  */
-export const zProcessDefinitionId = z.string().min(1).regex(/^[\p{L}_][\p{L}\p{N}_\-\.]*$/u).register(z.globalRegistry, {
+export const zProcessDefinitionId = /*#__PURE__*/ (() => z.string().min(1).regex(/^[\p{L}_][\p{L}\p{N}_\-\.]*$/u).register(z.globalRegistry, {
     description: 'Id of a process definition, from the model. Only ids of process definitions that are deployed are useful.'
-});
+}))();
 
 /**
  * The model-defined id of an element.
  */
-export const zElementId = z.string().register(z.globalRegistry, {
+export const zElementId = /*#__PURE__*/ (() => z.string().register(z.globalRegistry, {
     description: 'The model-defined id of an element.'
-});
+}))();
 
 /**
  * A tool available to the agent.
  */
-export const zAgentTool = z.object({
+export const zAgentTool = /*#__PURE__*/ (() => z.object({
     name: z.string().register(z.globalRegistry, {
         description: 'The tool name as visible to the LLM.'
     }),
@@ -2610,13 +2610,13 @@ export const zAgentTool = z.object({
     elementId: zElementId.nullable()
 }).register(z.globalRegistry, {
     description: 'A tool available to the agent.'
-});
+}))();
 
 /**
  * A tool call associated with a history item. Used in both ASSISTANT and TOOL_RESULT items.
  *
  */
-export const zAgentInstanceToolCall = z.object({
+export const zAgentInstanceToolCall = /*#__PURE__*/ (() => z.object({
     toolCallId: z.string().register(z.globalRegistry, {
         description: 'The LLM-assigned tool call ID. Correlates ASSISTANT items to their matching TOOL_RESULT items.'
     }),
@@ -2627,7 +2627,7 @@ export const zAgentInstanceToolCall = z.object({
     arguments: z.record(z.string(), z.unknown()).nullable()
 }).register(z.globalRegistry, {
     description: 'A tool call associated with a history item. Used in both ASSISTANT and TOOL_RESULT items.\n'
-});
+}))();
 
 /**
  * Instructions describing a move operation. This instruction will terminate all active
@@ -2636,105 +2636,105 @@ export const zAgentInstanceToolCall = z.object({
  * scope of the source element instances.
  *
  */
-export const zProcessInstanceModificationMoveBatchOperationInstruction = z.object({
+export const zProcessInstanceModificationMoveBatchOperationInstruction = /*#__PURE__*/ (() => z.object({
     sourceElementId: zElementId,
     targetElementId: zElementId
 }).register(z.globalRegistry, {
     description: 'Instructions describing a move operation. This instruction will terminate all active\nelement instances at `sourceElementId` and activate a new element instance for each\nterminated one at `targetElementId`. The new element instances are created in the parent\nscope of the source element instances.\n'
-});
+}))();
 
-export const zAdHocSubProcessActivateActivityReference = z.object({
+export const zAdHocSubProcessActivateActivityReference = /*#__PURE__*/ (() => z.object({
     elementId: zElementId,
     variables: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
         description: 'Variables to be set when activating the element.'
     }).optional()
-});
+}))();
 
-export const zAdHocSubProcessActivateActivitiesInstruction = z.object({
+export const zAdHocSubProcessActivateActivitiesInstruction = /*#__PURE__*/ (() => z.object({
     elements: z.array(zAdHocSubProcessActivateActivityReference).register(z.globalRegistry, {
         description: 'Activities to activate.'
     }),
     cancelRemainingInstances: z.boolean().register(z.globalRegistry, {
         description: 'Whether to cancel remaining instances of the ad-hoc sub-process.'
     }).optional().default(false)
-});
+}))();
 
 /**
  * The user-defined id for the form
  */
-export const zFormId = z.string().register(z.globalRegistry, {
+export const zFormId = /*#__PURE__*/ (() => z.string().register(z.globalRegistry, {
     description: 'The user-defined id for the form'
-});
+}))();
 
 /**
  * Id of a decision definition, from the model. Only ids of decision definitions that are deployed are useful.
  */
-export const zDecisionDefinitionId = z.string().min(1).regex(/^[\p{L}_][\p{L}\p{N}_\-\.]*$/u).register(z.globalRegistry, {
+export const zDecisionDefinitionId = /*#__PURE__*/ (() => z.string().min(1).regex(/^[\p{L}_][\p{L}\p{N}_\-\.]*$/u).register(z.globalRegistry, {
     description: 'Id of a decision definition, from the model. Only ids of decision definitions that are deployed are useful.'
-});
+}))();
 
 /**
  * The user-defined id for the global listener
  */
-export const zGlobalListenerId = z.string().min(1).max(256).regex(/^[a-zA-Z0-9_~@.+\-]+$/).register(z.globalRegistry, {
+export const zGlobalListenerId = /*#__PURE__*/ (() => z.string().min(1).max(256).regex(/^[a-zA-Z0-9_~@.+\-]+$/).register(z.globalRegistry, {
     description: 'The user-defined id for the global listener'
-});
+}))();
 
-export const zCreateGlobalTaskListenerRequest = zGlobalTaskListenerBase.and(z.object({
+export const zCreateGlobalTaskListenerRequest = /*#__PURE__*/ (() => zGlobalTaskListenerBase.and(z.object({
     id: zGlobalListenerId,
     eventTypes: zGlobalTaskListenerEventTypes
-}));
+})))();
 
-export const zGlobalTaskListenerResult = zGlobalTaskListenerBase.and(z.object({
+export const zGlobalTaskListenerResult = /*#__PURE__*/ (() => zGlobalTaskListenerBase.and(z.object({
     id: zGlobalListenerId,
     source: zGlobalListenerSourceEnum,
     eventTypes: zGlobalTaskListenerEventTypes
-}));
+})))();
 
 /**
  * The unique identifier of the tenant.
  */
-export const zTenantId = z.string().min(1).max(31).regex(/^(<default>|[\w\.\-]{1,31})$/).register(z.globalRegistry, {
+export const zTenantId = /*#__PURE__*/ (() => z.string().min(1).max(31).regex(/^(<default>|[\w\.\-]{1,31})$/).register(z.globalRegistry, {
     description: 'The unique identifier of the tenant.'
-});
+}))();
 
 /**
  * Decision evaluation by ID
  */
-export const zDecisionEvaluationById = z.object({
+export const zDecisionEvaluationById = /*#__PURE__*/ (() => z.object({
     decisionDefinitionId: zDecisionDefinitionId,
     variables: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
         description: 'The decision evaluation variables as JSON document.'
     }).optional(),
     tenantId: zTenantId.optional()
-});
+}))();
 
 /**
  * The unique name of a user.
  */
-export const zUsername = z.string().min(1).max(256).regex(/^[a-zA-Z0-9_~@.+-]+$/).register(z.globalRegistry, {
+export const zUsername = /*#__PURE__*/ (() => z.string().min(1).max(256).regex(/^[a-zA-Z0-9_~@.+-]+$/).register(z.globalRegistry, {
     description: 'The unique name of a user.'
-});
+}))();
 
-export const zGroupUserResult = z.object({
+export const zGroupUserResult = /*#__PURE__*/ (() => z.object({
     username: zUsername
-});
+}))();
 
 /**
  * The unique identifier of a role.
  */
-export const zRoleId = z.string().min(1).max(256).regex(/^[a-zA-Z0-9_~@.+-]+$/).register(z.globalRegistry, {
+export const zRoleId = /*#__PURE__*/ (() => z.string().min(1).max(256).regex(/^[a-zA-Z0-9_~@.+-]+$/).register(z.globalRegistry, {
     description: 'The unique identifier of a role.'
-});
+}))();
 
 /**
  * The unique identifier of a group.
  */
-export const zGroupId = z.string().min(1).max(256).register(z.globalRegistry, {
+export const zGroupId = /*#__PURE__*/ (() => z.string().min(1).max(256).register(z.globalRegistry, {
     description: 'The unique identifier of a group.'
-});
+}))();
 
-export const zGroupCreateRequest = z.object({
+export const zGroupCreateRequest = /*#__PURE__*/ (() => z.object({
     groupId: zGroupId,
     name: z.string().register(z.globalRegistry, {
         description: 'The display name of the new group.'
@@ -2742,28 +2742,28 @@ export const zGroupCreateRequest = z.object({
     description: z.string().register(z.globalRegistry, {
         description: 'The description of the new group.'
     }).optional()
-});
+}))();
 
-export const zGroupCreateResult = z.object({
+export const zGroupCreateResult = /*#__PURE__*/ (() => z.object({
     groupId: zGroupId,
     name: z.string().register(z.globalRegistry, {
         description: 'The display name of the created group.'
     }),
     description: z.string().nullable()
-});
+}))();
 
-export const zGroupUpdateResult = z.object({
+export const zGroupUpdateResult = /*#__PURE__*/ (() => z.object({
     groupId: zGroupId,
     name: z.string().register(z.globalRegistry, {
         description: 'The name of the group.'
     }),
     description: z.string().nullable()
-});
+}))();
 
 /**
  * Group search response item.
  */
-export const zGroupResult = z.object({
+export const zGroupResult = /*#__PURE__*/ (() => z.object({
     name: z.string().register(z.globalRegistry, {
         description: 'The group name.'
     }),
@@ -2771,14 +2771,14 @@ export const zGroupResult = z.object({
     description: z.string().nullable()
 }).register(z.globalRegistry, {
     description: 'Group search response item.'
-});
+}))();
 
 /**
  * The unique identifier of a mapping rule.
  */
-export const zMappingRuleId = z.string().min(1).max(256).regex(/^[a-zA-Z0-9_~@.+-]+$/).register(z.globalRegistry, {
+export const zMappingRuleId = /*#__PURE__*/ (() => z.string().min(1).max(256).regex(/^[a-zA-Z0-9_~@.+-]+$/).register(z.globalRegistry, {
     description: 'The unique identifier of a mapping rule.'
-});
+}))();
 
 /**
  * The unique identifier of an OAuth client.
@@ -2788,22 +2788,22 @@ export const zMappingRuleId = z.string().min(1).max(256).regex(/^[a-zA-Z0-9_~@.+
  * applications are modelled as users instead — see the user identifier.
  *
  */
-export const zClientId = z.string().min(1).max(256).regex(/^[a-zA-Z0-9_~@.+-]+$/).register(z.globalRegistry, {
+export const zClientId = /*#__PURE__*/ (() => z.string().min(1).max(256).regex(/^[a-zA-Z0-9_~@.+-]+$/).register(z.globalRegistry, {
     description: 'The unique identifier of an OAuth client.\nMinted outside the Camunda REST API: in SaaS by Console, in Self-Managed\nwith OIDC by the external identity provider (e.g. EntraID, Keycloak,\nOkta). In Self-Managed with Basic authentication, machine-to-machine\napplications are modelled as users instead — see the user identifier.\n'
-});
+}))();
 
-export const zGroupClientResult = z.object({
+export const zGroupClientResult = /*#__PURE__*/ (() => z.object({
     clientId: zClientId
-});
+}))();
 
 /**
  * The name of a cluster variable. Unique within its scope (global or tenant-specific).
  */
-export const zClusterVariableName = z.string().min(1).max(256).regex(/^[a-zA-Z0-9_~@.+-]+$/).register(z.globalRegistry, {
+export const zClusterVariableName = /*#__PURE__*/ (() => z.string().min(1).max(256).regex(/^[a-zA-Z0-9_~@.+-]+$/).register(z.globalRegistry, {
     description: 'The name of a cluster variable. Unique within its scope (global or tenant-specific).'
-});
+}))();
 
-export const zCreateClusterVariableRequest = z.object({
+export const zCreateClusterVariableRequest = /*#__PURE__*/ (() => z.object({
     name: zClusterVariableName,
     value: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
         description: 'The value of the cluster variable. Can be any JSON object or primitive value. Will be serialized as a JSON string in responses.'
@@ -2815,12 +2815,12 @@ export const zCreateClusterVariableRequest = z.object({
         description: 'A generic key-value metadata bag attached to the cluster variable. Values must be strings or numbers. Limited to 100 entries and a configurable maximum serialized size (default: 100 entries at max key length of a cluster variable name (256 chars) plus the maximum value length, 8192 characters).'
     }).optional(),
     kind: zClusterVariableKindEnum.optional()
-});
+}))();
 
 /**
  * Cluster variable response item.
  */
-export const zClusterVariableResultBase = z.object({
+export const zClusterVariableResultBase = /*#__PURE__*/ (() => z.object({
     name: zClusterVariableName,
     scope: zClusterVariableScopeEnum,
     tenantId: z.string().nullable(),
@@ -2833,18 +2833,18 @@ export const zClusterVariableResultBase = z.object({
     kind: zClusterVariableKindEnum
 }).register(z.globalRegistry, {
     description: 'Cluster variable response item.'
-});
+}))();
 
-export const zClusterVariableResult = zClusterVariableResultBase.and(z.object({
+export const zClusterVariableResult = /*#__PURE__*/ (() => zClusterVariableResultBase.and(z.object({
     value: z.string().register(z.globalRegistry, {
         description: 'Full value of this cluster variable.'
     })
-}));
+})))();
 
 /**
  * Cluster variable search response item.
  */
-export const zClusterVariableSearchResult = zClusterVariableResultBase.and(z.object({
+export const zClusterVariableSearchResult = /*#__PURE__*/ (() => zClusterVariableResultBase.and(z.object({
     value: z.string().register(z.globalRegistry, {
         description: 'Value of this cluster variable. Can be truncated.'
     }),
@@ -2853,21 +2853,21 @@ export const zClusterVariableSearchResult = zClusterVariableResultBase.and(z.obj
     })
 })).register(z.globalRegistry, {
     description: 'Cluster variable search response item.'
-});
+}))();
 
 /**
  * A tag. Needs to start with a letter; then alphanumerics, `_`, `-`, `:`, or `.`; length ≤ 100.
  */
-export const zTag = z.string().min(1).max(100).regex(/^[A-Za-z][A-Za-z0-9_\-:.]{0,99}$/).register(z.globalRegistry, {
+export const zTag = /*#__PURE__*/ (() => z.string().min(1).max(100).regex(/^[A-Za-z][A-Za-z0-9_\-:.]{0,99}$/).register(z.globalRegistry, {
     description: 'A tag. Needs to start with a letter; then alphanumerics, `_`, `-`, `:`, or `.`; length ≤ 100.'
-});
+}))();
 
 /**
  * List of tags. Tags need to start with a letter; then alphanumerics, `_`, `-`, `:`, or `.`; length ≤ 100.
  */
-export const zTagSet = z.array(zTag).max(10).register(z.globalRegistry, {
+export const zTagSet = /*#__PURE__*/ (() => z.array(zTag).max(10).register(z.globalRegistry, {
     description: 'List of tags. Tags need to start with a letter; then alphanumerics, `_`, `-`, `:`, or `.`; length ≤ 100.'
-});
+}))();
 
 /**
  * An optional, user-defined string identifier that identifies the process instance
@@ -2877,9 +2877,9 @@ export const zTagSet = z.array(zTag).max(10).register(z.globalRegistry, {
  * Note that any active child process instances with the same business id are not taken into account.
  *
  */
-export const zBusinessId = z.string().min(1).max(256).register(z.globalRegistry, {
+export const zBusinessId = /*#__PURE__*/ (() => z.string().min(1).max(256).register(z.globalRegistry, {
     description: 'An optional, user-defined string identifier that identifies the process instance\nwithin the scope of a process definition (scoped by tenant). If provided and uniqueness\nenforcement is enabled, the engine will reject creation if another root process instance\nwith the same business id is already active for the same process definition.\nNote that any active child process instances with the same business id are not taken into account.\n'
-});
+}))();
 
 /**
  * A client-provided sequential integer identifying a loop iteration: one pass
@@ -2891,16 +2891,16 @@ export const zBusinessId = z.string().min(1).max(256).register(z.globalRegistry,
  * connector when appending the first history item of a loopIteration.
  *
  */
-export const zLoopIterationId = z.int().gte(1).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+export const zLoopIterationId = /*#__PURE__*/ (() => z.int().gte(1).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
     description: 'A client-provided sequential integer identifying a loop iteration: one pass\nthrough an AI agent\'s loop, during which the model reasons, selects tools,\nevaluates the result, and decides whether to continue. One iteration covers\nthe input for the LLM call, the call itself, and the tools it dispatches;\nthe results of those tool calls are input to the next iteration. Must be a\npositive integer, increasing with each loopIteration. Established by the\nconnector when appending the first history item of a loopIteration.\n'
-});
+}))();
 
 /**
  * The client-supplied identifier this item was created with.
  */
-export const zHistoryItemId = z.string().min(1).max(256).register(z.globalRegistry, {
+export const zHistoryItemId = /*#__PURE__*/ (() => z.string().min(1).max(256).register(z.globalRegistry, {
     description: 'The client-supplied identifier this item was created with.'
-});
+}))();
 
 /**
  * An opaque, engine-minted fencing token identifying a single activation of a job.
@@ -2913,16 +2913,16 @@ export const zHistoryItemId = z.string().min(1).max(256).register(z.globalRegist
  * per leased activation, and clients must not depend on any particular internal format.
  *
  */
-export const zJobLeaseToken = z.string().min(1).register(z.globalRegistry, {
+export const zJobLeaseToken = /*#__PURE__*/ (() => z.string().min(1).register(z.globalRegistry, {
     description: 'An opaque, engine-minted fencing token identifying a single activation of a job.\nReturned by Activate Jobs as `ActivatedJobResult.jobLeaseToken` when the job is\nactivated with a lease, and passed back under the same name on fenced job\ncommands and on agent-instance creation/updates, to prove the caller holds the\ncurrent lease. The token is opaque: clients may rely on its presence and equality\nonly, and must never construct, parse, or otherwise interpret it beyond equality\nchecks. It cannot be minted client-side; only the engine produces it, exactly once\nper leased activation, and clients must not depend on any particular internal format.\n'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced ElementId filter.
  */
-export const zAdvancedElementIdFilter = z.object({
+export const zAdvancedElementIdFilter = /*#__PURE__*/ (() => z.object({
     $eq: zElementId.optional(),
     $neq: zElementId.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -2937,14 +2937,14 @@ export const zAdvancedElementIdFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced ElementId filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced ProcessDefinitionId filter.
  */
-export const zAdvancedProcessDefinitionIdFilter = z.object({
+export const zAdvancedProcessDefinitionIdFilter = /*#__PURE__*/ (() => z.object({
     $eq: zProcessDefinitionId.optional(),
     $neq: zProcessDefinitionId.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -2959,12 +2959,12 @@ export const zAdvancedProcessDefinitionIdFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced ProcessDefinitionId filter.'
-});
+}))();
 
 /**
  * Incident error type with a defined set of values.
  */
-export const zIncidentErrorTypeEnum = z.enum([
+export const zIncidentErrorTypeEnum = /*#__PURE__*/ (() => z.enum([
     'AD_HOC_SUB_PROCESS_NO_RETRIES',
     'CALLED_DECISION_ERROR',
     'CALLED_ELEMENT_ERROR',
@@ -2984,14 +2984,14 @@ export const zIncidentErrorTypeEnum = z.enum([
     'UNSPECIFIED'
 ]).register(z.globalRegistry, {
     description: 'Incident error type with a defined set of values.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced IncidentErrorTypeEnum filter
  */
-export const zAdvancedIncidentErrorTypeFilter = z.object({
+export const zAdvancedIncidentErrorTypeFilter = /*#__PURE__*/ (() => z.object({
     $eq: zIncidentErrorTypeEnum.optional(),
     $neq: zIncidentErrorTypeEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -3006,12 +3006,12 @@ export const zAdvancedIncidentErrorTypeFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced IncidentErrorTypeEnum filter'
-});
+}))();
 
 /**
  * Incident states with a defined set of values.
  */
-export const zIncidentStateEnum = z.enum([
+export const zIncidentStateEnum = /*#__PURE__*/ (() => z.enum([
     'ACTIVE',
     'MIGRATED',
     'PENDING',
@@ -3019,14 +3019,14 @@ export const zIncidentStateEnum = z.enum([
     'UNKNOWN'
 ]).register(z.globalRegistry, {
     description: 'Incident states with a defined set of values.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced IncidentStateEnum filter
  */
-export const zAdvancedIncidentStateFilter = z.object({
+export const zAdvancedIncidentStateFilter = /*#__PURE__*/ (() => z.object({
     $eq: zIncidentStateEnum.optional(),
     $neq: zIncidentStateEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -3041,9 +3041,9 @@ export const zAdvancedIncidentStateFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced IncidentStateEnum filter'
-});
+}))();
 
-export const zIncidentProcessInstanceStatisticsByErrorResult = z.object({
+export const zIncidentProcessInstanceStatisticsByErrorResult = /*#__PURE__*/ (() => z.object({
     errorHashCode: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'The hash code identifying a specific incident error..'
     }),
@@ -3053,35 +3053,35 @@ export const zIncidentProcessInstanceStatisticsByErrorResult = z.object({
     activeInstancesWithErrorCount: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
         description: 'The number of active process instances that currently have an active incident with this error.\n'
     })
-});
+}))();
 
 /**
  * Filter for the incident process instance statistics by definition query.
  */
-export const zIncidentProcessInstanceStatisticsByDefinitionFilter = z.object({
+export const zIncidentProcessInstanceStatisticsByDefinitionFilter = /*#__PURE__*/ (() => z.object({
     errorHashCode: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'The error hash code of the incidents to filter the process instance statistics by.\n'
     })
 }).register(z.globalRegistry, {
     description: 'Filter for the incident process instance statistics by definition query.'
-});
+}))();
 
 /**
  * Metric for a single job status.
  */
-export const zStatusMetric = z.object({
+export const zStatusMetric = /*#__PURE__*/ (() => z.object({
     count: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
         description: 'Number of jobs in this status.'
     }),
     lastUpdatedAt: z.iso.datetime().nullable()
 }).register(z.globalRegistry, {
     description: 'Metric for a single job status.'
-});
+}))();
 
 /**
  * Global job statistics query result.
  */
-export const zGlobalJobStatisticsQueryResult = z.object({
+export const zGlobalJobStatisticsQueryResult = /*#__PURE__*/ (() => z.object({
     created: zStatusMetric,
     completed: zStatusMetric,
     failed: zStatusMetric,
@@ -3090,12 +3090,12 @@ export const zGlobalJobStatisticsQueryResult = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Global job statistics query result.'
-});
+}))();
 
 /**
  * Job type statistics search filter.
  */
-export const zJobTypeStatisticsFilter = z.object({
+export const zJobTypeStatisticsFilter = /*#__PURE__*/ (() => z.object({
     from: z.iso.datetime().register(z.globalRegistry, {
         description: 'Start of the time window to filter metrics. ISO 8601 date-time format.\n'
     }),
@@ -3105,12 +3105,12 @@ export const zJobTypeStatisticsFilter = z.object({
     jobType: zStringFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'Job type statistics search filter.'
-});
+}))();
 
 /**
  * Statistics for a single job type.
  */
-export const zJobTypeStatisticsItem = z.object({
+export const zJobTypeStatisticsItem = /*#__PURE__*/ (() => z.object({
     jobType: z.string().register(z.globalRegistry, {
         description: 'The job type identifier.'
     }),
@@ -3122,12 +3122,12 @@ export const zJobTypeStatisticsItem = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Statistics for a single job type.'
-});
+}))();
 
 /**
  * Job worker statistics search filter.
  */
-export const zJobWorkerStatisticsFilter = z.object({
+export const zJobWorkerStatisticsFilter = /*#__PURE__*/ (() => z.object({
     from: z.iso.datetime().register(z.globalRegistry, {
         description: 'Start of the time window to filter metrics. ISO 8601 date-time format.\n'
     }),
@@ -3139,12 +3139,12 @@ export const zJobWorkerStatisticsFilter = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Job worker statistics search filter.'
-});
+}))();
 
 /**
  * Statistics for a single worker within a job type.
  */
-export const zJobWorkerStatisticsItem = z.object({
+export const zJobWorkerStatisticsItem = /*#__PURE__*/ (() => z.object({
     worker: z.string().register(z.globalRegistry, {
         description: 'The name of the worker activating the jobs, mostly used for logging purposes.'
     }),
@@ -3153,12 +3153,12 @@ export const zJobWorkerStatisticsItem = z.object({
     failed: zStatusMetric
 }).register(z.globalRegistry, {
     description: 'Statistics for a single worker within a job type.'
-});
+}))();
 
 /**
  * Job time-series statistics search filter.
  */
-export const zJobTimeSeriesStatisticsFilter = z.object({
+export const zJobTimeSeriesStatisticsFilter = /*#__PURE__*/ (() => z.object({
     from: z.iso.datetime().register(z.globalRegistry, {
         description: 'Start of the time window to filter metrics. ISO 8601 date-time format.\n'
     }),
@@ -3173,12 +3173,12 @@ export const zJobTimeSeriesStatisticsFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Job time-series statistics search filter.'
-});
+}))();
 
 /**
  * Aggregated job metrics for a single time bucket.
  */
-export const zJobTimeSeriesStatisticsItem = z.object({
+export const zJobTimeSeriesStatisticsItem = /*#__PURE__*/ (() => z.object({
     time: z.iso.datetime().register(z.globalRegistry, {
         description: 'ISO 8601 timestamp representing the start of this time bucket.'
     }),
@@ -3187,12 +3187,12 @@ export const zJobTimeSeriesStatisticsItem = z.object({
     failed: zStatusMetric
 }).register(z.globalRegistry, {
     description: 'Aggregated job metrics for a single time bucket.'
-});
+}))();
 
 /**
  * Job error statistics search filter.
  */
-export const zJobErrorStatisticsFilter = z.object({
+export const zJobErrorStatisticsFilter = /*#__PURE__*/ (() => z.object({
     from: z.iso.datetime().register(z.globalRegistry, {
         description: 'Start of the time window to filter metrics. ISO 8601 date-time format.\n'
     }),
@@ -3206,12 +3206,12 @@ export const zJobErrorStatisticsFilter = z.object({
     errorMessage: zStringFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'Job error statistics search filter.'
-});
+}))();
 
 /**
  * Aggregated error metrics for a single error type and message combination.
  */
-export const zJobErrorStatisticsItem = z.object({
+export const zJobErrorStatisticsItem = /*#__PURE__*/ (() => z.object({
     errorCode: z.string().register(z.globalRegistry, {
         description: 'The error code identifier.'
     }),
@@ -3223,9 +3223,9 @@ export const zJobErrorStatisticsItem = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Aggregated error metrics for a single error type and message combination.'
-});
+}))();
 
-export const zJobFailRequest = z.object({
+export const zJobFailRequest = /*#__PURE__*/ (() => z.object({
     retries: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'The amount of retries the job should have left'
     }).optional().default(0),
@@ -3239,16 +3239,16 @@ export const zJobFailRequest = z.object({
         description: 'JSON object that will instantiate the variables at the local scope of the job\'s associated task.\n'
     }).optional(),
     jobLeaseToken: zJobLeaseToken.nullish()
-});
+}))();
 
-export const zJobErrorRequest = z.object({
+export const zJobErrorRequest = /*#__PURE__*/ (() => z.object({
     errorCode: z.string().register(z.globalRegistry, {
         description: 'The error code that will be matched with an error catch event.\n'
     }),
     errorMessage: z.string().nullish(),
     variables: z.record(z.string(), z.unknown()).nullish(),
     jobLeaseToken: zJobLeaseToken.nullish()
-});
+}))();
 
 /**
  * JSON object with attributes that were corrected by the worker.
@@ -3266,43 +3266,43 @@ export const zJobErrorRequest = z.object({
  * the persisted attribute's value.
  *
  */
-export const zJobResultCorrections = z.object({
+export const zJobResultCorrections = /*#__PURE__*/ (() => z.object({
     assignee: z.string().nullish(),
     dueDate: z.iso.datetime().nullish(),
     followUpDate: z.iso.datetime().nullish(),
     candidateUsers: z.array(z.string()).nullish(),
     candidateGroups: z.array(z.string()).nullish(),
     priority: z.int().gte(0).lte(100).nullish()
-}).nullable();
+}).nullable())();
 
 /**
  * Job result details for a user task completion, optionally including a denial reason and corrected task properties.
  *
  */
-export const zJobResultUserTask = z.object({
+export const zJobResultUserTask = /*#__PURE__*/ (() => z.object({
     denied: z.boolean().nullish(),
     deniedReason: z.string().nullish(),
     corrections: zJobResultCorrections.optional(),
     type: z.string().register(z.globalRegistry, {
         description: 'Used to distinguish between different types of job results.'
     }).optional()
-}).nullable();
+}).nullable())();
 
 /**
  * Instruction to activate a single BPMN element within an ad‑hoc sub‑process, optionally providing variables scoped to that element.
  */
-export const zJobResultActivateElement = z.object({
+export const zJobResultActivateElement = /*#__PURE__*/ (() => z.object({
     elementId: zElementId.optional(),
     variables: z.record(z.string(), z.unknown()).nullish()
 }).register(z.globalRegistry, {
     description: 'Instruction to activate a single BPMN element within an ad‑hoc sub‑process, optionally providing variables scoped to that element.'
-});
+}))();
 
 /**
  * Job result details for an ad‑hoc sub‑process, including elements to activate and flags indicating completion or cancellation behavior.
  *
  */
-export const zJobResultAdHocSubProcess = z.object({
+export const zJobResultAdHocSubProcess = /*#__PURE__*/ (() => z.object({
     activateElements: z.array(zJobResultActivateElement).register(z.globalRegistry, {
         description: 'Indicates which elements need to be activated in the ad-hoc subprocess.'
     }).optional(),
@@ -3315,48 +3315,48 @@ export const zJobResultAdHocSubProcess = z.object({
     type: z.string().register(z.globalRegistry, {
         description: 'Used to distinguish between different types of job results.'
     }).optional()
-}).nullable();
+}).nullable())();
 
 /**
  * The result of the completed job as determined by the worker.
  *
  */
-export const zJobResult = z.union([
+export const zJobResult = /*#__PURE__*/ (() => z.union([
     z.object({
         type: z.literal('userTask')
     }).and(zJobResultUserTask),
     z.object({
         type: z.literal('adHocSubProcess')
     }).and(zJobResultAdHocSubProcess)
-]);
+]))();
 
-export const zJobCompletionRequest = z.object({
+export const zJobCompletionRequest = /*#__PURE__*/ (() => z.object({
     variables: z.record(z.string(), z.unknown()).nullish(),
     result: zJobResult.optional(),
     jobLeaseToken: zJobLeaseToken.nullish(),
     businessId: zBusinessId.nullish()
-});
+}))();
 
 /**
  * JSON object with changed job attribute values. The job cannot be completed or failed with this endpoint, use the complete job or fail job endpoints instead.
  */
-export const zJobChangeset = z.object({
+export const zJobChangeset = /*#__PURE__*/ (() => z.object({
     retries: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).nullish(),
     timeout: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullish(),
     priority: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).nullish()
 }).register(z.globalRegistry, {
     description: 'JSON object with changed job attribute values. The job cannot be completed or failed with this endpoint, use the complete job or fail job endpoints instead.'
-});
+}))();
 
 /**
  * The tenant filtering strategy for job activation. Determines whether to use tenant IDs provided in the request or tenant IDs assigned to the authenticated principal.
  *
  */
-export const zTenantFilterEnum = z.enum(['PROVIDED', 'ASSIGNED']).register(z.globalRegistry, {
+export const zTenantFilterEnum = /*#__PURE__*/ (() => z.enum(['PROVIDED', 'ASSIGNED']).register(z.globalRegistry, {
     description: 'The tenant filtering strategy for job activation. Determines whether to use tenant IDs provided in the request or tenant IDs assigned to the authenticated principal.\n'
-});
+}))();
 
-export const zJobActivationRequest = z.object({
+export const zJobActivationRequest = /*#__PURE__*/ (() => z.object({
     type: z.string().register(z.globalRegistry, {
         description: 'The job type, as defined in the BPMN process (e.g. <zeebe:taskDefinition type="payment-service" />)'
     }),
@@ -3380,12 +3380,12 @@ export const zJobActivationRequest = z.object({
     }).optional(),
     tenantFilter: zTenantFilterEnum.optional(),
     withLease: z.boolean().nullish()
-});
+}))();
 
 /**
  * The state of the job.
  */
-export const zJobStateEnum = z.enum([
+export const zJobStateEnum = /*#__PURE__*/ (() => z.enum([
     'CANCELED',
     'COMPLETED',
     'CREATED',
@@ -3398,24 +3398,24 @@ export const zJobStateEnum = z.enum([
     'TIMED_OUT'
 ]).register(z.globalRegistry, {
     description: 'The state of the job.'
-});
+}))();
 
 /**
  * The job kind.
  */
-export const zJobKindEnum = z.enum([
+export const zJobKindEnum = /*#__PURE__*/ (() => z.enum([
     'BPMN_ELEMENT',
     'EXECUTION_LISTENER',
     'TASK_LISTENER',
     'AD_HOC_SUB_PROCESS'
 ]).register(z.globalRegistry, {
     description: 'The job kind.'
-});
+}))();
 
 /**
  * The listener event type of the job.
  */
-export const zJobListenerEventTypeEnum = z.enum([
+export const zJobListenerEventTypeEnum = /*#__PURE__*/ (() => z.enum([
     'ASSIGNING',
     'BEFORE_ALL',
     'CANCEL',
@@ -3428,14 +3428,14 @@ export const zJobListenerEventTypeEnum = z.enum([
     'UPDATING'
 ]).register(z.globalRegistry, {
     description: 'The listener event type of the job.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced JobKindEnum filter.
  */
-export const zAdvancedJobKindFilter = z.object({
+export const zAdvancedJobKindFilter = /*#__PURE__*/ (() => z.object({
     $eq: zJobKindEnum.optional(),
     $neq: zJobKindEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -3447,14 +3447,14 @@ export const zAdvancedJobKindFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced JobKindEnum filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced JobListenerEventTypeEnum filter.
  */
-export const zAdvancedJobListenerEventTypeFilter = z.object({
+export const zAdvancedJobListenerEventTypeFilter = /*#__PURE__*/ (() => z.object({
     $eq: zJobListenerEventTypeEnum.optional(),
     $neq: zJobListenerEventTypeEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -3466,14 +3466,14 @@ export const zAdvancedJobListenerEventTypeFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced JobListenerEventTypeEnum filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced JobStateEnum filter.
  */
-export const zAdvancedJobStateFilter = z.object({
+export const zAdvancedJobStateFilter = /*#__PURE__*/ (() => z.object({
     $eq: zJobStateEnum.optional(),
     $neq: zJobStateEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -3485,21 +3485,21 @@ export const zAdvancedJobStateFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced JobStateEnum filter.'
-});
+}))();
 
 /**
  * Zeebe Engine resource key (Java long serialized as string)
  */
-export const zLongKey = z.string().min(1).max(25).regex(/^-?[0-9]+$/).register(z.globalRegistry, {
+export const zLongKey = /*#__PURE__*/ (() => z.string().min(1).max(25).regex(/^-?[0-9]+$/).register(z.globalRegistry, {
     description: 'Zeebe Engine resource key (Java long serialized as string)'
-});
+}))();
 
 /**
  * System-generated key for an authorization.
  */
 export const zAuthorizationKey = zLongKey;
 
-export const zAuthorizationResult = z.object({
+export const zAuthorizationResult = /*#__PURE__*/ (() => z.object({
     ownerId: z.string().register(z.globalRegistry, {
         description: 'The ID of the owner of permissions.'
     }),
@@ -3511,11 +3511,11 @@ export const zAuthorizationResult = z.object({
         description: 'Specifies the types of the permissions.'
     }),
     authorizationKey: zAuthorizationKey
-});
+}))();
 
-export const zAuthorizationCreateResult = z.object({
+export const zAuthorizationCreateResult = /*#__PURE__*/ (() => z.object({
     authorizationKey: zAuthorizationKey
-});
+}))();
 
 /**
  * System-generated key for a conditional evaluation.
@@ -3532,7 +3532,7 @@ export const zDeploymentKey = zLongKey;
  *
  * Advanced DeploymentKey filter.
  */
-export const zAdvancedDeploymentKeyFilter = z.object({
+export const zAdvancedDeploymentKeyFilter = /*#__PURE__*/ (() => z.object({
     $eq: zDeploymentKey.optional(),
     $neq: zDeploymentKey.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -3546,7 +3546,7 @@ export const zAdvancedDeploymentKeyFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced DeploymentKey filter.'
-});
+}))();
 
 /**
  * System-generated key for a process instance.
@@ -3556,7 +3556,7 @@ export const zProcessInstanceKey = zLongKey;
 /**
  * Information about the document.
  */
-export const zDocumentMetadata = z.object({
+export const zDocumentMetadata = /*#__PURE__*/ (() => z.object({
     contentType: z.string().register(z.globalRegistry, {
         description: 'The content type of the document.'
     }).optional(),
@@ -3576,12 +3576,12 @@ export const zDocumentMetadata = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Information about the document.'
-});
+}))();
 
 /**
  * Information about the document that is returned in responses.
  */
-export const zDocumentMetadataResponse = z.object({
+export const zDocumentMetadataResponse = /*#__PURE__*/ (() => z.object({
     contentType: z.string().register(z.globalRegistry, {
         description: 'The content type of the document.'
     }),
@@ -3599,9 +3599,9 @@ export const zDocumentMetadataResponse = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Information about the document that is returned in responses.'
-});
+}))();
 
-export const zDocumentReference = z.object({
+export const zDocumentReference = /*#__PURE__*/ (() => z.object({
     'camunda.document.type': z.enum(['camunda']).register(z.globalRegistry, {
         description: 'Document discriminator. Always set to "camunda".'
     }),
@@ -3611,37 +3611,37 @@ export const zDocumentReference = z.object({
     documentId: zDocumentId,
     contentHash: z.string().nullable(),
     metadata: zDocumentMetadataResponse
-});
+}))();
 
 /**
  * Document content
  *
  * A Camunda Document Store reference content block.
  */
-export const zAgentInstanceDocumentContent = z.object({
+export const zAgentInstanceDocumentContent = /*#__PURE__*/ (() => z.object({
     contentType: z.string().register(z.globalRegistry, {
         description: 'The content type discriminator.'
     }),
     documentReference: zDocumentReference
 }).register(z.globalRegistry, {
     description: 'A Camunda Document Store reference content block.'
-});
+}))();
 
 /**
  * A single content block within a history item. Discriminated by `contentType`.
  */
-export const zAgentInstanceMessageContent = z.discriminatedUnion('contentType', [
+export const zAgentInstanceMessageContent = /*#__PURE__*/ (() => z.discriminatedUnion('contentType', [
     zAgentInstanceTextContent.extend({ contentType: z.literal('TEXT') }),
     zAgentInstanceDocumentContent.extend({ contentType: z.literal('DOCUMENT') }),
     zAgentInstanceObjectContent.extend({ contentType: z.literal('OBJECT') })
-]);
+]))();
 
 /**
  * The definition of an agent instance. Set at creation, but can change later via a
  * CONFIGURATION history item.
  *
  */
-export const zAgentInstanceDefinitionResult = z.object({
+export const zAgentInstanceDefinitionResult = /*#__PURE__*/ (() => z.object({
     model: z.string().register(z.globalRegistry, {
         description: 'The LLM model identifier (for example, gpt-4o).'
     }),
@@ -3653,14 +3653,14 @@ export const zAgentInstanceDefinitionResult = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'The definition of an agent instance. Set at creation, but can change later via a\nCONFIGURATION history item.\n'
-});
+}))();
 
 /**
  * A single history item to append to the agent instance's conversation history,
  * submitted as part of the batch on an agent instance update request.
  *
  */
-export const zAgentInstanceHistoryItem = z.object({
+export const zAgentInstanceHistoryItem = /*#__PURE__*/ (() => z.object({
     historyItemId: zHistoryItemId,
     loopIteration: zLoopIterationId,
     role: zAgentInstanceHistoryRoleEnum,
@@ -3683,47 +3683,47 @@ export const zAgentInstanceHistoryItem = z.object({
     systemPrompt: z.array(zAgentInstanceMessageContent).nullish()
 }).register(z.globalRegistry, {
     description: 'A single history item to append to the agent instance\'s conversation history,\nsubmitted as part of the batch on an agent instance update request.\n'
-});
+}))();
 
-export const zDocumentCreationBatchResponse = z.object({
+export const zDocumentCreationBatchResponse = /*#__PURE__*/ (() => z.object({
     failedDocuments: z.array(zDocumentCreationFailureDetail).register(z.globalRegistry, {
         description: 'Documents that were successfully created.'
     }),
     createdDocuments: z.array(zDocumentReference).register(z.globalRegistry, {
         description: 'Documents that failed creation.'
     })
-});
+}))();
 
 /**
  * System-generated key for a deployed process definition.
  */
 export const zProcessDefinitionKey = zLongKey;
 
-export const zConditionalEvaluationInstruction = z.object({
+export const zConditionalEvaluationInstruction = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId.optional(),
     processDefinitionKey: zProcessDefinitionKey.optional(),
     variables: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
         description: 'JSON object representing the variables to use for evaluation of the conditions and to pass to the process instances that have been triggered.\n'
     })
-});
+}))();
 
-export const zProcessInstanceReference = z.object({
+export const zProcessInstanceReference = /*#__PURE__*/ (() => z.object({
     processDefinitionKey: zProcessDefinitionKey,
     processInstanceKey: zProcessInstanceKey
-});
+}))();
 
-export const zEvaluateConditionalResult = z.object({
+export const zEvaluateConditionalResult = /*#__PURE__*/ (() => z.object({
     conditionalEvaluationKey: zConditionalEvaluationKey,
     tenantId: zTenantId,
     processInstances: z.array(zProcessInstanceReference).register(z.globalRegistry, {
         description: 'List of process instances created. If no root-level conditional start events evaluated to true, the list will be empty.'
     })
-});
+}))();
 
 /**
  * A deployed process.
  */
-export const zDeploymentProcessResult = z.object({
+export const zDeploymentProcessResult = /*#__PURE__*/ (() => z.object({
     processDefinitionId: zProcessDefinitionId,
     processDefinitionVersion: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'The assigned process version.'
@@ -3735,9 +3735,9 @@ export const zDeploymentProcessResult = z.object({
     processDefinitionKey: zProcessDefinitionKey
 }).register(z.globalRegistry, {
     description: 'A deployed process.'
-});
+}))();
 
-export const zIncidentProcessInstanceStatisticsByDefinitionResult = z.object({
+export const zIncidentProcessInstanceStatisticsByDefinitionResult = /*#__PURE__*/ (() => z.object({
     processDefinitionId: zProcessDefinitionId,
     processDefinitionKey: zProcessDefinitionKey,
     processDefinitionName: z.string().register(z.globalRegistry, {
@@ -3750,7 +3750,7 @@ export const zIncidentProcessInstanceStatisticsByDefinitionResult = z.object({
     activeInstancesWithErrorCount: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
         description: 'The number of active process instances that currently have an incident\nwith the specified error hash code.\n'
     })
-});
+}))();
 
 /**
  * System-generated key for a element instance.
@@ -3762,13 +3762,13 @@ export const zElementInstanceKey = zLongKey;
  */
 export const zUserTaskKey = zLongKey;
 
-export const zUserTaskWaitStateDetails = zBaseWaitStateDetails.and(z.object({
+export const zUserTaskWaitStateDetails = /*#__PURE__*/ (() => zBaseWaitStateDetails.and(z.object({
     taskKey: zUserTaskKey,
     dueDate: z.iso.datetime().nullable(),
     waitStateType: z.string().register(z.globalRegistry, {
         description: 'The wait state type discriminator.'
     })
-}));
+})))();
 
 /**
  * System-generated key for a deployed form.
@@ -3778,7 +3778,7 @@ export const zFormKey = zLongKey;
 /**
  * A deployed form.
  */
-export const zDeploymentFormResult = z.object({
+export const zDeploymentFormResult = /*#__PURE__*/ (() => z.object({
     formId: zFormId,
     version: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'The version of the deployed form.'
@@ -3790,9 +3790,9 @@ export const zDeploymentFormResult = z.object({
     formKey: zFormKey
 }).register(z.globalRegistry, {
     description: 'A deployed form.'
-});
+}))();
 
-export const zFormResult = z.object({
+export const zFormResult = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId,
     formId: zFormId,
     schema: z.string().register(z.globalRegistry, {
@@ -3802,12 +3802,12 @@ export const zFormResult = z.object({
         description: 'The version of the the deployed form.'
     }),
     formKey: zFormKey
-});
+}))();
 
 /**
  * Contains properties of a user task.
  */
-export const zUserTaskProperties = z.object({
+export const zUserTaskProperties = /*#__PURE__*/ (() => z.object({
     action: z.string().register(z.globalRegistry, {
         description: 'The action performed on the user task.'
     }),
@@ -3828,7 +3828,7 @@ export const zUserTaskProperties = z.object({
     userTaskKey: zUserTaskKey.nullable()
 }).register(z.globalRegistry, {
     description: 'Contains properties of a user task.'
-});
+}))();
 
 /**
  * System-generated key for a variable.
@@ -3840,12 +3840,12 @@ export const zVariableKey = zLongKey;
  * element instance in a BPMN process or the process instance itself.
  *
  */
-export const zScopeKey = z.union([
+export const zScopeKey = /*#__PURE__*/ (() => z.union([
     zProcessInstanceKey,
     zElementInstanceKey
-]);
+]))();
 
-export const zExpressionEvaluationRequest = z.object({
+export const zExpressionEvaluationRequest = /*#__PURE__*/ (() => z.object({
     expression: z.string().register(z.globalRegistry, {
         description: 'The expression to evaluate (e.g., "=x + y")'
     }),
@@ -3854,14 +3854,14 @@ export const zExpressionEvaluationRequest = z.object({
     }).optional(),
     scopeKey: zScopeKey.optional(),
     variables: z.record(z.string(), z.unknown()).nullish()
-});
+}))();
 
 /**
  * System-generated key for a incident.
  */
 export const zIncidentKey = zLongKey;
 
-export const zElementInstanceResult = z.object({
+export const zElementInstanceResult = /*#__PURE__*/ (() => z.object({
     processDefinitionId: zProcessDefinitionId,
     startDate: z.iso.datetime().register(z.globalRegistry, {
         description: 'Date when element instance started.'
@@ -3912,7 +3912,7 @@ export const zElementInstanceResult = z.object({
     rootProcessInstanceKey: zProcessInstanceKey.nullable(),
     processDefinitionKey: zProcessDefinitionKey,
     incidentKey: zIncidentKey.nullable()
-});
+}))();
 
 /**
  * System-generated key for a job.
@@ -3922,7 +3922,7 @@ export const zJobKey = zLongKey;
 /**
  * Request to create a new agent instance.
  */
-export const zAgentInstanceCreationRequest = z.object({
+export const zAgentInstanceCreationRequest = /*#__PURE__*/ (() => z.object({
     elementInstanceKey: zElementInstanceKey,
     jobKey: zJobKey,
     jobLeaseToken: zJobLeaseToken,
@@ -3931,13 +3931,13 @@ export const zAgentInstanceCreationRequest = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Request to create a new agent instance.'
-});
+}))();
 
 /**
  * Request to update the mutable state of an agent instance.
  *
  */
-export const zAgentInstanceUpdateRequest = z.object({
+export const zAgentInstanceUpdateRequest = /*#__PURE__*/ (() => z.object({
     elementInstanceKey: zElementInstanceKey,
     status: zAgentInstanceUpdateStatusEnum.optional(),
     jobKey: zJobKey,
@@ -3945,9 +3945,9 @@ export const zAgentInstanceUpdateRequest = z.object({
     history: z.array(zAgentInstanceHistoryItem).nullish()
 }).register(z.globalRegistry, {
     description: 'Request to update the mutable state of an agent instance.\n'
-});
+}))();
 
-export const zJobWaitStateDetails = zBaseWaitStateDetails.and(z.object({
+export const zJobWaitStateDetails = /*#__PURE__*/ (() => zBaseWaitStateDetails.and(z.object({
     jobKey: zJobKey,
     jobType: z.string().register(z.globalRegistry, {
         description: 'The job type (worker subscription identifier).'
@@ -3958,12 +3958,12 @@ export const zJobWaitStateDetails = zBaseWaitStateDetails.and(z.object({
     waitStateType: z.string().register(z.globalRegistry, {
         description: 'The wait state type discriminator.'
     })
-}));
+})))();
 
 /**
  * Wait-state-specific details of an element instance.
  */
-export const zWaitStateDetails = z.union([
+export const zWaitStateDetails = /*#__PURE__*/ (() => z.union([
     z.object({
         waitStateType: z.literal('JOB')
     }).and(zJobWaitStateDetails),
@@ -3982,12 +3982,12 @@ export const zWaitStateDetails = z.union([
     z.object({
         waitStateType: z.literal('CONDITION')
     }).and(zConditionWaitStateDetails)
-]);
+]))();
 
 /**
  * An element instance waiting state.
  */
-export const zElementInstanceWaitStateResult = z.object({
+export const zElementInstanceWaitStateResult = /*#__PURE__*/ (() => z.object({
     rootProcessInstanceKey: zProcessInstanceKey.nullable(),
     processInstanceKey: zProcessInstanceKey,
     elementInstanceKey: zElementInstanceKey,
@@ -4000,9 +4000,9 @@ export const zElementInstanceWaitStateResult = z.object({
     details: zWaitStateDetails
 }).register(z.globalRegistry, {
     description: 'An element instance waiting state.'
-});
+}))();
 
-export const zIncidentResult = z.object({
+export const zIncidentResult = /*#__PURE__*/ (() => z.object({
     processDefinitionId: zProcessDefinitionId,
     errorType: zIncidentErrorTypeEnum,
     errorMessage: z.string().register(z.globalRegistry, {
@@ -4020,9 +4020,9 @@ export const zIncidentResult = z.object({
     rootProcessInstanceKey: zProcessInstanceKey.nullable(),
     elementInstanceKey: zElementInstanceKey,
     jobKey: zJobKey.nullable()
-});
+}))();
 
-export const zActivatedJobResult = z.object({
+export const zActivatedJobResult = /*#__PURE__*/ (() => z.object({
     type: z.string().register(z.globalRegistry, {
         description: 'The type of the job (should match what was requested).'
     }),
@@ -4064,20 +4064,20 @@ export const zActivatedJobResult = z.object({
         description: 'The priority of the job. Higher values indicate higher priority. Jobs created before 8.10 have no stored priority; the API returns 0 for such jobs.\n'
     }),
     jobLeaseToken: zJobLeaseToken.nullish()
-});
+}))();
 
 /**
  * The list of activated jobs
  */
-export const zJobActivationResult = z.object({
+export const zJobActivationResult = /*#__PURE__*/ (() => z.object({
     jobs: z.array(zActivatedJobResult).register(z.globalRegistry, {
         description: 'The activated jobs.'
     })
 }).register(z.globalRegistry, {
     description: 'The list of activated jobs'
-});
+}))();
 
-export const zJobSearchResult = z.object({
+export const zJobSearchResult = /*#__PURE__*/ (() => z.object({
     customHeaders: z.record(z.string(), z.string()).register(z.globalRegistry, {
         description: 'A set of custom headers defined during modelling.'
     }),
@@ -4116,7 +4116,7 @@ export const zJobSearchResult = z.object({
     priority: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'The priority of the job. Higher values indicate higher priority. Jobs created before 8.10 have no stored priority; they appear last when sorting by this field and are excluded when filtering by this field. The API returns 0 for such jobs.\n'
     })
-});
+}))();
 
 /**
  * System-generated key for a decision definition.
@@ -4126,18 +4126,18 @@ export const zDecisionDefinitionKey = zLongKey;
 /**
  * Decision evaluation by key
  */
-export const zDecisionEvaluationByKey = z.object({
+export const zDecisionEvaluationByKey = /*#__PURE__*/ (() => z.object({
     decisionDefinitionKey: zDecisionDefinitionKey,
     variables: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
         description: 'The decision evaluation variables as JSON document.'
     }).optional(),
     tenantId: zTenantId.optional()
-});
+}))();
 
-export const zDecisionEvaluationInstruction = z.union([
+export const zDecisionEvaluationInstruction = /*#__PURE__*/ (() => z.union([
     zDecisionEvaluationById,
     zDecisionEvaluationByKey
-]);
+]))();
 
 /**
  * System-generated identifier for a decision evaluation instance. It is composed of the
@@ -4145,14 +4145,14 @@ export const zDecisionEvaluationInstruction = z.union([
  * that evaluation, joined by a hyphen (format: `<decisionEvaluationKey>-<index>`).
  *
  */
-export const zDecisionEvaluationInstanceKey = z.string().min(3).max(30).regex(/^[0-9]+-[0-9]+$/).register(z.globalRegistry, {
+export const zDecisionEvaluationInstanceKey = /*#__PURE__*/ (() => z.string().min(3).max(30).regex(/^[0-9]+-[0-9]+$/).register(z.globalRegistry, {
     description: 'System-generated identifier for a decision evaluation instance. It is composed of the\nparent decision evaluation key and the 1-based index of the evaluated decision within\nthat evaluation, joined by a hyphen (format: `<decisionEvaluationKey>-<index>`).\n'
-});
+}))();
 
 /**
  * A decision that was evaluated.
  */
-export const zEvaluatedDecisionResult = z.object({
+export const zEvaluatedDecisionResult = /*#__PURE__*/ (() => z.object({
     decisionDefinitionId: zDecisionDefinitionId,
     decisionDefinitionName: z.string().register(z.globalRegistry, {
         description: 'The name of the decision which was evaluated.'
@@ -4177,14 +4177,14 @@ export const zEvaluatedDecisionResult = z.object({
     decisionEvaluationInstanceKey: zDecisionEvaluationInstanceKey
 }).register(z.globalRegistry, {
     description: 'A decision that was evaluated.'
-});
+}))();
 
 /**
  * System-generated key for a decision evaluation.
  */
 export const zDecisionEvaluationKey = zLongKey;
 
-export const zDecisionInstanceResult = z.object({
+export const zDecisionInstanceResult = /*#__PURE__*/ (() => z.object({
     businessId: zBusinessId.nullable(),
     decisionDefinitionId: zDecisionDefinitionId,
     decisionDefinitionKey: zDecisionDefinitionKey,
@@ -4211,16 +4211,16 @@ export const zDecisionInstanceResult = z.object({
     rootProcessInstanceKey: zProcessInstanceKey.nullable(),
     state: zDecisionInstanceStateEnum,
     tenantId: zTenantId
-});
+}))();
 
-export const zDecisionInstanceGetQueryResult = zDecisionInstanceResult.and(z.object({
+export const zDecisionInstanceGetQueryResult = /*#__PURE__*/ (() => zDecisionInstanceResult.and(z.object({
     evaluatedInputs: z.array(zEvaluatedDecisionInputItem).register(z.globalRegistry, {
         description: 'The evaluated inputs of the decision instance.\n'
     }),
     matchedRules: z.array(zMatchedDecisionRuleItem).register(z.globalRegistry, {
         description: 'The matched rules of the decision instance.\n'
     })
-}));
+})))();
 
 /**
  * System-generated key for a deployed decision requirements definition.
@@ -4230,7 +4230,7 @@ export const zDecisionRequirementsKey = zLongKey;
 /**
  * Decision definition search filter.
  */
-export const zDecisionDefinitionFilter = z.object({
+export const zDecisionDefinitionFilter = /*#__PURE__*/ (() => z.object({
     decisionDefinitionId: zDecisionDefinitionId.optional(),
     name: z.string().register(z.globalRegistry, {
         description: 'The DMN name of the decision definition.'
@@ -4255,9 +4255,9 @@ export const zDecisionDefinitionFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Decision definition search filter.'
-});
+}))();
 
-export const zDecisionDefinitionResult = z.object({
+export const zDecisionDefinitionResult = /*#__PURE__*/ (() => z.object({
     decisionDefinitionId: zDecisionDefinitionId,
     decisionDefinitionKey: zDecisionDefinitionKey,
     decisionRequirementsId: z.string().register(z.globalRegistry, {
@@ -4277,12 +4277,12 @@ export const zDecisionDefinitionResult = z.object({
     version: z.int().register(z.globalRegistry, {
         description: 'The assigned version of the decision definition.'
     })
-});
+}))();
 
 /**
  * Decision requirements search filter.
  */
-export const zDecisionRequirementsFilter = z.object({
+export const zDecisionRequirementsFilter = /*#__PURE__*/ (() => z.object({
     decisionRequirementsName: z.string().register(z.globalRegistry, {
         description: 'The DMN name of the decision requirements.'
     }).optional(),
@@ -4299,9 +4299,9 @@ export const zDecisionRequirementsFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Decision requirements search filter.'
-});
+}))();
 
-export const zDecisionRequirementsResult = z.object({
+export const zDecisionRequirementsResult = /*#__PURE__*/ (() => z.object({
     decisionRequirementsId: z.string().register(z.globalRegistry, {
         description: 'The DMN ID of the decision requirements.'
     }),
@@ -4316,12 +4316,12 @@ export const zDecisionRequirementsResult = z.object({
     version: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'The assigned version of the decision requirements.'
     })
-});
+}))();
 
 /**
  * A deployed decision.
  */
-export const zDeploymentDecisionResult = z.object({
+export const zDeploymentDecisionResult = /*#__PURE__*/ (() => z.object({
     decisionDefinitionId: zDecisionDefinitionId,
     version: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'The assigned decision version.'
@@ -4337,12 +4337,12 @@ export const zDeploymentDecisionResult = z.object({
     decisionRequirementsKey: zDecisionRequirementsKey
 }).register(z.globalRegistry, {
     description: 'A deployed decision.'
-});
+}))();
 
 /**
  * Deployed decision requirements.
  */
-export const zDeploymentDecisionRequirementsResult = z.object({
+export const zDeploymentDecisionRequirementsResult = /*#__PURE__*/ (() => z.object({
     decisionRequirementsId: z.string().register(z.globalRegistry, {
         description: 'The id of the deployed decision requirements.'
     }),
@@ -4359,22 +4359,22 @@ export const zDeploymentDecisionRequirementsResult = z.object({
     decisionRequirementsKey: zDecisionRequirementsKey
 }).register(z.globalRegistry, {
     description: 'Deployed decision requirements.'
-});
+}))();
 
 /**
  * The system-assigned key for this resource.
  */
-export const zResourceKey = z.union([
+export const zResourceKey = /*#__PURE__*/ (() => z.union([
     zProcessDefinitionKey,
     zDecisionRequirementsKey,
     zFormKey,
     zDecisionDefinitionKey
-]);
+]))();
 
 /**
  * A deployed Resource.
  */
-export const zDeploymentResourceResult = z.object({
+export const zDeploymentResourceResult = /*#__PURE__*/ (() => z.object({
     resourceId: z.string().register(z.globalRegistry, {
         description: 'The resource id of the deployed resource.'
     }),
@@ -4388,25 +4388,25 @@ export const zDeploymentResourceResult = z.object({
     resourceKey: zResourceKey
 }).register(z.globalRegistry, {
     description: 'A deployed Resource.'
-});
+}))();
 
-export const zDeploymentMetadataResult = z.object({
+export const zDeploymentMetadataResult = /*#__PURE__*/ (() => z.object({
     processDefinition: zDeploymentProcessResult.nullable(),
     decisionDefinition: zDeploymentDecisionResult.nullable(),
     decisionRequirements: zDeploymentDecisionRequirementsResult.nullable(),
     form: zDeploymentFormResult.nullable(),
     resource: zDeploymentResourceResult.nullable()
-});
+}))();
 
-export const zDeploymentResult = z.object({
+export const zDeploymentResult = /*#__PURE__*/ (() => z.object({
     deploymentKey: zDeploymentKey,
     tenantId: zTenantId,
     deployments: z.array(zDeploymentMetadataResult).register(z.globalRegistry, {
         description: 'Items deployed by the request.'
     })
-});
+}))();
 
-export const zResourceResult = z.object({
+export const zResourceResult = /*#__PURE__*/ (() => z.object({
     resourceName: z.string().register(z.globalRegistry, {
         description: 'The resource name from which this resource was parsed.'
     }),
@@ -4419,14 +4419,14 @@ export const zResourceResult = z.object({
     }),
     tenantId: zTenantId,
     resourceKey: zResourceKey
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced ResourceKey filter.
  */
-export const zAdvancedResourceKeyFilter = z.object({
+export const zAdvancedResourceKeyFilter = /*#__PURE__*/ (() => z.object({
     $eq: zResourceKey.optional(),
     $neq: zResourceKey.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -4440,14 +4440,14 @@ export const zAdvancedResourceKeyFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced ResourceKey filter.'
-});
+}))();
 
 /**
  * System-generated key for a deployed decision instance.
  */
 export const zDecisionInstanceKey = zLongKey;
 
-export const zEvaluateDecisionResult = z.object({
+export const zEvaluateDecisionResult = /*#__PURE__*/ (() => z.object({
     decisionDefinitionId: zDecisionDefinitionId,
     decisionDefinitionKey: zDecisionDefinitionKey,
     decisionDefinitionName: z.string().register(z.globalRegistry, {
@@ -4471,26 +4471,26 @@ export const zEvaluateDecisionResult = z.object({
         description: 'JSON document that will instantiate the result of the decision which was evaluated.\n'
     }),
     tenantId: zTenantId
-});
+}))();
 
 /**
  * System-generated key for an batch operation.
  */
-export const zBatchOperationKey = z.string().register(z.globalRegistry, {
+export const zBatchOperationKey = /*#__PURE__*/ (() => z.string().register(z.globalRegistry, {
     description: 'System-generated key for an batch operation.'
-});
+}))();
 
 /**
  * The created batch operation.
  */
-export const zBatchOperationCreatedResult = z.object({
+export const zBatchOperationCreatedResult = /*#__PURE__*/ (() => z.object({
     batchOperationKey: zBatchOperationKey,
     batchOperationType: zBatchOperationTypeEnum
 }).register(z.globalRegistry, {
     description: 'The created batch operation.'
-});
+}))();
 
-export const zBatchOperationResponse = z.object({
+export const zBatchOperationResponse = /*#__PURE__*/ (() => z.object({
     batchOperationKey: zBatchOperationKey,
     state: zBatchOperationStateEnum,
     batchOperationType: zBatchOperationTypeEnum.nullable(),
@@ -4510,9 +4510,9 @@ export const zBatchOperationResponse = z.object({
     errors: z.array(zBatchOperationError).register(z.globalRegistry, {
         description: 'The errors that occurred per partition during the batch operation.'
     })
-});
+}))();
 
-export const zBatchOperationItemResponse = z.object({
+export const zBatchOperationItemResponse = /*#__PURE__*/ (() => z.object({
     operationType: zBatchOperationTypeEnum,
     batchOperationKey: zBatchOperationKey,
     itemKey: z.string().register(z.globalRegistry, {
@@ -4531,42 +4531,42 @@ export const zBatchOperationItemResponse = z.object({
     }),
     processedDate: z.iso.datetime().nullable(),
     errorMessage: z.string().nullable()
-});
+}))();
 
-export const zDeleteResourceResponse = z.object({
+export const zDeleteResourceResponse = /*#__PURE__*/ (() => z.object({
     resourceKey: zResourceKey,
     batchOperation: zBatchOperationCreatedResult.nullable()
-});
+}))();
 
 /**
  * A reference key chosen by the user that will be part of all records resulting from this operation.
  * Must be > 0 if provided.
  *
  */
-export const zOperationReference = z.coerce.number().int().gte(1).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
+export const zOperationReference = /*#__PURE__*/ (() => z.coerce.number().int().gte(1).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
     description: 'A reference key chosen by the user that will be part of all records resulting from this operation.\nMust be > 0 if provided.\n'
-});
+}))();
 
-export const zDeleteDecisionInstanceRequest = z.object({
+export const zDeleteDecisionInstanceRequest = /*#__PURE__*/ (() => z.object({
     operationReference: zOperationReference.optional()
-}).nullable();
+}).nullable())();
 
-export const zDeleteResourceRequest = z.object({
+export const zDeleteResourceRequest = /*#__PURE__*/ (() => z.object({
     operationReference: zOperationReference.optional(),
     deleteHistory: z.boolean().register(z.globalRegistry, {
         description: 'Indicates if the historic data associated with the resource should also be deleted\nasynchronously.\n\nThis flag is effective for process definitions and decision requirements definitions.\nFor other resource types (forms, generic resources) it is ignored and no history is\ndeleted. For a decision requirements definition the `batchOperation` field in the\nresponse carries the created batch operation. For a process definition the history is\ndeleted as part of the definition\'s draining/deletion lifecycle and no batch operation is\nreturned.\n'
     }).optional().default(false)
-}).nullable();
+}).nullable())();
 
-export const zIncidentResolutionRequest = z.object({
+export const zIncidentResolutionRequest = /*#__PURE__*/ (() => z.object({
     operationReference: zOperationReference.optional()
-});
+}))();
 
-export const zJobUpdateRequest = z.object({
+export const zJobUpdateRequest = /*#__PURE__*/ (() => z.object({
     changeset: zJobChangeset,
     operationReference: zOperationReference.optional(),
     jobLeaseToken: zJobLeaseToken.nullish()
-});
+}))();
 
 /**
  * System-generated key for an agent definition.
@@ -4576,7 +4576,7 @@ export const zAgentDefinitionKey = zLongKey;
 /**
  * An agent definition, created at deploy time for the process element it belongs to.
  */
-export const zAgentDefinitionResult = z.object({
+export const zAgentDefinitionResult = /*#__PURE__*/ (() => z.object({
     agentDefinitionKey: zAgentDefinitionKey,
     agentType: zAgentDefinitionTypeEnum,
     name: z.string().register(z.globalRegistry, {
@@ -4592,14 +4592,14 @@ export const zAgentDefinitionResult = z.object({
     tenantId: zTenantId
 }).register(z.globalRegistry, {
     description: 'An agent definition, created at deploy time for the process element it belongs to.'
-});
+}))();
 
 /**
  * System-generated key for an agent instance.
  */
 export const zAgentInstanceKey = zLongKey;
 
-export const zAgentInstanceResult = z.object({
+export const zAgentInstanceResult = /*#__PURE__*/ (() => z.object({
     agentInstanceKey: zAgentInstanceKey,
     agentDefinitionKey: zAgentDefinitionKey,
     status: zAgentInstanceStatusEnum,
@@ -4629,7 +4629,7 @@ export const zAgentInstanceResult = z.object({
     elementInstanceKeys: z.array(zElementInstanceKey).register(z.globalRegistry, {
         description: 'The keys of all element instances associated with this agent instance.'
     })
-});
+}))();
 
 /**
  * System-generated key for an agent history item.
@@ -4641,7 +4641,7 @@ export const zAgentHistoryItemKey = zLongKey;
  * history batch.
  *
  */
-export const zAgentInstanceCreatedHistoryItem = z.object({
+export const zAgentInstanceCreatedHistoryItem = /*#__PURE__*/ (() => z.object({
     historyItemId: zHistoryItemId,
     historyItemKey: zAgentHistoryItemKey,
     isDuplicate: z.boolean().register(z.globalRegistry, {
@@ -4649,35 +4649,35 @@ export const zAgentInstanceCreatedHistoryItem = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'The outcome of appending a single history item from an update request\'s\nhistory batch.\n'
-});
+}))();
 
 /**
  * Response returned after successfully creating an agent instance.
  */
-export const zAgentInstanceCreationResult = z.object({
+export const zAgentInstanceCreationResult = /*#__PURE__*/ (() => z.object({
     agentInstanceKey: zAgentInstanceKey,
     createdHistory: z.array(zAgentInstanceCreatedHistoryItem).register(z.globalRegistry, {
         description: 'One entry per history item submitted in the request, in request order.\n'
     })
 }).register(z.globalRegistry, {
     description: 'Response returned after successfully creating an agent instance.'
-});
+}))();
 
 /**
  * Response returned after successfully updating an agent instance.
  */
-export const zAgentInstanceUpdateResult = z.object({
+export const zAgentInstanceUpdateResult = /*#__PURE__*/ (() => z.object({
     createdHistory: z.array(zAgentInstanceCreatedHistoryItem).register(z.globalRegistry, {
         description: 'One entry per history item submitted in the request, in request order.\nEmpty when no history items were submitted.\n'
     })
 }).register(z.globalRegistry, {
     description: 'Response returned after successfully updating an agent instance.'
-});
+}))();
 
 /**
  * A single conversation history item belonging to an agent instance.
  */
-export const zAgentInstanceHistoryItemResult = z.object({
+export const zAgentInstanceHistoryItemResult = /*#__PURE__*/ (() => z.object({
     historyItemKey: zAgentHistoryItemKey,
     historyItemId: zHistoryItemId,
     agentInstanceKey: zAgentInstanceKey,
@@ -4708,7 +4708,7 @@ export const zAgentInstanceHistoryItemResult = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'A single conversation history item belonging to an agent instance.'
-});
+}))();
 
 /**
  * System-generated key for an audit log entry.
@@ -4718,7 +4718,7 @@ export const zAuditLogKey = zLongKey;
 /**
  * Audit log item.
  */
-export const zAuditLogResult = z.object({
+export const zAuditLogResult = /*#__PURE__*/ (() => z.object({
     auditLogKey: zAuditLogKey,
     entityKey: zAuditLogEntityKey,
     entityType: zAuditLogEntityTypeEnum,
@@ -4756,14 +4756,14 @@ export const zAuditLogResult = z.object({
     inboundChannelToolName: z.string().nullable()
 }).register(z.globalRegistry, {
     description: 'Audit log item.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced ProcessDefinitionKey filter.
  */
-export const zAdvancedProcessDefinitionKeyFilter = z.object({
+export const zAdvancedProcessDefinitionKeyFilter = /*#__PURE__*/ (() => z.object({
     $eq: zProcessDefinitionKey.optional(),
     $neq: zProcessDefinitionKey.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -4777,14 +4777,14 @@ export const zAdvancedProcessDefinitionKeyFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced ProcessDefinitionKey filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced ProcessInstanceKey filter.
  */
-export const zAdvancedProcessInstanceKeyFilter = z.object({
+export const zAdvancedProcessInstanceKeyFilter = /*#__PURE__*/ (() => z.object({
     $eq: zProcessInstanceKey.optional(),
     $neq: zProcessInstanceKey.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -4798,14 +4798,14 @@ export const zAdvancedProcessInstanceKeyFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced ProcessInstanceKey filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced ElementInstanceKey filter.
  */
-export const zAdvancedElementInstanceKeyFilter = z.object({
+export const zAdvancedElementInstanceKeyFilter = /*#__PURE__*/ (() => z.object({
     $eq: zElementInstanceKey.optional(),
     $neq: zElementInstanceKey.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -4819,14 +4819,14 @@ export const zAdvancedElementInstanceKeyFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced ElementInstanceKey filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced JobKey filter.
  */
-export const zAdvancedJobKeyFilter = z.object({
+export const zAdvancedJobKeyFilter = /*#__PURE__*/ (() => z.object({
     $eq: zJobKey.optional(),
     $neq: zJobKey.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -4840,14 +4840,14 @@ export const zAdvancedJobKeyFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced JobKey filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced DecisionDefinitionKey filter.
  */
-export const zAdvancedDecisionDefinitionKeyFilter = z.object({
+export const zAdvancedDecisionDefinitionKeyFilter = /*#__PURE__*/ (() => z.object({
     $eq: zDecisionDefinitionKey.optional(),
     $neq: zDecisionDefinitionKey.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -4861,14 +4861,14 @@ export const zAdvancedDecisionDefinitionKeyFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced DecisionDefinitionKey filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced ScopeKey filter.
  */
-export const zAdvancedScopeKeyFilter = z.object({
+export const zAdvancedScopeKeyFilter = /*#__PURE__*/ (() => z.object({
     $eq: zScopeKey.optional(),
     $neq: zScopeKey.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -4882,14 +4882,14 @@ export const zAdvancedScopeKeyFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced ScopeKey filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced VariableKey filter.
  */
-export const zAdvancedVariableKeyFilter = z.object({
+export const zAdvancedVariableKeyFilter = /*#__PURE__*/ (() => z.object({
     $eq: zVariableKey.optional(),
     $neq: zVariableKey.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -4903,14 +4903,14 @@ export const zAdvancedVariableKeyFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced VariableKey filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced DecisionEvaluationInstanceKey filter.
  */
-export const zAdvancedDecisionEvaluationInstanceKeyFilter = z.object({
+export const zAdvancedDecisionEvaluationInstanceKeyFilter = /*#__PURE__*/ (() => z.object({
     $eq: zDecisionEvaluationInstanceKey.optional(),
     $neq: zDecisionEvaluationInstanceKey.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -4924,14 +4924,14 @@ export const zAdvancedDecisionEvaluationInstanceKeyFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced DecisionEvaluationInstanceKey filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced AgentDefinitionKey filter.
  */
-export const zAdvancedAgentDefinitionKeyFilter = z.object({
+export const zAdvancedAgentDefinitionKeyFilter = /*#__PURE__*/ (() => z.object({
     $eq: zAgentDefinitionKey.optional(),
     $neq: zAgentDefinitionKey.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -4945,14 +4945,14 @@ export const zAdvancedAgentDefinitionKeyFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced AgentDefinitionKey filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced AgentInstanceKey filter.
  */
-export const zAdvancedAgentInstanceKeyFilter = z.object({
+export const zAdvancedAgentInstanceKeyFilter = /*#__PURE__*/ (() => z.object({
     $eq: zAgentInstanceKey.optional(),
     $neq: zAgentInstanceKey.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -4966,14 +4966,14 @@ export const zAdvancedAgentInstanceKeyFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced AgentInstanceKey filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced AgentHistoryItemKey filter.
  */
-export const zAdvancedAgentHistoryItemKeyFilter = z.object({
+export const zAdvancedAgentHistoryItemKeyFilter = /*#__PURE__*/ (() => z.object({
     $eq: zAgentHistoryItemKey.optional(),
     $neq: zAgentHistoryItemKey.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -4987,14 +4987,14 @@ export const zAdvancedAgentHistoryItemKeyFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced AgentHistoryItemKey filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced AuditLogKey filter.
  */
-export const zAdvancedAuditLogKeyFilter = z.object({
+export const zAdvancedAuditLogKeyFilter = /*#__PURE__*/ (() => z.object({
     $eq: zAuditLogKey.optional(),
     $neq: zAuditLogKey.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -5008,14 +5008,14 @@ export const zAdvancedAuditLogKeyFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced AuditLogKey filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced FormKey filter.
  */
-export const zAdvancedFormKeyFilter = z.object({
+export const zAdvancedFormKeyFilter = /*#__PURE__*/ (() => z.object({
     $eq: zFormKey.optional(),
     $neq: zFormKey.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -5029,14 +5029,14 @@ export const zAdvancedFormKeyFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced FormKey filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced DecisionEvaluationKey filter.
  */
-export const zAdvancedDecisionEvaluationKeyFilter = z.object({
+export const zAdvancedDecisionEvaluationKeyFilter = /*#__PURE__*/ (() => z.object({
     $eq: zDecisionEvaluationKey.optional(),
     $neq: zDecisionEvaluationKey.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -5050,14 +5050,14 @@ export const zAdvancedDecisionEvaluationKeyFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced DecisionEvaluationKey filter.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced DecisionRequirementsKey filter.
  */
-export const zAdvancedDecisionRequirementsKeyFilter = z.object({
+export const zAdvancedDecisionRequirementsKeyFilter = /*#__PURE__*/ (() => z.object({
     $eq: zDecisionRequirementsKey.optional(),
     $neq: zDecisionRequirementsKey.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -5071,12 +5071,12 @@ export const zAdvancedDecisionRequirementsKeyFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced DecisionRequirementsKey filter.'
-});
+}))();
 
 /**
  * The response of a license request.
  */
-export const zLicenseResponse = z.object({
+export const zLicenseResponse = /*#__PURE__*/ (() => z.object({
     validLicense: z.boolean().register(z.globalRegistry, {
         description: 'True if the Camunda license is valid, false if otherwise'
     }),
@@ -5089,9 +5089,9 @@ export const zLicenseResponse = z.object({
     expiresAt: z.iso.datetime().nullable()
 }).register(z.globalRegistry, {
     description: 'The response of a license request.'
-});
+}))();
 
-export const zMappingRuleCreateUpdateRequest = z.object({
+export const zMappingRuleCreateUpdateRequest = /*#__PURE__*/ (() => z.object({
     claimName: z.string().register(z.globalRegistry, {
         description: 'The name of the claim to map.'
     }),
@@ -5101,15 +5101,15 @@ export const zMappingRuleCreateUpdateRequest = z.object({
     name: z.string().register(z.globalRegistry, {
         description: 'The name of the mapping rule.'
     })
-});
+}))();
 
-export const zMappingRuleCreateRequest = zMappingRuleCreateUpdateRequest.and(z.object({
+export const zMappingRuleCreateRequest = /*#__PURE__*/ (() => zMappingRuleCreateUpdateRequest.and(z.object({
     mappingRuleId: zMappingRuleId
-}));
+})))();
 
 export const zMappingRuleUpdateRequest = zMappingRuleCreateUpdateRequest;
 
-export const zMappingRuleCreateUpdateResult = z.object({
+export const zMappingRuleCreateUpdateResult = /*#__PURE__*/ (() => z.object({
     claimName: z.string().register(z.globalRegistry, {
         description: 'The name of the claim to map.'
     }),
@@ -5120,13 +5120,13 @@ export const zMappingRuleCreateUpdateResult = z.object({
         description: 'The name of the mapping rule.'
     }),
     mappingRuleId: zMappingRuleId
-});
+}))();
 
 export const zMappingRuleCreateResult = zMappingRuleCreateUpdateResult;
 
 export const zMappingRuleUpdateResult = zMappingRuleCreateUpdateResult;
 
-export const zMappingRuleResult = z.object({
+export const zMappingRuleResult = /*#__PURE__*/ (() => z.object({
     claimName: z.string().register(z.globalRegistry, {
         description: 'The name of the claim to map.'
     }),
@@ -5137,12 +5137,12 @@ export const zMappingRuleResult = z.object({
         description: 'The name of the mapping rule.'
     }),
     mappingRuleId: zMappingRuleId
-});
+}))();
 
 /**
  * Mapping rule search filter fields.
  */
-export const zMappingRuleFilterFields = z.object({
+export const zMappingRuleFilterFields = /*#__PURE__*/ (() => z.object({
     claimName: z.string().register(z.globalRegistry, {
         description: 'The claim name to match against a token.'
     }).optional(),
@@ -5153,16 +5153,16 @@ export const zMappingRuleFilterFields = z.object({
     mappingRuleId: zStringFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'Mapping rule search filter fields.'
-});
+}))();
 
 /**
  * Mapping rule search filter.
  */
-export const zMappingRuleFilter = zMappingRuleFilterFields.and(z.object({
+export const zMappingRuleFilter = /*#__PURE__*/ (() => zMappingRuleFilterFields.and(z.object({
     $or: z.array(zMappingRuleFilterFields).nullish()
-}));
+})))();
 
-export const zMessageCorrelationRequest = z.object({
+export const zMessageCorrelationRequest = /*#__PURE__*/ (() => z.object({
     name: z.string().register(z.globalRegistry, {
         description: 'The message name as defined in the BPMN process\n'
     }),
@@ -5174,9 +5174,9 @@ export const zMessageCorrelationRequest = z.object({
     }).optional(),
     tenantId: zTenantId.optional(),
     businessId: zBusinessId.optional()
-});
+}))();
 
-export const zMessagePublicationRequest = z.object({
+export const zMessagePublicationRequest = /*#__PURE__*/ (() => z.object({
     name: z.string().register(z.globalRegistry, {
         description: 'The name of the message.'
     }),
@@ -5194,7 +5194,7 @@ export const zMessagePublicationRequest = z.object({
     }).optional(),
     tenantId: zTenantId.optional(),
     businessId: zBusinessId.optional()
-});
+}))();
 
 /**
  * The state of message subscription.
@@ -5204,14 +5204,14 @@ export const zMessagePublicationRequest = z.object({
  * use the `/correlated-message-subscriptions/search` endpoint.
  *
  */
-export const zMessageSubscriptionStateEnum = z.enum([
+export const zMessageSubscriptionStateEnum = /*#__PURE__*/ (() => z.enum([
     'CORRELATED',
     'CREATED',
     'DELETED',
     'MIGRATED'
 ]).register(z.globalRegistry, {
     description: 'The state of message subscription.\n\n**Note for `START_EVENT` subscriptions:** The `CORRELATED` and `MIGRATED` states are not\ntracked for these subscriptions. To query correlation history for process start events,\nuse the `/correlated-message-subscriptions/search` endpoint.\n'
-});
+}))();
 
 /**
  * The type of message subscription.
@@ -5221,16 +5221,16 @@ export const zMessageSubscriptionStateEnum = z.enum([
  * no value stored; the API returns `PROCESS_EVENT` as a default for those entries.
  *
  */
-export const zMessageSubscriptionTypeEnum = z.enum(['START_EVENT', 'PROCESS_EVENT']).register(z.globalRegistry, {
+export const zMessageSubscriptionTypeEnum = /*#__PURE__*/ (() => z.enum(['START_EVENT', 'PROCESS_EVENT']).register(z.globalRegistry, {
     description: 'The type of message subscription.\n`START_EVENT` is definition-scoped (process start events). Always has a value; only\ncaptured from Camunda 8.10 onwards.\n`PROCESS_EVENT` is instance-scoped (intermediate catch events). Pre-8.10 entries have\nno value stored; the API returns `PROCESS_EVENT` as a default for those entries.\n'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced MessageSubscriptionTypeEnum filter
  */
-export const zAdvancedMessageSubscriptionTypeFilter = z.object({
+export const zAdvancedMessageSubscriptionTypeFilter = /*#__PURE__*/ (() => z.object({
     $eq: zMessageSubscriptionTypeEnum.optional(),
     $neq: zMessageSubscriptionTypeEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -5242,14 +5242,14 @@ export const zAdvancedMessageSubscriptionTypeFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced MessageSubscriptionTypeEnum filter'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced MessageSubscriptionStateEnum filter
  */
-export const zAdvancedMessageSubscriptionStateFilter = z.object({
+export const zAdvancedMessageSubscriptionStateFilter = /*#__PURE__*/ (() => z.object({
     $eq: zMessageSubscriptionStateEnum.optional(),
     $neq: zMessageSubscriptionStateEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -5261,14 +5261,14 @@ export const zAdvancedMessageSubscriptionStateFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced MessageSubscriptionStateEnum filter'
-});
+}))();
 
 /**
  * System-generated key for a message subscription.
  */
 export const zMessageSubscriptionKey = zLongKey;
 
-export const zMessageSubscriptionResult = z.object({
+export const zMessageSubscriptionResult = /*#__PURE__*/ (() => z.object({
     businessId: zBusinessId.nullable(),
     messageSubscriptionKey: zMessageSubscriptionKey,
     processDefinitionId: zProcessDefinitionId,
@@ -5294,14 +5294,14 @@ export const zMessageSubscriptionResult = z.object({
     toolName: z.string().nullable(),
     inboundConnectorType: z.string().nullable(),
     tenantId: zTenantId
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced MessageSubscriptionKey filter.
  */
-export const zAdvancedMessageSubscriptionKeyFilter = z.object({
+export const zAdvancedMessageSubscriptionKeyFilter = /*#__PURE__*/ (() => z.object({
     $eq: zMessageSubscriptionKey.optional(),
     $neq: zMessageSubscriptionKey.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -5315,7 +5315,7 @@ export const zAdvancedMessageSubscriptionKeyFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced MessageSubscriptionKey filter.'
-});
+}))();
 
 /**
  * System-generated key for an message.
@@ -5327,25 +5327,25 @@ export const zMessageKey = zLongKey;
  * correlated with.
  *
  */
-export const zMessageCorrelationResult = z.object({
+export const zMessageCorrelationResult = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId,
     messageKey: zMessageKey,
     processInstanceKey: zProcessInstanceKey
 }).register(z.globalRegistry, {
     description: 'The message key of the correlated message, as well as the first process instance key it\ncorrelated with.\n'
-});
+}))();
 
 /**
  * The message key of the published message.
  */
-export const zMessagePublicationResult = z.object({
+export const zMessagePublicationResult = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId,
     messageKey: zMessageKey
 }).register(z.globalRegistry, {
     description: 'The message key of the published message.'
-});
+}))();
 
-export const zCorrelatedMessageSubscriptionResult = z.object({
+export const zCorrelatedMessageSubscriptionResult = /*#__PURE__*/ (() => z.object({
     businessId: zBusinessId.nullable(),
     correlationKey: z.string().nullable(),
     correlationTime: z.iso.datetime().register(z.globalRegistry, {
@@ -5366,13 +5366,13 @@ export const zCorrelatedMessageSubscriptionResult = z.object({
     rootProcessInstanceKey: zProcessInstanceKey.nullable(),
     subscriptionKey: zMessageSubscriptionKey,
     tenantId: zTenantId
-});
+}))();
 
 /**
  * A Problem detail object as described in [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457). There may be additional properties specific to the problem type.
  *
  */
-export const zProblemDetail = z.object({
+export const zProblemDetail = /*#__PURE__*/ (() => z.object({
     type: z.url().register(z.globalRegistry, {
         description: 'A URI identifying the problem type.'
     }).default('about:blank'),
@@ -5390,12 +5390,12 @@ export const zProblemDetail = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'A Problem detail object as described in [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457). There may be additional properties specific to the problem type.\n'
-});
+}))();
 
 /**
  * Process definition search filter.
  */
-export const zProcessDefinitionFilter = z.object({
+export const zProcessDefinitionFilter = /*#__PURE__*/ (() => z.object({
     name: zStringFilterProperty.optional(),
     isLatestVersion: z.boolean().register(z.globalRegistry, {
         description: 'Whether to only return the latest version of each process definition.\nWhen using this filter, pagination functionality is limited, you can only paginate forward using `after` and `limit`.\nThe response contains no `startCursor` in the `page`, and requests ignore the `from` and `before` in the `page`.\nWhen using this filter, sorting is limited to `processDefinitionId` and `tenantId` fields only.\n'
@@ -5424,9 +5424,9 @@ export const zProcessDefinitionFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Process definition search filter.'
-});
+}))();
 
-export const zProcessDefinitionResult = z.object({
+export const zProcessDefinitionResult = /*#__PURE__*/ (() => z.object({
     name: z.string().nullable(),
     resourceName: z.string().register(z.globalRegistry, {
         description: 'Resource name for this process definition.'
@@ -5448,12 +5448,12 @@ export const zProcessDefinitionResult = z.object({
     ]).register(z.globalRegistry, {
         description: 'The state of this process definition.\n`DRAINING` indicates the definition is being deleted but still has active process\ninstances draining before it is removed.\n'
     })
-});
+}))();
 
 /**
  * Process element statistics response.
  */
-export const zProcessElementStatisticsResult = z.object({
+export const zProcessElementStatisticsResult = /*#__PURE__*/ (() => z.object({
     elementId: zElementId,
     active: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
         description: 'The total number of active instances of the element.'
@@ -5469,40 +5469,40 @@ export const zProcessElementStatisticsResult = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Process element statistics response.'
-});
+}))();
 
 /**
  * Process definition element statistics query response.
  */
-export const zProcessDefinitionElementStatisticsQueryResult = z.object({
+export const zProcessDefinitionElementStatisticsQueryResult = /*#__PURE__*/ (() => z.object({
     items: z.array(zProcessElementStatisticsResult).register(z.globalRegistry, {
         description: 'The element statistics.'
     })
 }).register(z.globalRegistry, {
     description: 'Process definition element statistics query response.'
-});
+}))();
 
 /**
  * Process definition variable name filter request.
  */
-export const zProcessDefinitionVariableNameFilter = z.object({
+export const zProcessDefinitionVariableNameFilter = /*#__PURE__*/ (() => z.object({
     name: zStringFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'Process definition variable name filter request.'
-});
+}))();
 
 /**
  * Process definition variable name search response item.
  */
-export const zProcessDefinitionVariableNameSearchResult = z.object({
+export const zProcessDefinitionVariableNameSearchResult = /*#__PURE__*/ (() => z.object({
     name: z.string().register(z.globalRegistry, {
         description: 'The variable name.'
     })
 }).register(z.globalRegistry, {
     description: 'Process definition variable name search response item.'
-});
+}))();
 
-export const zProcessDefinitionMessageSubscriptionStatisticsResult = z.object({
+export const zProcessDefinitionMessageSubscriptionStatisticsResult = /*#__PURE__*/ (() => z.object({
     processDefinitionId: zProcessDefinitionId,
     tenantId: zTenantId,
     processDefinitionKey: zProcessDefinitionKey,
@@ -5512,12 +5512,12 @@ export const zProcessDefinitionMessageSubscriptionStatisticsResult = z.object({
     activeSubscriptions: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
         description: 'The total number of active message subscriptions for this process definition key.'
     })
-});
+}))();
 
 /**
  * Process definition instance statistics response.
  */
-export const zProcessDefinitionInstanceStatisticsResult = z.object({
+export const zProcessDefinitionInstanceStatisticsResult = /*#__PURE__*/ (() => z.object({
     processDefinitionId: zProcessDefinitionId,
     tenantId: zTenantId,
     latestProcessDefinitionName: z.string().nullable(),
@@ -5532,22 +5532,22 @@ export const zProcessDefinitionInstanceStatisticsResult = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Process definition instance statistics response.'
-});
+}))();
 
 /**
  * Process definition instance version statistics search filter.
  */
-export const zProcessDefinitionInstanceVersionStatisticsFilter = z.object({
+export const zProcessDefinitionInstanceVersionStatisticsFilter = /*#__PURE__*/ (() => z.object({
     processDefinitionId: zProcessDefinitionId,
     tenantId: zTenantId.optional()
 }).register(z.globalRegistry, {
     description: 'Process definition instance version statistics search filter.'
-});
+}))();
 
 /**
  * Process definition instance version statistics response.
  */
-export const zProcessDefinitionInstanceVersionStatisticsResult = z.object({
+export const zProcessDefinitionInstanceVersionStatisticsResult = /*#__PURE__*/ (() => z.object({
     processDefinitionId: zProcessDefinitionId,
     processDefinitionKey: zProcessDefinitionKey,
     processDefinitionName: z.string().nullable(),
@@ -5563,33 +5563,33 @@ export const zProcessDefinitionInstanceVersionStatisticsResult = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Process definition instance version statistics response.'
-});
+}))();
 
-export const zProcessInstanceCreationStartInstruction = z.object({
+export const zProcessInstanceCreationStartInstruction = /*#__PURE__*/ (() => z.object({
     elementId: zElementId
-});
+}))();
 
 /**
  * Terminates the process instance after a specific BPMN element is completed or terminated.
  *
  */
-export const zProcessInstanceCreationTerminateInstruction = z.object({
+export const zProcessInstanceCreationTerminateInstruction = /*#__PURE__*/ (() => z.object({
     type: z.string().register(z.globalRegistry, {
         description: 'The type of the runtime instruction'
     }).optional(),
     afterElementId: zElementId
 }).register(z.globalRegistry, {
     description: 'Terminates the process instance after a specific BPMN element is completed or terminated.\n'
-});
+}))();
 
-export const zProcessInstanceCreationRuntimeInstruction = z.object({
+export const zProcessInstanceCreationRuntimeInstruction = /*#__PURE__*/ (() => z.object({
         type: z.literal('TERMINATE_PROCESS_INSTANCE')
-    }).and(zProcessInstanceCreationTerminateInstruction);
+    }).and(zProcessInstanceCreationTerminateInstruction))();
 
 /**
  * Process creation by id
  */
-export const zProcessInstanceCreationInstructionById = z.object({
+export const zProcessInstanceCreationInstructionById = /*#__PURE__*/ (() => z.object({
     processDefinitionId: zProcessDefinitionId,
     processDefinitionVersion: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'The version of the process. If omitted, the latest active version is used.\n'
@@ -5616,12 +5616,12 @@ export const zProcessInstanceCreationInstructionById = z.object({
     }).optional().default(0),
     tags: zTagSet.optional(),
     businessId: zBusinessId.optional()
-});
+}))();
 
 /**
  * Process creation by key
  */
-export const zProcessInstanceCreationInstructionByKey = z.object({
+export const zProcessInstanceCreationInstructionByKey = /*#__PURE__*/ (() => z.object({
     processDefinitionKey: zProcessDefinitionKey,
     processDefinitionVersion: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'As the version is already identified by the `processDefinitionKey`, the value of this field is ignored.\nIt\'s here for backwards-compatibility only as previous releases accepted it in request bodies.\n'
@@ -5648,19 +5648,19 @@ export const zProcessInstanceCreationInstructionByKey = z.object({
     }).optional(),
     tags: zTagSet.optional(),
     businessId: zBusinessId.optional()
-});
+}))();
 
 /**
  * Instructions for creating a process instance. The process definition can be specified
  * either by id or by key.
  *
  */
-export const zProcessInstanceCreationInstruction = z.union([
+export const zProcessInstanceCreationInstruction = /*#__PURE__*/ (() => z.union([
     zProcessInstanceCreationInstructionByKey,
     zProcessInstanceCreationInstructionById
-]);
+]))();
 
-export const zCreateProcessInstanceResult = z.object({
+export const zCreateProcessInstanceResult = /*#__PURE__*/ (() => z.object({
     processDefinitionId: zProcessDefinitionId,
     processDefinitionVersion: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'The version of the process definition which was used to create the process instance.\n'
@@ -5673,36 +5673,36 @@ export const zCreateProcessInstanceResult = z.object({
     processInstanceKey: zProcessInstanceKey,
     tags: zTagSet,
     businessId: zBusinessId.nullable()
-});
+}))();
 
-export const zCancelProcessInstanceRequest = z.object({
+export const zCancelProcessInstanceRequest = /*#__PURE__*/ (() => z.object({
     operationReference: zOperationReference.optional()
-}).nullable();
+}).nullable())();
 
-export const zDeleteProcessInstanceRequest = z.object({
+export const zDeleteProcessInstanceRequest = /*#__PURE__*/ (() => z.object({
     operationReference: zOperationReference.optional()
-}).nullable();
+}).nullable())();
 
-export const zSuspendProcessInstanceRequest = z.object({
+export const zSuspendProcessInstanceRequest = /*#__PURE__*/ (() => z.object({
     operationReference: zOperationReference.optional()
-}).nullable();
+}).nullable())();
 
-export const zResumeProcessInstanceRequest = z.object({
+export const zResumeProcessInstanceRequest = /*#__PURE__*/ (() => z.object({
     operationReference: zOperationReference.optional()
-}).nullable();
+}).nullable())();
 
-export const zProcessInstanceCallHierarchyEntry = z.object({
+export const zProcessInstanceCallHierarchyEntry = /*#__PURE__*/ (() => z.object({
     processInstanceKey: zProcessInstanceKey,
     processDefinitionKey: zProcessDefinitionKey,
     processDefinitionName: z.string().register(z.globalRegistry, {
         description: 'The name of the process definition (fall backs to the process definition id if not available).'
     })
-});
+}))();
 
 /**
  * Process instance sequence flow result.
  */
-export const zProcessInstanceSequenceFlowResult = z.object({
+export const zProcessInstanceSequenceFlowResult = /*#__PURE__*/ (() => z.object({
     sequenceFlowId: z.string().register(z.globalRegistry, {
         description: 'The sequence flow id.'
     }),
@@ -5714,82 +5714,82 @@ export const zProcessInstanceSequenceFlowResult = z.object({
     tenantId: zTenantId
 }).register(z.globalRegistry, {
     description: 'Process instance sequence flow result.'
-});
+}))();
 
 /**
  * Process instance sequence flows query response.
  */
-export const zProcessInstanceSequenceFlowsQueryResult = z.object({
+export const zProcessInstanceSequenceFlowsQueryResult = /*#__PURE__*/ (() => z.object({
     items: z.array(zProcessInstanceSequenceFlowResult).register(z.globalRegistry, {
         description: 'The sequence flows.'
     })
 }).register(z.globalRegistry, {
     description: 'Process instance sequence flows query response.'
-});
+}))();
 
 /**
  * Process instance element statistics query response.
  */
-export const zProcessInstanceElementStatisticsQueryResult = z.object({
+export const zProcessInstanceElementStatisticsQueryResult = /*#__PURE__*/ (() => z.object({
     items: z.array(zProcessElementStatisticsResult).register(z.globalRegistry, {
         description: 'The element statistics.'
     })
 }).register(z.globalRegistry, {
     description: 'Process instance element statistics query response.'
-});
+}))();
 
 /**
  * Process instance wait state statistics response item.
  */
-export const zProcessInstanceWaitStateStatisticsResult = z.object({
+export const zProcessInstanceWaitStateStatisticsResult = /*#__PURE__*/ (() => z.object({
     elementId: zElementId,
     waitingCount: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
         description: 'The total number of waiting instances of the element.'
     })
 }).register(z.globalRegistry, {
     description: 'Process instance wait state statistics response item.'
-});
+}))();
 
 /**
  * Process instance wait state statistics query response.
  */
-export const zProcessInstanceWaitStateStatisticsQueryResult = z.object({
+export const zProcessInstanceWaitStateStatisticsQueryResult = /*#__PURE__*/ (() => z.object({
     items: z.array(zProcessInstanceWaitStateStatisticsResult).register(z.globalRegistry, {
         description: 'The wait state statistics.'
     })
 }).register(z.globalRegistry, {
     description: 'Process instance wait state statistics query response.'
-});
+}))();
 
 /**
  * The mapping instructions describe how to map elements from the source process definition to the target process definition.
  *
  */
-export const zMigrateProcessInstanceMappingInstruction = z.object({
+export const zMigrateProcessInstanceMappingInstruction = /*#__PURE__*/ (() => z.object({
     sourceElementId: zElementId,
     targetElementId: zElementId
 }).register(z.globalRegistry, {
     description: 'The mapping instructions describe how to map elements from the source process definition to the target process definition.\n'
-});
+}))();
 
 /**
  * The migration instructions describe how to migrate a process instance from one process definition to another.
  *
  */
-export const zProcessInstanceMigrationBatchOperationPlan = z.object({
+export const zProcessInstanceMigrationBatchOperationPlan = /*#__PURE__*/ (() => z.object({
     targetProcessDefinitionKey: zProcessDefinitionKey,
     mappingInstructions: z.array(zMigrateProcessInstanceMappingInstruction).register(z.globalRegistry, {
         description: 'The mapping instructions.'
     })
 }).register(z.globalRegistry, {
     description: 'The migration instructions describe how to migrate a process instance from one process definition to another.\n'
-});
+}))();
 
 /**
  * The migration instructions describe how to migrate a process instance from one process definition to another.
  *
  */
-export const zProcessInstanceMigrationInstruction = z.object({
+export const zProcessInstanceMigrationInstruction = /*#__PURE__*/ (() => z.object({
     targetProcessDefinitionKey: zProcessDefinitionKey,
     mappingInstructions: z.array(zMigrateProcessInstanceMappingInstruction).register(z.globalRegistry, {
         description: 'Element mappings from the source process instance to the target process instance.'
@@ -5797,22 +5797,22 @@ export const zProcessInstanceMigrationInstruction = z.object({
     operationReference: zOperationReference.optional()
 }).register(z.globalRegistry, {
     description: 'The migration instructions describe how to migrate a process instance from one process definition to another.\n'
-});
+}))();
 
 /**
  * The instruction describing the business id to assign to a running process instance.
  *
  */
-export const zProcessInstanceBusinessIdAssignmentInstruction = z.object({
+export const zProcessInstanceBusinessIdAssignmentInstruction = /*#__PURE__*/ (() => z.object({
     businessId: zBusinessId
 }).register(z.globalRegistry, {
     description: 'The instruction describing the business id to assign to a running process instance.\n'
-});
+}))();
 
 /**
  * Instruction describing which variables to create or update.
  */
-export const zModifyProcessInstanceVariableInstruction = z.object({
+export const zModifyProcessInstanceVariableInstruction = /*#__PURE__*/ (() => z.object({
     variables: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
         description: 'JSON document that will instantiate the variables at the scope defined by the scopeId.\nIt must be a JSON object, as variables will be mapped in a key-value fashion.\n'
     }),
@@ -5821,12 +5821,12 @@ export const zModifyProcessInstanceVariableInstruction = z.object({
     }).optional().default('')
 }).register(z.globalRegistry, {
     description: 'Instruction describing which variables to create or update.'
-});
+}))();
 
 /**
  * Instruction describing an element to activate.
  */
-export const zProcessInstanceModificationActivateInstruction = z.object({
+export const zProcessInstanceModificationActivateInstruction = /*#__PURE__*/ (() => z.object({
     elementId: zElementId,
     variableInstructions: z.array(zModifyProcessInstanceVariableInstruction).register(z.globalRegistry, {
         description: 'Instructions describing which variables to create or update.'
@@ -5834,7 +5834,7 @@ export const zProcessInstanceModificationActivateInstruction = z.object({
     ancestorElementInstanceKey: zElementInstanceKey.optional()
 }).register(z.globalRegistry, {
     description: 'Instruction describing an element to activate.'
-});
+}))();
 
 /**
  * Defines an instruction with a sourceElementId. The move instruction with this sourceType will terminate all active element
@@ -5842,84 +5842,84 @@ export const zProcessInstanceModificationActivateInstruction = z.object({
  * one at targetElementId.
  *
  */
-export const zSourceElementIdInstruction = z.object({
+export const zSourceElementIdInstruction = /*#__PURE__*/ (() => z.object({
     sourceType: z.string().register(z.globalRegistry, {
         description: 'The type of source element instruction.'
     }),
     sourceElementId: zElementId
 }).register(z.globalRegistry, {
     description: 'Defines an instruction with a sourceElementId. The move instruction with this sourceType will terminate all active element\ninstances with the sourceElementId and activate a new element instance for each terminated\none at targetElementId.\n'
-});
+}))();
 
 /**
  * Defines an instruction with a sourceElementInstanceKey. The move instruction with this sourceType will terminate one active element
  * instance with the sourceElementInstanceKey and activate a new element instance at targetElementId.
  *
  */
-export const zSourceElementInstanceKeyInstruction = z.object({
+export const zSourceElementInstanceKeyInstruction = /*#__PURE__*/ (() => z.object({
     sourceType: z.string().register(z.globalRegistry, {
         description: 'The type of source element instruction.'
     }),
     sourceElementInstanceKey: zElementInstanceKey
 }).register(z.globalRegistry, {
     description: 'Defines an instruction with a sourceElementInstanceKey. The move instruction with this sourceType will terminate one active element\ninstance with the sourceElementInstanceKey and activate a new element instance at targetElementId.\n'
-});
+}))();
 
 /**
  * Defines the source element identifier for the move instruction. It can either be a sourceElementId, or sourceElementInstanceKey.
  *
  */
-export const zSourceElementInstruction = z.discriminatedUnion('sourceType', [
+export const zSourceElementInstruction = /*#__PURE__*/ (() => z.discriminatedUnion('sourceType', [
     zSourceElementIdInstruction.extend({ sourceType: z.literal('byId') }),
     zSourceElementInstanceKeyInstruction.extend({ sourceType: z.literal('byKey') })
-]);
+]))();
 
 /**
  * Provides a concrete key to use as ancestor scope for the created element instance.
  */
-export const zDirectAncestorKeyInstruction = z.object({
+export const zDirectAncestorKeyInstruction = /*#__PURE__*/ (() => z.object({
     ancestorScopeType: z.string().register(z.globalRegistry, {
         description: 'The type of ancestor scope instruction.'
     }),
     ancestorElementInstanceKey: zElementInstanceKey
 }).register(z.globalRegistry, {
     description: 'Provides a concrete key to use as ancestor scope for the created element instance.'
-});
+}))();
 
 /**
  * Instructs the engine to derive the ancestor scope key from the source element's hierarchy. The engine traverses the source element's ancestry to find an instance that matches one of the target element's flow scopes, ensuring the target is activated in the correct scope.
  *
  */
-export const zInferredAncestorKeyInstruction = z.object({
+export const zInferredAncestorKeyInstruction = /*#__PURE__*/ (() => z.object({
     ancestorScopeType: z.string().register(z.globalRegistry, {
         description: 'The type of ancestor scope instruction.'
     })
 }).register(z.globalRegistry, {
     description: 'Instructs the engine to derive the ancestor scope key from the source element\'s hierarchy. The engine traverses the source element\'s ancestry to find an instance that matches one of the target element\'s flow scopes, ensuring the target is activated in the correct scope.\n'
-});
+}))();
 
 /**
  * Instructs the engine to use the source's direct parent key as the ancestor scope key for the target element. This is a simpler alternative to `inferred` that skips hierarchy traversal and directly uses the source's parent key. This is useful when the source and target elements are siblings within the same flow scope.
  *
  */
-export const zUseSourceParentKeyInstruction = z.object({
+export const zUseSourceParentKeyInstruction = /*#__PURE__*/ (() => z.object({
     ancestorScopeType: z.string().register(z.globalRegistry, {
         description: 'The type of ancestor scope instruction.'
     })
 }).register(z.globalRegistry, {
     description: 'Instructs the engine to use the source\'s direct parent key as the ancestor scope key for the target element. This is a simpler alternative to `inferred` that skips hierarchy traversal and directly uses the source\'s parent key. This is useful when the source and target elements are siblings within the same flow scope.\n'
-});
+}))();
 
 /**
  * Defines the ancestor scope for the created element instances. The default behavior resembles
  * a "direct" scope instruction with an `ancestorElementInstanceKey` of `"-1"`.
  *
  */
-export const zAncestorScopeInstruction = z.discriminatedUnion('ancestorScopeType', [
+export const zAncestorScopeInstruction = /*#__PURE__*/ (() => z.discriminatedUnion('ancestorScopeType', [
     zDirectAncestorKeyInstruction.extend({ ancestorScopeType: z.literal('direct') }),
     zInferredAncestorKeyInstruction.extend({ ancestorScopeType: z.literal('inferred') }),
     zUseSourceParentKeyInstruction.extend({ ancestorScopeType: z.literal('sourceParent') })
-]);
+]))();
 
 /**
  * Instruction describing a move operation. This instruction will terminate active element
@@ -5928,7 +5928,7 @@ export const zAncestorScopeInstruction = z.discriminatedUnion('ancestorScopeType
  * body instances will activate new element instances at the target id.
  *
  */
-export const zProcessInstanceModificationMoveInstruction = z.object({
+export const zProcessInstanceModificationMoveInstruction = /*#__PURE__*/ (() => z.object({
     sourceElementInstruction: zSourceElementInstruction,
     targetElementId: zElementId,
     ancestorScopeInstruction: zAncestorScopeInstruction.optional(),
@@ -5937,37 +5937,37 @@ export const zProcessInstanceModificationMoveInstruction = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Instruction describing a move operation. This instruction will terminate active element\ninstances based on the sourceElementInstruction and activate a new element instance for each terminated\none at targetElementId. Note that, for multi-instance activities, only the multi-instance\nbody instances will activate new element instances at the target id.\n'
-});
+}))();
 
 /**
  * Instruction describing which elements to terminate. The element instances are determined
  * at runtime by the given id.
  *
  */
-export const zProcessInstanceModificationTerminateByIdInstruction = z.object({
+export const zProcessInstanceModificationTerminateByIdInstruction = /*#__PURE__*/ (() => z.object({
     elementId: zElementId
 }).register(z.globalRegistry, {
     description: 'Instruction describing which elements to terminate. The element instances are determined\nat runtime by the given id.\n'
-});
+}))();
 
 /**
  * Instruction providing the key of the element instance to terminate.
  */
-export const zProcessInstanceModificationTerminateByKeyInstruction = z.object({
+export const zProcessInstanceModificationTerminateByKeyInstruction = /*#__PURE__*/ (() => z.object({
     elementInstanceKey: zElementInstanceKey
 }).register(z.globalRegistry, {
     description: 'Instruction providing the key of the element instance to terminate.'
-});
+}))();
 
 /**
  * Instruction describing which elements to terminate.
  */
-export const zProcessInstanceModificationTerminateInstruction = z.union([
+export const zProcessInstanceModificationTerminateInstruction = /*#__PURE__*/ (() => z.union([
     zProcessInstanceModificationTerminateByIdInstruction,
     zProcessInstanceModificationTerminateByKeyInstruction
-]);
+]))();
 
-export const zProcessInstanceModificationInstruction = z.object({
+export const zProcessInstanceModificationInstruction = /*#__PURE__*/ (() => z.object({
     operationReference: zOperationReference.optional(),
     activateInstructions: z.array(zProcessInstanceModificationActivateInstruction).register(z.globalRegistry, {
         description: 'Instructions describing which elements to activate in which scopes and which variables to create or update.'
@@ -5978,24 +5978,24 @@ export const zProcessInstanceModificationInstruction = z.object({
     terminateInstructions: z.array(zProcessInstanceModificationTerminateInstruction).register(z.globalRegistry, {
         description: 'Instructions describing which elements to terminate.'
     }).optional()
-});
+}))();
 
 /**
  * Process instance states
  */
-export const zProcessInstanceStateEnum = z.enum([
+export const zProcessInstanceStateEnum = /*#__PURE__*/ (() => z.enum([
     'ACTIVE',
     'COMPLETED',
     'SUSPENDED',
     'TERMINATED'
 ]).register(z.globalRegistry, {
     description: 'Process instance states'
-});
+}))();
 
 /**
  * Process instance search response item.
  */
-export const zProcessInstanceResult = z.object({
+export const zProcessInstanceResult = /*#__PURE__*/ (() => z.object({
     processDefinitionId: zProcessDefinitionId,
     processDefinitionName: z.string().nullable(),
     processDefinitionVersion: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
@@ -6021,14 +6021,14 @@ export const zProcessInstanceResult = z.object({
     businessId: zBusinessId.nullable()
 }).register(z.globalRegistry, {
     description: 'Process instance search response item.'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced ProcessInstanceStateEnum filter.
  */
-export const zAdvancedProcessInstanceStateFilter = z.object({
+export const zAdvancedProcessInstanceStateFilter = /*#__PURE__*/ (() => z.object({
     $eq: zProcessInstanceStateEnum.optional(),
     $neq: zProcessInstanceStateEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -6040,9 +6040,9 @@ export const zAdvancedProcessInstanceStateFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced ProcessInstanceStateEnum filter.'
-});
+}))();
 
-export const zRoleCreateRequest = z.object({
+export const zRoleCreateRequest = /*#__PURE__*/ (() => z.object({
     roleId: zRoleId,
     name: z.string().register(z.globalRegistry, {
         description: 'The display name of the new role.'
@@ -6050,37 +6050,37 @@ export const zRoleCreateRequest = z.object({
     description: z.string().register(z.globalRegistry, {
         description: 'The description of the new role.'
     }).optional()
-});
+}))();
 
-export const zRoleCreateResult = z.object({
+export const zRoleCreateResult = /*#__PURE__*/ (() => z.object({
     roleId: zRoleId,
     name: z.string().register(z.globalRegistry, {
         description: 'The display name of the created role.'
     }),
     description: z.string().nullable()
-});
+}))();
 
-export const zRoleUpdateRequest = z.object({
+export const zRoleUpdateRequest = /*#__PURE__*/ (() => z.object({
     name: z.string().register(z.globalRegistry, {
         description: 'The display name of the new role.'
     }),
     description: z.string().register(z.globalRegistry, {
         description: 'The description of the new role.'
     }).optional()
-});
+}))();
 
-export const zRoleUpdateResult = z.object({
+export const zRoleUpdateResult = /*#__PURE__*/ (() => z.object({
     name: z.string().register(z.globalRegistry, {
         description: 'The display name of the updated role.'
     }),
     description: z.string().nullable(),
     roleId: zRoleId
-});
+}))();
 
 /**
  * Role search response item.
  */
-export const zRoleResult = z.object({
+export const zRoleResult = /*#__PURE__*/ (() => z.object({
     name: z.string().register(z.globalRegistry, {
         description: 'The role name.'
     }),
@@ -6088,149 +6088,149 @@ export const zRoleResult = z.object({
     description: z.string().nullable()
 }).register(z.globalRegistry, {
     description: 'Role search response item.'
-});
+}))();
 
 /**
  * Role filter request
  */
-export const zRoleFilterFields = z.object({
+export const zRoleFilterFields = /*#__PURE__*/ (() => z.object({
     roleId: zStringFilterProperty.optional(),
     name: zStringFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'Role filter request'
-});
+}))();
 
 /**
  * Role filter request
  */
-export const zRoleFilter = zRoleFilterFields.and(z.object({
+export const zRoleFilter = /*#__PURE__*/ (() => zRoleFilterFields.and(z.object({
     $or: z.array(zRoleFilterFields).nullish()
-}));
+})))();
 
-export const zRoleUserResult = z.object({
+export const zRoleUserResult = /*#__PURE__*/ (() => z.object({
     username: zUsername
-});
+}))();
 
-export const zRoleClientResult = z.object({
+export const zRoleClientResult = /*#__PURE__*/ (() => z.object({
     clientId: zClientId
-});
+}))();
 
-export const zRoleGroupResult = z.object({
+export const zRoleGroupResult = /*#__PURE__*/ (() => z.object({
     groupId: zGroupId
-});
+}))();
 
 /**
  * Limit-based pagination
  */
-export const zLimitPagination = z.object({
+export const zLimitPagination = /*#__PURE__*/ (() => z.object({
     limit: z.int().gte(0).lte(10000).register(z.globalRegistry, {
         description: 'The maximum number of items to return in one request.'
     }).optional().default(100)
-});
+}))();
 
 /**
  * Offset-based pagination
  */
-export const zOffsetPagination = z.object({
+export const zOffsetPagination = /*#__PURE__*/ (() => z.object({
     from: z.int().gte(0).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'The index of items to start searching from.'
     }).optional(),
     limit: z.int().gte(0).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'The maximum number of items to return in one request.'
     }).optional().default(100)
-});
+}))();
 
 /**
  * Cursor-based forward pagination
  */
-export const zCursorForwardPagination = z.object({
+export const zCursorForwardPagination = /*#__PURE__*/ (() => z.object({
     after: zEndCursor.optional(),
     limit: z.int().gte(0).lte(10000).register(z.globalRegistry, {
         description: 'The maximum number of items to return in one request.'
     }).optional().default(100)
-});
+}))();
 
 /**
  * Job type statistics query.
  */
-export const zJobTypeStatisticsQuery = z.object({
+export const zJobTypeStatisticsQuery = /*#__PURE__*/ (() => z.object({
     filter: zJobTypeStatisticsFilter.optional(),
     page: zCursorForwardPagination.optional()
 }).register(z.globalRegistry, {
     description: 'Job type statistics query.'
-});
+}))();
 
 /**
  * Job worker statistics query.
  */
-export const zJobWorkerStatisticsQuery = z.object({
+export const zJobWorkerStatisticsQuery = /*#__PURE__*/ (() => z.object({
     filter: zJobWorkerStatisticsFilter,
     page: zCursorForwardPagination.optional()
 }).register(z.globalRegistry, {
     description: 'Job worker statistics query.'
-});
+}))();
 
 /**
  * Job time-series statistics query.
  */
-export const zJobTimeSeriesStatisticsQuery = z.object({
+export const zJobTimeSeriesStatisticsQuery = /*#__PURE__*/ (() => z.object({
     filter: zJobTimeSeriesStatisticsFilter,
     page: zCursorForwardPagination.optional()
 }).register(z.globalRegistry, {
     description: 'Job time-series statistics query.'
-});
+}))();
 
 /**
  * Job error statistics query.
  */
-export const zJobErrorStatisticsQuery = z.object({
+export const zJobErrorStatisticsQuery = /*#__PURE__*/ (() => z.object({
     filter: zJobErrorStatisticsFilter,
     page: zCursorForwardPagination.optional()
 }).register(z.globalRegistry, {
     description: 'Job error statistics query.'
-});
+}))();
 
 /**
  * Cursor-based backward pagination
  */
-export const zCursorBackwardPagination = z.object({
+export const zCursorBackwardPagination = /*#__PURE__*/ (() => z.object({
     before: zStartCursor.optional(),
     limit: z.int().gte(0).lte(10000).register(z.globalRegistry, {
         description: 'The maximum number of items to return in one request.'
     }).optional().default(100)
-});
+}))();
 
 /**
  * Pagination criteria. Can use offset-based pagination (from/limit) OR cursor-based pagination (after/before + limit), but not both.
  */
-export const zSearchQueryPageRequest = z.union([
+export const zSearchQueryPageRequest = /*#__PURE__*/ (() => z.union([
     zLimitPagination,
     zOffsetPagination,
     zCursorForwardPagination,
     zCursorBackwardPagination
-]);
+]))();
 
-export const zSearchQueryRequest = z.object({
+export const zSearchQueryRequest = /*#__PURE__*/ (() => z.object({
     page: zSearchQueryPageRequest.optional()
-});
+}))();
 
 /**
  * Process definition variable name search query request.
  */
-export const zProcessDefinitionVariableNameSearchQuery = zSearchQueryRequest.and(z.object({
+export const zProcessDefinitionVariableNameSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     filter: zProcessDefinitionVariableNameFilter.optional()
 })).register(z.globalRegistry, {
     description: 'Process definition variable name search query request.'
-});
+}))();
 
 /**
  * The order in which to sort the related field.
  */
-export const zSortOrderEnum = z.enum(['ASC', 'DESC']).register(z.globalRegistry, {
+export const zSortOrderEnum = /*#__PURE__*/ (() => z.enum(['ASC', 'DESC']).register(z.globalRegistry, {
     description: 'The order in which to sort the related field.'
-}).default('ASC');
+}).default('ASC'))();
 
-export const zAgentDefinitionSearchQuerySortRequest = z.object({
+export const zAgentDefinitionSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'agentDefinitionKey',
         'agentType',
@@ -6245,9 +6245,9 @@ export const zAgentDefinitionSearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zAgentInstanceSearchQuerySortRequest = z.object({
+export const zAgentInstanceSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'agentInstanceKey',
         'agentDefinitionKey',
@@ -6264,9 +6264,9 @@ export const zAgentInstanceSearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zAgentInstanceHistorySearchQuerySortRequest = z.object({
+export const zAgentInstanceHistorySearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'producedAt',
         'historyItemKey',
@@ -6275,9 +6275,9 @@ export const zAgentInstanceHistorySearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zAuditLogSearchQuerySortRequest = z.object({
+export const zAuditLogSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'actorId',
         'actorType',
@@ -6308,9 +6308,9 @@ export const zAuditLogSearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zAuthorizationSearchQuerySortRequest = z.object({
+export const zAuthorizationSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'ownerId',
         'ownerType',
@@ -6321,16 +6321,16 @@ export const zAuthorizationSearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zAuthorizationSearchQuery = zSearchQueryRequest.and(z.object({
+export const zAuthorizationSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zAuthorizationSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zAuthorizationFilter.optional()
-}));
+})))();
 
-export const zBatchOperationSearchQuerySortRequest = z.object({
+export const zBatchOperationSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'batchOperationKey',
         'operationType',
@@ -6343,9 +6343,9 @@ export const zBatchOperationSearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zBatchOperationItemSearchQuerySortRequest = z.object({
+export const zBatchOperationItemSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'batchOperationKey',
         'itemKey',
@@ -6356,9 +6356,9 @@ export const zBatchOperationItemSearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zClusterVariableSearchQuerySortRequest = z.object({
+export const zClusterVariableSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'name',
         'value',
@@ -6368,9 +6368,9 @@ export const zClusterVariableSearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zDecisionDefinitionSearchQuerySortRequest = z.object({
+export const zDecisionDefinitionSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'decisionDefinitionKey',
         'decisionDefinitionId',
@@ -6385,16 +6385,16 @@ export const zDecisionDefinitionSearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zDecisionDefinitionSearchQuery = zSearchQueryRequest.and(z.object({
+export const zDecisionDefinitionSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zDecisionDefinitionSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zDecisionDefinitionFilter.optional()
-}));
+})))();
 
-export const zDecisionInstanceSearchQuerySortRequest = z.object({
+export const zDecisionInstanceSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'businessId',
         'decisionDefinitionId',
@@ -6416,9 +6416,9 @@ export const zDecisionInstanceSearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zDecisionRequirementsSearchQuerySortRequest = z.object({
+export const zDecisionRequirementsSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'decisionRequirementsKey',
         'decisionRequirementsName',
@@ -6429,16 +6429,16 @@ export const zDecisionRequirementsSearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zDecisionRequirementsSearchQuery = zSearchQueryRequest.and(z.object({
+export const zDecisionRequirementsSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zDecisionRequirementsSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zDecisionRequirementsFilter.optional()
-}));
+})))();
 
-export const zResourceSearchQuerySortRequest = z.object({
+export const zResourceSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'resourceKey',
         'resourceName',
@@ -6451,9 +6451,9 @@ export const zResourceSearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zElementInstanceSearchQuerySortRequest = z.object({
+export const zElementInstanceSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'elementInstanceKey',
         'processInstanceKey',
@@ -6471,9 +6471,9 @@ export const zElementInstanceSearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zElementInstanceWaitStateQuerySortRequest = z.object({
+export const zElementInstanceWaitStateQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'elementInstanceKey',
         'processInstanceKey',
@@ -6483,9 +6483,9 @@ export const zElementInstanceWaitStateQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zGlobalTaskListenerSearchQuerySortRequest = z.object({
+export const zGlobalTaskListenerSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'id',
         'type',
@@ -6496,54 +6496,54 @@ export const zGlobalTaskListenerSearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zGroupSearchQuerySortRequest = z.object({
+export const zGroupSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum(['name', 'groupId']).register(z.globalRegistry, {
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
 /**
  * Group search request.
  */
-export const zGroupSearchQueryRequest = zSearchQueryRequest.and(z.object({
+export const zGroupSearchQueryRequest = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zGroupSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zGroupFilter.optional()
 })).register(z.globalRegistry, {
     description: 'Group search request.'
-});
+}))();
 
-export const zGroupUserSearchQuerySortRequest = z.object({
+export const zGroupUserSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum(['username']).register(z.globalRegistry, {
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zGroupUserSearchQueryRequest = zSearchQueryRequest.and(z.object({
+export const zGroupUserSearchQueryRequest = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zGroupUserSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional()
-}));
+})))();
 
-export const zGroupClientSearchQuerySortRequest = z.object({
+export const zGroupClientSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum(['clientId']).register(z.globalRegistry, {
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zGroupClientSearchQueryRequest = zSearchQueryRequest.and(z.object({
+export const zGroupClientSearchQueryRequest = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zGroupClientSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional()
-}));
+})))();
 
-export const zIncidentSearchQuerySortRequest = z.object({
+export const zIncidentSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'incidentKey',
         'processDefinitionKey',
@@ -6560,23 +6560,23 @@ export const zIncidentSearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zIncidentProcessInstanceStatisticsByErrorQuerySortRequest = z.object({
+export const zIncidentProcessInstanceStatisticsByErrorQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum(['errorMessage', 'activeInstancesWithErrorCount']).register(z.globalRegistry, {
         description: 'The field to sort the incident error statistics by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zIncidentProcessInstanceStatisticsByErrorQuery = z.object({
+export const zIncidentProcessInstanceStatisticsByErrorQuery = /*#__PURE__*/ (() => z.object({
     page: zOffsetPagination.optional(),
     sort: z.array(zIncidentProcessInstanceStatisticsByErrorQuerySortRequest).register(z.globalRegistry, {
         description: 'Sorting criteria for process instance statistics grouped by incident error.'
     }).optional()
-});
+}))();
 
-export const zIncidentProcessInstanceStatisticsByDefinitionQuerySortRequest = z.object({
+export const zIncidentProcessInstanceStatisticsByDefinitionQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'activeInstancesWithErrorCount',
         'processDefinitionKey',
@@ -6585,17 +6585,17 @@ export const zIncidentProcessInstanceStatisticsByDefinitionQuerySortRequest = z.
         description: 'The aggregated field by which the process instance statistics are sorted.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zIncidentProcessInstanceStatisticsByDefinitionQuery = z.object({
+export const zIncidentProcessInstanceStatisticsByDefinitionQuery = /*#__PURE__*/ (() => z.object({
     filter: zIncidentProcessInstanceStatisticsByDefinitionFilter,
     page: zOffsetPagination.optional(),
     sort: z.array(zIncidentProcessInstanceStatisticsByDefinitionQuerySortRequest).register(z.globalRegistry, {
         description: 'Sorting criteria for process instance statistics grouped by process definition.'
     }).optional()
-});
+}))();
 
-export const zJobSearchQuerySortRequest = z.object({
+export const zJobSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'creationTime',
         'deadline',
@@ -6623,9 +6623,9 @@ export const zJobSearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zMappingRuleSearchQuerySortRequest = z.object({
+export const zMappingRuleSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'mappingRuleId',
         'claimName',
@@ -6635,16 +6635,16 @@ export const zMappingRuleSearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zMappingRuleSearchQueryRequest = zSearchQueryRequest.and(z.object({
+export const zMappingRuleSearchQueryRequest = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zMappingRuleSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zMappingRuleFilter.optional()
-}));
+})))();
 
-export const zMessageSubscriptionSearchQuerySortRequest = z.object({
+export const zMessageSubscriptionSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'businessId',
         'messageSubscriptionKey',
@@ -6666,9 +6666,9 @@ export const zMessageSubscriptionSearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zCorrelatedMessageSubscriptionSearchQuerySortRequest = z.object({
+export const zCorrelatedMessageSubscriptionSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'businessId',
         'correlationKey',
@@ -6687,9 +6687,9 @@ export const zCorrelatedMessageSubscriptionSearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zProcessDefinitionSearchQuerySortRequest = z.object({
+export const zProcessDefinitionSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'processDefinitionKey',
         'name',
@@ -6702,16 +6702,16 @@ export const zProcessDefinitionSearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zProcessDefinitionSearchQuery = zSearchQueryRequest.and(z.object({
+export const zProcessDefinitionSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zProcessDefinitionSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zProcessDefinitionFilter.optional()
-}));
+})))();
 
-export const zProcessDefinitionInstanceStatisticsQuerySortRequest = z.object({
+export const zProcessDefinitionInstanceStatisticsQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'processDefinitionId',
         'activeInstancesWithIncidentCount',
@@ -6720,16 +6720,16 @@ export const zProcessDefinitionInstanceStatisticsQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zProcessDefinitionInstanceStatisticsQuery = z.object({
+export const zProcessDefinitionInstanceStatisticsQuery = /*#__PURE__*/ (() => z.object({
     page: zOffsetPagination.optional(),
     sort: z.array(zProcessDefinitionInstanceStatisticsQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional()
-});
+}))();
 
-export const zProcessDefinitionInstanceVersionStatisticsQuerySortRequest = z.object({
+export const zProcessDefinitionInstanceVersionStatisticsQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'processDefinitionId',
         'processDefinitionKey',
@@ -6741,17 +6741,17 @@ export const zProcessDefinitionInstanceVersionStatisticsQuerySortRequest = z.obj
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zProcessDefinitionInstanceVersionStatisticsQuery = z.object({
+export const zProcessDefinitionInstanceVersionStatisticsQuery = /*#__PURE__*/ (() => z.object({
     page: zOffsetPagination.optional(),
     sort: z.array(zProcessDefinitionInstanceVersionStatisticsQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zProcessDefinitionInstanceVersionStatisticsFilter
-});
+}))();
 
-export const zProcessInstanceSearchQuerySortRequest = z.object({
+export const zProcessInstanceSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'processInstanceKey',
         'processDefinitionId',
@@ -6772,70 +6772,70 @@ export const zProcessInstanceSearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zRoleSearchQuerySortRequest = z.object({
+export const zRoleSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum(['name', 'roleId']).register(z.globalRegistry, {
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
 /**
  * Role search request.
  */
-export const zRoleSearchQueryRequest = zSearchQueryRequest.and(z.object({
+export const zRoleSearchQueryRequest = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zRoleSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zRoleFilter.optional()
 })).register(z.globalRegistry, {
     description: 'Role search request.'
-});
+}))();
 
-export const zRoleUserSearchQuerySortRequest = z.object({
+export const zRoleUserSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum(['username']).register(z.globalRegistry, {
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zRoleUserSearchQueryRequest = zSearchQueryRequest.and(z.object({
+export const zRoleUserSearchQueryRequest = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zRoleUserSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional()
-}));
+})))();
 
-export const zRoleClientSearchQuerySortRequest = z.object({
+export const zRoleClientSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum(['clientId']).register(z.globalRegistry, {
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zRoleClientSearchQueryRequest = zSearchQueryRequest.and(z.object({
+export const zRoleClientSearchQueryRequest = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zRoleClientSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional()
-}));
+})))();
 
-export const zRoleGroupSearchQuerySortRequest = z.object({
+export const zRoleGroupSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum(['groupId']).register(z.globalRegistry, {
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zRoleGroupSearchQueryRequest = zSearchQueryRequest.and(z.object({
+export const zRoleGroupSearchQueryRequest = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zRoleGroupSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional()
-}));
+})))();
 
 /**
  * Pagination information about the search results.
  */
-export const zSearchQueryPageResponse = z.object({
+export const zSearchQueryPageResponse = /*#__PURE__*/ (() => z.object({
     totalItems: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
         description: 'Total items matching the criteria.'
     }),
@@ -6846,370 +6846,370 @@ export const zSearchQueryPageResponse = z.object({
     endCursor: zEndCursor.nullable()
 }).register(z.globalRegistry, {
     description: 'Pagination information about the search results.'
-});
+}))();
 
-export const zSearchQueryResponse = z.object({
+export const zSearchQueryResponse = /*#__PURE__*/ (() => z.object({
     page: zSearchQueryPageResponse
-});
+}))();
 
 /**
  * Agent definition search response.
  */
-export const zAgentDefinitionSearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zAgentDefinitionSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zAgentDefinitionResult).register(z.globalRegistry, {
         description: 'The matching agent definitions.'
     })
 })).register(z.globalRegistry, {
     description: 'Agent definition search response.'
-});
+}))();
 
 /**
  * Agent instance search response.
  */
-export const zAgentInstanceSearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zAgentInstanceSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zAgentInstanceResult).register(z.globalRegistry, {
         description: 'The matching agent instances.'
     })
 })).register(z.globalRegistry, {
     description: 'Agent instance search response.'
-});
+}))();
 
 /**
  * Agent instance history search response.
  */
-export const zAgentInstanceHistorySearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zAgentInstanceHistorySearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zAgentInstanceHistoryItemResult).register(z.globalRegistry, {
         description: 'The matching history items.'
     })
 })).register(z.globalRegistry, {
     description: 'Agent instance history search response.'
-});
+}))();
 
 /**
  * Audit log search response.
  */
-export const zAuditLogSearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zAuditLogSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zAuditLogResult).register(z.globalRegistry, {
         description: 'The matching audit logs.'
     })
 })).register(z.globalRegistry, {
     description: 'Audit log search response.'
-});
+}))();
 
-export const zAuthorizationSearchResult = zSearchQueryResponse.and(z.object({
+export const zAuthorizationSearchResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zAuthorizationResult).register(z.globalRegistry, {
         description: 'The matching authorizations.'
     })
-}));
+})))();
 
-export const zOwnAuthorizationSearchResult = zAuthorizationSearchResult.and(z.object({
+export const zOwnAuthorizationSearchResult = /*#__PURE__*/ (() => zAuthorizationSearchResult.and(z.object({
     authorizationsEnabled: z.boolean().register(z.globalRegistry, {
         description: 'Indicates whether authorization checks are enabled for the cluster.'
     })
-}));
+})))();
 
 /**
  * The batch operation search query result.
  */
-export const zBatchOperationSearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zBatchOperationSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zBatchOperationResponse).register(z.globalRegistry, {
         description: 'The matching batch operations.'
     })
 })).register(z.globalRegistry, {
     description: 'The batch operation search query result.'
-});
+}))();
 
-export const zBatchOperationItemSearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zBatchOperationItemSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zBatchOperationItemResponse).register(z.globalRegistry, {
         description: 'The matching batch operation items.'
     })
-}));
+})))();
 
 /**
  * Cluster variable search query response.
  */
-export const zClusterVariableSearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zClusterVariableSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zClusterVariableSearchResult).register(z.globalRegistry, {
         description: 'The matching cluster variables.'
     }).default([])
 })).register(z.globalRegistry, {
     description: 'Cluster variable search query response.'
-});
+}))();
 
-export const zDecisionDefinitionSearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zDecisionDefinitionSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zDecisionDefinitionResult).register(z.globalRegistry, {
         description: 'The matching decision definitions.'
     }).default([])
-}));
+})))();
 
-export const zDecisionInstanceSearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zDecisionInstanceSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zDecisionInstanceResult).register(z.globalRegistry, {
         description: 'The matching decision instances.'
     })
-}));
+})))();
 
-export const zDecisionRequirementsSearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zDecisionRequirementsSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zDecisionRequirementsResult).register(z.globalRegistry, {
         description: 'The matching decision requirements.'
     })
-}));
+})))();
 
-export const zResourceSearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zResourceSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zResourceResult).register(z.globalRegistry, {
         description: 'The matching resources.'
     })
-}));
+})))();
 
-export const zElementInstanceSearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zElementInstanceSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zElementInstanceResult).register(z.globalRegistry, {
         description: 'The matching element instances.'
     })
-}));
+})))();
 
-export const zElementInstanceWaitStateQueryResult = zSearchQueryResponse.and(z.object({
+export const zElementInstanceWaitStateQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zElementInstanceWaitStateResult).register(z.globalRegistry, {
         description: 'The matching waiting states.'
     })
-}));
+})))();
 
 /**
  * Global listener search query response.
  */
-export const zGlobalTaskListenerSearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zGlobalTaskListenerSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zGlobalTaskListenerResult).register(z.globalRegistry, {
         description: 'The matching global listeners.'
     })
 })).register(z.globalRegistry, {
     description: 'Global listener search query response.'
-});
+}))();
 
 /**
  * Group search response.
  */
-export const zGroupSearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zGroupSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zGroupResult).register(z.globalRegistry, {
         description: 'The matching groups.'
     })
 })).register(z.globalRegistry, {
     description: 'Group search response.'
-});
+}))();
 
-export const zGroupUserSearchResult = zSearchQueryResponse.and(z.object({
+export const zGroupUserSearchResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zGroupUserResult).register(z.globalRegistry, {
         description: 'The matching members.'
     })
-}));
+})))();
 
-export const zGroupClientSearchResult = zSearchQueryResponse.and(z.object({
+export const zGroupClientSearchResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zGroupClientResult).register(z.globalRegistry, {
         description: 'The matching client IDs.'
     })
-}));
+})))();
 
-export const zGroupMappingRuleSearchResult = zSearchQueryResponse.and(z.object({
+export const zGroupMappingRuleSearchResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zMappingRuleResult).register(z.globalRegistry, {
         description: 'The matching mapping rules.'
     })
-}));
+})))();
 
-export const zGroupRoleSearchResult = zSearchQueryResponse.and(z.object({
+export const zGroupRoleSearchResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zRoleResult).register(z.globalRegistry, {
         description: 'The matching roles.'
     })
-}));
+})))();
 
-export const zIncidentSearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zIncidentSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zIncidentResult).register(z.globalRegistry, {
         description: 'The matching incidents.'
     })
-}));
+})))();
 
-export const zIncidentProcessInstanceStatisticsByErrorQueryResult = zSearchQueryResponse.and(z.object({
+export const zIncidentProcessInstanceStatisticsByErrorQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zIncidentProcessInstanceStatisticsByErrorResult).register(z.globalRegistry, {
         description: 'Statistics of active process instances grouped by incident error.\n'
     })
-}));
+})))();
 
-export const zIncidentProcessInstanceStatisticsByDefinitionQueryResult = zSearchQueryResponse.and(z.object({
+export const zIncidentProcessInstanceStatisticsByDefinitionQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zIncidentProcessInstanceStatisticsByDefinitionResult).register(z.globalRegistry, {
         description: 'Statistics of active process instances with incidents, grouped by process\ndefinition for the specified error hash code.\n'
     })
-}));
+})))();
 
 /**
  * Job type statistics query result.
  */
-export const zJobTypeStatisticsQueryResult = zSearchQueryResponse.and(z.object({
+export const zJobTypeStatisticsQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zJobTypeStatisticsItem).register(z.globalRegistry, {
         description: 'The list of job type statistics items.'
     }),
     page: zSearchQueryPageResponse
 })).register(z.globalRegistry, {
     description: 'Job type statistics query result.'
-});
+}))();
 
 /**
  * Job worker statistics query result.
  */
-export const zJobWorkerStatisticsQueryResult = zSearchQueryResponse.and(z.object({
+export const zJobWorkerStatisticsQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zJobWorkerStatisticsItem).register(z.globalRegistry, {
         description: 'The list of per-worker statistics items.'
     }),
     page: zSearchQueryPageResponse
 })).register(z.globalRegistry, {
     description: 'Job worker statistics query result.'
-});
+}))();
 
 /**
  * Job time-series statistics query result.
  */
-export const zJobTimeSeriesStatisticsQueryResult = zSearchQueryResponse.and(z.object({
+export const zJobTimeSeriesStatisticsQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zJobTimeSeriesStatisticsItem).register(z.globalRegistry, {
         description: 'The list of time-bucketed statistics items, ordered ascending by time.'
     }),
     page: zSearchQueryPageResponse
 })).register(z.globalRegistry, {
     description: 'Job time-series statistics query result.'
-});
+}))();
 
 /**
  * Job error statistics query result.
  */
-export const zJobErrorStatisticsQueryResult = zSearchQueryResponse.and(z.object({
+export const zJobErrorStatisticsQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zJobErrorStatisticsItem).register(z.globalRegistry, {
         description: 'The list of per-error statistics items.'
     }),
     page: zSearchQueryPageResponse
 })).register(z.globalRegistry, {
     description: 'Job error statistics query result.'
-});
+}))();
 
 /**
  * Job search response.
  */
-export const zJobSearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zJobSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zJobSearchResult).register(z.globalRegistry, {
         description: 'The matching jobs.'
     })
 })).register(z.globalRegistry, {
     description: 'Job search response.'
-});
+}))();
 
-export const zMappingRuleSearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zMappingRuleSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zMappingRuleResult).register(z.globalRegistry, {
         description: 'The matching mapping rules.'
     })
-}));
+})))();
 
-export const zMessageSubscriptionSearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zMessageSubscriptionSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zMessageSubscriptionResult).register(z.globalRegistry, {
         description: 'The matching message subscriptions.'
     })
-}));
+})))();
 
-export const zCorrelatedMessageSubscriptionSearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zCorrelatedMessageSubscriptionSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zCorrelatedMessageSubscriptionResult).register(z.globalRegistry, {
         description: 'The matching correlated message subscriptions.'
     })
-}));
+})))();
 
-export const zProcessDefinitionSearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zProcessDefinitionSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zProcessDefinitionResult).register(z.globalRegistry, {
         description: 'The matching process definitions.'
     })
-}));
+})))();
 
 /**
  * Process definition variable name search query response.
  */
-export const zProcessDefinitionVariableNameSearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zProcessDefinitionVariableNameSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zProcessDefinitionVariableNameSearchResult).register(z.globalRegistry, {
         description: 'The matching variable names.'
     })
 })).register(z.globalRegistry, {
     description: 'Process definition variable name search query response.'
-});
+}))();
 
-export const zProcessDefinitionMessageSubscriptionStatisticsQueryResult = zSearchQueryResponse.and(z.object({
+export const zProcessDefinitionMessageSubscriptionStatisticsQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zProcessDefinitionMessageSubscriptionStatisticsResult).register(z.globalRegistry, {
         description: 'The matching process definition message subscription statistics.'
     })
-}));
+})))();
 
-export const zProcessDefinitionInstanceStatisticsQueryResult = zSearchQueryResponse.and(z.object({
+export const zProcessDefinitionInstanceStatisticsQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zProcessDefinitionInstanceStatisticsResult).register(z.globalRegistry, {
         description: 'The process definition instance statistics result.'
     })
-}));
+})))();
 
-export const zProcessDefinitionInstanceVersionStatisticsQueryResult = zSearchQueryResponse.and(z.object({
+export const zProcessDefinitionInstanceVersionStatisticsQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zProcessDefinitionInstanceVersionStatisticsResult).register(z.globalRegistry, {
         description: 'The process definition instance version statistics result.'
     })
-}));
+})))();
 
 /**
  * Process instance search response.
  */
-export const zProcessInstanceSearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zProcessInstanceSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zProcessInstanceResult).register(z.globalRegistry, {
         description: 'The matching process instances.'
     })
 })).register(z.globalRegistry, {
     description: 'Process instance search response.'
-});
+}))();
 
 /**
  * Role search response.
  */
-export const zRoleSearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zRoleSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zRoleResult).register(z.globalRegistry, {
         description: 'The matching roles.'
     })
 })).register(z.globalRegistry, {
     description: 'Role search response.'
-});
+}))();
 
-export const zRoleUserSearchResult = zSearchQueryResponse.and(z.object({
+export const zRoleUserSearchResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zRoleUserResult).register(z.globalRegistry, {
         description: 'The matching users.'
     })
-}));
+})))();
 
-export const zRoleClientSearchResult = zSearchQueryResponse.and(z.object({
+export const zRoleClientSearchResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zRoleClientResult).register(z.globalRegistry, {
         description: 'The matching clients.'
     })
-}));
+})))();
 
-export const zRoleGroupSearchResult = zSearchQueryResponse.and(z.object({
+export const zRoleGroupSearchResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zRoleGroupResult).register(z.globalRegistry, {
         description: 'The matching groups.'
     })
-}));
+})))();
 
-export const zRoleMappingRuleSearchResult = zSearchQueryResponse.and(z.object({
+export const zRoleMappingRuleSearchResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zMappingRuleResult).register(z.globalRegistry, {
         description: 'The matching mapping rules.'
     })
-}));
+})))();
 
-export const zSecretResolveRequest = z.object({
+export const zSecretResolveRequest = /*#__PURE__*/ (() => z.object({
     references: z.array(z.string().max(256).register(z.globalRegistry, {
         description: 'A secret reference of the form `camunda.secrets.<name>`, where `<name>` is a\nnon-empty token of letters, digits, `_` and `-`. A reference outside that form is\nreported in `errors` with `INVALID_REFERENCE` rather than failing the request.\n'
     })).max(20).register(z.globalRegistry, {
         description: 'The secret references to resolve, each of the form `camunda.secrets.<name>`.\nDuplicate references are deduplicated by the server and resolved once.\nAt most 20 references may be requested in a single batch.\n'
     })
-});
+}))();
 
-export const zResolvedSecret = z.object({
+export const zResolvedSecret = /*#__PURE__*/ (() => z.object({
     reference: z.string().register(z.globalRegistry, {
         description: 'The resolved secret reference of the form `camunda.secrets.<name>`.'
     }),
     value: z.string().register(z.globalRegistry, {
         description: 'The resolved secret value.'
     })
-});
+}))();
 
 /**
  * The typed reason a reference could not be resolved.
@@ -7223,16 +7223,16 @@ export const zResolvedSecret = z.object({
  * not be read. Whether the secret exists is not implied.
  *
  */
-export const zSecretErrorCode = z.enum([
+export const zSecretErrorCode = /*#__PURE__*/ (() => z.enum([
     'NOT_FOUND',
     'ACCESS_DENIED',
     'INVALID_REFERENCE',
     'UNREADABLE'
 ]).register(z.globalRegistry, {
     description: 'The typed reason a reference could not be resolved.\n\n- `NOT_FOUND`: no secret exists for the reference.\n- `ACCESS_DENIED`: the caller lacks `SECRET:REVEAL` on the reference.\n- `INVALID_REFERENCE`: the reference is malformed, or the configured store rejected it as\n  an invalid secret identifier.\n- `UNREADABLE`: the configured store could not return a value for the reference, for\n  example because it rejected the cluster\'s own store credentials or the stored value could\n  not be read. Whether the secret exists is not implied.\n'
-});
+}))();
 
-export const zSecretResolutionError = z.object({
+export const zSecretResolutionError = /*#__PURE__*/ (() => z.object({
     reference: z.string().register(z.globalRegistry, {
         description: 'The secret reference that could not be resolved.'
     }),
@@ -7240,12 +7240,12 @@ export const zSecretResolutionError = z.object({
     message: z.string().register(z.globalRegistry, {
         description: 'A human-readable description of the failure. Never contains the secret value;\nonly error metadata (codes, names) is included.\n'
     })
-});
+}))();
 
 /**
  * The per-reference outcome of a resolve request.
  */
-export const zSecretResolveResult = z.object({
+export const zSecretResolveResult = /*#__PURE__*/ (() => z.object({
     resolved: z.array(zResolvedSecret).register(z.globalRegistry, {
         description: 'The references that were successfully resolved.'
     }),
@@ -7254,16 +7254,16 @@ export const zSecretResolveResult = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'The per-reference outcome of a resolve request.'
-});
+}))();
 
 /**
  * Reserved for future filtering options. Currently takes no properties. The request body is
  * optional: omitting it (or sending an empty object) applies no filters.
  *
  */
-export const zSecretListRequest = z.record(z.string(), z.never()).register(z.globalRegistry, {
+export const zSecretListRequest = /*#__PURE__*/ (() => z.record(z.string(), z.never()).register(z.globalRegistry, {
     description: 'Reserved for future filtering options. Currently takes no properties. The request body is\noptional: omitting it (or sending an empty object) applies no filters.\n'
-});
+}))();
 
 /**
  * The secret references the caller is authorized to see.
@@ -7272,7 +7272,7 @@ export const zSecretListRequest = z.record(z.string(), z.never()).register(z.glo
  * tenant.
  *
  */
-export const zSecretListResult = z.object({
+export const zSecretListResult = /*#__PURE__*/ (() => z.object({
     references: z.array(z.string().register(z.globalRegistry, {
         description: 'A secret reference of the form `camunda.secrets.<name>`.'
     })).register(z.globalRegistry, {
@@ -7280,9 +7280,9 @@ export const zSecretListResult = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'The secret references the caller is authorized to see.\n\nUnbounded: the response carries the configured stores\' full enumeration for the physical\ntenant.\n'
-});
+}))();
 
-export const zSignalBroadcastRequest = z.object({
+export const zSignalBroadcastRequest = /*#__PURE__*/ (() => z.object({
     signalName: z.string().register(z.globalRegistry, {
         description: 'The name of the signal to broadcast.'
     }),
@@ -7290,19 +7290,19 @@ export const zSignalBroadcastRequest = z.object({
         description: 'The signal variables as a JSON object.'
     }).optional(),
     tenantId: zTenantId.optional()
-});
+}))();
 
 /**
  * System-generated key for an signal.
  */
 export const zSignalKey = zLongKey;
 
-export const zSignalBroadcastResult = z.object({
+export const zSignalBroadcastResult = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId,
     signalKey: zSignalKey
-});
+}))();
 
-export const zUsageMetricsResponseItem = z.object({
+export const zUsageMetricsResponseItem = /*#__PURE__*/ (() => z.object({
     processInstances: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
         description: 'The amount of created root process instances.'
     }),
@@ -7312,21 +7312,21 @@ export const zUsageMetricsResponseItem = z.object({
     assignees: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
         description: 'The amount of unique active task users.'
     })
-});
+}))();
 
-export const zUsageMetricsResponse = zUsageMetricsResponseItem.and(z.object({
+export const zUsageMetricsResponse = /*#__PURE__*/ (() => zUsageMetricsResponseItem.and(z.object({
     activeTenants: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
         description: 'The amount of active tenants.'
     }),
     tenants: z.record(z.string(), zUsageMetricsResponseItem).register(z.globalRegistry, {
         description: 'The usage metrics by tenants. Only available if request `withTenants` query parameter was `true`.'
     })
-}));
+})))();
 
 /**
  * Configuration for job metrics collection and export.
  */
-export const zJobMetricsConfigurationResponse = z.object({
+export const zJobMetricsConfigurationResponse = /*#__PURE__*/ (() => z.object({
     enabled: z.boolean().register(z.globalRegistry, {
         description: 'Whether job metrics export is enabled.'
     }),
@@ -7347,12 +7347,12 @@ export const zJobMetricsConfigurationResponse = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Configuration for job metrics collection and export.'
-});
+}))();
 
 /**
  * Configuration for deployment characteristics.
  */
-export const zDeploymentConfigurationResponse = z.object({
+export const zDeploymentConfigurationResponse = /*#__PURE__*/ (() => z.object({
     isMultiTenancyEnabled: z.boolean().register(z.globalRegistry, {
         description: 'Whether multi-tenancy is enabled.'
     }),
@@ -7361,12 +7361,12 @@ export const zDeploymentConfigurationResponse = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Configuration for deployment characteristics.'
-});
+}))();
 
 /**
  * Configuration for authentication and session management.
  */
-export const zAuthenticationConfigurationResponse = z.object({
+export const zAuthenticationConfigurationResponse = /*#__PURE__*/ (() => z.object({
     canLogout: z.boolean().register(z.globalRegistry, {
         description: 'Whether users can log out (false for SaaS deployments).'
     }),
@@ -7375,56 +7375,56 @@ export const zAuthenticationConfigurationResponse = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Configuration for authentication and session management.'
-});
+}))();
 
 /**
  * A Camunda webapp component name.
  */
-export const zWebappComponent = z.enum([
+export const zWebappComponent = /*#__PURE__*/ (() => z.enum([
     'operate',
     'tasklist',
     'admin'
 ]).register(z.globalRegistry, {
     description: 'A Camunda webapp component name.'
-});
+}))();
 
 /**
  * Configuration for active Camunda components in the deployment.
  */
-export const zComponentsConfigurationResponse = z.object({
+export const zComponentsConfigurationResponse = /*#__PURE__*/ (() => z.object({
     active: z.array(zWebappComponent).register(z.globalRegistry, {
         description: 'List of webapp components whose UI is enabled in this deployment.'
     })
 }).register(z.globalRegistry, {
     description: 'Configuration for active Camunda components in the deployment.'
-});
+}))();
 
 /**
  * The cloud deployment stage.
  */
-export const zCloudStage = z.enum([
+export const zCloudStage = /*#__PURE__*/ (() => z.enum([
     'dev',
     'int',
     'prod'
 ]).register(z.globalRegistry, {
     description: 'The cloud deployment stage.'
-});
+}))();
 
 /**
  * Configuration for SaaS/cloud-specific settings.
  */
-export const zCloudConfigurationResponse = z.object({
+export const zCloudConfigurationResponse = /*#__PURE__*/ (() => z.object({
     stage: zCloudStage.nullable()
 }).register(z.globalRegistry, {
     description: 'Configuration for SaaS/cloud-specific settings.'
-});
+}))();
 
 /**
  * Envelope for all system configuration sections. Each property
  * represents a feature area.
  *
  */
-export const zSystemConfigurationResponse = z.object({
+export const zSystemConfigurationResponse = /*#__PURE__*/ (() => z.object({
     jobMetrics: zJobMetricsConfigurationResponse,
     components: zComponentsConfigurationResponse,
     deployment: zDeploymentConfigurationResponse,
@@ -7432,9 +7432,9 @@ export const zSystemConfigurationResponse = z.object({
     cloud: zCloudConfigurationResponse
 }).register(z.globalRegistry, {
     description: 'Envelope for all system configuration sections. Each property\nrepresents a feature area.\n'
-});
+}))();
 
-export const zTenantCreateRequest = z.object({
+export const zTenantCreateRequest = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId,
     name: z.string().register(z.globalRegistry, {
         description: 'The name of the tenant.'
@@ -7442,37 +7442,37 @@ export const zTenantCreateRequest = z.object({
     description: z.string().register(z.globalRegistry, {
         description: 'The description of the tenant.'
     }).optional()
-});
+}))();
 
-export const zTenantCreateResult = z.object({
+export const zTenantCreateResult = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId,
     name: z.string().register(z.globalRegistry, {
         description: 'The name of the tenant.'
     }),
     description: z.string().nullable()
-});
+}))();
 
-export const zTenantUpdateRequest = z.object({
+export const zTenantUpdateRequest = /*#__PURE__*/ (() => z.object({
     name: z.string().register(z.globalRegistry, {
         description: 'The new name of the tenant.'
     }),
     description: z.string().register(z.globalRegistry, {
         description: 'The new description of the tenant.'
     }).optional()
-});
+}))();
 
-export const zTenantUpdateResult = z.object({
+export const zTenantUpdateResult = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId,
     name: z.string().register(z.globalRegistry, {
         description: 'The name of the tenant.'
     }),
     description: z.string().nullable()
-});
+}))();
 
 /**
  * Tenant search response item.
  */
-export const zTenantResult = z.object({
+export const zTenantResult = /*#__PURE__*/ (() => z.object({
     name: z.string().register(z.globalRegistry, {
         description: 'The tenant name.'
     }),
@@ -7480,9 +7480,9 @@ export const zTenantResult = z.object({
     description: z.string().nullable()
 }).register(z.globalRegistry, {
     description: 'Tenant search response item.'
-});
+}))();
 
-export const zCamundaUserResult = z.object({
+export const zCamundaUserResult = /*#__PURE__*/ (() => z.object({
     username: zUsername,
     displayName: z.string().nullable(),
     email: z.string().nullable(),
@@ -7505,9 +7505,9 @@ export const zCamundaUserResult = z.object({
     canLogout: z.boolean().register(z.globalRegistry, {
         description: 'Flag for understanding if the user is able to perform logout.'
     })
-});
+}))();
 
-export const zTenantSearchQuerySortRequest = z.object({
+export const zTenantSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'key',
         'name',
@@ -7516,125 +7516,125 @@ export const zTenantSearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
 /**
  * Tenant filter request
  */
-export const zTenantFilter = z.object({
+export const zTenantFilter = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId.optional(),
     name: z.string().register(z.globalRegistry, {
         description: 'The name of the tenant.'
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Tenant filter request'
-});
+}))();
 
 /**
  * Tenant search request
  */
-export const zTenantSearchQueryRequest = zSearchQueryRequest.and(z.object({
+export const zTenantSearchQueryRequest = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zTenantSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zTenantFilter.optional()
 })).register(z.globalRegistry, {
     description: 'Tenant search request'
-});
+}))();
 
 /**
  * Tenant search response.
  */
-export const zTenantSearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zTenantSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zTenantResult).register(z.globalRegistry, {
         description: 'The matching tenants.'
     })
 })).register(z.globalRegistry, {
     description: 'Tenant search response.'
-});
+}))();
 
-export const zTenantUserResult = z.object({
+export const zTenantUserResult = /*#__PURE__*/ (() => z.object({
     username: zUsername
-});
+}))();
 
-export const zTenantUserSearchResult = zSearchQueryResponse.and(z.object({
+export const zTenantUserSearchResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zTenantUserResult).register(z.globalRegistry, {
         description: 'The matching users.'
     })
-}));
+})))();
 
-export const zTenantUserSearchQuerySortRequest = z.object({
+export const zTenantUserSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum(['username']).register(z.globalRegistry, {
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zTenantUserSearchQueryRequest = zSearchQueryRequest.and(z.object({
+export const zTenantUserSearchQueryRequest = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zTenantUserSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional()
-}));
+})))();
 
-export const zTenantClientResult = z.object({
+export const zTenantClientResult = /*#__PURE__*/ (() => z.object({
     clientId: zClientId
-});
+}))();
 
-export const zTenantClientSearchResult = zSearchQueryResponse.and(z.object({
+export const zTenantClientSearchResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zTenantClientResult).register(z.globalRegistry, {
         description: 'The matching clients.'
     })
-}));
+})))();
 
-export const zTenantClientSearchQuerySortRequest = z.object({
+export const zTenantClientSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum(['clientId']).register(z.globalRegistry, {
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zTenantClientSearchQueryRequest = zSearchQueryRequest.and(z.object({
+export const zTenantClientSearchQueryRequest = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zTenantClientSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional()
-}));
+})))();
 
-export const zTenantGroupResult = z.object({
+export const zTenantGroupResult = /*#__PURE__*/ (() => z.object({
     groupId: zGroupId
-});
+}))();
 
-export const zTenantGroupSearchResult = zSearchQueryResponse.and(z.object({
+export const zTenantGroupSearchResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zTenantGroupResult).register(z.globalRegistry, {
         description: 'The matching groups.'
     })
-}));
+})))();
 
-export const zTenantRoleSearchResult = zSearchQueryResponse.and(z.object({
+export const zTenantRoleSearchResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zRoleResult).register(z.globalRegistry, {
         description: 'The matching roles.'
     })
-}));
+})))();
 
-export const zTenantMappingRuleSearchResult = zSearchQueryResponse.and(z.object({
+export const zTenantMappingRuleSearchResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zMappingRuleResult).register(z.globalRegistry, {
         description: 'The matching mapping rules.'
     })
-}));
+})))();
 
-export const zTenantGroupSearchQuerySortRequest = z.object({
+export const zTenantGroupSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum(['groupId']).register(z.globalRegistry, {
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zTenantGroupSearchQueryRequest = zSearchQueryRequest.and(z.object({
+export const zTenantGroupSearchQueryRequest = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zTenantGroupSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional()
-}));
+})))();
 
-export const zUserTaskSearchQuerySortRequest = z.object({
+export const zUserTaskSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'creationDate',
         'completionDate',
@@ -7647,20 +7647,20 @@ export const zUserTaskSearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
-export const zUserTaskCompletionRequest = z.object({
+export const zUserTaskCompletionRequest = /*#__PURE__*/ (() => z.object({
     variables: z.record(z.string(), z.unknown()).nullish(),
     action: z.string().nullish()
-});
+}))();
 
-export const zUserTaskAssignmentRequest = z.object({
+export const zUserTaskAssignmentRequest = /*#__PURE__*/ (() => z.object({
     assignee: z.string().register(z.globalRegistry, {
         description: 'The assignee for the user task. The assignee must not be empty or `null`.'
     }).optional(),
     allowOverride: z.boolean().nullish(),
     action: z.string().nullish()
-});
+}))();
 
 /**
  * JSON object with changed task attribute values.
@@ -7681,20 +7681,20 @@ export const zUserTaskAssignmentRequest = z.object({
  * This ensures correct event emission for assignee changes.
  *
  */
-export const zChangeset = z.object({
+export const zChangeset = /*#__PURE__*/ (() => z.object({
     dueDate: z.iso.datetime().nullish(),
     followUpDate: z.iso.datetime().nullish(),
     candidateUsers: z.array(z.string()).nullish(),
     candidateGroups: z.array(z.string()).nullish(),
     priority: z.int().gte(0).lte(100).nullish().default(50)
-}).nullable();
+}).nullable())();
 
-export const zUserTaskUpdateRequest = z.object({
+export const zUserTaskUpdateRequest = /*#__PURE__*/ (() => z.object({
     changeset: zChangeset.optional(),
     action: z.string().nullish()
-});
+}))();
 
-export const zUserTaskVariableSearchQuerySortRequest = z.object({
+export const zUserTaskVariableSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'value',
         'name',
@@ -7706,14 +7706,14 @@ export const zUserTaskVariableSearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
 /**
  * The state of the user task.
  * Note: FAILED state is only for legacy job-worker-based tasks.
  *
  */
-export const zUserTaskStateEnum = z.enum([
+export const zUserTaskStateEnum = /*#__PURE__*/ (() => z.enum([
     'CREATING',
     'CREATED',
     'ASSIGNING',
@@ -7725,9 +7725,9 @@ export const zUserTaskStateEnum = z.enum([
     'FAILED'
 ]).register(z.globalRegistry, {
     description: 'The state of the user task.\nNote: FAILED state is only for legacy job-worker-based tasks.\n'
-});
+}))();
 
-export const zUserTaskResult = z.object({
+export const zUserTaskResult = /*#__PURE__*/ (() => z.object({
     name: z.string().nullable(),
     state: zUserTaskStateEnum,
     assignee: z.string().nullable(),
@@ -7765,45 +7765,45 @@ export const zUserTaskResult = z.object({
     businessId: zBusinessId.nullable(),
     formKey: zFormKey.nullable(),
     tags: zTagSet
-});
+}))();
 
 /**
  * User task search query response.
  */
-export const zUserTaskSearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zUserTaskSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zUserTaskResult).register(z.globalRegistry, {
         description: 'The matching user tasks.'
     })
 })).register(z.globalRegistry, {
     description: 'User task search query response.'
-});
+}))();
 
 /**
  * The user task variable search filters.
  */
-export const zUserTaskVariableFilter = z.object({
+export const zUserTaskVariableFilter = /*#__PURE__*/ (() => z.object({
     name: zStringFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'The user task variable search filters.'
-});
+}))();
 
 /**
  * User task search query request.
  */
-export const zUserTaskVariableSearchQueryRequest = zSearchQueryRequest.and(z.object({
+export const zUserTaskVariableSearchQueryRequest = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zUserTaskVariableSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zUserTaskVariableFilter.optional()
 })).register(z.globalRegistry, {
     description: 'User task search query request.'
-});
+}))();
 
 /**
  * User task effective variable search query request. Uses offset-based pagination only.
  *
  */
-export const zUserTaskEffectiveVariableSearchQueryRequest = z.object({
+export const zUserTaskEffectiveVariableSearchQueryRequest = /*#__PURE__*/ (() => z.object({
     page: zOffsetPagination.optional(),
     sort: z.array(zUserTaskVariableSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
@@ -7811,14 +7811,14 @@ export const zUserTaskEffectiveVariableSearchQueryRequest = z.object({
     filter: zUserTaskVariableFilter.optional()
 }).register(z.globalRegistry, {
     description: 'User task effective variable search query request. Uses offset-based pagination only.\n'
-});
+}))();
 
 /**
  * Advanced filter
  *
  * Advanced UserTaskStateEnum filter.
  */
-export const zAdvancedUserTaskStateFilter = z.object({
+export const zAdvancedUserTaskStateFilter = /*#__PURE__*/ (() => z.object({
     $eq: zUserTaskStateEnum.optional(),
     $neq: zUserTaskStateEnum.optional(),
     $exists: z.boolean().register(z.globalRegistry, {
@@ -7830,9 +7830,9 @@ export const zAdvancedUserTaskStateFilter = z.object({
     $like: zLikeFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Advanced UserTaskStateEnum filter.'
-});
+}))();
 
-export const zUserRequest = z.object({
+export const zUserRequest = /*#__PURE__*/ (() => z.object({
     password: z.string().register(z.globalRegistry, {
         description: 'The password of the user.'
     }),
@@ -7843,15 +7843,15 @@ export const zUserRequest = z.object({
     email: z.string().register(z.globalRegistry, {
         description: 'The email of the user.'
     }).optional()
-});
+}))();
 
-export const zUserCreateResult = z.object({
+export const zUserCreateResult = /*#__PURE__*/ (() => z.object({
     username: zUsername,
     name: z.string().nullable(),
     email: z.string().nullable()
-});
+}))();
 
-export const zUserUpdateRequest = z.object({
+export const zUserUpdateRequest = /*#__PURE__*/ (() => z.object({
     password: z.string().register(z.globalRegistry, {
         description: 'The password of the user. If blank, the password is unchanged.'
     }).optional(),
@@ -7861,21 +7861,21 @@ export const zUserUpdateRequest = z.object({
     email: z.string().register(z.globalRegistry, {
         description: 'The email of the user.'
     }).optional()
-});
+}))();
 
-export const zUserUpdateResult = z.object({
+export const zUserUpdateResult = /*#__PURE__*/ (() => z.object({
     username: zUsername,
     name: z.string().nullable(),
     email: z.string().nullable()
-});
+}))();
 
-export const zUserResult = z.object({
+export const zUserResult = /*#__PURE__*/ (() => z.object({
     username: zUsername,
     name: z.string().nullable(),
     email: z.string().nullable()
-});
+}))();
 
-export const zUserSearchQuerySortRequest = z.object({
+export const zUserSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'username',
         'name',
@@ -7884,40 +7884,40 @@ export const zUserSearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
 /**
  * User search filter fields.
  */
-export const zUserFilterFields = z.object({
+export const zUserFilterFields = /*#__PURE__*/ (() => z.object({
     username: zStringFilterProperty.optional(),
     name: zStringFilterProperty.optional(),
     email: zStringFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'User search filter fields.'
-});
+}))();
 
 /**
  * User search filter.
  */
-export const zUserFilter = zUserFilterFields.and(z.object({
+export const zUserFilter = /*#__PURE__*/ (() => zUserFilterFields.and(z.object({
     $or: z.array(zUserFilterFields).nullish()
-}));
+})))();
 
-export const zUserSearchQueryRequest = zSearchQueryRequest.and(z.object({
+export const zUserSearchQueryRequest = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zUserSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zUserFilter.optional()
-}));
+})))();
 
-export const zUserSearchResult = zSearchQueryResponse.and(z.object({
+export const zUserSearchResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zUserResult).register(z.globalRegistry, {
         description: 'The matching users.'
     })
-}));
+})))();
 
-export const zVariableSearchQuerySortRequest = z.object({
+export const zVariableSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
     field: z.enum([
         'value',
         'name',
@@ -7929,12 +7929,12 @@ export const zVariableSearchQuerySortRequest = z.object({
         description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
-});
+}))();
 
 /**
  * Variable response item.
  */
-export const zVariableResultBase = z.object({
+export const zVariableResultBase = /*#__PURE__*/ (() => z.object({
     name: z.string().register(z.globalRegistry, {
         description: 'Name of this variable.'
     }),
@@ -7945,12 +7945,12 @@ export const zVariableResultBase = z.object({
     rootProcessInstanceKey: zProcessInstanceKey.nullable()
 }).register(z.globalRegistry, {
     description: 'Variable response item.'
-});
+}))();
 
 /**
  * Variable search response item.
  */
-export const zVariableSearchResult = zVariableResultBase.and(z.object({
+export const zVariableSearchResult = /*#__PURE__*/ (() => zVariableResultBase.and(z.object({
     value: z.string().register(z.globalRegistry, {
         description: 'Value of this variable. Can be truncated.'
     }),
@@ -7959,38 +7959,38 @@ export const zVariableSearchResult = zVariableResultBase.and(z.object({
     })
 })).register(z.globalRegistry, {
     description: 'Variable search response item.'
-});
+}))();
 
 /**
  * Variable search query response.
  */
-export const zVariableSearchQueryResult = zSearchQueryResponse.and(z.object({
+export const zVariableSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zVariableSearchResult).register(z.globalRegistry, {
         description: 'The matching variables.'
     })
 })).register(z.globalRegistry, {
     description: 'Variable search query response.'
-});
+}))();
 
 /**
  * Variable search response item.
  */
-export const zVariableResult = zVariableResultBase.and(z.object({
+export const zVariableResult = /*#__PURE__*/ (() => zVariableResultBase.and(z.object({
     value: z.string().register(z.globalRegistry, {
         description: 'Full value of this variable.'
     })
 })).register(z.globalRegistry, {
     description: 'Variable search response item.'
-});
+}))();
 
-export const zVariableValueFilterProperty = z.object({
+export const zVariableValueFilterProperty = /*#__PURE__*/ (() => z.object({
     name: z.string().register(z.globalRegistry, {
         description: 'Name of the variable.'
     }),
     value: zStringFilterProperty
-});
+}))();
 
-export const zSetVariableRequest = z.object({
+export const zSetVariableRequest = /*#__PURE__*/ (() => z.object({
     variables: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
         description: 'JSON object representing the variables to set in the element’s scope.'
     }),
@@ -7998,7 +7998,7 @@ export const zSetVariableRequest = z.object({
         description: 'If set to `true`, the variables are merged strictly into the local scope (as specified\nby the `elementInstanceKey`). Otherwise, the variables are propagated to upper scopes\nand set at the outermost one.\n\nLet\'s consider the following example:\nThere are two scopes \'1\' and \'2\'. Scope \'1\' is the parent scope of \'2\'. The effective\nvariables of the scopes are:\n1 => { "foo" : 2 }\n2 => { "bar" : 1 }\n\nAn update request with elementInstanceKey as \'2\', variables { "foo": 5 }, and local set\nto `true` leaves scope \'1\' unchanged and adjusts scope \'2\' to { "bar": 1, "foo": 5 }. By\ndefault, with local set to `false`, scope \'1\' will be { "foo": 5 } and scope \'2\' will be\n{ "bar": 1 }.'
     }).optional().default(false),
     operationReference: zOperationReference.optional()
-});
+}))();
 
 /**
  * Exact match
@@ -8010,10 +8010,10 @@ export const zAgentDefinitionTypeExactMatch = zAgentDefinitionTypeEnum;
 /**
  * AgentDefinitionTypeEnum property with full advanced search capabilities.
  */
-export const zAgentDefinitionTypeFilterProperty = z.union([
+export const zAgentDefinitionTypeFilterProperty = /*#__PURE__*/ (() => z.union([
     zAgentDefinitionTypeExactMatch,
     zAdvancedAgentDefinitionTypeFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8025,10 +8025,10 @@ export const zAgentInstanceStatusExactMatch = zAgentInstanceStatusEnum;
 /**
  * AgentInstanceStatusEnum property with full advanced search capabilities.
  */
-export const zAgentInstanceStatusFilterProperty = z.union([
+export const zAgentInstanceStatusFilterProperty = /*#__PURE__*/ (() => z.union([
     zAgentInstanceStatusExactMatch,
     zAdvancedAgentInstanceStatusFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8040,10 +8040,10 @@ export const zAgentInstanceHistoryRoleExactMatch = zAgentInstanceHistoryRoleEnum
 /**
  * AgentInstanceHistoryRoleEnum property with full advanced search capabilities.
  */
-export const zAgentInstanceHistoryRoleFilterProperty = z.union([
+export const zAgentInstanceHistoryRoleFilterProperty = /*#__PURE__*/ (() => z.union([
     zAgentInstanceHistoryRoleExactMatch,
     zAdvancedAgentInstanceHistoryRoleFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8055,10 +8055,10 @@ export const zAgentInstanceHistoryCommitStatusExactMatch = zAgentInstanceHistory
 /**
  * AgentInstanceHistoryCommitStatusEnum property with full advanced search capabilities.
  */
-export const zAgentInstanceHistoryCommitStatusFilterProperty = z.union([
+export const zAgentInstanceHistoryCommitStatusFilterProperty = /*#__PURE__*/ (() => z.union([
     zAgentInstanceHistoryCommitStatusExactMatch,
     zAdvancedAgentInstanceHistoryCommitStatusFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8070,10 +8070,10 @@ export const zAuditLogEntityKeyExactMatch = zAuditLogEntityKey;
 /**
  * EntityKey property with full advanced search capabilities.
  */
-export const zAuditLogEntityKeyFilterProperty = z.union([
+export const zAuditLogEntityKeyFilterProperty = /*#__PURE__*/ (() => z.union([
     zAuditLogEntityKeyExactMatch,
     zAdvancedAuditLogEntityKeyFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8085,10 +8085,10 @@ export const zEntityTypeExactMatch = zAuditLogEntityTypeEnum;
 /**
  * AuditLogEntityTypeEnum property with full advanced search capabilities.
  */
-export const zEntityTypeFilterProperty = z.union([
+export const zEntityTypeFilterProperty = /*#__PURE__*/ (() => z.union([
     zEntityTypeExactMatch,
     zAdvancedEntityTypeFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8100,10 +8100,10 @@ export const zOperationTypeExactMatch = zAuditLogOperationTypeEnum;
 /**
  * AuditLogOperationTypeEnum property with full advanced search capabilities.
  */
-export const zOperationTypeFilterProperty = z.union([
+export const zOperationTypeFilterProperty = /*#__PURE__*/ (() => z.union([
     zOperationTypeExactMatch,
     zAdvancedOperationTypeFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8115,10 +8115,10 @@ export const zCategoryExactMatch = zAuditLogCategoryEnum;
 /**
  * AuditLogCategoryEnum property with full advanced search capabilities.
  */
-export const zCategoryFilterProperty = z.union([
+export const zCategoryFilterProperty = /*#__PURE__*/ (() => z.union([
     zCategoryExactMatch,
     zAdvancedCategoryFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8130,10 +8130,10 @@ export const zAuditLogResultExactMatch = zAuditLogResultEnum;
 /**
  * AuditLogResultEnum property with full advanced search capabilities.
  */
-export const zAuditLogResultFilterProperty = z.union([
+export const zAuditLogResultFilterProperty = /*#__PURE__*/ (() => z.union([
     zAuditLogResultExactMatch,
     zAdvancedResultFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8145,15 +8145,15 @@ export const zAuditLogActorTypeExactMatch = zAuditLogActorTypeEnum;
 /**
  * AuditLogActorTypeEnum property with full advanced search capabilities.
  */
-export const zAuditLogActorTypeFilterProperty = z.union([
+export const zAuditLogActorTypeFilterProperty = /*#__PURE__*/ (() => z.union([
     zAuditLogActorTypeExactMatch,
     zAdvancedActorTypeFilter
-]);
+]))();
 
 /**
  * The user task audit log search filters.
  */
-export const zUserTaskAuditLogFilter = z.object({
+export const zUserTaskAuditLogFilter = /*#__PURE__*/ (() => z.object({
     operationType: zOperationTypeFilterProperty.optional(),
     result: zAuditLogResultFilterProperty.optional(),
     timestamp: zDateTimeFilterProperty.optional(),
@@ -8161,19 +8161,19 @@ export const zUserTaskAuditLogFilter = z.object({
     actorId: zStringFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'The user task audit log search filters.'
-});
+}))();
 
 /**
  * User task search query request.
  */
-export const zUserTaskAuditLogSearchQueryRequest = zSearchQueryRequest.and(z.object({
+export const zUserTaskAuditLogSearchQueryRequest = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zAuditLogSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zUserTaskAuditLogFilter.optional()
 })).register(z.globalRegistry, {
     description: 'User task search query request.'
-});
+}))();
 
 /**
  * Exact match
@@ -8185,10 +8185,10 @@ export const zBatchOperationTypeExactMatch = zBatchOperationTypeEnum;
 /**
  * BatchOperationTypeEnum property with full advanced search capabilities.
  */
-export const zBatchOperationTypeFilterProperty = z.union([
+export const zBatchOperationTypeFilterProperty = /*#__PURE__*/ (() => z.union([
     zBatchOperationTypeExactMatch,
     zAdvancedBatchOperationTypeFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8200,15 +8200,15 @@ export const zBatchOperationStateExactMatch = zBatchOperationStateEnum;
 /**
  * BatchOperationStateEnum property with full advanced search capabilities.
  */
-export const zBatchOperationStateFilterProperty = z.union([
+export const zBatchOperationStateFilterProperty = /*#__PURE__*/ (() => z.union([
     zBatchOperationStateExactMatch,
     zAdvancedBatchOperationStateFilter
-]);
+]))();
 
 /**
  * Batch operation filter request.
  */
-export const zBatchOperationFilter = z.object({
+export const zBatchOperationFilter = /*#__PURE__*/ (() => z.object({
     batchOperationKey: zBasicStringFilterProperty.optional(),
     operationType: zBatchOperationTypeFilterProperty.optional(),
     state: zBatchOperationStateFilterProperty.optional(),
@@ -8216,19 +8216,19 @@ export const zBatchOperationFilter = z.object({
     actorId: zStringFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'Batch operation filter request.'
-});
+}))();
 
 /**
  * Batch operation search request.
  */
-export const zBatchOperationSearchQuery = zSearchQueryRequest.and(z.object({
+export const zBatchOperationSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zBatchOperationSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zBatchOperationFilter.optional()
 })).register(z.globalRegistry, {
     description: 'Batch operation search request.'
-});
+}))();
 
 /**
  * Exact match
@@ -8240,10 +8240,10 @@ export const zBatchOperationItemStateExactMatch = zBatchOperationItemStateEnum;
 /**
  * BatchOperationItemStateEnum property with full advanced search capabilities.
  */
-export const zBatchOperationItemStateFilterProperty = z.union([
+export const zBatchOperationItemStateFilterProperty = /*#__PURE__*/ (() => z.union([
     zBatchOperationItemStateExactMatch,
     zAdvancedBatchOperationItemStateFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8255,10 +8255,10 @@ export const zClusterVariableScopeExactMatch = zClusterVariableScopeEnum;
 /**
  * ClusterVariableScopeEnum property with full advanced search capabilities.
  */
-export const zClusterVariableScopeFilterProperty = z.union([
+export const zClusterVariableScopeFilterProperty = /*#__PURE__*/ (() => z.union([
     zClusterVariableScopeExactMatch,
     zAdvancedClusterVariableScopeFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8270,15 +8270,15 @@ export const zClusterVariableKindExactMatch = zClusterVariableKindEnum;
 /**
  * ClusterVariableKindEnum property with full advanced search capabilities.
  */
-export const zClusterVariableKindFilterProperty = z.union([
+export const zClusterVariableKindFilterProperty = /*#__PURE__*/ (() => z.union([
     zClusterVariableKindExactMatch,
     zAdvancedClusterVariableKindFilter
-]);
+]))();
 
 /**
  * Cluster variable filter request.
  */
-export const zClusterVariableSearchQueryFilterRequest = z.object({
+export const zClusterVariableSearchQueryFilterRequest = /*#__PURE__*/ (() => z.object({
     name: zStringFilterProperty.optional(),
     value: zStringFilterProperty.optional(),
     scope: zClusterVariableScopeFilterProperty.optional(),
@@ -8292,19 +8292,19 @@ export const zClusterVariableSearchQueryFilterRequest = z.object({
     kind: zClusterVariableKindFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'Cluster variable filter request.'
-});
+}))();
 
 /**
  * Cluster variable search query request.
  */
-export const zClusterVariableSearchQueryRequest = zSearchQueryRequest.and(z.object({
+export const zClusterVariableSearchQueryRequest = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zClusterVariableSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zClusterVariableSearchQueryFilterRequest.optional()
 })).register(z.globalRegistry, {
     description: 'Cluster variable search query request.'
-});
+}))();
 
 /**
  * Exact match
@@ -8316,10 +8316,10 @@ export const zDecisionInstanceStateExactMatch = zDecisionInstanceStateEnum;
 /**
  * DecisionInstanceStateEnum property with full advanced search capabilities.
  */
-export const zDecisionInstanceStateFilterProperty = z.union([
+export const zDecisionInstanceStateFilterProperty = /*#__PURE__*/ (() => z.union([
     zDecisionInstanceStateExactMatch,
     zAdvancedDecisionInstanceStateFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8331,10 +8331,10 @@ export const zDeploymentKeyExactMatch = zDeploymentKey;
 /**
  * DeploymentKey property with full advanced search capabilities.
  */
-export const zDeploymentKeyFilterProperty = z.union([
+export const zDeploymentKeyFilterProperty = /*#__PURE__*/ (() => z.union([
     zDeploymentKeyExactMatch,
     zAdvancedDeploymentKeyFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8346,15 +8346,15 @@ export const zResourceKeyExactMatch = zResourceKey;
 /**
  * ResourceKey property with full advanced search capabilities.
  */
-export const zResourceKeyFilterProperty = z.union([
+export const zResourceKeyFilterProperty = /*#__PURE__*/ (() => z.union([
     zResourceKeyExactMatch,
     zAdvancedResourceKeyFilter
-]);
+]))();
 
 /**
  * Resource search filter.
  */
-export const zResourceFilter = z.object({
+export const zResourceFilter = /*#__PURE__*/ (() => z.object({
     resourceKey: zResourceKeyFilterProperty.optional(),
     resourceName: zStringFilterProperty.optional(),
     resourceId: zStringFilterProperty.optional(),
@@ -8364,14 +8364,14 @@ export const zResourceFilter = z.object({
     tenantId: zTenantId.optional()
 }).register(z.globalRegistry, {
     description: 'Resource search filter.'
-});
+}))();
 
-export const zResourceSearchQuery = zSearchQueryRequest.and(z.object({
+export const zResourceSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zResourceSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zResourceFilter.optional()
-}));
+})))();
 
 /**
  * Exact match
@@ -8383,10 +8383,10 @@ export const zElementInstanceStateExactMatch = zElementInstanceStateEnum;
 /**
  * ElementInstanceStateEnum property with full advanced search capabilities.
  */
-export const zElementInstanceStateFilterProperty = z.union([
+export const zElementInstanceStateFilterProperty = /*#__PURE__*/ (() => z.union([
     zElementInstanceStateExactMatch,
     zAdvancedElementInstanceStateFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8398,10 +8398,10 @@ export const zWaitStateElementTypeExactMatch = zWaitStateElementTypeEnum;
 /**
  * Element type property with full advanced search capabilities.
  */
-export const zWaitStateElementTypeFilterProperty = z.union([
+export const zWaitStateElementTypeFilterProperty = /*#__PURE__*/ (() => z.union([
     zWaitStateElementTypeExactMatch,
     zAdvancedWaitStateElementTypeFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8413,10 +8413,10 @@ export const zWaitStateTypeExactMatch = zWaitStateTypeEnum;
 /**
  * Wait state type property with full advanced search capabilities.
  */
-export const zWaitStateTypeFilterProperty = z.union([
+export const zWaitStateTypeFilterProperty = /*#__PURE__*/ (() => z.union([
     zWaitStateTypeExactMatch,
     zAdvancedWaitStateTypeFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8428,10 +8428,10 @@ export const zGlobalListenerSourceExactMatch = zGlobalListenerSourceEnum;
 /**
  * Global listener source property with full advanced search capabilities.
  */
-export const zGlobalListenerSourceFilterProperty = z.union([
+export const zGlobalListenerSourceFilterProperty = /*#__PURE__*/ (() => z.union([
     zGlobalListenerSourceExactMatch,
     zAdvancedGlobalListenerSourceFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8443,15 +8443,15 @@ export const zGlobalTaskListenerEventTypeExactMatch = zGlobalTaskListenerEventTy
 /**
  * Global listener event type property with full advanced search capabilities.
  */
-export const zGlobalTaskListenerEventTypeFilterProperty = z.union([
+export const zGlobalTaskListenerEventTypeFilterProperty = /*#__PURE__*/ (() => z.union([
     zGlobalTaskListenerEventTypeExactMatch,
     zAdvancedGlobalTaskListenerEventTypeFilter
-]);
+]))();
 
 /**
  * Global listener filter request.
  */
-export const zGlobalTaskListenerSearchQueryFilterRequest = z.object({
+export const zGlobalTaskListenerSearchQueryFilterRequest = /*#__PURE__*/ (() => z.object({
     id: zStringFilterProperty.optional(),
     type: zStringFilterProperty.optional(),
     retries: zIntegerFilterProperty.optional(),
@@ -8465,19 +8465,19 @@ export const zGlobalTaskListenerSearchQueryFilterRequest = z.object({
     source: zGlobalListenerSourceFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'Global listener filter request.'
-});
+}))();
 
 /**
  * Global listener search query request.
  */
-export const zGlobalTaskListenerSearchQueryRequest = zSearchQueryRequest.and(z.object({
+export const zGlobalTaskListenerSearchQueryRequest = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zGlobalTaskListenerSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zGlobalTaskListenerSearchQueryFilterRequest.optional()
 })).register(z.globalRegistry, {
     description: 'Global listener search query request.'
-});
+}))();
 
 /**
  * Exact match
@@ -8489,15 +8489,15 @@ export const zElementIdExactMatch = zElementId;
 /**
  * ElementId property with full advanced search capabilities.
  */
-export const zElementIdFilterProperty = z.union([
+export const zElementIdFilterProperty = /*#__PURE__*/ (() => z.union([
     zElementIdExactMatch,
     zAdvancedElementIdFilter
-]);
+]))();
 
 /**
  * Element instance filter fields.
  */
-export const zElementInstanceFilterFields = z.object({
+export const zElementInstanceFilterFields = /*#__PURE__*/ (() => z.object({
     processDefinitionId: zProcessDefinitionId.optional(),
     state: zElementInstanceStateFilterProperty.optional(),
     type: z.enum([
@@ -8549,28 +8549,28 @@ export const zElementInstanceFilterFields = z.object({
     ]).optional()
 }).register(z.globalRegistry, {
     description: 'Element instance filter fields.'
-});
+}))();
 
 /**
  * Element instance search filter.
  */
-export const zElementInstanceFilter = zElementInstanceFilterFields.and(z.object({
+export const zElementInstanceFilter = /*#__PURE__*/ (() => zElementInstanceFilterFields.and(z.object({
     $or: z.array(zElementInstanceFilterFields).register(z.globalRegistry, {
         description: 'Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.\n\nTop-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.\n<br>\n<em>Example:</em>\n\n```json\n{\n  "processInstanceKey": "2251799813685323",\n  "$or": [\n    { "elementName": { "$like": "*Order*" } },\n    { "elementId":   { "$like": "*Order*" } }\n  ]\n}\n```\nThis matches element instances scoped to the given process instance whose:\n\n<ul style="padding-left: 20px; margin-left: 20px;">\n  <li style="list-style-type: disc;"><code>elementName</code> contains <em>Order</em>, or</li>\n  <li style="list-style-type: disc;"><code>elementId</code> contains <em>Order</em></li>\n</ul>\n<br>\n<p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.\n'
     }).optional()
-}));
+})))();
 
 /**
  * Element instance search request.
  */
-export const zElementInstanceSearchQuery = zSearchQueryRequest.and(z.object({
+export const zElementInstanceSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zElementInstanceSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zElementInstanceFilter.optional()
 })).register(z.globalRegistry, {
     description: 'Element instance search request.'
-});
+}))();
 
 /**
  * Exact match
@@ -8582,10 +8582,10 @@ export const zProcessDefinitionIdExactMatch = zProcessDefinitionId;
 /**
  * ProcessDefinitionId property with full advanced search capabilities.
  */
-export const zProcessDefinitionIdFilterProperty = z.union([
+export const zProcessDefinitionIdFilterProperty = /*#__PURE__*/ (() => z.union([
     zProcessDefinitionIdExactMatch,
     zAdvancedProcessDefinitionIdFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8597,10 +8597,10 @@ export const zIncidentErrorTypeExactMatch = zIncidentErrorTypeEnum;
 /**
  * IncidentErrorTypeEnum with full advanced search capabilities.
  */
-export const zIncidentErrorTypeFilterProperty = z.union([
+export const zIncidentErrorTypeFilterProperty = /*#__PURE__*/ (() => z.union([
     zIncidentErrorTypeExactMatch,
     zAdvancedIncidentErrorTypeFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8612,10 +8612,10 @@ export const zIncidentStateExactMatch = zIncidentStateEnum;
 /**
  * IncidentStateEnum with full advanced search capabilities.
  */
-export const zIncidentStateFilterProperty = z.union([
+export const zIncidentStateFilterProperty = /*#__PURE__*/ (() => z.union([
     zIncidentStateExactMatch,
     zAdvancedIncidentStateFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8627,10 +8627,10 @@ export const zJobKindExactMatch = zJobKindEnum;
 /**
  * JobKindEnum property with full advanced search capabilities.
  */
-export const zJobKindFilterProperty = z.union([
+export const zJobKindFilterProperty = /*#__PURE__*/ (() => z.union([
     zJobKindExactMatch,
     zAdvancedJobKindFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8642,10 +8642,10 @@ export const zJobListenerEventTypeExactMatch = zJobListenerEventTypeEnum;
 /**
  * JobListenerEventTypeEnum property with full advanced search capabilities.
  */
-export const zJobListenerEventTypeFilterProperty = z.union([
+export const zJobListenerEventTypeFilterProperty = /*#__PURE__*/ (() => z.union([
     zJobListenerEventTypeExactMatch,
     zAdvancedJobListenerEventTypeFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8657,10 +8657,10 @@ export const zJobStateExactMatch = zJobStateEnum;
 /**
  * JobStateEnum property with full advanced search capabilities.
  */
-export const zJobStateFilterProperty = z.union([
+export const zJobStateFilterProperty = /*#__PURE__*/ (() => z.union([
     zJobStateExactMatch,
     zAdvancedJobStateFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8672,10 +8672,10 @@ export const zProcessDefinitionKeyExactMatch = zProcessDefinitionKey;
 /**
  * ProcessDefinitionKey property with full advanced search capabilities.
  */
-export const zProcessDefinitionKeyFilterProperty = z.union([
+export const zProcessDefinitionKeyFilterProperty = /*#__PURE__*/ (() => z.union([
     zProcessDefinitionKeyExactMatch,
     zAdvancedProcessDefinitionKeyFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8687,15 +8687,15 @@ export const zProcessInstanceKeyExactMatch = zProcessInstanceKey;
 /**
  * ProcessInstanceKey property with full advanced search capabilities.
  */
-export const zProcessInstanceKeyFilterProperty = z.union([
+export const zProcessInstanceKeyFilterProperty = /*#__PURE__*/ (() => z.union([
     zProcessInstanceKeyExactMatch,
     zAdvancedProcessInstanceKeyFilter
-]);
+]))();
 
 /**
  * Batch operation item filter request.
  */
-export const zBatchOperationItemFilter = z.object({
+export const zBatchOperationItemFilter = /*#__PURE__*/ (() => z.object({
     batchOperationKey: zBasicStringFilterProperty.optional(),
     itemKey: zBasicStringFilterProperty.optional(),
     processInstanceKey: zProcessInstanceKeyFilterProperty.optional(),
@@ -8703,19 +8703,19 @@ export const zBatchOperationItemFilter = z.object({
     operationType: zBatchOperationTypeFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'Batch operation item filter request.'
-});
+}))();
 
 /**
  * Batch operation item search request.
  */
-export const zBatchOperationItemSearchQuery = zSearchQueryRequest.and(z.object({
+export const zBatchOperationItemSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zBatchOperationItemSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zBatchOperationItemFilter.optional()
 })).register(z.globalRegistry, {
     description: 'Batch operation item search request.'
-});
+}))();
 
 /**
  * Exact match
@@ -8727,15 +8727,15 @@ export const zElementInstanceKeyExactMatch = zElementInstanceKey;
 /**
  * ElementInstanceKey property with full advanced search capabilities.
  */
-export const zElementInstanceKeyFilterProperty = z.union([
+export const zElementInstanceKeyFilterProperty = /*#__PURE__*/ (() => z.union([
     zElementInstanceKeyExactMatch,
     zAdvancedElementInstanceKeyFilter
-]);
+]))();
 
 /**
  * Filters for the element instance inspection.
  */
-export const zElementInstanceWaitStateFilter = z.object({
+export const zElementInstanceWaitStateFilter = /*#__PURE__*/ (() => z.object({
     elementInstanceKey: zElementInstanceKeyFilterProperty.optional(),
     processInstanceKey: zProcessInstanceKeyFilterProperty.optional(),
     rootProcessInstanceKey: zProcessInstanceKeyFilterProperty.optional(),
@@ -8744,19 +8744,19 @@ export const zElementInstanceWaitStateFilter = z.object({
     waitStateType: zWaitStateTypeFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'Filters for the element instance inspection.'
-});
+}))();
 
 /**
  * Element instance inspection request.
  */
-export const zElementInstanceWaitStateQuery = zSearchQueryRequest.and(z.object({
+export const zElementInstanceWaitStateQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zElementInstanceWaitStateQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zElementInstanceWaitStateFilter.optional()
 })).register(z.globalRegistry, {
     description: 'Element instance inspection request.'
-});
+}))();
 
 /**
  * Exact match
@@ -8768,15 +8768,15 @@ export const zJobKeyExactMatch = zJobKey;
 /**
  * JobKey property with full advanced search capabilities.
  */
-export const zJobKeyFilterProperty = z.union([
+export const zJobKeyFilterProperty = /*#__PURE__*/ (() => z.union([
     zJobKeyExactMatch,
     zAdvancedJobKeyFilter
-]);
+]))();
 
 /**
  * Incident search filter.
  */
-export const zIncidentFilter = z.object({
+export const zIncidentFilter = /*#__PURE__*/ (() => z.object({
     processDefinitionId: zStringFilterProperty.optional(),
     errorType: zIncidentErrorTypeFilterProperty.optional(),
     errorMessage: zStringFilterProperty.optional(),
@@ -8791,19 +8791,19 @@ export const zIncidentFilter = z.object({
     jobKey: zJobKeyFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'Incident search filter.'
-});
+}))();
 
-export const zIncidentSearchQuery = zSearchQueryRequest.and(z.object({
+export const zIncidentSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zIncidentSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zIncidentFilter.optional()
-}));
+})))();
 
 /**
  * Job search filter.
  */
-export const zJobFilter = z.object({
+export const zJobFilter = /*#__PURE__*/ (() => z.object({
     deadline: zDateTimeFilterProperty.nullish(),
     deniedReason: zStringFilterProperty.optional(),
     elementId: zStringFilterProperty.optional(),
@@ -8831,31 +8831,31 @@ export const zJobFilter = z.object({
     lastUpdateTime: zDateTimeFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'Job search filter.'
-});
+}))();
 
 /**
  * Job search request.
  */
-export const zJobSearchQuery = zSearchQueryRequest.and(z.object({
+export const zJobSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zJobSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zJobFilter.optional()
 })).register(z.globalRegistry, {
     description: 'Job search request.'
-});
+}))();
 
 /**
  * The filter and changeset for a batch job update operation. The filter defines which jobs are updated; the changeset defines what to update. At least one changeset field must be non-null.
  *
  */
-export const zJobBatchUpdateRequest = z.object({
+export const zJobBatchUpdateRequest = /*#__PURE__*/ (() => z.object({
     filter: zJobFilter,
     changeset: zJobChangeset,
     operationReference: zOperationReference.optional()
 }).register(z.globalRegistry, {
     description: 'The filter and changeset for a batch job update operation. The filter defines which jobs are updated; the changeset defines what to update. At least one changeset field must be non-null.\n'
-});
+}))();
 
 /**
  * Exact match
@@ -8867,10 +8867,10 @@ export const zDecisionDefinitionKeyExactMatch = zDecisionDefinitionKey;
 /**
  * DecisionDefinitionKey property with full advanced search capabilities.
  */
-export const zDecisionDefinitionKeyFilterProperty = z.union([
+export const zDecisionDefinitionKeyFilterProperty = /*#__PURE__*/ (() => z.union([
     zDecisionDefinitionKeyExactMatch,
     zAdvancedDecisionDefinitionKeyFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8884,10 +8884,10 @@ export const zScopeKeyExactMatch = zScopeKey;
  * element instance or process instance that defines the scope of a variable.
  *
  */
-export const zScopeKeyFilterProperty = z.union([
+export const zScopeKeyFilterProperty = /*#__PURE__*/ (() => z.union([
     zScopeKeyExactMatch,
     zAdvancedScopeKeyFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8899,15 +8899,15 @@ export const zVariableKeyExactMatch = zVariableKey;
 /**
  * VariableKey property with full advanced search capabilities.
  */
-export const zVariableKeyFilterProperty = z.union([
+export const zVariableKeyFilterProperty = /*#__PURE__*/ (() => z.union([
     zVariableKeyExactMatch,
     zAdvancedVariableKeyFilter
-]);
+]))();
 
 /**
  * Variable filter request.
  */
-export const zVariableFilter = z.object({
+export const zVariableFilter = /*#__PURE__*/ (() => z.object({
     name: zStringFilterProperty.optional(),
     value: zStringFilterProperty.optional(),
     tenantId: zTenantId.optional(),
@@ -8919,19 +8919,19 @@ export const zVariableFilter = z.object({
     processInstanceKey: zProcessInstanceKeyFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'Variable filter request.'
-});
+}))();
 
 /**
  * Variable search query request.
  */
-export const zVariableSearchQuery = zSearchQueryRequest.and(z.object({
+export const zVariableSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zVariableSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zVariableFilter.optional()
 })).register(z.globalRegistry, {
     description: 'Variable search query request.'
-});
+}))();
 
 /**
  * Exact match
@@ -8943,10 +8943,10 @@ export const zDecisionEvaluationInstanceKeyExactMatch = zDecisionEvaluationInsta
 /**
  * DecisionEvaluationInstanceKey property with full advanced search capabilities.
  */
-export const zDecisionEvaluationInstanceKeyFilterProperty = z.union([
+export const zDecisionEvaluationInstanceKeyFilterProperty = /*#__PURE__*/ (() => z.union([
     zDecisionEvaluationInstanceKeyExactMatch,
     zAdvancedDecisionEvaluationInstanceKeyFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -8958,15 +8958,15 @@ export const zAgentDefinitionKeyExactMatch = zAgentDefinitionKey;
 /**
  * AgentDefinitionKey property with full advanced search capabilities.
  */
-export const zAgentDefinitionKeyFilterProperty = z.union([
+export const zAgentDefinitionKeyFilterProperty = /*#__PURE__*/ (() => z.union([
     zAgentDefinitionKeyExactMatch,
     zAdvancedAgentDefinitionKeyFilter
-]);
+]))();
 
 /**
  * Agent definition search filter.
  */
-export const zAgentDefinitionFilter = z.object({
+export const zAgentDefinitionFilter = /*#__PURE__*/ (() => z.object({
     agentDefinitionKey: zAgentDefinitionKeyFilterProperty.optional(),
     agentType: zAgentDefinitionTypeFilterProperty.optional(),
     name: zStringFilterProperty.optional(),
@@ -8978,19 +8978,19 @@ export const zAgentDefinitionFilter = z.object({
     tenantId: zStringFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'Agent definition search filter.'
-});
+}))();
 
 /**
  * Agent definition search request.
  */
-export const zAgentDefinitionSearchQuery = zSearchQueryRequest.and(z.object({
+export const zAgentDefinitionSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zAgentDefinitionSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zAgentDefinitionFilter.optional()
 })).register(z.globalRegistry, {
     description: 'Agent definition search request.'
-});
+}))();
 
 /**
  * Exact match
@@ -9002,15 +9002,15 @@ export const zAgentInstanceKeyExactMatch = zAgentInstanceKey;
 /**
  * AgentInstanceKey property with full advanced search capabilities.
  */
-export const zAgentInstanceKeyFilterProperty = z.union([
+export const zAgentInstanceKeyFilterProperty = /*#__PURE__*/ (() => z.union([
     zAgentInstanceKeyExactMatch,
     zAdvancedAgentInstanceKeyFilter
-]);
+]))();
 
 /**
  * Agent instance search filter.
  */
-export const zAgentInstanceFilter = z.object({
+export const zAgentInstanceFilter = /*#__PURE__*/ (() => z.object({
     agentInstanceKey: zAgentInstanceKeyFilterProperty.optional(),
     agentDefinitionKey: zAgentDefinitionKeyFilterProperty.optional(),
     status: zAgentInstanceStatusFilterProperty.optional(),
@@ -9030,19 +9030,19 @@ export const zAgentInstanceFilter = z.object({
     processDefinitionVersionTag: zStringFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'Agent instance search filter.'
-});
+}))();
 
 /**
  * Agent instance search request.
  */
-export const zAgentInstanceSearchQuery = zSearchQueryRequest.and(z.object({
+export const zAgentInstanceSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zAgentInstanceSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zAgentInstanceFilter.optional()
 })).register(z.globalRegistry, {
     description: 'Agent instance search request.'
-});
+}))();
 
 /**
  * Exact match
@@ -9054,15 +9054,15 @@ export const zAgentHistoryItemKeyExactMatch = zAgentHistoryItemKey;
 /**
  * AgentHistoryItemKey property with full advanced search capabilities.
  */
-export const zAgentHistoryItemKeyFilterProperty = z.union([
+export const zAgentHistoryItemKeyFilterProperty = /*#__PURE__*/ (() => z.union([
     zAgentHistoryItemKeyExactMatch,
     zAdvancedAgentHistoryItemKeyFilter
-]);
+]))();
 
 /**
  * Agent instance history item search filter.
  */
-export const zAgentInstanceHistoryFilter = z.object({
+export const zAgentInstanceHistoryFilter = /*#__PURE__*/ (() => z.object({
     historyItemKey: zAgentHistoryItemKeyFilterProperty.optional(),
     role: zAgentInstanceHistoryRoleFilterProperty.optional(),
     elementInstanceKey: zElementInstanceKeyFilterProperty.optional(),
@@ -9072,19 +9072,19 @@ export const zAgentInstanceHistoryFilter = z.object({
     producedAt: zDateTimeFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'Agent instance history item search filter.'
-});
+}))();
 
 /**
  * Agent instance history search request.
  */
-export const zAgentInstanceHistorySearchQuery = zSearchQueryRequest.and(z.object({
+export const zAgentInstanceHistorySearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zAgentInstanceHistorySearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zAgentInstanceHistoryFilter.optional()
 })).register(z.globalRegistry, {
     description: 'Agent instance history search request.'
-});
+}))();
 
 /**
  * Exact match
@@ -9096,10 +9096,10 @@ export const zAuditLogKeyExactMatch = zAuditLogKey;
 /**
  * AuditLogKey property with full advanced search capabilities.
  */
-export const zAuditLogKeyFilterProperty = z.union([
+export const zAuditLogKeyFilterProperty = /*#__PURE__*/ (() => z.union([
     zAuditLogKeyExactMatch,
     zAdvancedAuditLogKeyFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -9111,10 +9111,10 @@ export const zFormKeyExactMatch = zFormKey;
 /**
  * FormKey property with full advanced search capabilities.
  */
-export const zFormKeyFilterProperty = z.union([
+export const zFormKeyFilterProperty = /*#__PURE__*/ (() => z.union([
     zFormKeyExactMatch,
     zAdvancedFormKeyFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -9126,10 +9126,10 @@ export const zDecisionEvaluationKeyExactMatch = zDecisionEvaluationKey;
 /**
  * DecisionEvaluationKey property with full advanced search capabilities.
  */
-export const zDecisionEvaluationKeyFilterProperty = z.union([
+export const zDecisionEvaluationKeyFilterProperty = /*#__PURE__*/ (() => z.union([
     zDecisionEvaluationKeyExactMatch,
     zAdvancedDecisionEvaluationKeyFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -9141,15 +9141,15 @@ export const zDecisionRequirementsKeyExactMatch = zDecisionRequirementsKey;
 /**
  * DecisionRequirementsKey property with full advanced search capabilities.
  */
-export const zDecisionRequirementsKeyFilterProperty = z.union([
+export const zDecisionRequirementsKeyFilterProperty = /*#__PURE__*/ (() => z.union([
     zDecisionRequirementsKeyExactMatch,
     zAdvancedDecisionRequirementsKeyFilter
-]);
+]))();
 
 /**
  * Audit log filter request
  */
-export const zAuditLogFilter = z.object({
+export const zAuditLogFilter = /*#__PURE__*/ (() => z.object({
     auditLogKey: zAuditLogKeyFilterProperty.optional(),
     processDefinitionKey: zProcessDefinitionKeyFilterProperty.optional(),
     processInstanceKey: zProcessInstanceKeyFilterProperty.optional(),
@@ -9183,24 +9183,24 @@ export const zAuditLogFilter = z.object({
     inboundChannelToolName: zStringFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'Audit log filter request'
-});
+}))();
 
 /**
  * Audit log search request.
  */
-export const zAuditLogSearchQueryRequest = zSearchQueryRequest.and(z.object({
+export const zAuditLogSearchQueryRequest = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zAuditLogSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zAuditLogFilter.optional()
 })).register(z.globalRegistry, {
     description: 'Audit log search request.'
-});
+}))();
 
 /**
  * Decision instance search filter.
  */
-export const zDecisionInstanceFilter = z.object({
+export const zDecisionInstanceFilter = /*#__PURE__*/ (() => z.object({
     decisionEvaluationInstanceKey: zDecisionEvaluationInstanceKeyFilterProperty.optional(),
     state: zDecisionInstanceStateFilterProperty.optional(),
     evaluationFailure: z.string().register(z.globalRegistry, {
@@ -9226,24 +9226,24 @@ export const zDecisionInstanceFilter = z.object({
     decisionRequirementsKey: zDecisionRequirementsKeyFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'Decision instance search filter.'
-});
+}))();
 
 /**
  * The decision instance filter that defines which decision instances should be deleted.
  */
-export const zDecisionInstanceDeletionBatchOperationRequest = z.object({
+export const zDecisionInstanceDeletionBatchOperationRequest = /*#__PURE__*/ (() => z.object({
     filter: zDecisionInstanceFilter,
     operationReference: zOperationReference.optional()
 }).register(z.globalRegistry, {
     description: 'The decision instance filter that defines which decision instances should be deleted.'
-});
+}))();
 
-export const zDecisionInstanceSearchQuery = zSearchQueryRequest.and(z.object({
+export const zDecisionInstanceSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zDecisionInstanceSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zDecisionInstanceFilter.optional()
-}));
+})))();
 
 /**
  * Exact match
@@ -9255,10 +9255,10 @@ export const zMessageSubscriptionTypeExactMatch = zMessageSubscriptionTypeEnum;
 /**
  * MessageSubscriptionTypeEnum with full advanced search capabilities.
  */
-export const zMessageSubscriptionTypeFilterProperty = z.union([
+export const zMessageSubscriptionTypeFilterProperty = /*#__PURE__*/ (() => z.union([
     zMessageSubscriptionTypeExactMatch,
     zAdvancedMessageSubscriptionTypeFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -9270,10 +9270,10 @@ export const zMessageSubscriptionStateExactMatch = zMessageSubscriptionStateEnum
 /**
  * MessageSubscriptionStateEnum with full advanced search capabilities.
  */
-export const zMessageSubscriptionStateFilterProperty = z.union([
+export const zMessageSubscriptionStateFilterProperty = /*#__PURE__*/ (() => z.union([
     zMessageSubscriptionStateExactMatch,
     zAdvancedMessageSubscriptionStateFilter
-]);
+]))();
 
 /**
  * Exact match
@@ -9285,15 +9285,15 @@ export const zMessageSubscriptionKeyExactMatch = zMessageSubscriptionKey;
 /**
  * MessageSubscriptionKey property with full advanced search capabilities.
  */
-export const zMessageSubscriptionKeyFilterProperty = z.union([
+export const zMessageSubscriptionKeyFilterProperty = /*#__PURE__*/ (() => z.union([
     zMessageSubscriptionKeyExactMatch,
     zAdvancedMessageSubscriptionKeyFilter
-]);
+]))();
 
 /**
  * Message subscription search filter.
  */
-export const zMessageSubscriptionFilter = z.object({
+export const zMessageSubscriptionFilter = /*#__PURE__*/ (() => z.object({
     businessId: zStringFilterProperty.optional(),
     messageSubscriptionKey: zMessageSubscriptionKeyFilterProperty.optional(),
     processDefinitionKey: zProcessDefinitionKeyFilterProperty.optional(),
@@ -9313,19 +9313,19 @@ export const zMessageSubscriptionFilter = z.object({
     inboundConnectorType: zStringFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'Message subscription search filter.'
-});
+}))();
 
-export const zMessageSubscriptionSearchQuery = zSearchQueryRequest.and(z.object({
+export const zMessageSubscriptionSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zMessageSubscriptionSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zMessageSubscriptionFilter.optional()
-}));
+})))();
 
 /**
  * Correlated message subscriptions search filter.
  */
-export const zCorrelatedMessageSubscriptionFilter = z.object({
+export const zCorrelatedMessageSubscriptionFilter = /*#__PURE__*/ (() => z.object({
     businessId: zStringFilterProperty.optional(),
     correlationKey: zStringFilterProperty.optional(),
     correlationTime: zDateTimeFilterProperty.optional(),
@@ -9341,19 +9341,19 @@ export const zCorrelatedMessageSubscriptionFilter = z.object({
     tenantId: zStringFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'Correlated message subscriptions search filter.'
-});
+}))();
 
-export const zCorrelatedMessageSubscriptionSearchQuery = zSearchQueryRequest.and(z.object({
+export const zCorrelatedMessageSubscriptionSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zCorrelatedMessageSubscriptionSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zCorrelatedMessageSubscriptionFilter.optional()
-}));
+})))();
 
-export const zProcessDefinitionMessageSubscriptionStatisticsQuery = z.object({
+export const zProcessDefinitionMessageSubscriptionStatisticsQuery = /*#__PURE__*/ (() => z.object({
     page: zCursorForwardPagination.optional(),
     filter: zMessageSubscriptionFilter.optional()
-});
+}))();
 
 /**
  * Exact match
@@ -9365,15 +9365,15 @@ export const zProcessInstanceStateExactMatch = zProcessInstanceStateEnum;
 /**
  * ProcessInstanceStateEnum property with full advanced search capabilities.
  */
-export const zProcessInstanceStateFilterProperty = z.union([
+export const zProcessInstanceStateFilterProperty = /*#__PURE__*/ (() => z.union([
     zProcessInstanceStateExactMatch,
     zAdvancedProcessInstanceStateFilter
-]);
+]))();
 
 /**
  * Base process instance search filter.
  */
-export const zBaseProcessInstanceFilterFields = z.object({
+export const zBaseProcessInstanceFilterFields = /*#__PURE__*/ (() => z.object({
     startDate: zDateTimeFilterProperty.optional(),
     endDate: zDateTimeFilterProperty.optional(),
     state: zProcessInstanceStateFilterProperty.optional(),
@@ -9404,30 +9404,30 @@ export const zBaseProcessInstanceFilterFields = z.object({
     businessId: zStringFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'Base process instance search filter.'
-});
+}))();
 
 /**
  * Process definition statistics search filter.
  */
-export const zProcessDefinitionStatisticsFilter = zBaseProcessInstanceFilterFields.and(z.object({
+export const zProcessDefinitionStatisticsFilter = /*#__PURE__*/ (() => zBaseProcessInstanceFilterFields.and(z.object({
     $or: z.array(zBaseProcessInstanceFilterFields).register(z.globalRegistry, {
         description: 'Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.\n\nTop-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.\n<br>\n<em>Example:</em>\n\n```json\n{\n  "state": "ACTIVE",\n  "tenantId": 123,\n  "$or": [\n    { "processDefinitionId": "process_v1" },\n    { "processDefinitionId": "process_v2", "hasIncident": true }\n  ]\n}\n```\nThis matches process instances that:\n\n<ul style="padding-left: 20px; margin-left: 20px;">\n  <li style="list-style-type: disc;">are in <em>ACTIVE</em> state</li>\n  <li style="list-style-type: disc;">have tenant id equal to <em>123</em></li>\n  <li style="list-style-type: disc;">and match either:\n    <ul style="padding-left: 20px; margin-left: 20px;">\n      <li style="list-style-type: circle;"><code>processDefinitionId</code> is <em>process_v1</em>, or</li>\n      <li style="list-style-type: circle;"><code>processDefinitionId</code> is <em>process_v2</em> and <code>hasIncident</code> is <em>true</em></li>\n    </ul>\n  </li>\n</ul>\n<br>\n<p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.\n'
     }).optional()
-}));
+})))();
 
 /**
  * Process definition element statistics request.
  */
-export const zProcessDefinitionElementStatisticsQuery = z.object({
+export const zProcessDefinitionElementStatisticsQuery = /*#__PURE__*/ (() => z.object({
     filter: zProcessDefinitionStatisticsFilter.optional()
 }).register(z.globalRegistry, {
     description: 'Process definition element statistics request.'
-});
+}))();
 
 /**
  * Process instance search filter.
  */
-export const zProcessInstanceFilterFields = zBaseProcessInstanceFilterFields.and(z.object({
+export const zProcessInstanceFilterFields = /*#__PURE__*/ (() => zBaseProcessInstanceFilterFields.and(z.object({
     processDefinitionId: zStringFilterProperty.optional(),
     processDefinitionName: zStringFilterProperty.optional(),
     processDefinitionVersion: zIntegerFilterProperty.optional(),
@@ -9435,59 +9435,59 @@ export const zProcessInstanceFilterFields = zBaseProcessInstanceFilterFields.and
     processDefinitionKey: zProcessDefinitionKeyFilterProperty.optional()
 })).register(z.globalRegistry, {
     description: 'Process instance search filter.'
-});
+}))();
 
 /**
  * Process instance search filter.
  */
-export const zProcessInstanceFilter = zProcessInstanceFilterFields.and(z.object({
+export const zProcessInstanceFilter = /*#__PURE__*/ (() => zProcessInstanceFilterFields.and(z.object({
     $or: z.array(zProcessInstanceFilterFields).register(z.globalRegistry, {
         description: 'Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.\n\nTop-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.\n<br>\n<em>Example:</em>\n\n```json\n{\n  "state": "ACTIVE",\n  "tenantId": 123,\n  "$or": [\n    { "processDefinitionId": "process_v1" },\n    { "processDefinitionId": "process_v2", "hasIncident": true }\n  ]\n}\n```\nThis matches process instances that:\n\n<ul style="padding-left: 20px; margin-left: 20px;">\n  <li style="list-style-type: disc;">are in <em>ACTIVE</em> state</li>\n  <li style="list-style-type: disc;">have tenant id equal to <em>123</em></li>\n  <li style="list-style-type: disc;">and match either:\n    <ul style="padding-left: 20px; margin-left: 20px;">\n      <li style="list-style-type: circle;"><code>processDefinitionId</code> is <em>process_v1</em>, or</li>\n      <li style="list-style-type: circle;"><code>processDefinitionId</code> is <em>process_v2</em> and <code>hasIncident</code> is <em>true</em></li>\n    </ul>\n  </li>\n</ul>\n<br>\n<p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.\n'
     }).optional()
-}));
+})))();
 
 /**
  * The process instance filter that defines which process instances should be canceled.
  */
-export const zProcessInstanceCancellationBatchOperationRequest = z.object({
+export const zProcessInstanceCancellationBatchOperationRequest = /*#__PURE__*/ (() => z.object({
     filter: zProcessInstanceFilter,
     operationReference: zOperationReference.optional()
 }).register(z.globalRegistry, {
     description: 'The process instance filter that defines which process instances should be canceled.'
-});
+}))();
 
 /**
  * The process instance filter that defines which process instances should have their incidents resolved.
  */
-export const zProcessInstanceIncidentResolutionBatchOperationRequest = z.object({
+export const zProcessInstanceIncidentResolutionBatchOperationRequest = /*#__PURE__*/ (() => z.object({
     filter: zProcessInstanceFilter,
     operationReference: zOperationReference.optional()
 }).register(z.globalRegistry, {
     description: 'The process instance filter that defines which process instances should have their incidents resolved.'
-});
+}))();
 
 /**
  * The process instance filter that defines which process instances should be deleted.
  */
-export const zProcessInstanceDeletionBatchOperationRequest = z.object({
+export const zProcessInstanceDeletionBatchOperationRequest = /*#__PURE__*/ (() => z.object({
     filter: zProcessInstanceFilter,
     operationReference: zOperationReference.optional()
 }).register(z.globalRegistry, {
     description: 'The process instance filter that defines which process instances should be deleted.'
-});
+}))();
 
-export const zProcessInstanceMigrationBatchOperationRequest = z.object({
+export const zProcessInstanceMigrationBatchOperationRequest = /*#__PURE__*/ (() => z.object({
     filter: zProcessInstanceFilter,
     migrationPlan: zProcessInstanceMigrationBatchOperationPlan,
     operationReference: zOperationReference.optional()
-});
+}))();
 
 /**
  * The process instance filter to define on which process instances tokens should be moved,
  * and new element instances should be activated or terminated.
  *
  */
-export const zProcessInstanceModificationBatchOperationRequest = z.object({
+export const zProcessInstanceModificationBatchOperationRequest = /*#__PURE__*/ (() => z.object({
     filter: zProcessInstanceFilter,
     moveInstructions: z.array(zProcessInstanceModificationMoveBatchOperationInstruction).register(z.globalRegistry, {
         description: 'Instructions for moving tokens between elements.'
@@ -9495,39 +9495,39 @@ export const zProcessInstanceModificationBatchOperationRequest = z.object({
     operationReference: zOperationReference.optional()
 }).register(z.globalRegistry, {
     description: 'The process instance filter to define on which process instances tokens should be moved,\nand new element instances should be activated or terminated.\n'
-});
+}))();
 
 /**
  * The process instance filter that defines which process instances should be suspended.
  */
-export const zProcessInstanceSuspensionBatchOperationRequest = z.object({
+export const zProcessInstanceSuspensionBatchOperationRequest = /*#__PURE__*/ (() => z.object({
     filter: zProcessInstanceFilter,
     operationReference: zOperationReference.optional()
 }).register(z.globalRegistry, {
     description: 'The process instance filter that defines which process instances should be suspended.'
-});
+}))();
 
 /**
  * The process instance filter that defines which process instances should be resumed.
  */
-export const zProcessInstanceResumptionBatchOperationRequest = z.object({
+export const zProcessInstanceResumptionBatchOperationRequest = /*#__PURE__*/ (() => z.object({
     filter: zProcessInstanceFilter,
     operationReference: zOperationReference.optional()
 }).register(z.globalRegistry, {
     description: 'The process instance filter that defines which process instances should be resumed.'
-});
+}))();
 
 /**
  * Process instance search request.
  */
-export const zProcessInstanceSearchQuery = zSearchQueryRequest.and(z.object({
+export const zProcessInstanceSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zProcessInstanceSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zProcessInstanceFilter.optional()
 })).register(z.globalRegistry, {
     description: 'Process instance search request.'
-});
+}))();
 
 /**
  * Exact match
@@ -9539,15 +9539,15 @@ export const zUserTaskStateExactMatch = zUserTaskStateEnum;
 /**
  * UserTaskStateEnum property with full advanced search capabilities.
  */
-export const zUserTaskStateFilterProperty = z.union([
+export const zUserTaskStateFilterProperty = /*#__PURE__*/ (() => z.union([
     zUserTaskStateExactMatch,
     zAdvancedUserTaskStateFilter
-]);
+]))();
 
 /**
  * User task filter fields.
  */
-export const zUserTaskFilterFields = z.object({
+export const zUserTaskFilterFields = /*#__PURE__*/ (() => z.object({
     state: zUserTaskStateFilterProperty.optional(),
     assignee: zStringFilterProperty.optional(),
     businessId: zStringFilterProperty.optional(),
@@ -9575,28 +9575,28 @@ export const zUserTaskFilterFields = z.object({
     tags: zTagSet.optional()
 }).register(z.globalRegistry, {
     description: 'User task filter fields.'
-});
+}))();
 
 /**
  * User task filter request.
  */
-export const zUserTaskFilter = zUserTaskFilterFields.and(z.object({
+export const zUserTaskFilter = /*#__PURE__*/ (() => zUserTaskFilterFields.and(z.object({
     $or: z.array(zUserTaskFilterFields).register(z.globalRegistry, {
         description: 'Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.\n\nTop-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.\n<br>\n<em>Example:</em>\n\n```json\n{\n  "assignee": "user1",\n  "$or": [\n    { "candidateGroup": "groupA" },\n    { "candidateUser": "user2" }\n  ]\n}\n```\nThis matches user tasks that:\n\n<ul style="padding-left: 20px; margin-left: 20px;">\n  <li style="list-style-type: disc;">are assigned to <em>user1</em></li>\n  <li style="list-style-type: disc;">and match either:\n    <ul style="padding-left: 20px; margin-left: 20px;">\n      <li style="list-style-type: circle;"><code>candidateGroup</code> is <em>groupA</em>, or</li>\n      <li style="list-style-type: circle;"><code>candidateUser</code> is <em>user2</em></li>\n    </ul>\n  </li>\n</ul>\n<br>\n<p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.\n'
     }).optional()
-}));
+})))();
 
 /**
  * User task search query request.
  */
-export const zUserTaskSearchQuery = zSearchQueryRequest.and(z.object({
+export const zUserTaskSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
     sort: z.array(zUserTaskSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional(),
     filter: zUserTaskFilter.optional()
 })).register(z.globalRegistry, {
     description: 'User task search query request.'
-});
+}))();
 
 /**
  * System-generated key for an authorization.
@@ -9614,22 +9614,22 @@ export const zAuthorizationKeyWritable = zLongKey;
  * - Otherwise, if one partition is 'IN_PROGRESS', the overall state is 'IN_PROGRESS'.
  *
  */
-export const zBackupInfoWritable = z.object({
+export const zBackupInfoWritable = /*#__PURE__*/ (() => z.object({
     failureReason: z.string().nullable()
 }).register(z.globalRegistry, {
     description: 'Detailed status of a runtime backup. The aggregated state is computed from the backup\nstate of each partition as:\n- If the backup of all partitions is \'COMPLETED\', the overall state is \'COMPLETED\'.\n- If one partition is \'FAILED\', the overall state is \'FAILED\'.\n- Otherwise, if one partition is \'DOES_NOT_EXIST\', the overall state is \'INCOMPLETE\'.\n- Otherwise, if one partition is \'IN_PROGRESS\', the overall state is \'IN_PROGRESS\'.\n'
-});
+}))();
 
 /**
  * Partition Backup Info
  *
  * Detailed info of the backup for a given partition.
  */
-export const zPartitionBackupInfoWritable = z.object({
+export const zPartitionBackupInfoWritable = /*#__PURE__*/ (() => z.object({
     failureReason: z.string().nullable()
 }).register(z.globalRegistry, {
     description: 'Detailed info of the backup for a given partition.'
-});
+}))();
 
 /**
  * History Backup Info
@@ -9645,16 +9645,16 @@ export const zPartitionBackupInfoWritable = z.object({
  * configured timeout, the overall state is 'INCOMPLETE'.
  *
  */
-export const zHistoryBackupInfoWritable = z.object({
+export const zHistoryBackupInfoWritable = /*#__PURE__*/ (() => z.object({
     failureReason: z.string().nullable()
 }).register(z.globalRegistry, {
     description: 'Detailed status of a history backup. The aggregated state is computed from the state of\neach of its snapshots as:\n- If every expected snapshot exists and all are complete, the overall state is\n  \'COMPLETED\'.\n- If one snapshot failed or is partial, the overall state is \'FAILED\'.\n- Otherwise, if one snapshot is incompatible, the overall state is \'INCOMPATIBLE\'.\n- Otherwise, if one snapshot is still running, the overall state is \'IN_PROGRESS\'.\n- Otherwise, if snapshots are missing and the backup has not progressed within the\n  configured timeout, the overall state is \'INCOMPLETE\'.\n'
-});
+}))();
 
 /**
  * What a single physical tenant reports for a runtime backup id.
  */
-export const zClusterRuntimeBackupTenantInfoWritable = z.object({
+export const zClusterRuntimeBackupTenantInfoWritable = /*#__PURE__*/ (() => z.object({
     physicalTenantId: z.string().register(z.globalRegistry, {
         description: 'The id of the physical tenant.'
     }),
@@ -9665,12 +9665,12 @@ export const zClusterRuntimeBackupTenantInfoWritable = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'What a single physical tenant reports for a runtime backup id.'
-});
+}))();
 
 /**
  * A runtime backup id, what each physical tenant reports for it, and the state aggregated over every targeted tenant — folded from the per-tenant states by the same rules a per-tenant state is folded from its partitions.
  */
-export const zClusterRuntimeBackupInfoWritable = z.object({
+export const zClusterRuntimeBackupInfoWritable = /*#__PURE__*/ (() => z.object({
     backupId: zBackupId,
     state: zStateCode,
     failureReason: z.string().nullable(),
@@ -9679,12 +9679,12 @@ export const zClusterRuntimeBackupInfoWritable = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'A runtime backup id, what each physical tenant reports for it, and the state aggregated over every targeted tenant — folded from the per-tenant states by the same rules a per-tenant state is folded from its partitions.'
-});
+}))();
 
 /**
  * What a single physical tenant reports for a history backup id.
  */
-export const zClusterHistoryBackupTenantInfoWritable = z.object({
+export const zClusterHistoryBackupTenantInfoWritable = /*#__PURE__*/ (() => z.object({
     physicalTenantId: z.string().register(z.globalRegistry, {
         description: 'The id of the physical tenant.'
     }),
@@ -9695,19 +9695,19 @@ export const zClusterHistoryBackupTenantInfoWritable = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'What a single physical tenant reports for a history backup id.'
-});
+}))();
 
 /**
  * A history backup id and what each physical tenant reports for it. No cluster-level state is aggregated from the per-tenant states.
  */
-export const zClusterHistoryBackupInfoWritable = z.object({
+export const zClusterHistoryBackupInfoWritable = /*#__PURE__*/ (() => z.object({
     backupId: zBackupId,
     physicalTenants: z.array(zClusterHistoryBackupTenantInfoWritable).register(z.globalRegistry, {
         description: 'What each physical tenant reports for this backup id, ordered by physical tenant id. When looking a backup id up directly, every targeted tenant is listed, including the ones reporting `NOT_FOUND`. Within a listing, only the tenants that hold the id are listed.'
     })
 }).register(z.globalRegistry, {
     description: 'A history backup id and what each physical tenant reports for it. No cluster-level state is aggregated from the per-tenant states.'
-});
+}))();
 
 /**
  * System-generated key for a conditional evaluation.
@@ -9722,16 +9722,16 @@ export const zDeploymentKeyWritable = zLongKey;
 /**
  * List of user task event types that trigger the listener.
  */
-export const zGlobalTaskListenerEventTypesWritable = z.array(zGlobalTaskListenerEventTypeEnum).register(z.globalRegistry, {
+export const zGlobalTaskListenerEventTypesWritable = /*#__PURE__*/ (() => z.array(zGlobalTaskListenerEventTypeEnum).register(z.globalRegistry, {
     description: 'List of user task event types that trigger the listener.'
-});
+}))();
 
 /**
  * List of tags. Tags need to start with a letter; then alphanumerics, `_`, `-`, `:`, or `.`; length ≤ 100.
  */
-export const zTagSetWritable = z.array(zTag).max(10).register(z.globalRegistry, {
+export const zTagSetWritable = /*#__PURE__*/ (() => z.array(zTag).max(10).register(z.globalRegistry, {
     description: 'List of tags. Tags need to start with a letter; then alphanumerics, `_`, `-`, `:`, or `.`; length ≤ 100.'
-});
+}))();
 
 /**
  * System-generated key for a process instance.
@@ -9768,10 +9768,10 @@ export const zVariableKeyWritable = zLongKey;
  * element instance in a BPMN process or the process instance itself.
  *
  */
-export const zScopeKeyWritable = z.union([
+export const zScopeKeyWritable = /*#__PURE__*/ (() => z.union([
     zProcessInstanceKeyWritable,
     zElementInstanceKeyWritable
-]);
+]))();
 
 /**
  * System-generated key for a incident.
@@ -9801,12 +9801,12 @@ export const zDecisionRequirementsKeyWritable = zLongKey;
 /**
  * The system-assigned key for this resource.
  */
-export const zResourceKeyWritable = z.union([
+export const zResourceKeyWritable = /*#__PURE__*/ (() => z.union([
     zProcessDefinitionKeyWritable,
     zDecisionRequirementsKeyWritable,
     zFormKeyWritable,
     zDecisionDefinitionKeyWritable
-]);
+]))();
 
 /**
  * System-generated key for a deployed decision instance.
@@ -10198,9 +10198,9 @@ export const zProcessInstanceStateExactMatchWritable = zProcessInstanceStateEnum
  */
 export const zUserTaskStateExactMatchWritable = zUserTaskStateEnum;
 
-export const zGetAgentDefinitionPath = z.object({
+export const zGetAgentDefinitionPath = /*#__PURE__*/ (() => z.object({
     agentDefinitionKey: zAgentDefinitionKeyWritable
-});
+}))();
 
 /**
  * The agent definition is successfully returned.
@@ -10221,9 +10221,9 @@ export const zCreateAgentInstanceBody = zAgentInstanceCreationRequest;
  */
 export const zCreateAgentInstanceResponse = zAgentInstanceCreationResult;
 
-export const zGetAgentInstancePath = z.object({
+export const zGetAgentInstancePath = /*#__PURE__*/ (() => z.object({
     agentInstanceKey: zAgentInstanceKeyWritable
-});
+}))();
 
 /**
  * The agent instance is successfully returned.
@@ -10232,9 +10232,9 @@ export const zGetAgentInstanceResponse = zAgentInstanceResult;
 
 export const zUpdateAgentInstanceBody = zAgentInstanceUpdateRequest;
 
-export const zUpdateAgentInstancePath = z.object({
+export const zUpdateAgentInstancePath = /*#__PURE__*/ (() => z.object({
     agentInstanceKey: zAgentInstanceKeyWritable
-});
+}))();
 
 /**
  * The agent instance was updated successfully.
@@ -10250,9 +10250,9 @@ export const zSearchAgentInstancesResponse = zAgentInstanceSearchQueryResult;
 
 export const zSearchAgentInstanceHistoryBody = zAgentInstanceHistorySearchQuery;
 
-export const zSearchAgentInstanceHistoryPath = z.object({
+export const zSearchAgentInstanceHistoryPath = /*#__PURE__*/ (() => z.object({
     agentInstanceKey: zAgentInstanceKeyWritable
-});
+}))();
 
 /**
  * The agent instance history search result.
@@ -10266,9 +10266,9 @@ export const zSearchAuditLogsBody = zAuditLogSearchQueryRequest;
  */
 export const zSearchAuditLogsResponse = zAuditLogSearchQueryResult;
 
-export const zGetAuditLogPath = z.object({
+export const zGetAuditLogPath = /*#__PURE__*/ (() => z.object({
     auditLogKey: zAuditLogKeyWritable
-});
+}))();
 
 /**
  * The audit log entry is successfully returned.
@@ -10301,20 +10301,20 @@ export const zSearchAuthorizationsBody = zAuthorizationSearchQuery;
  */
 export const zSearchAuthorizationsResponse = zAuthorizationSearchResult;
 
-export const zDeleteAuthorizationPath = z.object({
+export const zDeleteAuthorizationPath = /*#__PURE__*/ (() => z.object({
     authorizationKey: zAuthorizationKeyWritable
-});
+}))();
 
 /**
  * The authorization was deleted successfully.
  */
-export const zDeleteAuthorizationResponse = z.void().register(z.globalRegistry, {
+export const zDeleteAuthorizationResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The authorization was deleted successfully.'
-});
+}))();
 
-export const zGetAuthorizationPath = z.object({
+export const zGetAuthorizationPath = /*#__PURE__*/ (() => z.object({
     authorizationKey: zAuthorizationKeyWritable
-});
+}))();
 
 /**
  * The authorization was successfully returned.
@@ -10323,27 +10323,27 @@ export const zGetAuthorizationResponse = zAuthorizationResult;
 
 export const zUpdateAuthorizationBody = zAuthorizationRequest;
 
-export const zUpdateAuthorizationPath = z.object({
+export const zUpdateAuthorizationPath = /*#__PURE__*/ (() => z.object({
     authorizationKey: zAuthorizationKeyWritable
-});
+}))();
 
 /**
  * The authorization was updated successfully.
  */
-export const zUpdateAuthorizationResponse = z.void().register(z.globalRegistry, {
+export const zUpdateAuthorizationResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The authorization was updated successfully.'
-});
+}))();
 
-export const zListRuntimeBackupsQuery = z.object({
+export const zListRuntimeBackupsQuery = /*#__PURE__*/ (() => z.object({
     prefix: zBackupIdPrefix.optional()
-});
+}))();
 
 /**
  * The list of runtime backups.
  */
-export const zListRuntimeBackupsResponse = z.array(zBackupInfo).register(z.globalRegistry, {
+export const zListRuntimeBackupsResponse = /*#__PURE__*/ (() => z.array(zBackupInfo).register(z.globalRegistry, {
     description: 'The list of runtime backups.'
-});
+}))();
 
 export const zTakeRuntimeBackupBody = zTakeRuntimeBackupRequest;
 
@@ -10355,9 +10355,9 @@ export const zTakeRuntimeBackupResponse2 = zTakeRuntimeBackupResponse;
 /**
  * The runtime backup state has been successfully reset.
  */
-export const zDeleteRuntimeBackupStateResponse = z.void().register(z.globalRegistry, {
+export const zDeleteRuntimeBackupStateResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The runtime backup state has been successfully reset.'
-});
+}))();
 
 /**
  * The runtime backup state.
@@ -10369,39 +10369,39 @@ export const zGetRuntimeBackupStateResponse = zRuntimeBackupState;
  */
 export const zSyncRuntimeBackupStateResponse = zRuntimeBackupState;
 
-export const zDeleteRuntimeBackupPath = z.object({
+export const zDeleteRuntimeBackupPath = /*#__PURE__*/ (() => z.object({
     backupId: zBackupId
-});
+}))();
 
 /**
  * The backup has been successfully deleted.
  */
-export const zDeleteRuntimeBackupResponse = z.void().register(z.globalRegistry, {
+export const zDeleteRuntimeBackupResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The backup has been successfully deleted.'
-});
+}))();
 
-export const zGetRuntimeBackupPath = z.object({
+export const zGetRuntimeBackupPath = /*#__PURE__*/ (() => z.object({
     backupId: zBackupId
-});
+}))();
 
 /**
  * The runtime backup.
  */
 export const zGetRuntimeBackupResponse = zBackupInfo;
 
-export const zListHistoryBackupsQuery = z.object({
+export const zListHistoryBackupsQuery = /*#__PURE__*/ (() => z.object({
     prefix: zBackupIdPrefix.optional(),
     verbose: z.boolean().register(z.globalRegistry, {
         description: 'Whether to ask the secondary storage for snapshot-level detail. Setting this to\n`false` makes the query cheaper, but the store then reports neither snapshot state\nnor start time, so both the per-snapshot `details` and the aggregated `state` are\nincomplete and the listing order is unspecified.\n'
     }).optional().default(true)
-});
+}))();
 
 /**
  * The list of history backups.
  */
-export const zListHistoryBackupsResponse = z.array(zHistoryBackupInfo).register(z.globalRegistry, {
+export const zListHistoryBackupsResponse = /*#__PURE__*/ (() => z.array(zHistoryBackupInfo).register(z.globalRegistry, {
     description: 'The list of history backups.'
-});
+}))();
 
 export const zTakeHistoryBackupBody = zTakeHistoryBackupRequest;
 
@@ -10410,20 +10410,20 @@ export const zTakeHistoryBackupBody = zTakeHistoryBackupRequest;
  */
 export const zTakeHistoryBackupResponse2 = zTakeHistoryBackupResponse;
 
-export const zDeleteHistoryBackupPath = z.object({
+export const zDeleteHistoryBackupPath = /*#__PURE__*/ (() => z.object({
     backupId: zBackupId
-});
+}))();
 
 /**
  * The backup has been successfully deleted.
  */
-export const zDeleteHistoryBackupResponse = z.void().register(z.globalRegistry, {
+export const zDeleteHistoryBackupResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The backup has been successfully deleted.'
-});
+}))();
 
-export const zGetHistoryBackupPath = z.object({
+export const zGetHistoryBackupPath = /*#__PURE__*/ (() => z.object({
     backupId: zBackupId
-});
+}))();
 
 /**
  * The history backup.
@@ -10444,69 +10444,69 @@ export const zSearchBatchOperationsBody = zBatchOperationSearchQuery;
  */
 export const zSearchBatchOperationsResponse = zBatchOperationSearchQueryResult;
 
-export const zGetBatchOperationPath = z.object({
+export const zGetBatchOperationPath = /*#__PURE__*/ (() => z.object({
     batchOperationKey: zBatchOperationKey
-});
+}))();
 
 /**
  * The batch operation was found.
  */
 export const zGetBatchOperationResponse = zBatchOperationResponse;
 
-export const zCancelBatchOperationBody = z.unknown();
+export const zCancelBatchOperationBody = /*#__PURE__*/ (() => z.unknown())();
 
-export const zCancelBatchOperationPath = z.object({
+export const zCancelBatchOperationPath = /*#__PURE__*/ (() => z.object({
     batchOperationKey: zBatchOperationKey
-});
+}))();
 
 /**
  * The batch operation cancel request was created.
  */
-export const zCancelBatchOperationResponse = z.void().register(z.globalRegistry, {
+export const zCancelBatchOperationResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The batch operation cancel request was created.'
-});
+}))();
 
-export const zResumeBatchOperationBody = z.unknown();
+export const zResumeBatchOperationBody = /*#__PURE__*/ (() => z.unknown())();
 
-export const zResumeBatchOperationPath = z.object({
+export const zResumeBatchOperationPath = /*#__PURE__*/ (() => z.object({
     batchOperationKey: zBatchOperationKey
-});
+}))();
 
 /**
  * The batch operation resume request was created.
  */
-export const zResumeBatchOperationResponse = z.void().register(z.globalRegistry, {
+export const zResumeBatchOperationResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The batch operation resume request was created.'
-});
+}))();
 
-export const zSuspendBatchOperationBody = z.unknown();
+export const zSuspendBatchOperationBody = /*#__PURE__*/ (() => z.unknown())();
 
-export const zSuspendBatchOperationPath = z.object({
+export const zSuspendBatchOperationPath = /*#__PURE__*/ (() => z.object({
     batchOperationKey: zBatchOperationKey
-});
+}))();
 
 /**
  * The batch operation pause request was created.
  */
-export const zSuspendBatchOperationResponse = z.void().register(z.globalRegistry, {
+export const zSuspendBatchOperationResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The batch operation pause request was created.'
-});
+}))();
 
 export const zPinClockBody = zClockPinRequest;
 
 /**
  * The clock was successfully pinned.
  */
-export const zPinClockResponse = z.void().register(z.globalRegistry, {
+export const zPinClockResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The clock was successfully pinned.'
-});
+}))();
 
 /**
  * The clock was successfully reset to the system time.
  */
-export const zResetClockResponse = z.void().register(z.globalRegistry, {
+export const zResetClockResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The clock was successfully reset to the system time.'
-});
+}))();
 
 export const zCreateGlobalClusterVariableBody = zCreateClusterVariableRequest;
 
@@ -10515,20 +10515,20 @@ export const zCreateGlobalClusterVariableBody = zCreateClusterVariableRequest;
  */
 export const zCreateGlobalClusterVariableResponse = zClusterVariableResult;
 
-export const zDeleteGlobalClusterVariablePath = z.object({
+export const zDeleteGlobalClusterVariablePath = /*#__PURE__*/ (() => z.object({
     name: zClusterVariableName
-});
+}))();
 
 /**
  * Cluster variable deleted successfully
  */
-export const zDeleteGlobalClusterVariableResponse = z.void().register(z.globalRegistry, {
+export const zDeleteGlobalClusterVariableResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'Cluster variable deleted successfully'
-});
+}))();
 
-export const zGetGlobalClusterVariablePath = z.object({
+export const zGetGlobalClusterVariablePath = /*#__PURE__*/ (() => z.object({
     name: zClusterVariableName
-});
+}))();
 
 /**
  * Cluster variable found
@@ -10537,9 +10537,9 @@ export const zGetGlobalClusterVariableResponse = zClusterVariableResult;
 
 export const zUpdateGlobalClusterVariableBody = zUpdateClusterVariableRequest;
 
-export const zUpdateGlobalClusterVariablePath = z.object({
+export const zUpdateGlobalClusterVariablePath = /*#__PURE__*/ (() => z.object({
     name: zClusterVariableName
-});
+}))();
 
 /**
  * Cluster variable updated successfully
@@ -10548,11 +10548,11 @@ export const zUpdateGlobalClusterVariableResponse = zClusterVariableResult;
 
 export const zSearchClusterVariablesBody = zClusterVariableSearchQueryRequest;
 
-export const zSearchClusterVariablesQuery = z.object({
+export const zSearchClusterVariablesQuery = /*#__PURE__*/ (() => z.object({
     truncateValues: z.boolean().register(z.globalRegistry, {
         description: 'When true (default), long variable values in the response are truncated. When false, full variable values are returned.'
     }).optional()
-});
+}))();
 
 /**
  * The cluster variable search result.
@@ -10561,31 +10561,31 @@ export const zSearchClusterVariablesResponse = zClusterVariableSearchQueryResult
 
 export const zCreateTenantClusterVariableBody = zCreateClusterVariableRequest;
 
-export const zCreateTenantClusterVariablePath = z.object({
+export const zCreateTenantClusterVariablePath = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId
-});
+}))();
 
 /**
  * Cluster variable created
  */
 export const zCreateTenantClusterVariableResponse = zClusterVariableResult;
 
-export const zDeleteTenantClusterVariablePath = z.object({
+export const zDeleteTenantClusterVariablePath = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId,
     name: zClusterVariableName
-});
+}))();
 
 /**
  * Cluster variable deleted successfully
  */
-export const zDeleteTenantClusterVariableResponse = z.void().register(z.globalRegistry, {
+export const zDeleteTenantClusterVariableResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'Cluster variable deleted successfully'
-});
+}))();
 
-export const zGetTenantClusterVariablePath = z.object({
+export const zGetTenantClusterVariablePath = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId,
     name: zClusterVariableName
-});
+}))();
 
 /**
  * Cluster variable found
@@ -10594,10 +10594,10 @@ export const zGetTenantClusterVariableResponse = zClusterVariableResult;
 
 export const zUpdateTenantClusterVariableBody = zUpdateClusterVariableRequest;
 
-export const zUpdateTenantClusterVariablePath = z.object({
+export const zUpdateTenantClusterVariablePath = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId,
     name: zClusterVariableName
-});
+}))();
 
 /**
  * Cluster variable updated successfully
@@ -10632,25 +10632,25 @@ export const zSearchDecisionDefinitionsBody = zDecisionDefinitionSearchQuery;
  */
 export const zSearchDecisionDefinitionsResponse = zDecisionDefinitionSearchQueryResult;
 
-export const zGetDecisionDefinitionPath = z.object({
+export const zGetDecisionDefinitionPath = /*#__PURE__*/ (() => z.object({
     decisionDefinitionKey: zDecisionDefinitionKeyWritable
-});
+}))();
 
 /**
  * The decision definition is successfully returned.
  */
 export const zGetDecisionDefinitionResponse = zDecisionDefinitionResult;
 
-export const zGetDecisionDefinitionXmlPath = z.object({
+export const zGetDecisionDefinitionXmlPath = /*#__PURE__*/ (() => z.object({
     decisionDefinitionKey: zDecisionDefinitionKeyWritable
-});
+}))();
 
 /**
  * The XML of the decision definition is successfully returned.
  */
-export const zGetDecisionDefinitionXmlResponse = z.string().register(z.globalRegistry, {
+export const zGetDecisionDefinitionXmlResponse = /*#__PURE__*/ (() => z.string().register(z.globalRegistry, {
     description: 'The XML of the decision definition is successfully returned.'
-});
+}))();
 
 export const zSearchDecisionInstancesBody = zDecisionInstanceSearchQuery;
 
@@ -10659,9 +10659,9 @@ export const zSearchDecisionInstancesBody = zDecisionInstanceSearchQuery;
  */
 export const zSearchDecisionInstancesResponse = zDecisionInstanceSearchQueryResult;
 
-export const zGetDecisionInstancePath = z.object({
+export const zGetDecisionInstancePath = /*#__PURE__*/ (() => z.object({
     decisionEvaluationInstanceKey: zDecisionEvaluationInstanceKey
-});
+}))();
 
 /**
  * The decision instance is successfully returned.
@@ -10670,16 +10670,16 @@ export const zGetDecisionInstanceResponse = zDecisionInstanceGetQueryResult;
 
 export const zDeleteDecisionInstanceBody = zDeleteDecisionInstanceRequest;
 
-export const zDeleteDecisionInstancePath = z.object({
+export const zDeleteDecisionInstancePath = /*#__PURE__*/ (() => z.object({
     decisionEvaluationKey: zDecisionEvaluationKeyWritable
-});
+}))();
 
 /**
  * The decision instance is marked for deletion.
  */
-export const zDeleteDecisionInstanceResponse = z.void().register(z.globalRegistry, {
+export const zDeleteDecisionInstanceResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The decision instance is marked for deletion.'
-});
+}))();
 
 export const zDeleteDecisionInstancesBatchOperationBody = zDecisionInstanceDeletionBatchOperationRequest;
 
@@ -10695,27 +10695,27 @@ export const zSearchDecisionRequirementsBody = zDecisionRequirementsSearchQuery;
  */
 export const zSearchDecisionRequirementsResponse = zDecisionRequirementsSearchQueryResult;
 
-export const zGetDecisionRequirementsPath = z.object({
+export const zGetDecisionRequirementsPath = /*#__PURE__*/ (() => z.object({
     decisionRequirementsKey: zDecisionRequirementsKeyWritable
-});
+}))();
 
 /**
  * The decision requirements is successfully returned.
  */
 export const zGetDecisionRequirementsResponse = zDecisionRequirementsResult;
 
-export const zGetDecisionRequirementsXmlPath = z.object({
+export const zGetDecisionRequirementsXmlPath = /*#__PURE__*/ (() => z.object({
     decisionRequirementsKey: zDecisionRequirementsKeyWritable
-});
+}))();
 
 /**
  * The XML of the decision requirements is successfully returned.
  */
-export const zGetDecisionRequirementsXmlResponse = z.string().register(z.globalRegistry, {
+export const zGetDecisionRequirementsXmlResponse = /*#__PURE__*/ (() => z.string().register(z.globalRegistry, {
     description: 'The XML of the decision requirements is successfully returned.'
-});
+}))();
 
-export const zCreateDeploymentBody = z.object({
+export const zCreateDeploymentBody = /*#__PURE__*/ (() => z.object({
     resources: z.array(
             z.any().refine(
                 (v) => (typeof File !== 'undefined' && v instanceof File),
@@ -10723,101 +10723,101 @@ export const zCreateDeploymentBody = z.object({
             )
         ).nonempty().register(z.globalRegistry, {}),
     tenantId: zTenantId.optional()
-});
+}))();
 
 /**
  * The resources are deployed.
  */
 export const zCreateDeploymentResponse = zDeploymentResult;
 
-export const zCreateDocumentBody = z.object({
+export const zCreateDocumentBody = /*#__PURE__*/ (() => z.object({
     file: z.string(),
     metadata: zDocumentMetadata.optional()
-});
+}))();
 
-export const zCreateDocumentQuery = z.object({
+export const zCreateDocumentQuery = /*#__PURE__*/ (() => z.object({
     storeId: z.string().register(z.globalRegistry, {
         description: 'The ID of the document store to upload the documents to. Currently, only a single document store is supported per cluster. However, this attribute is included to allow for potential future support of multiple document stores.'
     }).optional(),
     documentId: zDocumentId.optional()
-});
+}))();
 
 /**
  * The document was uploaded successfully.
  */
 export const zCreateDocumentResponse = zDocumentReference;
 
-export const zCreateDocumentsBody = z.object({
+export const zCreateDocumentsBody = /*#__PURE__*/ (() => z.object({
     files: z.array(z.string()).min(1).register(z.globalRegistry, {
         description: 'The documents to upload.'
     }),
     metadataList: z.array(zDocumentMetadata).register(z.globalRegistry, {
         description: 'Optional JSON array of metadata object whose index aligns with each file entry. The metadata array must have the same length as the files array.\n'
     }).optional()
-});
+}))();
 
-export const zCreateDocumentsQuery = z.object({
+export const zCreateDocumentsQuery = /*#__PURE__*/ (() => z.object({
     storeId: z.string().register(z.globalRegistry, {
         description: 'The ID of the document store to upload the documents to. Currently, only a single document store is supported per cluster. However, this attribute is included to allow for potential future support of multiple document stores.'
     }).optional()
-});
+}))();
 
 /**
  * All documents were uploaded successfully.
  */
 export const zCreateDocumentsResponse = zDocumentCreationBatchResponse;
 
-export const zDeleteDocumentPath = z.object({
+export const zDeleteDocumentPath = /*#__PURE__*/ (() => z.object({
     documentId: zDocumentId
-});
+}))();
 
-export const zDeleteDocumentQuery = z.object({
+export const zDeleteDocumentQuery = /*#__PURE__*/ (() => z.object({
     storeId: z.string().register(z.globalRegistry, {
         description: 'The ID of the document store to delete the document from.'
     }).optional()
-});
+}))();
 
 /**
  * The document was deleted successfully.
  */
-export const zDeleteDocumentResponse = z.void().register(z.globalRegistry, {
+export const zDeleteDocumentResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The document was deleted successfully.'
-});
+}))();
 
-export const zGetDocumentPath = z.object({
+export const zGetDocumentPath = /*#__PURE__*/ (() => z.object({
     documentId: zDocumentId
-});
+}))();
 
-export const zGetDocumentQuery = z.object({
+export const zGetDocumentQuery = /*#__PURE__*/ (() => z.object({
     storeId: z.string().register(z.globalRegistry, {
         description: 'The ID of the document store to download the document from.'
     }).optional(),
     contentHash: z.string().register(z.globalRegistry, {
         description: 'The hash of the document content that was computed by the document store during upload. The hash is part of the document reference that is returned when uploading a document. If the client fails to provide the correct hash, the request will be rejected.\n'
     }).optional()
-});
+}))();
 
 /**
  * The document was downloaded successfully.
  */
-export const zGetDocumentResponse = z.string().register(z.globalRegistry, {
+export const zGetDocumentResponse = /*#__PURE__*/ (() => z.string().register(z.globalRegistry, {
     description: 'The document was downloaded successfully.'
-});
+}))();
 
 export const zCreateDocumentLinkBody = zDocumentLinkRequest;
 
-export const zCreateDocumentLinkPath = z.object({
+export const zCreateDocumentLinkPath = /*#__PURE__*/ (() => z.object({
     documentId: zDocumentId
-});
+}))();
 
-export const zCreateDocumentLinkQuery = z.object({
+export const zCreateDocumentLinkQuery = /*#__PURE__*/ (() => z.object({
     storeId: z.string().register(z.globalRegistry, {
         description: 'The ID of the document store where the document is located.'
     }).optional(),
     contentHash: z.string().register(z.globalRegistry, {
         description: 'The hash of the document content that was computed by the document store during upload. The hash is part of the document reference that is returned when uploading a document. If the client fails to provide the correct hash, the request will be rejected.\n'
     }).optional()
-});
+}))();
 
 /**
  * The document link was created successfully.
@@ -10826,16 +10826,16 @@ export const zCreateDocumentLinkResponse = zDocumentLink;
 
 export const zActivateAdHocSubProcessActivitiesBody = zAdHocSubProcessActivateActivitiesInstruction;
 
-export const zActivateAdHocSubProcessActivitiesPath = z.object({
+export const zActivateAdHocSubProcessActivitiesPath = /*#__PURE__*/ (() => z.object({
     adHocSubProcessInstanceKey: zElementInstanceKeyWritable
-});
+}))();
 
 /**
  * The ad-hoc sub-process instance is modified.
  */
-export const zActivateAdHocSubProcessActivitiesResponse = z.void().register(z.globalRegistry, {
+export const zActivateAdHocSubProcessActivitiesResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The ad-hoc sub-process instance is modified.'
-});
+}))();
 
 export const zSearchElementInstanceWaitStatesBody = zElementInstanceWaitStateQuery;
 
@@ -10851,9 +10851,9 @@ export const zSearchElementInstancesBody = zElementInstanceSearchQuery;
  */
 export const zSearchElementInstancesResponse = zElementInstanceSearchQueryResult;
 
-export const zGetElementInstancePath = z.object({
+export const zGetElementInstancePath = /*#__PURE__*/ (() => z.object({
     elementInstanceKey: zElementInstanceKeyWritable
-});
+}))();
 
 /**
  * The element instance is successfully returned.
@@ -10862,9 +10862,9 @@ export const zGetElementInstanceResponse = zElementInstanceResult;
 
 export const zSearchElementInstanceIncidentsBody = zIncidentSearchQuery;
 
-export const zSearchElementInstanceIncidentsPath = z.object({
+export const zSearchElementInstanceIncidentsPath = /*#__PURE__*/ (() => z.object({
     elementInstanceKey: zElementInstanceKeyWritable
-});
+}))();
 
 /**
  * The element instance incident search result.
@@ -10873,41 +10873,41 @@ export const zSearchElementInstanceIncidentsResponse = zIncidentSearchQueryResul
 
 export const zCreateElementInstanceVariablesBody = zSetVariableRequest;
 
-export const zCreateElementInstanceVariablesPath = z.object({
+export const zCreateElementInstanceVariablesPath = /*#__PURE__*/ (() => z.object({
     elementInstanceKey: zElementInstanceKeyWritable
-});
+}))();
 
 /**
  * The variables were updated.
  */
-export const zCreateElementInstanceVariablesResponse = z.void().register(z.globalRegistry, {
+export const zCreateElementInstanceVariablesResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The variables were updated.'
-});
+}))();
 
 /**
  * The current exporting status of the physical tenant.
  */
 export const zGetExportingStatusResponse = zExportingStatusResponse;
 
-export const zPauseExportingQuery = z.object({
+export const zPauseExportingQuery = /*#__PURE__*/ (() => z.object({
     soft: z.boolean().register(z.globalRegistry, {
         description: 'If true, soft-pauses exporting instead of a hard pause.'
     }).optional().default(false)
-});
+}))();
 
 /**
  * Exporting was successfully paused.
  */
-export const zPauseExportingResponse = z.void().register(z.globalRegistry, {
+export const zPauseExportingResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'Exporting was successfully paused.'
-});
+}))();
 
 /**
  * Exporting was successfully resumed.
  */
-export const zResumeExportingResponse = z.void().register(z.globalRegistry, {
+export const zResumeExportingResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'Exporting was successfully resumed.'
-});
+}))();
 
 export const zEvaluateExpressionBody = zExpressionEvaluationRequest;
 
@@ -10916,9 +10916,9 @@ export const zEvaluateExpressionBody = zExpressionEvaluationRequest;
  */
 export const zEvaluateExpressionResponse = zExpressionEvaluationResult;
 
-export const zGetFormByKeyPath = z.object({
+export const zGetFormByKeyPath = /*#__PURE__*/ (() => z.object({
     formKey: zFormKeyWritable
-});
+}))();
 
 /**
  * The form is successfully returned.
@@ -10932,20 +10932,20 @@ export const zCreateGlobalTaskListenerBody = zCreateGlobalTaskListenerRequest;
  */
 export const zCreateGlobalTaskListenerResponse = zGlobalTaskListenerResult;
 
-export const zDeleteGlobalTaskListenerPath = z.object({
+export const zDeleteGlobalTaskListenerPath = /*#__PURE__*/ (() => z.object({
     id: zGlobalListenerId
-});
+}))();
 
 /**
  * The global listener was deleted successfully.
  */
-export const zDeleteGlobalTaskListenerResponse = z.void().register(z.globalRegistry, {
+export const zDeleteGlobalTaskListenerResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The global listener was deleted successfully.'
-});
+}))();
 
-export const zGetGlobalTaskListenerPath = z.object({
+export const zGetGlobalTaskListenerPath = /*#__PURE__*/ (() => z.object({
     id: zGlobalListenerId
-});
+}))();
 
 /**
  * The global user task listener is successfully returned.
@@ -10954,9 +10954,9 @@ export const zGetGlobalTaskListenerResponse = zGlobalTaskListenerResult;
 
 export const zUpdateGlobalTaskListenerBody = zUpdateGlobalTaskListenerRequest;
 
-export const zUpdateGlobalTaskListenerPath = z.object({
+export const zUpdateGlobalTaskListenerPath = /*#__PURE__*/ (() => z.object({
     id: zGlobalListenerId
-});
+}))();
 
 /**
  * The global listener was updated successfully.
@@ -10984,20 +10984,20 @@ export const zSearchGroupsBody = zGroupSearchQueryRequest;
  */
 export const zSearchGroupsResponse = zGroupSearchQueryResult;
 
-export const zDeleteGroupPath = z.object({
+export const zDeleteGroupPath = /*#__PURE__*/ (() => z.object({
     groupId: zGroupId
-});
+}))();
 
 /**
  * The group was deleted successfully.
  */
-export const zDeleteGroupResponse = z.void().register(z.globalRegistry, {
+export const zDeleteGroupResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The group was deleted successfully.'
-});
+}))();
 
-export const zGetGroupPath = z.object({
+export const zGetGroupPath = /*#__PURE__*/ (() => z.object({
     groupId: zGroupId
-});
+}))();
 
 /**
  * The group is successfully returned.
@@ -11006,9 +11006,9 @@ export const zGetGroupResponse = zGroupResult;
 
 export const zUpdateGroupBody = zGroupUpdateRequest;
 
-export const zUpdateGroupPath = z.object({
+export const zUpdateGroupPath = /*#__PURE__*/ (() => z.object({
     groupId: zGroupId
-});
+}))();
 
 /**
  * The group was updated successfully.
@@ -11017,79 +11017,79 @@ export const zUpdateGroupResponse = zGroupUpdateResult;
 
 export const zSearchClientsForGroupBody = zGroupClientSearchQueryRequest;
 
-export const zSearchClientsForGroupPath = z.object({
+export const zSearchClientsForGroupPath = /*#__PURE__*/ (() => z.object({
     groupId: zGroupId
-});
+}))();
 
 /**
  * The clients assigned to the group.
  */
 export const zSearchClientsForGroupResponse = zGroupClientSearchResult;
 
-export const zUnassignClientFromGroupPath = z.object({
+export const zUnassignClientFromGroupPath = /*#__PURE__*/ (() => z.object({
     groupId: zGroupId,
     clientId: zClientId
-});
+}))();
 
 /**
  * The client was unassigned successfully from the group.
  */
-export const zUnassignClientFromGroupResponse = z.void().register(z.globalRegistry, {
+export const zUnassignClientFromGroupResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The client was unassigned successfully from the group.'
-});
+}))();
 
-export const zAssignClientToGroupPath = z.object({
+export const zAssignClientToGroupPath = /*#__PURE__*/ (() => z.object({
     groupId: zGroupId,
     clientId: zClientId
-});
+}))();
 
 /**
  * The client was assigned successfully to the group.
  */
-export const zAssignClientToGroupResponse = z.void().register(z.globalRegistry, {
+export const zAssignClientToGroupResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The client was assigned successfully to the group.'
-});
+}))();
 
 export const zSearchMappingRulesForGroupBody = zMappingRuleSearchQueryRequest;
 
-export const zSearchMappingRulesForGroupPath = z.object({
+export const zSearchMappingRulesForGroupPath = /*#__PURE__*/ (() => z.object({
     groupId: zGroupId
-});
+}))();
 
 /**
  * The mapping rules assigned to the group.
  */
 export const zSearchMappingRulesForGroupResponse = zGroupMappingRuleSearchResult;
 
-export const zUnassignMappingRuleFromGroupPath = z.object({
+export const zUnassignMappingRuleFromGroupPath = /*#__PURE__*/ (() => z.object({
     groupId: zGroupId,
     mappingRuleId: zMappingRuleId
-});
+}))();
 
 /**
  * The mapping rule was unassigned successfully from the group.
  */
-export const zUnassignMappingRuleFromGroupResponse = z.void().register(z.globalRegistry, {
+export const zUnassignMappingRuleFromGroupResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The mapping rule was unassigned successfully from the group.'
-});
+}))();
 
-export const zAssignMappingRuleToGroupPath = z.object({
+export const zAssignMappingRuleToGroupPath = /*#__PURE__*/ (() => z.object({
     groupId: zGroupId,
     mappingRuleId: zMappingRuleId
-});
+}))();
 
 /**
  * The mapping rule was assigned successfully to the group.
  */
-export const zAssignMappingRuleToGroupResponse = z.void().register(z.globalRegistry, {
+export const zAssignMappingRuleToGroupResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The mapping rule was assigned successfully to the group.'
-});
+}))();
 
 export const zSearchRolesForGroupBody = zRoleSearchQueryRequest;
 
-export const zSearchRolesForGroupPath = z.object({
+export const zSearchRolesForGroupPath = /*#__PURE__*/ (() => z.object({
     groupId: zGroupId
-});
+}))();
 
 /**
  * The roles assigned to the group.
@@ -11098,38 +11098,38 @@ export const zSearchRolesForGroupResponse = zGroupRoleSearchResult;
 
 export const zSearchUsersForGroupBody = zGroupUserSearchQueryRequest;
 
-export const zSearchUsersForGroupPath = z.object({
+export const zSearchUsersForGroupPath = /*#__PURE__*/ (() => z.object({
     groupId: zGroupId
-});
+}))();
 
 /**
  * The users assigned to the group.
  */
 export const zSearchUsersForGroupResponse = zGroupUserSearchResult;
 
-export const zUnassignUserFromGroupPath = z.object({
+export const zUnassignUserFromGroupPath = /*#__PURE__*/ (() => z.object({
     groupId: zGroupId,
     username: zUsername
-});
+}))();
 
 /**
  * The user was unassigned successfully from the group.
  */
-export const zUnassignUserFromGroupResponse = z.void().register(z.globalRegistry, {
+export const zUnassignUserFromGroupResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The user was unassigned successfully from the group.'
-});
+}))();
 
-export const zAssignUserToGroupPath = z.object({
+export const zAssignUserToGroupPath = /*#__PURE__*/ (() => z.object({
     groupId: zGroupId,
     username: zUsername
-});
+}))();
 
 /**
  * The user was assigned successfully to the group.
  */
-export const zAssignUserToGroupResponse = z.void().register(z.globalRegistry, {
+export const zAssignUserToGroupResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The user was assigned successfully to the group.'
-});
+}))();
 
 export const zSearchIncidentsBody = zIncidentSearchQuery;
 
@@ -11138,9 +11138,9 @@ export const zSearchIncidentsBody = zIncidentSearchQuery;
  */
 export const zSearchIncidentsResponse = zIncidentSearchQueryResult;
 
-export const zGetIncidentPath = z.object({
+export const zGetIncidentPath = /*#__PURE__*/ (() => z.object({
     incidentKey: zIncidentKeyWritable
-});
+}))();
 
 /**
  * The incident is successfully returned.
@@ -11149,16 +11149,16 @@ export const zGetIncidentResponse = zIncidentResult;
 
 export const zResolveIncidentBody = zIncidentResolutionRequest;
 
-export const zResolveIncidentPath = z.object({
+export const zResolveIncidentPath = /*#__PURE__*/ (() => z.object({
     incidentKey: zIncidentKeyWritable
-});
+}))();
 
 /**
  * The incident is marked as resolved.
  */
-export const zResolveIncidentResponse = z.void().register(z.globalRegistry, {
+export const zResolveIncidentResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The incident is marked as resolved.'
-});
+}))();
 
 export const zGetProcessInstanceStatisticsByDefinitionBody = zIncidentProcessInstanceStatisticsByDefinitionQuery;
 
@@ -11194,55 +11194,55 @@ export const zSearchJobsResponse = zJobSearchQueryResult;
 
 export const zUpdateJobBody = zJobUpdateRequest;
 
-export const zUpdateJobPath = z.object({
+export const zUpdateJobPath = /*#__PURE__*/ (() => z.object({
     jobKey: zJobKeyWritable
-});
+}))();
 
 /**
  * The job was updated successfully.
  */
-export const zUpdateJobResponse = z.void().register(z.globalRegistry, {
+export const zUpdateJobResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The job was updated successfully.'
-});
+}))();
 
 export const zCompleteJobBody = zJobCompletionRequest;
 
-export const zCompleteJobPath = z.object({
+export const zCompleteJobPath = /*#__PURE__*/ (() => z.object({
     jobKey: zJobKeyWritable
-});
+}))();
 
 /**
  * The job was completed successfully.
  */
-export const zCompleteJobResponse = z.void().register(z.globalRegistry, {
+export const zCompleteJobResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The job was completed successfully.'
-});
+}))();
 
 export const zThrowJobErrorBody = zJobErrorRequest;
 
-export const zThrowJobErrorPath = z.object({
+export const zThrowJobErrorPath = /*#__PURE__*/ (() => z.object({
     jobKey: zJobKeyWritable
-});
+}))();
 
 /**
  * An error is thrown for the job.
  */
-export const zThrowJobErrorResponse = z.void().register(z.globalRegistry, {
+export const zThrowJobErrorResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'An error is thrown for the job.'
-});
+}))();
 
 export const zFailJobBody = zJobFailRequest;
 
-export const zFailJobPath = z.object({
+export const zFailJobPath = /*#__PURE__*/ (() => z.object({
     jobKey: zJobKeyWritable
-});
+}))();
 
 /**
  * The job is failed.
  */
-export const zFailJobResponse = z.void().register(z.globalRegistry, {
+export const zFailJobResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The job is failed.'
-});
+}))();
 
 export const zUpdateJobsBatchOperationBody = zJobBatchUpdateRequest;
 
@@ -11251,7 +11251,7 @@ export const zUpdateJobsBatchOperationBody = zJobBatchUpdateRequest;
  */
 export const zUpdateJobsBatchOperationResponse = zBatchOperationCreatedResult;
 
-export const zGetGlobalJobStatisticsQuery = z.object({
+export const zGetGlobalJobStatisticsQuery = /*#__PURE__*/ (() => z.object({
     from: z.iso.datetime().register(z.globalRegistry, {
         description: 'Start of the time window to filter metrics. ISO 8601 date-time format.\n'
     }),
@@ -11261,7 +11261,7 @@ export const zGetGlobalJobStatisticsQuery = z.object({
     jobType: z.string().register(z.globalRegistry, {
         description: 'Optional job type to limit the aggregation to a single job type.'
     }).optional()
-});
+}))();
 
 /**
  * Global job metrics
@@ -11315,20 +11315,20 @@ export const zSearchMappingRuleBody = zMappingRuleSearchQueryRequest;
  */
 export const zSearchMappingRuleResponse = zMappingRuleSearchQueryResult;
 
-export const zDeleteMappingRulePath = z.object({
+export const zDeleteMappingRulePath = /*#__PURE__*/ (() => z.object({
     mappingRuleId: zMappingRuleId
-});
+}))();
 
 /**
  * The mapping rule was deleted successfully.
  */
-export const zDeleteMappingRuleResponse = z.void().register(z.globalRegistry, {
+export const zDeleteMappingRuleResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The mapping rule was deleted successfully.'
-});
+}))();
 
-export const zGetMappingRulePath = z.object({
+export const zGetMappingRulePath = /*#__PURE__*/ (() => z.object({
     mappingRuleId: zMappingRuleId
-});
+}))();
 
 /**
  * The mapping rule was returned successfully.
@@ -11337,9 +11337,9 @@ export const zGetMappingRuleResponse = zMappingRuleResult;
 
 export const zUpdateMappingRuleBody = zMappingRuleUpdateRequest;
 
-export const zUpdateMappingRulePath = z.object({
+export const zUpdateMappingRulePath = /*#__PURE__*/ (() => z.object({
     mappingRuleId: zMappingRuleId
-});
+}))();
 
 /**
  * The mapping rule was updated successfully.
@@ -11388,31 +11388,31 @@ export const zGetProcessDefinitionInstanceStatisticsBody = zProcessDefinitionIns
  */
 export const zGetProcessDefinitionInstanceStatisticsResponse = zProcessDefinitionInstanceStatisticsQueryResult;
 
-export const zGetProcessDefinitionPath = z.object({
+export const zGetProcessDefinitionPath = /*#__PURE__*/ (() => z.object({
     processDefinitionKey: zProcessDefinitionKeyWritable
-});
+}))();
 
 /**
  * The process definition is successfully returned.
  */
 export const zGetProcessDefinitionResponse = zProcessDefinitionResult;
 
-export const zGetStartProcessFormPath = z.object({
+export const zGetStartProcessFormPath = /*#__PURE__*/ (() => z.object({
     processDefinitionKey: zProcessDefinitionKeyWritable
-});
+}))();
 
-export const zGetStartProcessFormResponse = z.union([
+export const zGetStartProcessFormResponse = /*#__PURE__*/ (() => z.union([
     zFormResult,
     z.void().register(z.globalRegistry, {
         description: 'The process was found, but no form is associated with it.'
     })
-]);
+]))();
 
 export const zGetProcessDefinitionStatisticsBody = zProcessDefinitionElementStatisticsQuery;
 
-export const zGetProcessDefinitionStatisticsPath = z.object({
+export const zGetProcessDefinitionStatisticsPath = /*#__PURE__*/ (() => z.object({
     processDefinitionKey: zProcessDefinitionKeyWritable
-});
+}))();
 
 /**
  * The process definition statistics result.
@@ -11421,25 +11421,25 @@ export const zGetProcessDefinitionStatisticsResponse = zProcessDefinitionElement
 
 export const zSearchProcessDefinitionVariableNamesBody = zProcessDefinitionVariableNameSearchQuery;
 
-export const zSearchProcessDefinitionVariableNamesPath = z.object({
+export const zSearchProcessDefinitionVariableNamesPath = /*#__PURE__*/ (() => z.object({
     processDefinitionKey: zProcessDefinitionKeyWritable
-});
+}))();
 
 /**
  * The process definition variable name search result.
  */
 export const zSearchProcessDefinitionVariableNamesResponse = zProcessDefinitionVariableNameSearchQueryResult;
 
-export const zGetProcessDefinitionXmlPath = z.object({
+export const zGetProcessDefinitionXmlPath = /*#__PURE__*/ (() => z.object({
     processDefinitionKey: zProcessDefinitionKeyWritable
-});
+}))();
 
 /**
  * The XML of the process definition is successfully returned.
  */
-export const zGetProcessDefinitionXmlResponse = z.string().register(z.globalRegistry, {
+export const zGetProcessDefinitionXmlResponse = /*#__PURE__*/ (() => z.string().register(z.globalRegistry, {
     description: 'The XML of the process definition is successfully returned.'
-});
+}))();
 
 export const zGetProcessDefinitionInstanceVersionStatisticsBody = zProcessDefinitionInstanceVersionStatisticsQuery;
 
@@ -11511,9 +11511,9 @@ export const zSuspendProcessInstancesBatchOperationBody = zProcessInstanceSuspen
  */
 export const zSuspendProcessInstancesBatchOperationResponse = zBatchOperationCreatedResult;
 
-export const zGetProcessInstancePath = z.object({
+export const zGetProcessInstancePath = /*#__PURE__*/ (() => z.object({
     processInstanceKey: zProcessInstanceKeyWritable
-});
+}))();
 
 /**
  * The process instance is successfully returned.
@@ -11522,57 +11522,57 @@ export const zGetProcessInstanceResponse = zProcessInstanceResult;
 
 export const zAssignProcessInstanceBusinessIdBody = zProcessInstanceBusinessIdAssignmentInstruction;
 
-export const zAssignProcessInstanceBusinessIdPath = z.object({
+export const zAssignProcessInstanceBusinessIdPath = /*#__PURE__*/ (() => z.object({
     processInstanceKey: zProcessInstanceKeyWritable
-});
+}))();
 
 /**
  * The business id is assigned to the process instance.
  */
-export const zAssignProcessInstanceBusinessIdResponse = z.void().register(z.globalRegistry, {
+export const zAssignProcessInstanceBusinessIdResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The business id is assigned to the process instance.'
-});
+}))();
 
-export const zGetProcessInstanceCallHierarchyPath = z.object({
+export const zGetProcessInstanceCallHierarchyPath = /*#__PURE__*/ (() => z.object({
     processInstanceKey: zProcessInstanceKeyWritable
-});
+}))();
 
 /**
  * The call hierarchy is successfully returned.
  */
-export const zGetProcessInstanceCallHierarchyResponse = z.array(zProcessInstanceCallHierarchyEntry).register(z.globalRegistry, {
+export const zGetProcessInstanceCallHierarchyResponse = /*#__PURE__*/ (() => z.array(zProcessInstanceCallHierarchyEntry).register(z.globalRegistry, {
     description: 'The call hierarchy is successfully returned.'
-});
+}))();
 
 export const zCancelProcessInstanceBody = zCancelProcessInstanceRequest;
 
-export const zCancelProcessInstancePath = z.object({
+export const zCancelProcessInstancePath = /*#__PURE__*/ (() => z.object({
     processInstanceKey: zProcessInstanceKeyWritable
-});
+}))();
 
 /**
  * The process instance is canceled.
  */
-export const zCancelProcessInstanceResponse = z.void().register(z.globalRegistry, {
+export const zCancelProcessInstanceResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The process instance is canceled.'
-});
+}))();
 
 export const zDeleteProcessInstanceBody = zDeleteProcessInstanceRequest;
 
-export const zDeleteProcessInstancePath = z.object({
+export const zDeleteProcessInstancePath = /*#__PURE__*/ (() => z.object({
     processInstanceKey: zProcessInstanceKeyWritable
-});
+}))();
 
 /**
  * The process instance is marked for deletion.
  */
-export const zDeleteProcessInstanceResponse = z.void().register(z.globalRegistry, {
+export const zDeleteProcessInstanceResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The process instance is marked for deletion.'
-});
+}))();
 
-export const zResolveProcessInstanceIncidentsPath = z.object({
+export const zResolveProcessInstanceIncidentsPath = /*#__PURE__*/ (() => z.object({
     processInstanceKey: zProcessInstanceKeyWritable
-});
+}))();
 
 /**
  * The batch operation request for incident resolution was created.
@@ -11581,9 +11581,9 @@ export const zResolveProcessInstanceIncidentsResponse = zBatchOperationCreatedRe
 
 export const zSearchProcessInstanceIncidentsBody = zIncidentSearchQuery;
 
-export const zSearchProcessInstanceIncidentsPath = z.object({
+export const zSearchProcessInstanceIncidentsPath = /*#__PURE__*/ (() => z.object({
     processInstanceKey: zProcessInstanceKeyWritable
-});
+}))();
 
 /**
  * The process instance search result.
@@ -11592,64 +11592,64 @@ export const zSearchProcessInstanceIncidentsResponse = zIncidentSearchQueryResul
 
 export const zMigrateProcessInstanceBody = zProcessInstanceMigrationInstruction;
 
-export const zMigrateProcessInstancePath = z.object({
+export const zMigrateProcessInstancePath = /*#__PURE__*/ (() => z.object({
     processInstanceKey: zProcessInstanceKeyWritable
-});
+}))();
 
 /**
  * The process instance is migrated.
  */
-export const zMigrateProcessInstanceResponse = z.void().register(z.globalRegistry, {
+export const zMigrateProcessInstanceResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The process instance is migrated.'
-});
+}))();
 
 export const zModifyProcessInstanceBody = zProcessInstanceModificationInstruction;
 
-export const zModifyProcessInstancePath = z.object({
+export const zModifyProcessInstancePath = /*#__PURE__*/ (() => z.object({
     processInstanceKey: zProcessInstanceKeyWritable
-});
+}))();
 
 /**
  * The process instance is modified.
  */
-export const zModifyProcessInstanceResponse = z.void().register(z.globalRegistry, {
+export const zModifyProcessInstanceResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The process instance is modified.'
-});
+}))();
 
 export const zResumeProcessInstanceBody = zResumeProcessInstanceRequest;
 
-export const zResumeProcessInstancePath = z.object({
+export const zResumeProcessInstancePath = /*#__PURE__*/ (() => z.object({
     processInstanceKey: zProcessInstanceKeyWritable
-});
+}))();
 
 /**
  * The process instance is resumed.
  */
-export const zResumeProcessInstanceResponse = z.void().register(z.globalRegistry, {
+export const zResumeProcessInstanceResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The process instance is resumed.'
-});
+}))();
 
-export const zGetProcessInstanceSequenceFlowsPath = z.object({
+export const zGetProcessInstanceSequenceFlowsPath = /*#__PURE__*/ (() => z.object({
     processInstanceKey: zProcessInstanceKeyWritable
-});
+}))();
 
 /**
  * The process instance sequence flows result.
  */
 export const zGetProcessInstanceSequenceFlowsResponse = zProcessInstanceSequenceFlowsQueryResult;
 
-export const zGetProcessInstanceStatisticsPath = z.object({
+export const zGetProcessInstanceStatisticsPath = /*#__PURE__*/ (() => z.object({
     processInstanceKey: zProcessInstanceKeyWritable
-});
+}))();
 
 /**
  * The process instance statistics result.
  */
 export const zGetProcessInstanceStatisticsResponse = zProcessInstanceElementStatisticsQueryResult;
 
-export const zGetProcessInstanceWaitStateStatisticsPath = z.object({
+export const zGetProcessInstanceWaitStateStatisticsPath = /*#__PURE__*/ (() => z.object({
     processInstanceKey: zProcessInstanceKeyWritable
-});
+}))();
 
 /**
  * The process instance wait state statistics result.
@@ -11658,16 +11658,16 @@ export const zGetProcessInstanceWaitStateStatisticsResponse = zProcessInstanceWa
 
 export const zSuspendProcessInstanceBody = zSuspendProcessInstanceRequest;
 
-export const zSuspendProcessInstancePath = z.object({
+export const zSuspendProcessInstancePath = /*#__PURE__*/ (() => z.object({
     processInstanceKey: zProcessInstanceKeyWritable
-});
+}))();
 
 /**
  * The process instance is suspended.
  */
-export const zSuspendProcessInstanceResponse = z.void().register(z.globalRegistry, {
+export const zSuspendProcessInstanceResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The process instance is suspended.'
-});
+}))();
 
 export const zSearchResourcesBody = zResourceSearchQuery;
 
@@ -11676,42 +11676,42 @@ export const zSearchResourcesBody = zResourceSearchQuery;
  */
 export const zSearchResourcesResponse = zResourceSearchQueryResult;
 
-export const zGetResourcePath = z.object({
+export const zGetResourcePath = /*#__PURE__*/ (() => z.object({
     resourceKey: zResourceKeyWritable
-});
+}))();
 
 /**
  * The resource is successfully returned.
  */
 export const zGetResourceResponse = zResourceResult;
 
-export const zGetResourceContentPath = z.object({
+export const zGetResourceContentPath = /*#__PURE__*/ (() => z.object({
     resourceKey: zResourceKeyWritable
-});
+}))();
 
 /**
  * The resource content is successfully returned.
  */
-export const zGetResourceContentResponse = z.record(z.string(), z.unknown()).register(z.globalRegistry, {
+export const zGetResourceContentResponse = /*#__PURE__*/ (() => z.record(z.string(), z.unknown()).register(z.globalRegistry, {
     description: 'The resource content is successfully returned.'
-});
+}))();
 
-export const zGetResourceContentBinaryPath = z.object({
+export const zGetResourceContentBinaryPath = /*#__PURE__*/ (() => z.object({
     resourceKey: zResourceKeyWritable
-});
+}))();
 
 /**
  * The resource content is successfully returned.
  */
-export const zGetResourceContentBinaryResponse = z.string().register(z.globalRegistry, {
+export const zGetResourceContentBinaryResponse = /*#__PURE__*/ (() => z.string().register(z.globalRegistry, {
     description: 'The resource content is successfully returned.'
-});
+}))();
 
 export const zDeleteResourceBody = zDeleteResourceRequest;
 
-export const zDeleteResourcePath = z.object({
+export const zDeleteResourcePath = /*#__PURE__*/ (() => z.object({
     resourceKey: zResourceKeyWritable
-});
+}))();
 
 /**
  * The resource is deleted.
@@ -11732,20 +11732,20 @@ export const zSearchRolesBody = zRoleSearchQueryRequest;
  */
 export const zSearchRolesResponse = zRoleSearchQueryResult;
 
-export const zDeleteRolePath = z.object({
+export const zDeleteRolePath = /*#__PURE__*/ (() => z.object({
     roleId: zRoleId
-});
+}))();
 
 /**
  * The role was deleted successfully.
  */
-export const zDeleteRoleResponse = z.void().register(z.globalRegistry, {
+export const zDeleteRoleResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The role was deleted successfully.'
-});
+}))();
 
-export const zGetRolePath = z.object({
+export const zGetRolePath = /*#__PURE__*/ (() => z.object({
     roleId: zRoleId
-});
+}))();
 
 /**
  * The role is successfully returned.
@@ -11754,9 +11754,9 @@ export const zGetRoleResponse = zRoleResult;
 
 export const zUpdateRoleBody = zRoleUpdateRequest;
 
-export const zUpdateRolePath = z.object({
+export const zUpdateRolePath = /*#__PURE__*/ (() => z.object({
     roleId: zRoleId
-});
+}))();
 
 /**
  * The role was updated successfully.
@@ -11765,143 +11765,143 @@ export const zUpdateRoleResponse = zRoleUpdateResult;
 
 export const zSearchClientsForRoleBody = zRoleClientSearchQueryRequest;
 
-export const zSearchClientsForRolePath = z.object({
+export const zSearchClientsForRolePath = /*#__PURE__*/ (() => z.object({
     roleId: zRoleId
-});
+}))();
 
 /**
  * The clients with the assigned role.
  */
 export const zSearchClientsForRoleResponse = zRoleClientSearchResult;
 
-export const zUnassignRoleFromClientPath = z.object({
+export const zUnassignRoleFromClientPath = /*#__PURE__*/ (() => z.object({
     roleId: zRoleId,
     clientId: zClientId
-});
+}))();
 
 /**
  * The role was unassigned successfully from the client.
  */
-export const zUnassignRoleFromClientResponse = z.void().register(z.globalRegistry, {
+export const zUnassignRoleFromClientResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The role was unassigned successfully from the client.'
-});
+}))();
 
-export const zAssignRoleToClientPath = z.object({
+export const zAssignRoleToClientPath = /*#__PURE__*/ (() => z.object({
     roleId: zRoleId,
     clientId: zClientId
-});
+}))();
 
 /**
  * The role was assigned successfully to the client.
  */
-export const zAssignRoleToClientResponse = z.void().register(z.globalRegistry, {
+export const zAssignRoleToClientResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The role was assigned successfully to the client.'
-});
+}))();
 
 export const zSearchGroupsForRoleBody = zRoleGroupSearchQueryRequest;
 
-export const zSearchGroupsForRolePath = z.object({
+export const zSearchGroupsForRolePath = /*#__PURE__*/ (() => z.object({
     roleId: zRoleId
-});
+}))();
 
 /**
  * The groups with assigned role.
  */
 export const zSearchGroupsForRoleResponse = zRoleGroupSearchResult;
 
-export const zUnassignRoleFromGroupPath = z.object({
+export const zUnassignRoleFromGroupPath = /*#__PURE__*/ (() => z.object({
     roleId: zRoleId,
     groupId: zGroupId
-});
+}))();
 
 /**
  * The role was unassigned successfully from the group.
  */
-export const zUnassignRoleFromGroupResponse = z.void().register(z.globalRegistry, {
+export const zUnassignRoleFromGroupResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The role was unassigned successfully from the group.'
-});
+}))();
 
-export const zAssignRoleToGroupPath = z.object({
+export const zAssignRoleToGroupPath = /*#__PURE__*/ (() => z.object({
     roleId: zRoleId,
     groupId: zGroupId
-});
+}))();
 
 /**
  * The role was assigned successfully to the group.
  */
-export const zAssignRoleToGroupResponse = z.void().register(z.globalRegistry, {
+export const zAssignRoleToGroupResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The role was assigned successfully to the group.'
-});
+}))();
 
 export const zSearchMappingRulesForRoleBody = zMappingRuleSearchQueryRequest;
 
-export const zSearchMappingRulesForRolePath = z.object({
+export const zSearchMappingRulesForRolePath = /*#__PURE__*/ (() => z.object({
     roleId: zRoleId
-});
+}))();
 
 /**
  * The mapping rules with assigned role.
  */
 export const zSearchMappingRulesForRoleResponse = zRoleMappingRuleSearchResult;
 
-export const zUnassignRoleFromMappingRulePath = z.object({
+export const zUnassignRoleFromMappingRulePath = /*#__PURE__*/ (() => z.object({
     roleId: zRoleId,
     mappingRuleId: zMappingRuleId
-});
+}))();
 
 /**
  * The role was unassigned successfully from the mapping rule.
  */
-export const zUnassignRoleFromMappingRuleResponse = z.void().register(z.globalRegistry, {
+export const zUnassignRoleFromMappingRuleResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The role was unassigned successfully from the mapping rule.'
-});
+}))();
 
-export const zAssignRoleToMappingRulePath = z.object({
+export const zAssignRoleToMappingRulePath = /*#__PURE__*/ (() => z.object({
     roleId: zRoleId,
     mappingRuleId: zMappingRuleId
-});
+}))();
 
 /**
  * The role was assigned successfully to the mapping rule.
  */
-export const zAssignRoleToMappingRuleResponse = z.void().register(z.globalRegistry, {
+export const zAssignRoleToMappingRuleResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The role was assigned successfully to the mapping rule.'
-});
+}))();
 
 export const zSearchUsersForRoleBody = zRoleUserSearchQueryRequest;
 
-export const zSearchUsersForRolePath = z.object({
+export const zSearchUsersForRolePath = /*#__PURE__*/ (() => z.object({
     roleId: zRoleId
-});
+}))();
 
 /**
  * The users with the assigned role.
  */
 export const zSearchUsersForRoleResponse = zRoleUserSearchResult;
 
-export const zUnassignRoleFromUserPath = z.object({
+export const zUnassignRoleFromUserPath = /*#__PURE__*/ (() => z.object({
     roleId: zRoleId,
     username: zUsername
-});
+}))();
 
 /**
  * The role was unassigned successfully from the user.
  */
-export const zUnassignRoleFromUserResponse = z.void().register(z.globalRegistry, {
+export const zUnassignRoleFromUserResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The role was unassigned successfully from the user.'
-});
+}))();
 
-export const zAssignRoleToUserPath = z.object({
+export const zAssignRoleToUserPath = /*#__PURE__*/ (() => z.object({
     roleId: zRoleId,
     username: zUsername
-});
+}))();
 
 /**
  * The role was assigned successfully to the user.
  */
-export const zAssignRoleToUserResponse = z.void().register(z.globalRegistry, {
+export const zAssignRoleToUserResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The role was assigned successfully to the user.'
-});
+}))();
 
 export const zResolveSecretsBody = zSecretResolveRequest;
 
@@ -11936,11 +11936,11 @@ export const zBroadcastSignalResponse = zSignalBroadcastResult;
 /**
  * The default physical tenant is UP and has at least one partition with a healthy leader.
  */
-export const zGetStatusResponse = z.void().register(z.globalRegistry, {
+export const zGetStatusResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The default physical tenant is UP and has at least one partition with a healthy leader.'
-});
+}))();
 
-export const zGetUsageMetricsQuery = z.object({
+export const zGetUsageMetricsQuery = /*#__PURE__*/ (() => z.object({
     startTime: z.iso.datetime().register(z.globalRegistry, {
         description: 'The start date for usage metrics, including this date. Value in ISO 8601 format.'
     }),
@@ -11951,7 +11951,7 @@ export const zGetUsageMetricsQuery = z.object({
     withTenants: z.boolean().register(z.globalRegistry, {
         description: 'Whether to return tenant metrics in addition to the total metrics or not. Default false.'
     }).optional().default(false)
-});
+}))();
 
 /**
  * The usage metrics search result.
@@ -11977,20 +11977,20 @@ export const zSearchTenantsBody = zTenantSearchQueryRequest;
  */
 export const zSearchTenantsResponse = zTenantSearchQueryResult;
 
-export const zDeleteTenantPath = z.object({
+export const zDeleteTenantPath = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId
-});
+}))();
 
 /**
  * The tenant was deleted successfully.
  */
-export const zDeleteTenantResponse = z.void().register(z.globalRegistry, {
+export const zDeleteTenantResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The tenant was deleted successfully.'
-});
+}))();
 
-export const zGetTenantPath = z.object({
+export const zGetTenantPath = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId
-});
+}))();
 
 /**
  * The tenant was retrieved successfully.
@@ -11999,9 +11999,9 @@ export const zGetTenantResponse = zTenantResult;
 
 export const zUpdateTenantBody = zTenantUpdateRequest;
 
-export const zUpdateTenantPath = z.object({
+export const zUpdateTenantPath = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId
-});
+}))();
 
 /**
  * The tenant was updated successfully.
@@ -12010,190 +12010,190 @@ export const zUpdateTenantResponse = zTenantUpdateResult;
 
 export const zSearchClientsForTenantBody = zTenantClientSearchQueryRequest;
 
-export const zSearchClientsForTenantPath = z.object({
+export const zSearchClientsForTenantPath = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId
-});
+}))();
 
 /**
  * The search result of users for the tenant.
  */
 export const zSearchClientsForTenantResponse = zTenantClientSearchResult;
 
-export const zUnassignClientFromTenantPath = z.object({
+export const zUnassignClientFromTenantPath = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId,
     clientId: zClientId
-});
+}))();
 
 /**
  * The client was successfully unassigned from the tenant.
  */
-export const zUnassignClientFromTenantResponse = z.void().register(z.globalRegistry, {
+export const zUnassignClientFromTenantResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The client was successfully unassigned from the tenant.'
-});
+}))();
 
-export const zAssignClientToTenantPath = z.object({
+export const zAssignClientToTenantPath = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId,
     clientId: zClientId
-});
+}))();
 
 /**
  * The client was successfully assigned to the tenant.
  */
-export const zAssignClientToTenantResponse = z.void().register(z.globalRegistry, {
+export const zAssignClientToTenantResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The client was successfully assigned to the tenant.'
-});
+}))();
 
 export const zSearchGroupIdsForTenantBody = zTenantGroupSearchQueryRequest;
 
-export const zSearchGroupIdsForTenantPath = z.object({
+export const zSearchGroupIdsForTenantPath = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId
-});
+}))();
 
 /**
  * The search result of groups for the tenant.
  */
 export const zSearchGroupIdsForTenantResponse = zTenantGroupSearchResult;
 
-export const zUnassignGroupFromTenantPath = z.object({
+export const zUnassignGroupFromTenantPath = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId,
     groupId: zGroupId
-});
+}))();
 
 /**
  * The group was successfully unassigned from the tenant.
  */
-export const zUnassignGroupFromTenantResponse = z.void().register(z.globalRegistry, {
+export const zUnassignGroupFromTenantResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The group was successfully unassigned from the tenant.'
-});
+}))();
 
-export const zAssignGroupToTenantPath = z.object({
+export const zAssignGroupToTenantPath = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId,
     groupId: zGroupId
-});
+}))();
 
 /**
  * The group was successfully assigned to the tenant.
  */
-export const zAssignGroupToTenantResponse = z.void().register(z.globalRegistry, {
+export const zAssignGroupToTenantResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The group was successfully assigned to the tenant.'
-});
+}))();
 
 export const zSearchMappingRulesForTenantBody = zMappingRuleSearchQueryRequest;
 
-export const zSearchMappingRulesForTenantPath = z.object({
+export const zSearchMappingRulesForTenantPath = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId
-});
+}))();
 
 /**
  * The search result of MappingRules for the tenant.
  */
 export const zSearchMappingRulesForTenantResponse = zTenantMappingRuleSearchResult;
 
-export const zUnassignMappingRuleFromTenantPath = z.object({
+export const zUnassignMappingRuleFromTenantPath = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId,
     mappingRuleId: zMappingRuleId
-});
+}))();
 
 /**
  * The mapping rule was successfully unassigned from the tenant.
  */
-export const zUnassignMappingRuleFromTenantResponse = z.void().register(z.globalRegistry, {
+export const zUnassignMappingRuleFromTenantResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The mapping rule was successfully unassigned from the tenant.'
-});
+}))();
 
-export const zAssignMappingRuleToTenantPath = z.object({
+export const zAssignMappingRuleToTenantPath = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId,
     mappingRuleId: zMappingRuleId
-});
+}))();
 
 /**
  * The mapping rule was successfully assigned to the tenant.
  */
-export const zAssignMappingRuleToTenantResponse = z.void().register(z.globalRegistry, {
+export const zAssignMappingRuleToTenantResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The mapping rule was successfully assigned to the tenant.'
-});
+}))();
 
 export const zSearchRolesForTenantBody = zRoleSearchQueryRequest;
 
-export const zSearchRolesForTenantPath = z.object({
+export const zSearchRolesForTenantPath = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId
-});
+}))();
 
 /**
  * The search result of roles for the tenant.
  */
 export const zSearchRolesForTenantResponse = zTenantRoleSearchResult;
 
-export const zUnassignRoleFromTenantPath = z.object({
+export const zUnassignRoleFromTenantPath = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId,
     roleId: zRoleId
-});
+}))();
 
 /**
  * The role was successfully unassigned from the tenant.
  */
-export const zUnassignRoleFromTenantResponse = z.void().register(z.globalRegistry, {
+export const zUnassignRoleFromTenantResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The role was successfully unassigned from the tenant.'
-});
+}))();
 
-export const zAssignRoleToTenantPath = z.object({
+export const zAssignRoleToTenantPath = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId,
     roleId: zRoleId
-});
+}))();
 
 /**
  * The role was successfully assigned to the tenant.
  */
-export const zAssignRoleToTenantResponse = z.void().register(z.globalRegistry, {
+export const zAssignRoleToTenantResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The role was successfully assigned to the tenant.'
-});
+}))();
 
 export const zSearchUsersForTenantBody = zTenantUserSearchQueryRequest;
 
-export const zSearchUsersForTenantPath = z.object({
+export const zSearchUsersForTenantPath = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId
-});
+}))();
 
 /**
  * The search result of users for the tenant.
  */
 export const zSearchUsersForTenantResponse = zTenantUserSearchResult;
 
-export const zUnassignUserFromTenantPath = z.object({
+export const zUnassignUserFromTenantPath = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId,
     username: zUsername
-});
+}))();
 
 /**
  * The user was successfully unassigned from the tenant.
  */
-export const zUnassignUserFromTenantResponse = z.void().register(z.globalRegistry, {
+export const zUnassignUserFromTenantResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The user was successfully unassigned from the tenant.'
-});
+}))();
 
-export const zAssignUserToTenantPath = z.object({
+export const zAssignUserToTenantPath = /*#__PURE__*/ (() => z.object({
     tenantId: zTenantId,
     username: zUsername
-});
+}))();
 
 /**
  * The user was successfully assigned to the tenant.
  */
-export const zAssignUserToTenantResponse = z.void().register(z.globalRegistry, {
+export const zAssignUserToTenantResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The user was successfully assigned to the tenant.'
-});
+}))();
 
 /**
  * Obtains the current topology of the cluster the gateway is part of.
  */
 export const zGetTopologyResponse = zTopologyResponse;
 
-export const zChangeClusterModeQuery = z.object({
+export const zChangeClusterModeQuery = /*#__PURE__*/ (() => z.object({
     mode: zMode,
     dryRun: z.boolean().register(z.globalRegistry, {
         description: 'If true, the requested change is only validated and the resulting plan is returned, without applying it to the cluster.'
     }).optional().default(false)
-});
+}))();
 
 /**
  * The mode change request was accepted; returns the planned cluster changes.
@@ -12207,11 +12207,11 @@ export const zGetRestoreStatusResponse = zRestoreStatusResponse;
 
 export const zRestoreBody = zRestoreRequest;
 
-export const zRestoreQuery = z.object({
+export const zRestoreQuery = /*#__PURE__*/ (() => z.object({
     dryRun: z.boolean().register(z.globalRegistry, {
         description: 'If true, the requested change is only validated and the resulting plan is returned, without applying it to the cluster.'
     }).optional().default(false)
-});
+}))();
 
 /**
  * The restore request was accepted; returns the planned cluster changes.
@@ -12223,121 +12223,121 @@ export const zRestoreResponse = zClusterRestoreResponse;
  */
 export const zGetClusterExportingStatusResponse = zExportingStatusResponse;
 
-export const zPauseClusterExportingQuery = z.object({
+export const zPauseClusterExportingQuery = /*#__PURE__*/ (() => z.object({
     soft: z.boolean().register(z.globalRegistry, {
         description: 'If true, soft-pauses exporting instead of a hard pause.'
     }).optional().default(false)
-});
+}))();
 
 /**
  * Exporting was successfully paused on every physical tenant.
  */
-export const zPauseClusterExportingResponse = z.void().register(z.globalRegistry, {
+export const zPauseClusterExportingResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'Exporting was successfully paused on every physical tenant.'
-});
+}))();
 
 /**
  * Exporting was successfully resumed on every physical tenant.
  */
-export const zResumeClusterExportingResponse = z.void().register(z.globalRegistry, {
+export const zResumeClusterExportingResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'Exporting was successfully resumed on every physical tenant.'
-});
+}))();
 
-export const zListRuntimeBackupsAsClusterAdminQuery = z.object({
+export const zListRuntimeBackupsAsClusterAdminQuery = /*#__PURE__*/ (() => z.object({
     physicalTenantId: z.string().register(z.globalRegistry, {
         description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
     }).optional(),
     prefix: zBackupIdPrefix.optional()
-});
+}))();
 
 /**
  * The runtime backups of every targeted physical tenant, grouped by backup id and sorted in descending order of backup id, as the per-physical-tenant listing is. Empty when every targeted tenant was read and none of them holds a matching backup.
  */
-export const zListRuntimeBackupsAsClusterAdminResponse = z.array(zClusterRuntimeBackupInfo).register(z.globalRegistry, {
+export const zListRuntimeBackupsAsClusterAdminResponse = /*#__PURE__*/ (() => z.array(zClusterRuntimeBackupInfo).register(z.globalRegistry, {
     description: 'The runtime backups of every targeted physical tenant, grouped by backup id and sorted in descending order of backup id, as the per-physical-tenant listing is. Empty when every targeted tenant was read and none of them holds a matching backup.'
-});
+}))();
 
 export const zTakeRuntimeBackupAsClusterAdminBody = zTakeRuntimeBackupRequest;
 
-export const zTakeRuntimeBackupAsClusterAdminQuery = z.object({
+export const zTakeRuntimeBackupAsClusterAdminQuery = /*#__PURE__*/ (() => z.object({
     physicalTenantId: z.string().register(z.globalRegistry, {
         description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
     }).optional()
-});
+}))();
 
 /**
  * The backup was triggered on every targeted physical tenant.
  */
 export const zTakeRuntimeBackupAsClusterAdminResponse = zClusterTakeRuntimeBackupResponse;
 
-export const zDeleteRuntimeBackupStateAsClusterAdminQuery = z.object({
+export const zDeleteRuntimeBackupStateAsClusterAdminQuery = /*#__PURE__*/ (() => z.object({
     physicalTenantId: z.string().register(z.globalRegistry, {
         description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
     }).optional()
-});
+}))();
 
 /**
  * The runtime backup state was reset on every targeted physical tenant.
  */
-export const zDeleteRuntimeBackupStateAsClusterAdminResponse = z.void().register(z.globalRegistry, {
+export const zDeleteRuntimeBackupStateAsClusterAdminResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The runtime backup state was reset on every targeted physical tenant.'
-});
+}))();
 
-export const zGetRuntimeBackupStateAsClusterAdminQuery = z.object({
+export const zGetRuntimeBackupStateAsClusterAdminQuery = /*#__PURE__*/ (() => z.object({
     physicalTenantId: z.string().register(z.globalRegistry, {
         description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
     }).optional()
-});
+}))();
 
 /**
  * The runtime backup state of every targeted physical tenant, ordered by physical tenant id.
  */
 export const zGetRuntimeBackupStateAsClusterAdminResponse = zClusterRuntimeBackupState;
 
-export const zSyncRuntimeBackupStateAsClusterAdminQuery = z.object({
+export const zSyncRuntimeBackupStateAsClusterAdminQuery = /*#__PURE__*/ (() => z.object({
     physicalTenantId: z.string().register(z.globalRegistry, {
         description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
     }).optional()
-});
+}))();
 
 /**
  * The updated runtime backup state of every targeted physical tenant, ordered by physical tenant id.
  */
 export const zSyncRuntimeBackupStateAsClusterAdminResponse = zClusterRuntimeBackupState;
 
-export const zDeleteRuntimeBackupAsClusterAdminPath = z.object({
+export const zDeleteRuntimeBackupAsClusterAdminPath = /*#__PURE__*/ (() => z.object({
     backupId: zBackupId
-});
+}))();
 
-export const zDeleteRuntimeBackupAsClusterAdminQuery = z.object({
+export const zDeleteRuntimeBackupAsClusterAdminQuery = /*#__PURE__*/ (() => z.object({
     physicalTenantId: z.string().register(z.globalRegistry, {
         description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
     }).optional()
-});
+}))();
 
 /**
  * No targeted physical tenant holds the backup any more.
  */
-export const zDeleteRuntimeBackupAsClusterAdminResponse = z.void().register(z.globalRegistry, {
+export const zDeleteRuntimeBackupAsClusterAdminResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'No targeted physical tenant holds the backup any more.'
-});
+}))();
 
-export const zGetRuntimeBackupAsClusterAdminPath = z.object({
+export const zGetRuntimeBackupAsClusterAdminPath = /*#__PURE__*/ (() => z.object({
     backupId: zBackupId
-});
+}))();
 
-export const zGetRuntimeBackupAsClusterAdminQuery = z.object({
+export const zGetRuntimeBackupAsClusterAdminQuery = /*#__PURE__*/ (() => z.object({
     physicalTenantId: z.string().register(z.globalRegistry, {
         description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
     }).optional()
-});
+}))();
 
 /**
  * Every targeted physical tenant was read, and at least one holds the backup. Each tenant reports either the backup or `DOES_NOT_EXIST`.
  */
 export const zGetRuntimeBackupAsClusterAdminResponse = zClusterRuntimeBackupInfo;
 
-export const zListHistoryBackupsAsClusterAdminQuery = z.object({
+export const zListHistoryBackupsAsClusterAdminQuery = /*#__PURE__*/ (() => z.object({
     physicalTenantId: z.string().register(z.globalRegistry, {
         description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
     }).optional(),
@@ -12345,61 +12345,61 @@ export const zListHistoryBackupsAsClusterAdminQuery = z.object({
     verbose: z.boolean().register(z.globalRegistry, {
         description: 'Whether to ask the secondary storage for snapshot-level detail. Setting this to\n`false` makes the query cheaper, but the store then reports neither snapshot state\nnor start time, so both the per-snapshot `details` and the per-tenant `state` are\nincomplete and the listing order is unspecified.\n'
     }).optional().default(true)
-});
+}))();
 
 /**
  * The history backups of every targeted physical tenant, grouped by backup id and ordered by backup id, descending. Deliberately not the per-physical-tenant endpoint's order, which is by snapshot start time: start times are per tenant, so a group spanning several tenants has no single one to sort on. Descending id is only recency for ids that ascend with time. Empty when every targeted tenant was read and none of them holds a matching backup.
  */
-export const zListHistoryBackupsAsClusterAdminResponse = z.array(zClusterHistoryBackupInfo).register(z.globalRegistry, {
+export const zListHistoryBackupsAsClusterAdminResponse = /*#__PURE__*/ (() => z.array(zClusterHistoryBackupInfo).register(z.globalRegistry, {
     description: 'The history backups of every targeted physical tenant, grouped by backup id and ordered by backup id, descending. Deliberately not the per-physical-tenant endpoint\'s order, which is by snapshot start time: start times are per tenant, so a group spanning several tenants has no single one to sort on. Descending id is only recency for ids that ascend with time. Empty when every targeted tenant was read and none of them holds a matching backup.'
-});
+}))();
 
 export const zTakeHistoryBackupAsClusterAdminBody = zTakeHistoryBackupRequest;
 
-export const zTakeHistoryBackupAsClusterAdminQuery = z.object({
+export const zTakeHistoryBackupAsClusterAdminQuery = /*#__PURE__*/ (() => z.object({
     physicalTenantId: z.string().register(z.globalRegistry, {
         description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
     }).optional()
-});
+}))();
 
 /**
  * The backup has been scheduled on every targeted physical tenant.
  */
 export const zTakeHistoryBackupAsClusterAdminResponse = zClusterTakeHistoryBackupResponse;
 
-export const zDeleteHistoryBackupAsClusterAdminPath = z.object({
+export const zDeleteHistoryBackupAsClusterAdminPath = /*#__PURE__*/ (() => z.object({
     backupId: zBackupId
-});
+}))();
 
-export const zDeleteHistoryBackupAsClusterAdminQuery = z.object({
+export const zDeleteHistoryBackupAsClusterAdminQuery = /*#__PURE__*/ (() => z.object({
     physicalTenantId: z.string().register(z.globalRegistry, {
         description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
     }).optional()
-});
+}))();
 
 /**
  * No targeted physical tenant holds the backup any more, because it was deleted from every tenant that held it. At least one tenant held it.
  */
-export const zDeleteHistoryBackupAsClusterAdminResponse = z.void().register(z.globalRegistry, {
+export const zDeleteHistoryBackupAsClusterAdminResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'No targeted physical tenant holds the backup any more, because it was deleted from every tenant that held it. At least one tenant held it.'
-});
+}))();
 
-export const zGetHistoryBackupAsClusterAdminPath = z.object({
+export const zGetHistoryBackupAsClusterAdminPath = /*#__PURE__*/ (() => z.object({
     backupId: zBackupId
-});
+}))();
 
-export const zGetHistoryBackupAsClusterAdminQuery = z.object({
+export const zGetHistoryBackupAsClusterAdminQuery = /*#__PURE__*/ (() => z.object({
     physicalTenantId: z.string().register(z.globalRegistry, {
         description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
     }).optional()
-});
+}))();
 
 /**
  * Every targeted physical tenant was read. Each one reports either the backup or `NOT_FOUND`; at least one holds the backup.
  */
 export const zGetHistoryBackupAsClusterAdminResponse = zClusterHistoryBackupInfo;
 
-export const zChangeClusterModeAsClusterAdminQuery = z.object({
+export const zChangeClusterModeAsClusterAdminQuery = /*#__PURE__*/ (() => z.object({
     mode: zMode,
     physicalTenantId: z.string().register(z.globalRegistry, {
         description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
@@ -12407,7 +12407,7 @@ export const zChangeClusterModeAsClusterAdminQuery = z.object({
     dryRun: z.boolean().register(z.globalRegistry, {
         description: 'If true, the requested change is only validated and the resulting plan is returned, without applying it to the cluster.'
     }).optional().default(false)
-});
+}))();
 
 /**
  * The mode change request was accepted; returns the planned cluster change covering every requested physical tenant.
@@ -12426,11 +12426,11 @@ export const zGetClusterRebalanceResponse = zClusterBalanceResponse;
 
 export const zTriggerClusterRebalanceBody = zClusterRebalanceRequest;
 
-export const zTriggerClusterRebalanceQuery = z.object({
+export const zTriggerClusterRebalanceQuery = /*#__PURE__*/ (() => z.object({
     dryRun: z.boolean().register(z.globalRegistry, {
         description: 'If true, report the plan the rebalance would carry out without pausing any partition or transferring any leadership.'
     }).optional().default(false)
-});
+}))();
 
 /**
  * The rebalance was accepted, and its status is reported as it starts.
@@ -12439,14 +12439,14 @@ export const zTriggerClusterRebalanceResponse = zClusterBalanceResponse;
 
 export const zRestoreAsClusterAdminBody = zClusterRestoreRequest;
 
-export const zRestoreAsClusterAdminQuery = z.object({
+export const zRestoreAsClusterAdminQuery = /*#__PURE__*/ (() => z.object({
     physicalTenantId: z.string().register(z.globalRegistry, {
         description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
     }).optional(),
     dryRun: z.boolean().register(z.globalRegistry, {
         description: 'If true, the requested change is only validated and the resulting plan is returned, without applying it to the cluster.'
     }).optional().default(false)
-});
+}))();
 
 /**
  * The restore request was accepted; returns the planned cluster change covering every requested physical tenant.
@@ -12482,20 +12482,20 @@ export const zSearchUsersBody = zUserSearchQueryRequest;
  */
 export const zSearchUsersResponse = zUserSearchResult;
 
-export const zDeleteUserPath = z.object({
+export const zDeleteUserPath = /*#__PURE__*/ (() => z.object({
     username: zUsername
-});
+}))();
 
 /**
  * The user was deleted successfully.
  */
-export const zDeleteUserResponse = z.void().register(z.globalRegistry, {
+export const zDeleteUserResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The user was deleted successfully.'
-});
+}))();
 
-export const zGetUserPath = z.object({
+export const zGetUserPath = /*#__PURE__*/ (() => z.object({
     username: zUsername
-});
+}))();
 
 /**
  * The user is successfully returned.
@@ -12504,9 +12504,9 @@ export const zGetUserResponse = zUserResult;
 
 export const zUpdateUserBody = zUserUpdateRequest;
 
-export const zUpdateUserPath = z.object({
+export const zUpdateUserPath = /*#__PURE__*/ (() => z.object({
     username: zUsername
-});
+}))();
 
 /**
  * The user was updated successfully.
@@ -12520,9 +12520,9 @@ export const zSearchUserTasksBody = zUserTaskSearchQuery;
  */
 export const zSearchUserTasksResponse = zUserTaskSearchQueryResult;
 
-export const zGetUserTaskPath = z.object({
+export const zGetUserTaskPath = /*#__PURE__*/ (() => z.object({
     userTaskKey: zUserTaskKeyWritable
-});
+}))();
 
 /**
  * The user task is successfully returned.
@@ -12531,46 +12531,46 @@ export const zGetUserTaskResponse = zUserTaskResult;
 
 export const zUpdateUserTaskBody = zUserTaskUpdateRequest;
 
-export const zUpdateUserTaskPath = z.object({
+export const zUpdateUserTaskPath = /*#__PURE__*/ (() => z.object({
     userTaskKey: zUserTaskKeyWritable
-});
+}))();
 
 /**
  * The user task was updated successfully.
  */
-export const zUpdateUserTaskResponse = z.void().register(z.globalRegistry, {
+export const zUpdateUserTaskResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The user task was updated successfully.'
-});
+}))();
 
-export const zUnassignUserTaskPath = z.object({
+export const zUnassignUserTaskPath = /*#__PURE__*/ (() => z.object({
     userTaskKey: zUserTaskKeyWritable
-});
+}))();
 
 /**
  * The user task was unassigned successfully.
  */
-export const zUnassignUserTaskResponse = z.void().register(z.globalRegistry, {
+export const zUnassignUserTaskResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The user task was unassigned successfully.'
-});
+}))();
 
 export const zAssignUserTaskBody = zUserTaskAssignmentRequest;
 
-export const zAssignUserTaskPath = z.object({
+export const zAssignUserTaskPath = /*#__PURE__*/ (() => z.object({
     userTaskKey: zUserTaskKeyWritable
-});
+}))();
 
 /**
  * The user task's assignment was adjusted.
  */
-export const zAssignUserTaskResponse = z.void().register(z.globalRegistry, {
+export const zAssignUserTaskResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The user task\'s assignment was adjusted.'
-});
+}))();
 
 export const zSearchUserTaskAuditLogsBody = zUserTaskAuditLogSearchQueryRequest;
 
-export const zSearchUserTaskAuditLogsPath = z.object({
+export const zSearchUserTaskAuditLogsPath = /*#__PURE__*/ (() => z.object({
     userTaskKey: zUserTaskKeyWritable
-});
+}))();
 
 /**
  * The user task audit log search result.
@@ -12579,56 +12579,56 @@ export const zSearchUserTaskAuditLogsResponse = zAuditLogSearchQueryResult;
 
 export const zCompleteUserTaskBody = zUserTaskCompletionRequest;
 
-export const zCompleteUserTaskPath = z.object({
+export const zCompleteUserTaskPath = /*#__PURE__*/ (() => z.object({
     userTaskKey: zUserTaskKeyWritable
-});
+}))();
 
 /**
  * The user task was completed successfully.
  */
-export const zCompleteUserTaskResponse = z.void().register(z.globalRegistry, {
+export const zCompleteUserTaskResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The user task was completed successfully.'
-});
+}))();
 
 export const zSearchUserTaskEffectiveVariablesBody = zUserTaskEffectiveVariableSearchQueryRequest;
 
-export const zSearchUserTaskEffectiveVariablesPath = z.object({
+export const zSearchUserTaskEffectiveVariablesPath = /*#__PURE__*/ (() => z.object({
     userTaskKey: zUserTaskKeyWritable
-});
+}))();
 
-export const zSearchUserTaskEffectiveVariablesQuery = z.object({
+export const zSearchUserTaskEffectiveVariablesQuery = /*#__PURE__*/ (() => z.object({
     truncateValues: z.boolean().register(z.globalRegistry, {
         description: 'When true (default), long variable values in the response are truncated. When false, full variable values are returned.'
     }).optional()
-});
+}))();
 
 /**
  * The user task effective variable search result.
  */
 export const zSearchUserTaskEffectiveVariablesResponse = zVariableSearchQueryResult;
 
-export const zGetUserTaskFormPath = z.object({
+export const zGetUserTaskFormPath = /*#__PURE__*/ (() => z.object({
     userTaskKey: zUserTaskKeyWritable
-});
+}))();
 
-export const zGetUserTaskFormResponse = z.union([
+export const zGetUserTaskFormResponse = /*#__PURE__*/ (() => z.union([
     zFormResult,
     z.void().register(z.globalRegistry, {
         description: 'The user task was found, but no form is associated with it.'
     })
-]);
+]))();
 
 export const zSearchUserTaskVariablesBody = zUserTaskVariableSearchQueryRequest;
 
-export const zSearchUserTaskVariablesPath = z.object({
+export const zSearchUserTaskVariablesPath = /*#__PURE__*/ (() => z.object({
     userTaskKey: zUserTaskKeyWritable
-});
+}))();
 
-export const zSearchUserTaskVariablesQuery = z.object({
+export const zSearchUserTaskVariablesQuery = /*#__PURE__*/ (() => z.object({
     truncateValues: z.boolean().register(z.globalRegistry, {
         description: 'When true (default), long variable values in the response are truncated. When false, full variable values are returned.'
     }).optional()
-});
+}))();
 
 /**
  * The user task variable search result.
@@ -12637,20 +12637,20 @@ export const zSearchUserTaskVariablesResponse = zVariableSearchQueryResult;
 
 export const zSearchVariablesBody = zVariableSearchQuery;
 
-export const zSearchVariablesQuery = z.object({
+export const zSearchVariablesQuery = /*#__PURE__*/ (() => z.object({
     truncateValues: z.boolean().register(z.globalRegistry, {
         description: 'When true (default), long variable values in the response are truncated. When false, full variable values are returned.'
     }).optional()
-});
+}))();
 
 /**
  * The variable search result.
  */
 export const zSearchVariablesResponse = zVariableSearchQueryResult;
 
-export const zGetVariablePath = z.object({
+export const zGetVariablePath = /*#__PURE__*/ (() => z.object({
     variableKey: zVariableKeyWritable
-});
+}))();
 
 /**
  * The variable is successfully returned.

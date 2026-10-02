@@ -48,7 +48,7 @@ const extraPrefixesMap: Record<string, Slot> = {
   $path_: 'path',
   $query_: 'query',
 };
-const extraPrefixes = Object.entries(extraPrefixesMap);
+const extraPrefixes = /* @__PURE__ */ Object.entries(extraPrefixesMap);
 
 type KeyMap = Map<
   string,

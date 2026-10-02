@@ -7,6 +7,20 @@ const BUNDLED_SPEC_PATH = path.join(ROOT, 'external-spec/bundled/rest-api.bundle
 const TEMPLATE_FILE = path.join(ROOT, 'src/template/CamundaClient.template.ts');
 const CLASS_FILE = path.join(ROOT, 'src/gen/CamundaClient.ts');
 const SDK_GEN_PATH = path.join(ROOT, 'src/gen/sdk.gen.ts');
+const OPS_FILE = path.join(ROOT, 'src/gen/operations.gen.ts');
+const OP_SCHEMAS_DIR = path.join(ROOT, 'src/gen/zod');
+
+/**
+ * Turn a line of a generated method body into the equivalent line of the standalone
+ * function: one indent level less, and `this` replaced by the core's runtime view.
+ */
+function toFunctionBody(line: string): string {
+  return line
+    .replace(/^ {2}/, '')
+    .replace(/\(this as any\)/g, '(rt as any)')
+    .replace(/\bthis\._isVoidResponse\(/g, '_isVoidResponse(')
+    .replace(/\bthis\./g, 'rt.');
+}
 
 /**
  * Detect operations whose request body has an optional `tenantIds: array`
@@ -251,7 +265,13 @@ export type ${o.opId}Consistency = {
   support.push('}');
 
   const methods: string[] = [];
-  methods.push('  // Generated methods');
+  /** Standalone per-operation functions (src/gen/operations.gen.ts). */
+  const fns: string[] = [];
+  /** operationId -> zod schema names its function validates with. */
+  const opSchemaModules = new Map<string, string[]>();
+  methods.push(
+    '  // Generated methods: each delegates to its standalone function in operations.gen.ts'
+  );
   // (createDeployment) enrichment handled inline per-call; types above exported
   for (const o of ops) {
     let jsdoc = forwardJsDoc(o, docs);
@@ -282,22 +302,34 @@ export type ${o.opId}Consistency = {
     // Method signature (single unified input)
     const returnType =
       o.opId === 'createDeployment' ? 'ExtendedDeploymentResult' : `_DataOf<typeof Sdk.${o.opId}>`;
-    if (o.hasBody || o.pathParams.length || o.queryParams.length) {
-      methods.push(
-        o.eventual
-          ? `  ${o.opId}(input: ${o.opId}Input, /** Management of eventual consistency **/ consistencyManagement: ${o.opId}Consistency, options?: OperationOptions): CancelablePromise<${returnType}>;`
-          : `  ${o.opId}(input: ${o.opId}Input, options?: OperationOptions): CancelablePromise<${returnType}>;`
-      );
-    } else {
-      methods.push(
-        o.eventual
-          ? `  ${o.opId}(consistencyManagement: ${o.opId}Consistency, options?: OperationOptions): CancelablePromise<${returnType}>;`
-          : `  ${o.opId}(options?: OperationOptions): CancelablePromise<${returnType}>;`
-      );
-    }
-    methods.push(
-      `  ${o.opId}(${o.hasBody || o.pathParams.length || o.queryParams.length ? 'arg: any' : 'arg?: any'}${o.eventual ? `, /** Management of eventual consistency **/ consistencyManagement: ${o.opId}Consistency` : ''}, options?: OperationOptions): CancelablePromise<any> {`
-    );
+    const hasInput = Boolean(o.hasBody || o.pathParams.length || o.queryParams.length);
+    const cmParam = `/** Management of eventual consistency **/ consistencyManagement: ${o.opId}Consistency`;
+    const publicParams = [
+      ...(hasInput ? [`input: ${o.opId}Input`] : []),
+      ...(o.eventual ? [cmParam] : []),
+      'options?: OperationOptions',
+    ].join(', ');
+    const implParams = [
+      hasInput ? 'arg: any' : 'arg?: any',
+      ...(o.eventual ? [cmParam] : []),
+      'options?: OperationOptions',
+    ].join(', ');
+    // No-input operations: the class method keeps its historical `(arg?, options?)`
+    // implementation signature (arg is unused, so `client.op({ retry })` binds the
+    // options object to `arg`). The standalone function takes no input parameter,
+    // so `op(core, { retry })` applies the options. The class forwards its own
+    // `options` parameter, preserving its existing behaviour exactly.
+    const fnImplParams = hasInput ? implParams : publicParams;
+    const forwardArgs = [
+      ...(hasInput ? ['arg'] : []),
+      ...(o.eventual ? ['consistencyManagement'] : []),
+      'options',
+    ].join(', ');
+    methods.push(`  ${o.opId}(${publicParams}): CancelablePromise<${returnType}>;`);
+    methods.push(`  ${o.opId}(${implParams}): CancelablePromise<any> {`);
+    // Everything pushed from here to the closing brace is the operation body. It is
+    // moved into the standalone function below; the method only delegates.
+    const bodyStart = methods.length;
     if (o.eventual) {
       methods.push(
         '    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");'
@@ -569,12 +601,109 @@ export type ${o.opId}Consistency = {
       }
     }
     methods.push('    });');
+    const body = methods.splice(bodyStart);
+    methods.push(`    return Ops.${o.opId}(this, ${forwardArgs});`);
     methods.push('  }');
     methods.push('');
+    if (jsdoc) fns.push(jsdoc);
+    fns.push(
+      `export function ${o.opId}(core: CamundaCore, ${publicParams}): CancelablePromise<${returnType}>;`
+    );
+    fns.push(
+      `export function ${o.opId}(core: CamundaCore, ${fnImplParams}): CancelablePromise<any> {`
+    );
+    fns.push('  const rt = core as unknown as OperationRuntime;');
+    // Per-operation schema module: the function lazily imports only the zod schemas
+    // it references (see hook 720 for why unused schemas then drop out of bundles).
+    const fnBody = body.map(toFunctionBody);
+    const schemaNames = [
+      ...new Set(
+        fnBody
+          .join('\n')
+          .match(/\b_schemas\.(z\w+)/g)
+          ?.map((m) => m.slice(9)) ?? []
+      ),
+    ].sort();
+    if (schemaNames.length) {
+      opSchemaModules.set(o.opId, schemaNames);
+      for (let i = 0; i < fnBody.length; i++) {
+        fnBody[i] = fnBody[i].replace(
+          'await rt._loadSchemas()',
+          `await import('./zod/${o.opId}.gen')`
+        );
+      }
+    }
+    fns.push(...fnBody);
+    fns.push('}');
+    fns.push('');
   }
 
+  // Standalone per-operation functions: the single implementation of every operation.
+  // CamundaClient methods delegate here; `@camunda8/orchestration-cluster-api/fn`
+  // exports them directly so bundlers keep only the operations a consumer imports.
+  const supportSrc = support.join('\n');
+  const exportedTypes = [...supportSrc.matchAll(/^export (?:type|interface) (\w+)/gm)].map(
+    (m) => m[1]
+  );
+  const opsSrc = [
+    '// @generated by hooks/post/300-generate-class-methods.ts - DO NOT EDIT DIRECTLY',
+    '// One standalone function per operation. CamundaClient methods delegate to these.',
+    "import type { CamundaCore, OperationRuntime } from '../runtime/camundaCore';",
+    "import { type CancelablePromise, toCancelable } from '../runtime/cancelable';",
+    "import { type ConsistencyOptions, eventualPoll } from '../runtime/eventual';",
+    "import type { OperationOptions } from '../runtime/retry';",
+    "import * as Sdk from './sdk.gen';",
+    '',
+    supportSrc,
+    'function _isVoidResponse(name: string): boolean {',
+    '  return VOID_RESPONSES.has(name);',
+    '}',
+    '',
+    ...fns,
+  ].join('\n');
+  // Gate: every schema access must go through the operation's own schema module.
+  if (/_loadSchemas\(|_schemas\[/.test(fns.join('\n'))) {
+    console.error(
+      '[class-gen][FAIL] operations.gen.ts loads schemas other than via its per-operation module'
+    );
+    process.exit(1);
+  }
+  fs.rmSync(OP_SCHEMAS_DIR, { recursive: true, force: true });
+  fs.mkdirSync(OP_SCHEMAS_DIR, { recursive: true });
+  for (const [opId, names] of opSchemaModules) {
+    fs.writeFileSync(
+      path.join(OP_SCHEMAS_DIR, `${opId}.gen.ts`),
+      [
+        '// @generated by hooks/post/300-generate-class-methods.ts - DO NOT EDIT DIRECTLY',
+        `// Zod schemas used by ${opId}, loaded lazily on first validation.`,
+        `export { ${names.join(', ')} } from '../zod.gen';`,
+        '',
+      ].join('\n'),
+      'utf8'
+    );
+  }
+  // Gate: a body that still references `this` would silently break in a free function.
+  if (/\bthis\b/.test(fns.join('\n').replace(/\/\*\*[\s\S]*?\*\//g, ''))) {
+    console.error('[class-gen][FAIL] operations.gen.ts function body still references `this`');
+    process.exit(1);
+  }
+  fs.writeFileSync(OPS_FILE, opsSrc, 'utf8');
+
+  // The class module re-exports the public support types (unchanged public names) and
+  // keeps its own VOID_RESPONSES for the private _isVoidResponse helper.
+  const clientSupport = [
+    '// Generated',
+    `// Operations: ${ops.length}`,
+    'type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;',
+    'type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;',
+    "import * as Ops from './operations.gen';",
+    `import type { ${exportedTypes.join(', ')} } from './operations.gen';`,
+    `export type { ${exportedTypes.join(', ')} } from './operations.gen';`,
+    ...support.filter((l) => l.startsWith('const VOID_RESPONSES')),
+  ].join('\n');
+
   const banner = '// @generated from CamundaClient.template.ts - DO NOT EDIT DIRECTLY\n';
-  const withTypes = `${tpl.slice(0, tS + MARK_TYPES_START.length)}\n${support.join('\n')}\n${tpl.slice(tE)}`;
+  const withTypes = `${tpl.slice(0, tS + MARK_TYPES_START.length)}\n${clientSupport}\n${tpl.slice(tE)}`;
   const w2S = withTypes.indexOf(MARK_METHODS_START);
   const w2E = withTypes.indexOf(MARK_METHODS_END);
   let finalSrc =

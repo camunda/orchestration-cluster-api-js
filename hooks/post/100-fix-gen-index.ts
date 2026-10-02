@@ -5,13 +5,13 @@ const GEN_INDEX_PATH = path.resolve(process.cwd(), 'src', 'gen', 'index.ts');
 const TYPES_GEN_PATH = path.resolve(process.cwd(), 'src', 'gen', 'types.gen.ts');
 
 /**
- * Names `types.gen.ts` declares as `export namespace` — the CamundaKey branding
- * helpers. Unlike a plain type alias these carry a *value* side (`assumeExists` and
+ * Names `types.gen.ts` declares as `export const X: {` — the CamundaKey branding
+ * helpers (formerly namespaces). Unlike a plain type alias these carry a *value* side (`assumeExists` and
  * friends), which is the whole reason this hook exists.
  */
 function valueNamespaces(): Set<string> {
   const source = fs.readFileSync(TYPES_GEN_PATH, 'utf8');
-  return new Set([...source.matchAll(/^export namespace (\w+) \{/gm)].map((m) => m[1]));
+  return new Set([...source.matchAll(/^export const (\w+): \{$/gm)].map((m) => m[1]));
 }
 
 /**

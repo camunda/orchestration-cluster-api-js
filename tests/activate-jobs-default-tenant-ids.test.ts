@@ -93,22 +93,23 @@ describe('default tenantIds (plural) injection — issue #170', () => {
     // Sanity: activateJobs must be one of them; otherwise the upstream spec changed.
     expect(ops).toContain('activateJobs');
 
-    const clientSrc = readFileSync(join(__dirname, '..', 'src', 'gen', 'CamundaClient.ts'), 'utf8');
+    // Operation bodies live in the standalone functions (CamundaClient methods delegate).
+    const opsSrc = readFileSync(join(__dirname, '..', 'src', 'gen', 'operations.gen.ts'), 'utf8');
 
     const missing: string[] = [];
     for (const opId of ops) {
       // Find the implementation block for this op (the second overload, with `arg: any`).
-      const implMarker = `${opId}(arg: any`;
-      const start = clientSrc.indexOf(implMarker);
+      const implMarker = `export function ${opId}(core: CamundaCore, arg: any`;
+      const start = opsSrc.indexOf(implMarker);
       expect(
         start,
-        `implementation for ${opId}(arg: any, …) not found in CamundaClient.ts`
+        `implementation for ${opId}(arg: any, …) not found in operations.gen.ts`
       ).toBeGreaterThan(-1);
       // Heuristic end: next "  }" at column 2 followed by newline + a method overload.
       // Use a generous slice (4 KB) and search within it.
-      const slice = clientSrc.slice(start, start + 4096);
+      const slice = opsSrc.slice(start, start + 4096);
       const ok =
-        /envelope\.body\.tenantIds\s*=/.test(slice) && /this\._config\.defaultTenantId/.test(slice);
+        /envelope\.body\.tenantIds\s*=/.test(slice) && /rt\._config\.defaultTenantId/.test(slice);
       if (!ok) missing.push(opId);
     }
     expect(missing).toEqual([]);
