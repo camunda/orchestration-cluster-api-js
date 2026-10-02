@@ -66,6 +66,14 @@ export interface CamundaOptions {
   // to drive those loops in tests without waiting for real time. Defaults to the live clock.
   // Liveness bounds — shutdown drains and request timeouts — deliberately do not use it.
   clock?: Clock;
+  /**
+   * Explicit component discriminator for support diagnostics. Set only by SDK-internal
+   * subclasses: `CamundaClientBase` passes `'CamundaClient'` so the construction log names
+   * the real component even when a consumer subclasses the public `CamundaCore` (where
+   * `new.target !== CamundaCore` alone could not distinguish core-subclass from client).
+   * @internal
+   */
+  __camundaComponent?: 'CamundaCore' | 'CamundaClient';
 }
 
 /**
@@ -223,12 +231,14 @@ export class CamundaCore {
     // Support logger initialization (after config hydration & before major components start emitting)
     this._supportLogger = createSupportLogger(this._config, opts.supportLogger);
     try {
-      // Report the component actually constructed. `CamundaClient` is a value-alias of the
-      // `CamundaClientBase` subclass, so `new.target` is `CamundaClientBase` for the full client
-      // and `CamundaCore` for a bare core. Compare constructor *identity* (not `new.target.name`):
-      // a consumer minifier may rename the class identifiers, but identity survives minification,
-      // so a bare core is never misattributed to a (nonexistent) client in support diagnostics.
-      const component = new.target === CamundaCore ? 'CamundaCore' : 'CamundaClient';
+      // Report the component actually constructed. The `__camundaComponent` discriminator is
+      // authoritative: `CamundaCore` defaults to `'CamundaCore'` and `CamundaClientBase` passes
+      // `'CamundaClient'`. An explicit marker (not `new.target`) is required because a consumer
+      // may subclass the now-public `CamundaCore` — `new.target !== CamundaCore` for such a
+      // subclass, so a `new.target`-based check would mislabel it "CamundaClient" in support
+      // diagnostics even though it has no client operation surface. The marker is also immune to
+      // minifiers renaming class identifiers and to test-transform (SSR) class re-instantiation.
+      const component = opts.__camundaComponent ?? 'CamundaCore';
       this._supportLogger.log(`${component} constructed`);
     } catch {
       /* ignore */

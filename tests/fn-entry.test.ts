@@ -162,6 +162,17 @@ describe('./fn entry point — behaviour', () => {
       supportLogger: { log: (m: string) => void clientMsgs.push(m) } as any,
     });
     expect(clientMsgs.some((m) => m.includes('CamundaClient constructed'))).toBe(true);
+
+    // A consumer subclass of the now-public CamundaCore is still a core: it has no
+    // client operation surface, so support diagnostics must not mislabel it as a client.
+    class CustomCore extends Fn.CamundaCore {}
+    const subclassMsgs: string[] = [];
+    new CustomCore({
+      config: baseConfig,
+      supportLogger: { log: (m: string) => void subclassMsgs.push(m) } as any,
+    });
+    expect(subclassMsgs.some((m) => m.includes('CamundaCore constructed'))).toBe(true);
+    expect(subclassMsgs.some((m) => m.includes('CamundaClient constructed'))).toBe(false);
   });
 
   it('jobs activated through a bare core can complete themselves', async () => {
