@@ -1,3 +1,10 @@
+# [10.0.0-alpha.52](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.51...v10.0.0-alpha.52) (2026-10-02)
+
+
+### Features
+
+* make the sdk tree-shakeable for bundler consumers ([#539](https://github.com/camunda/orchestration-cluster-api-js/issues/539)) ([2c25a1e](https://github.com/camunda/orchestration-cluster-api-js/commit/2c25a1ee65325984d6f30a50742563e06fca3ee4)), closes [#537](https://github.com/camunda/orchestration-cluster-api-js/issues/537) [#537](https://github.com/camunda/orchestration-cluster-api-js/issues/537) [#541](https://github.com/camunda/orchestration-cluster-api-js/issues/541) [#537](https://github.com/camunda/orchestration-cluster-api-js/issues/537)
+
 # [10.0.0-alpha.51](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.50...v10.0.0-alpha.51) (2026-10-01)
 
 
