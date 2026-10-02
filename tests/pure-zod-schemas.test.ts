@@ -77,4 +77,32 @@ describe('wrapSchemaInitialisers', () => {
     const src = 'export const config = buildConfig();';
     expect(() => wrapSchemaInitialisers(src)).toThrow(/unreviewed const declaration/);
   });
+
+  it('fails fast on a z* export whose call-chain root is not a reviewed Zod/schema root', () => {
+    // Exported + `z*`-named, but the call is an arbitrary side-effecting factory, not a zod
+    // (`z.*`) or reviewed-schema chain — must not be marked pure.
+    const src = 'export const zBootstrap = registerGlobalState();';
+    expect(() => wrapSchemaInitialisers(src)).toThrow(
+      /unreviewed call-chain root registerGlobalState/
+    );
+  });
+
+  it('fails fast on an unknown z* callee that is not a declared schema root', () => {
+    const src = 'export const zFoo = zMystery().optional();';
+    expect(() => wrapSchemaInitialisers(src)).toThrow(/unreviewed call-chain root zMystery/);
+  });
+
+  it('wraps a chain rooted at another declared z* schema (schema composition)', () => {
+    const src = [
+      'export const zParent = z.object({ a: z.string() });',
+      'export const zChild = zParent.extend({ b: z.number() });',
+    ].join('\n');
+    const out = wrapSchemaInitialisers(src);
+    expect(out).toBe(
+      [
+        'export const zParent = /*#__PURE__*/ (() => z.object({ a: z.string() }))();',
+        'export const zChild = /*#__PURE__*/ (() => zParent.extend({ b: z.number() }))();',
+      ].join('\n')
+    );
+  });
 });

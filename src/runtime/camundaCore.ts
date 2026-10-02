@@ -124,6 +124,16 @@ export class CamundaCore {
   protected _supportLogger: SupportLogger = new (class implements SupportLogger {
     log() {}
   })();
+  /**
+   * Stable delegating sink handed to `wrapFetch`. The wrapped fetch captures this object
+   * once, but every `log()` forwards to the *current* `_supportLogger` — so a support
+   * logger assigned (or injected) after fetch is wrapped still receives http end/error
+   * events. Passing `_supportLogger` directly would permanently capture whatever instance
+   * existed at wrap time (the initial no-op), silently dropping those events.
+   */
+  protected readonly _supportLogSink: SupportLogger = {
+    log: (message, addTimestamp) => this._supportLogger.log(message, addTimestamp),
+  };
 
   // Internal fixed error mode for eventual consistency ('throw' | 'result'). Not user mutable after construction.
   protected readonly _errorMode: 'throw' | 'result';
@@ -150,7 +160,7 @@ export class CamundaCore {
         hooks: opts.telemetry.hooks,
         correlation: opts.telemetry.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
-        supportLogger: this._supportLogger,
+        supportLogger: this._supportLogSink,
         mirrorToLog: opts.telemetry.mirrorToLog,
       });
     } else if (this._config.telemetry?.log) {
@@ -158,7 +168,7 @@ export class CamundaCore {
         hooks: undefined,
         correlation: this._config.telemetry.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
-        supportLogger: this._supportLogger,
+        supportLogger: this._supportLogSink,
         mirrorToLog: true,
       });
     } else if (
@@ -176,7 +186,7 @@ export class CamundaCore {
         hooks: undefined,
         correlation: this._config.telemetry?.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
-        supportLogger: this._supportLogger,
+        supportLogger: this._supportLogSink,
         mirrorToLog: true,
       });
     }
@@ -287,7 +297,7 @@ export class CamundaCore {
         hooks: next.telemetry.hooks,
         correlation: next.telemetry.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
-        supportLogger: this._supportLogger,
+        supportLogger: this._supportLogSink,
         mirrorToLog: next.telemetry.mirrorToLog,
       });
     } else if (this._config.telemetry?.log) {
@@ -295,7 +305,7 @@ export class CamundaCore {
         hooks: undefined,
         correlation: this._config.telemetry.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
-        supportLogger: this._supportLogger,
+        supportLogger: this._supportLogSink,
         mirrorToLog: true,
       });
     } else if (
@@ -310,7 +320,7 @@ export class CamundaCore {
         hooks: undefined,
         correlation: this._config.telemetry?.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
-        supportLogger: this._supportLogger,
+        supportLogger: this._supportLogSink,
         mirrorToLog: true,
       });
     }

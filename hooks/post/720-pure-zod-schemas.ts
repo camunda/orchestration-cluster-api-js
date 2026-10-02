@@ -39,6 +39,14 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
   const edits: { start: number; end: number; text: string }[] = [];
   const problems: string[] = [];
 
+  // Reviewed call-chain roots: the zod namespace (`import * as z from 'zod'`) and every
+  // exported `z*` schema const in this file (schemas build on one another, e.g.
+  // `zChild = zParent.extend(...)`). A call initialiser is only droppable-by-annotation if
+  // its chain is rooted at one of these — otherwise an upstream
+  // `export const zBootstrap = registerGlobalState()` would be marked pure despite its side
+  // effect, defeating the hook's fail-closed promise.
+  const schemaRoots = collectSchemaRoots(sf);
+
   for (const st of sf.statements) {
     if (ts.isImportDeclaration(st)) continue;
     // `void __zodAugmentApplied;` — deliberately retained (see hook 600).
@@ -64,6 +72,16 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
         if (!init || ts.isIdentifier(init)) continue; // alias: no side effect
         if (ts.isCallExpression(init)) {
           if (isPureIife(init)) continue; // already wrapped (idempotent rerun)
+          const root = callChainRoot(init);
+          if (!ts.isIdentifier(root) || !(root.text === 'z' || schemaRoots.has(root.text))) {
+            // A `z*` export whose call chain is NOT rooted at the zod namespace or another
+            // reviewed schema (e.g. `export const zBootstrap = registerGlobalState()`): the
+            // call may have side effects, so refuse to mark it pure.
+            problems.push(
+              `${name}: unreviewed call-chain root ${ts.isIdentifier(root) ? root.text : ts.SyntaxKind[root.kind]}`
+            );
+            continue;
+          }
           const exprText = init.getText(sf);
           edits.push({
             start: init.getStart(sf),
@@ -99,6 +117,39 @@ function isPureIife(call: ts.CallExpression): boolean {
   if (!ts.isParenthesizedExpression(callee) || !ts.isArrowFunction(callee.expression)) return false;
   const full = call.getFullText();
   return /\/\*#__PURE__\*\/\s*\($/.test(full.slice(0, full.indexOf('(') + 1));
+}
+
+/** Names of exported `z*` schema consts — the reviewed roots a schema call chain may build on. */
+function collectSchemaRoots(sf: ts.SourceFile): Set<string> {
+  const roots = new Set<string>();
+  for (const st of sf.statements) {
+    if (!ts.isVariableStatement(st) || !(st.declarationList.flags & ts.NodeFlags.Const)) continue;
+    const isExported = st.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword) ?? false;
+    if (!isExported) continue;
+    for (const decl of st.declarationList.declarations) {
+      const name = decl.name.getText(sf);
+      if (name.startsWith('z')) roots.add(name);
+    }
+  }
+  return roots;
+}
+
+/** Leftmost identifier a call/member chain is rooted at (e.g. `z` in `z.object(...).register(...)`). */
+function callChainRoot(expr: ts.Expression): ts.Expression {
+  let node: ts.Expression = expr;
+  for (;;) {
+    if (
+      ts.isCallExpression(node) ||
+      ts.isPropertyAccessExpression(node) ||
+      ts.isElementAccessExpression(node) ||
+      ts.isNonNullExpression(node) ||
+      ts.isParenthesizedExpression(node)
+    ) {
+      node = node.expression;
+    } else {
+      return node;
+    }
+  }
 }
 
 function main(): void {
