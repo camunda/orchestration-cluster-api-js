@@ -1,5 +1,5 @@
 /*
- * Regression guard for hooks/post/650-annotate-pure-initialisers.ts (issue #537, phase 2).
+ * Regression guard for hooks/post/715-annotate-pure-initialisers.ts (issue #537, phase 2).
  *
  * That hook is the pipeline's safety net for tree-shaking: every top-level
  * `const x = call(...)` in `src/gen` must be annotated `/* @__PURE__ *\/` (reviewed
@@ -14,11 +14,19 @@
  * generator can plausibly emit (single-line, multiline callee, multiline args,
  * nested calls, generics) — not just the one instance from the review.
  */
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterAll, afterEach, describe, expect, it } from 'vitest';
-import { annotatePureInitialisers } from '../hooks/post/650-annotate-pure-initialisers';
+import { annotatePureInitialisers } from '../hooks/post/715-annotate-pure-initialisers';
 
 const PURE = '/* @__PURE__ */';
 
@@ -78,7 +86,7 @@ afterAll(() => {
   expect(leaked).toEqual([]);
 });
 
-describe('650-annotate-pure-initialisers', () => {
+describe('715-annotate-pure-initialisers', () => {
   it('annotates a single-line top-level initialiser and its nested call', () => {
     const { result, read } = runHook({
       'client.gen.ts': `export const client = createClient(createConfig({ throwOnError: true }));\n`,
@@ -360,5 +368,87 @@ describe('650-annotate-pure-initialisers', () => {
     const { result, read } = runHook({ 'decls.gen.ts': src });
     expect(result.status).toBe(0);
     expect(read('decls.gen.ts')).toBe(src);
+  });
+
+  it('fails the pipeline on an unreviewed call in a PARAMETER decorator (evaluated when the class is defined)', () => {
+    // Review finding (PR #539, review 5387082968): a parameter decorator's
+    // expression is evaluated when the containing class is defined, but the
+    // eager-parts walk visited decorators only on the class and its MEMBERS —
+    // `class C { m(@sneakySideEffect() v: string) {} }` reached neither
+    // visitDecorators(member) nor the deferred method-body walk, so the
+    // unreviewed eager call passed the gate. Parameter decorators on every
+    // method/accessor/constructor overload must now reach the gate.
+    for (const src of [
+      `class C { m(@sneakySideEffect() v: string) {} }\n`,
+      `class C { constructor(@sneakySideEffect() v: string) {} }\n`,
+      `class C { get g(@sneakySideEffect() v: string) { return 1; } }\n`,
+      `class C { set s(@sneakySideEffect() v: string) {} }\n`,
+      `class C { static m(@sneakySideEffect() v: string) {} }\n`,
+      `export const C = class { m(@sneakySideEffect() v: string) {} };\n`,
+    ]) {
+      const { result } = runHook({ 'evil.gen.ts': src });
+      expect(result.status).toBe(1);
+      expect(result.stderr.toLowerCase()).toContain('sneaky');
+    }
+  });
+
+  it('fails the pipeline on an unreviewed TAGGED TEMPLATE (an eager invocation that is not a CallExpression)', () => {
+    // Review finding (PR #539, review 5387082968, previously-missed): a tagged
+    // template IS an eager function invocation — `tag\`...\`` calls `tag` at
+    // evaluation time — but it is a TaggedTemplateExpression, not a
+    // CallExpression, so `export const x = sneakyTag\`value\`` was silently
+    // accepted and could run an unreviewed side effect at import time. The tag
+    // and every substitution are eager and must reach the gate.
+    for (const src of [
+      'export const x = sneakyTag`value`;\n',
+      'export const x = sneakyTag`a${b}c`;\n',
+      'export const x = tag`${sneakySideEffect()}`;\n',
+      'export const x = tag`a${b}${sneakySideEffect()}`;\n',
+      'export const x = createClient(sneakyTag`value`);\n',
+    ]) {
+      const { result } = runHook({ 'evil.gen.ts': src });
+      expect(result.status).toBe(1);
+      expect(result.stderr.toLowerCase()).toContain('sneaky');
+    }
+  });
+
+  it('annotates a REVIEWED tagged template and its reviewed substitutions', () => {
+    // The pure counterpart: a reviewed tag is annotated like a reviewed call,
+    // and a reviewed callee in a substitution is annotated too.
+    const { result, read } = runHook({
+      'client.gen.ts': 'export const x = createClient`a${createConfig({ throwOnError: true })}`;\n',
+    });
+    expect(result.status).toBe(0);
+    expect(read('client.gen.ts')).toBe(
+      `export const x = ${PURE} createClient\`a\${${PURE} createConfig({ throwOnError: true })}\`;\n`
+    );
+  });
+
+  it('runs AFTER the last generated-source mutator in the post-hook ordering', () => {
+    // Review finding (PR #539, review 5387082968): the gate ran as
+    // 650-annotate-pure-initialisers.ts, but post hooks execute in lexicographic
+    // order and both 700-enrich-activate-jobs.ts and 710-derive-present-when.ts
+    // rewrite files under src/gen AFTER it — so an eager initializer introduced
+    // by either mutator bypassed the allowlist entirely. The gate must sort
+    // after every other hook that mutates src/gen. This asserts the invariant
+    // directly against the real hooks/post directory so a future mutator added
+    // after the gate fails here, not in a consumer bundle.
+    const postDir = join(__dirname, '..', 'hooks', 'post');
+    const gate = '715-annotate-pure-initialisers.ts';
+    const hooks = readdirSync(postDir)
+      .filter((f) => f.endsWith('.ts'))
+      .sort();
+    expect(hooks).toContain(gate);
+    // Hooks that only READ src/gen (test scaffolds, example typecheck) may run
+    // after the gate; hooks that WRITE src/gen must run before it. Keep this
+    // list empty: any new src/gen mutator must be numbered before the gate.
+    const GEN_MUTATORS_AFTER_GATE: string[] = [];
+    const gateIdx = hooks.indexOf(gate);
+    for (const later of hooks.slice(gateIdx + 1)) {
+      expect(GEN_MUTATORS_AFTER_GATE).not.toContain(later);
+    }
+    // And the two known mutators must sort BEFORE the gate.
+    expect(hooks.indexOf('700-enrich-activate-jobs.ts')).toBeLessThan(gateIdx);
+    expect(hooks.indexOf('710-derive-present-when.ts')).toBeLessThan(gateIdx);
   });
 });

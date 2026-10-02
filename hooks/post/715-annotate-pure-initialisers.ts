@@ -36,6 +36,13 @@ import ts from 'typescript';
 // function/arrow/class boundary, so it is fail-closed for every initialiser shape
 // without touching the lazy ones. Guarded end-to-end by
 // scripts/check-tree-shaking.mjs and tests/annotate-pure-initialisers.test.ts.
+//
+// Ordering: this hook is numbered 715 so it runs AFTER the last generated-source
+// mutator (700-enrich-activate-jobs, 710-derive-present-when — post hooks execute
+// in lexicographic order). A gate that runs before those hooks would validate a
+// tree that later hooks then rewrite, letting an eager initializer they introduce
+// bypass the allowlist. Any FUTURE hook that writes under src/gen must be
+// numbered below 715 (the regression suite asserts this ordering).
 
 // zod.gen.ts is excluded: it is only ever loaded lazily via `import()`, and its
 // schema definitions call `.register(...)` into a global registry (a real side
@@ -79,16 +86,22 @@ function alreadyAnnotated(src: string, node: ts.Node): boolean {
   return src.slice(node.getFullStart(), node.getStart()).includes('@__PURE__');
 }
 
-type EagerCall = { node: ts.CallExpression | ts.NewExpression; key: string; pure: boolean };
+type EagerCall = {
+  node: ts.CallExpression | ts.NewExpression | ts.TaggedTemplateExpression;
+  key: string;
+  pure: boolean;
+};
 
 /**
- * Collect every call / `new` that is EAGERLY evaluated while running `init` as a
- * module-level construct — i.e. reachable without crossing a function, arrow,
- * method, accessor, or constructor boundary, or a deferred (instance / body)
- * part of a class (those defer evaluation to call / construction time). The
- * arguments of an eager call are themselves eager, so we descend into them, and
- * so are a class's decorators, `extends` expression, computed member names,
- * static field initialisers and static blocks.
+ * Collect every call / `new` / tagged template that is EAGERLY evaluated while
+ * running `init` as a module-level construct — i.e. reachable without crossing a
+ * function, arrow, method, accessor, or constructor boundary, or a deferred
+ * (instance / body) part of a class (those defer evaluation to call /
+ * construction time). The arguments of an eager call are themselves eager, so we
+ * descend into them, and so are a class's decorators (including PARAMETER
+ * decorators), `extends` expression, computed member names, static field
+ * initialisers and static blocks. A tagged template is an eager invocation too —
+ * its tag and substitutions are collected the same way.
  */
 function collectEagerCalls(init: ts.Node, out: EagerCall[]): void {
   const visit = (node: ts.Node): void => {
@@ -128,6 +141,16 @@ function collectEagerCalls(init: ts.Node, out: EagerCall[]): void {
       ts.forEachChild(node, visit);
       return;
     }
+    if (ts.isTaggedTemplateExpression(node)) {
+      // A tagged template IS an eager invocation — `tag\`...\`` calls `tag` at
+      // evaluation time — but it is not a CallExpression, so without this branch
+      // `export const x = sneakyTag\`value\`` would bypass the gate. The tag and
+      // every substitution are eager; descend into both.
+      const tag = calleeText(node.tag);
+      out.push({ node, key: tag, pure: PURE_CALLEES.has(tag) });
+      ts.forEachChild(node, visit);
+      return;
+    }
     ts.forEachChild(node, visit);
   };
 
@@ -153,6 +176,18 @@ function collectEagerCalls(init: ts.Node, out: EagerCall[]): void {
       // A computed member name is evaluated eagerly whether or not it is static.
       if (member.name && ts.isComputedPropertyName(member.name)) {
         visit(member.name.expression);
+      }
+      // Parameter decorators are evaluated when the class is DEFINED, so a call
+      // in `m(@sneaky() v: string)` is eager even though the method BODY is
+      // deferred. Visit the decorators on every parameter of a method, accessor,
+      // or constructor declaration (including overloads).
+      if (
+        ts.isMethodDeclaration(member) ||
+        ts.isConstructorDeclaration(member) ||
+        ts.isGetAccessorDeclaration(member) ||
+        ts.isSetAccessorDeclaration(member)
+      ) {
+        for (const param of member.parameters) visitDecorators(param);
       }
       const isStatic =
         ts.canHaveModifiers(member) &&
@@ -226,7 +261,7 @@ function main(): void {
     console.error(
       '[annotate-pure] Unreviewed top-level calls in generated code. Each one runs at import ' +
         'time and defeats tree-shaking. Review it and add the callee to PURE_CALLEES in ' +
-        'hooks/post/650-annotate-pure-initialisers.ts if it is side-effect-free:\n  ' +
+        'hooks/post/715-annotate-pure-initialisers.ts if it is side-effect-free:\n  ' +
         unreviewed.join('\n  ')
     );
     process.exit(1);
