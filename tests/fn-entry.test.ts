@@ -87,6 +87,34 @@ describe('./fn entry point — class-scoped invariants', () => {
     });
     expect(misplaced).toEqual([]);
   });
+
+  // Regression for the whole class (Copilot round 7 "previously missed"): the disclosed
+  // bug affected every no-input method, but the behaviour test below exercises only
+  // `getTopology`. A no-input method is one whose generated implementation binds a lone
+  // first argument to an unused `arg` (`name(arg?: any, options?: OperationOptions)`);
+  // every one of them must forward `options ?? arg` so a lone first argument is honoured
+  // as the OperationOptions object. Asserting the delegation shape for ALL of them guards
+  // the class — a method that drops the lone argument (`Ops.x(this, options)`) or binds it
+  // wrongly fails here even if its behaviour test is never written.
+  it('every no-input CamundaClient method forwards options ?? arg', () => {
+    const src = read('src/gen/CamundaClient.ts');
+    // Identify every no-input method by its implementation signature, class-scoped.
+    const noInput = [
+      ...src.matchAll(
+        /\n {2}(\w+)\(arg\?: any, options\?: OperationOptions\): CancelablePromise<any> \{/g
+      ),
+    ].map((m) => m[1]);
+    // Sanity: the disclosed set is the 19 no-input operations; guard against the regex
+    // silently matching nothing if the generator changes the signature shape.
+    expect(noInput.length).toBeGreaterThanOrEqual(19);
+    const notForwarding = noInput.filter((op) => {
+      const re = new RegExp(
+        `\\n  ${op}\\(arg\\?: any, options\\?: OperationOptions\\): CancelablePromise<any> \\{\\n    return Ops\\.${op}\\(this, options \\?\\? arg\\);\\n  \\}\\n`
+      );
+      return !re.test(src);
+    });
+    expect(notForwarding).toEqual([]);
+  });
 });
 
 describe('./fn entry point — behaviour', () => {

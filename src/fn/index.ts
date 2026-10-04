@@ -17,6 +17,12 @@
  * import, plus the zod schemas those operations validate with (loaded lazily, and
  * only when validation is enabled).
  *
+ * One bundler limitation: this relies on the bundler tree-shaking dead dynamic-`import()`
+ * targets (Rollup, or esbuild without code splitting). esbuild's `splitting: true` mode
+ * retains the `import()` targets of unimported operations, so a code-split esbuild build
+ * may still include schema chunks for operations you did not import; prefer an unsplit
+ * build (or Rollup) when minimal bundles matter.
+ *
  * A `CamundaClient` is also a `CamundaCore`, so these functions accept an existing
  * client too.
  *

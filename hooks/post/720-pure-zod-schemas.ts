@@ -31,7 +31,10 @@
  * blindly marked pure. Calls inside deferred callback bodies (`z.lazy(() => …)`) are not
  * eager and are skipped.
  *
- * Idempotent: already-wrapped initialisers are left untouched.
+ * Idempotent: already-wrapped initialisers are left untouched — but their wrapped bodies
+ * are still validated with the same eager-call traversal before the name is accepted as a
+ * proven schema, so a `/*#__PURE__*\/ (() => …)()` wrapper that hides an unreviewed eager
+ * side effect fails closed rather than being trusted by shape alone.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -79,8 +82,21 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
           continue;
         }
         if (ts.isCallExpression(init)) {
-          if (isPureIife(init)) {
-            // Already wrapped (idempotent rerun): it was proven a schema when first wrapped.
+          const wrappedBody = pureIifeBody(init);
+          if (wrappedBody !== null) {
+            // Already wrapped (idempotent rerun). Do NOT trust the `/*#__PURE__*/ (() => …)()`
+            // shape alone: the annotation only asserts the OUTER expression is pure, so a
+            // hand-written or generator-regressed wrapper could still hide an eager side
+            // effect in its body (`(() => sideEffect())()`). Validate the wrapped body with
+            // the same eager-call traversal before accepting the name as a proven schema —
+            // an unreviewed eager call inside fails closed instead of being marked pure.
+            const unreviewed = findUnreviewedEagerCall(wrappedBody, schemaNames);
+            if (unreviewed !== null) {
+              problems.push(
+                `${decl.name.getText(sf)}: pure-IIFE initialiser wraps an eagerly-evaluated call whose chain is not rooted at the zod namespace or a schema reference (root: ${unreviewed}) — ${init.getText(sf).slice(0, 120)}`
+              );
+              continue;
+            }
             if (ts.isIdentifier(decl.name)) schemaNames.add(decl.name.text);
             continue;
           }
@@ -127,12 +143,28 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
   return out;
 }
 
-function isPureIife(call: ts.CallExpression): boolean {
-  if (call.arguments.length !== 0) return false;
+/**
+ * If `call` is an already-wrapped pure IIFE — `/*#__PURE__*\/ (() => BODY)()` — returns
+ * the wrapped BODY expression so the caller can validate it; otherwise returns `null`.
+ * The wrapper is recognised structurally (zero-arg call of a parenthesised arrow whose
+ * body is a single returned expression) plus the leading `/*#__PURE__*\/` annotation.
+ */
+function pureIifeBody(call: ts.CallExpression): ts.Expression | null {
+  if (call.arguments.length !== 0) return null;
   const callee = call.expression;
-  if (!ts.isParenthesizedExpression(callee) || !ts.isArrowFunction(callee.expression)) return false;
+  if (!ts.isParenthesizedExpression(callee) || !ts.isArrowFunction(callee.expression)) return null;
+  const arrow = callee.expression;
+  if (arrow.parameters.length !== 0) return null;
   const full = call.getFullText();
-  return /\/\*#__PURE__\*\/\s*\($/.test(full.slice(0, full.indexOf('(') + 1));
+  if (!/\/\*#__PURE__\*\/\s*\($/.test(full.slice(0, full.indexOf('(') + 1))) return null;
+  // The hook wraps with an expression-bodied arrow (`(() => EXPR)()`), so the body is the
+  // expression itself. Tolerate a block body with a single `return EXPR;` too.
+  if (!ts.isBlock(arrow.body)) return arrow.body;
+  if (arrow.body.statements.length === 1) {
+    const only = arrow.body.statements[0];
+    if (ts.isReturnStatement(only) && only.expression) return only.expression;
+  }
+  return null;
 }
 
 /**

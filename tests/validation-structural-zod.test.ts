@@ -57,6 +57,20 @@ describe('structural zod detection', () => {
       const structural: { name: string; issues: unknown[] } = core;
       expect(Array.isArray(structural.issues)).toBe(true);
     }
+
+    // Negative type assertion: pin the narrowing to the STRUCTURAL `ZodErrorLike`, not the
+    // classic `z.ZodError`. `ZodErrorLike` is exactly `{ name: string; issues: ZodIssue[] }`
+    // with no `Error` members, so it is NOT assignable to `z.ZodError` (which has `message`,
+    // `stack`, …). If `isZodError` is re-narrowed to `err is z.ZodError`, the narrowed value
+    // becomes a real `ZodError` and the `@ts-expect-error` line below stops erroring — failing
+    // type-checking. The positive block above alone cannot catch that regression, because a
+    // `ZodError` is still assignable to the weaker `{ name; issues }` shape.
+    const unknownErr: unknown = core;
+    if (isZodError(unknownErr)) {
+      // @ts-expect-error the narrowed type is the structural ZodErrorLike, not z.ZodError
+      const _classic: z.ZodError = unknownErr;
+      void _classic;
+    }
   });
 
   it('strict validation turns a core $ZodError into CamundaValidationError', async () => {

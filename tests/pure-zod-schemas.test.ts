@@ -161,4 +161,52 @@ describe('wrapSchemaInitialisers', () => {
       expect(out).toContain(`export const zFoo = ${WRAP}z.object(`);
     });
   });
+
+  // Regression (Copilot round 7): the idempotency branch trusted the `/*#__PURE__*/ (() => …)()`
+  // SHAPE alone and added the name to `schemaNames` without inspecting the wrapped body — so
+  // `export const zEvil = /*#__PURE__*/ (() => sideEffect())();` was accepted as a proven
+  // schema, and a later schema rooted at `zEvil` was wrapped too. The wrapper only asserts
+  // the OUTER expression is pure; the wrapped body must pass the same eager-call traversal.
+  describe('pure-IIFE body validation (fail the whole class)', () => {
+    it('fails closed on a pure-IIFE whose body is an unreviewed eager call', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { sideEffect } from './side-effect';",
+        'export const zEvil = /*#__PURE__*/ (() => sideEffect())();',
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zEvil/);
+    });
+
+    it('fails closed on a pure-IIFE whose body nests an unreviewed eager call', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { registerGlobalState } from './side-effect';",
+        'export const zEvil = /*#__PURE__*/ (() => z.object({ v: registerGlobalState() }))();',
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zEvil/);
+    });
+
+    it('does not let a malicious pure-IIFE become a proven schema root for a later schema', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { sideEffect } from './side-effect';",
+        'export const zEvil = /*#__PURE__*/ (() => sideEffect())();',
+        'export const zFoo = zEvil.extend({ b: z.number() });',
+      ].join('\n');
+      // zEvil must be reported (not recorded as a proven schema), so the chain rooted at
+      // it is not silently accepted either.
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zEvil/);
+    });
+
+    it('still accepts a legitimate pure-IIFE wrapping a zod-rooted chain (idempotent)', () => {
+      const src = [
+        "import * as z from 'zod';",
+        'export const zFoo = /*#__PURE__*/ (() => z.object({ a: z.string() }))();',
+        'export const zBar = /*#__PURE__*/ (() => zFoo.extend({ b: z.number() }))();',
+      ].join('\n');
+      const out = wrapSchemaInitialisers(src);
+      // Both already wrapped; left byte-identical (no double-wrap).
+      expect(out).toBe(src);
+    });
+  });
 });
