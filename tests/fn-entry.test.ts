@@ -189,6 +189,36 @@ describe('./fn entry point — behaviour', () => {
     expect(rec.calls).toHaveLength(1);
   });
 
+  it('support logger names the constructed component (core vs client)', () => {
+    // Regression for the `__camundaComponent` support-log discriminator: a bare core must
+    // not be attributed to a (nonexistent) client in support diagnostics, and a consumer
+    // subclass of the now-public CamundaCore is still a core (it has no client operation
+    // surface), so it must not be mislabelled a client either.
+    const coreMsgs: string[] = [];
+    Fn.createCamundaCore({
+      config: baseConfig,
+      supportLogger: { log: (m: string) => void coreMsgs.push(m) } as any,
+    });
+    expect(coreMsgs.some((m) => m.includes('CamundaCore constructed'))).toBe(true);
+    expect(coreMsgs.some((m) => m.includes('CamundaClient constructed'))).toBe(false);
+
+    const clientMsgs: string[] = [];
+    createCamundaClient({
+      config: baseConfig,
+      supportLogger: { log: (m: string) => void clientMsgs.push(m) } as any,
+    });
+    expect(clientMsgs.some((m) => m.includes('CamundaClient constructed'))).toBe(true);
+
+    class CustomCore extends Fn.CamundaCore {}
+    const subclassMsgs: string[] = [];
+    new CustomCore({
+      config: baseConfig,
+      supportLogger: { log: (m: string) => void subclassMsgs.push(m) } as any,
+    });
+    expect(subclassMsgs.some((m) => m.includes('CamundaCore constructed'))).toBe(true);
+    expect(subclassMsgs.some((m) => m.includes('CamundaClient constructed'))).toBe(false);
+  });
+
   it('eventually consistent operations take consistency management like the client', async () => {
     const rec = recordingFetch(() => ({ processInstanceKey: '1' }));
     const core = Fn.createCamundaCore({ config: baseConfig, fetch: rec.fetch });

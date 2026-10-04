@@ -248,4 +248,43 @@ describe('wrapSchemaInitialisers', () => {
       expect(out.match(/\/\*#__PURE__\*\/ \(\(\) => /g)?.length).toBe(2);
     });
   });
+
+  // Regression (Copilot round 10): the exportedness guard alone does not prove a schema
+  // construction. An EXPORTED const rooted at a namespace service/mutator object — e.g.
+  // `export const registration = z.globalRegistry.add(zFoo, metadata)` — is exported AND
+  // `z`-rooted, so it passed both guards and was wrapped `/*#__PURE__*/`, letting a bundler
+  // drop the registry mutation while the referenced `zFoo` stays. A reviewed schema
+  // construction is rooted at a schema CONSTRUCTOR (`z.object`, `z.string`, …) or a proven
+  // schema (`zFoo.extend`); a chain rooted at a namespace service object (`z.globalRegistry`,
+  // `z.registry`, …) is a mutation/service call and must fail closed even when exported.
+  describe('namespace service/mutator guard (fail the whole class)', () => {
+    it('fails closed on an EXPORTED const rooted at z.globalRegistry.add', () => {
+      const src = [
+        "import * as z from 'zod';",
+        'export const zFoo = z.object({ a: z.string() });',
+        'export const registration = z.globalRegistry.add(zFoo, { id: "foo" });',
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/registration/);
+    });
+
+    it('fails closed on an EXPORTED const rooted at another namespace service object', () => {
+      const src = [
+        "import * as z from 'zod';",
+        'export const zFoo = z.object({ a: z.string() });',
+        'export const reg = z.registry().add(zFoo, { id: "foo" });',
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/reg/);
+    });
+
+    it('still wraps an exported schema whose chain PASSES THROUGH a registry method', () => {
+      // `.register(z.globalRegistry, …)` is rooted at the schema constructor `z.object`,
+      // not at the registry object — the registry is only an argument. It must stay wrapped.
+      const src = [
+        "import * as z from 'zod';",
+        'export const zFoo = z.object({ a: z.string() }).register(z.globalRegistry, { id: "foo" });',
+      ].join('\n');
+      const out = wrapSchemaInitialisers(src);
+      expect(out).toContain(`export const zFoo = ${WRAP}z.object(`);
+    });
+  });
 });

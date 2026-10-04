@@ -110,6 +110,13 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
             // effect in its body (`(() => sideEffect())()`). Validate the wrapped body with
             // the same eager-call traversal before accepting the name as a proven schema —
             // an unreviewed eager call inside fails closed instead of being marked pure.
+            const svc = namespaceServiceRoot(wrappedBody);
+            if (svc !== null) {
+              problems.push(
+                `${decl.name.getText(sf)}: pure-IIFE initialiser is rooted at a zod namespace service/mutator object (${svc}), not a schema construction — ${init.getText(sf).slice(0, 120)}`
+              );
+              continue;
+            }
             const unreviewed = findUnreviewedEagerCall(wrappedBody, schemaNames);
             if (unreviewed !== null) {
               problems.push(
@@ -118,6 +125,20 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
               continue;
             }
             if (ts.isIdentifier(decl.name)) schemaNames.add(decl.name.text);
+            continue;
+          }
+          const svc = namespaceServiceRoot(init);
+          if (svc !== null) {
+            // Fail closed: exportedness + a `z`-rooted chain do NOT prove a schema
+            // construction. `export const registration = z.globalRegistry.add(zFoo, meta)`
+            // is exported and `z`-rooted, but its chain is rooted at a namespace
+            // service/mutator object (`z.globalRegistry`), so it is a registry MUTATION —
+            // wrapping it `/*#__PURE__*/` would let a bundler drop the mutation while the
+            // referenced `zFoo` stays. Only a chain rooted at a schema constructor
+            // (`z.object`, …) or a proven schema (`zFoo.extend`, …) is a construction.
+            problems.push(
+              `${decl.name.getText(sf)}: initialiser is rooted at a zod namespace service/mutator object (${svc}), not a schema construction — ${init.getText(sf).slice(0, 120)}`
+            );
             continue;
           }
           const unreviewed = findUnreviewedEagerCall(init, schemaNames);
@@ -259,6 +280,58 @@ function callChainRoot(expr: ts.Expression): ts.Expression {
     }
   }
   return cur;
+}
+
+/**
+ * Zod namespace service/mutator objects that must NOT be treated as schema-construction
+ * roots. A call chain rooted at one of these (e.g. `z.globalRegistry.add(schema, meta)`)
+ * performs a registry/service mutation rather than producing a schema, so marking it pure
+ * would let a bundler drop the mutation while the schema it registers stays referenced.
+ * This is distinct from a schema chain that merely PASSES a registry as an argument
+ * (`.register(z.globalRegistry, …)`), whose root is the schema constructor, not the
+ * registry object.
+ */
+const ZOD_NAMESPACE_SERVICE_OBJECTS = new Set(['globalRegistry', 'registry']);
+
+/**
+ * If `init`'s outer call chain is rooted at a zod namespace service/mutator object
+ * (`z.globalRegistry.add(...)`, `z.registry().add(...)`), returns a description of that
+ * root; otherwise returns `null`. Only the OUTER chain root is inspected: a schema
+ * construction rooted at `z.object`/`zFoo.extend` that merely passes `z.globalRegistry`
+ * as an argument is unaffected. A chain rooted at a proven schema or at a direct schema
+ * constructor (`z.object`) is a construction, not a service call.
+ */
+function namespaceServiceRoot(init: ts.Expression): string | null {
+  if (!ts.isCallExpression(init)) return null;
+  const root = callChainRoot(init.expression);
+  // A chain rooted at a proven schema (`zFoo.extend(...)`) or a non-`z` identifier is a
+  // construction (or handled elsewhere); only a `z.<service>` root is a namespace mutation.
+  if (!ts.isIdentifier(root) || root.text !== ZOD_NAMESPACE) return null;
+  // Walk the member/call chain from the namespace to its first property: `z.object` →
+  // `object` (a constructor), `z.globalRegistry` → `globalRegistry` (a service object),
+  // `z.registry()` → `registry` (a service factory).
+  let cur: ts.Expression = init.expression;
+  while (true) {
+    if (ts.isCallExpression(cur)) {
+      cur = cur.expression;
+      continue;
+    }
+    if (ts.isPropertyAccessExpression(cur)) {
+      if (ts.isIdentifier(cur.expression) && cur.expression.text === ZOD_NAMESPACE) {
+        return ZOD_NAMESPACE_SERVICE_OBJECTS.has(cur.name.text)
+          ? `${ZOD_NAMESPACE}.${cur.name.text}`
+          : null;
+      }
+      cur = cur.expression;
+      continue;
+    }
+    if (ts.isParenthesizedExpression(cur) || ts.isNonNullExpression(cur)) {
+      cur = cur.expression;
+      continue;
+    }
+    break;
+  }
+  return null;
 }
 
 function main(): void {
