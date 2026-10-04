@@ -19,7 +19,7 @@ import { describe, expect, it } from 'vitest';
  */
 
 const root = join(__dirname, '..');
-const ENTRIES = ['src/index.ts', 'src/fn/index.ts', 'src/logger.ts'];
+const ENTRIES = ['src/index.ts', 'src/fn/index.ts', 'src/logger.ts', 'src/effect/index.ts'];
 const PLATFORM = ['src/runtime/platform/node.ts', 'src/runtime/platform/browser.ts'];
 
 function resolveLocal(from: string, spec: string): string[] {
