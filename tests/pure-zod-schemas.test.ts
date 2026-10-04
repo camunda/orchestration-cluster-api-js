@@ -326,6 +326,65 @@ describe('wrapSchemaInitialisers', () => {
         const out = wrapSchemaInitialisers(src);
         expect(out).toContain(`export const zDerived = ${WRAP}zBase.extend(`);
       });
+
+      // Regression (Copilot round 15): the mutator guard ran ONLY on the outer initialiser
+      // chain, so a proven-schema-rooted mutator NESTED in an eager argument slipped through
+      // — its root is a reviewed schema, so `findUnreviewedEagerCall` accepted it and the
+      // whole initialiser was wrapped `/*#__PURE__*/`, letting a bundler drop the eager
+      // re-registration. A non-`z` registry argument isolates the `.register` detection from
+      // the namespace-service guard that would otherwise catch `z.globalRegistry`.
+      it('fails closed on a NESTED proven-schema-rooted .register in an eager argument', () => {
+        const src = [
+          "import * as z from 'zod';",
+          "import { registry } from './registry';",
+          'export const zBase = z.object({ a: z.string() });',
+          'export const zFoo = z.object({ v: zBase.register(registry, { id: "x" }) });',
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+      });
+
+      it('fails closed on a NESTED bracket-notation proven-schema .register', () => {
+        const src = [
+          "import * as z from 'zod';",
+          "import { registry } from './registry';",
+          'export const zBase = z.object({ a: z.string() });',
+          'export const zFoo = z.object({ v: zBase["register"](registry, { id: "x" }) });',
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+      });
+
+      it('fails closed on a NESTED proven-schema-rooted tagged-template mutator', () => {
+        const src = [
+          "import * as z from 'zod';",
+          'export const zBase = z.object({ a: z.string() });',
+          'export const zFoo = z.object({ v: zBase.register`x` });',
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+      });
+
+      // Regression (Copilot round 15): a COMPUTED first member off a proven schema
+      // (`zBase[key](...)`) is not statically known to be a combinator — `key` could be
+      // `register`. The mutator guard previously returned `null` (accept) for it, failing
+      // OPEN; the hook promises fail-closed behaviour, so it must be rejected.
+      it('fails closed on a COMPUTED first member off a proven schema — zBase[key](...)', () => {
+        const src = [
+          "import * as z from 'zod';",
+          "import { key, registry } from './dyn';",
+          'export const zBase = z.object({ a: z.string() });',
+          'export const zAlias = zBase[key](registry, { id: "base" });',
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/zAlias/);
+      });
+
+      it('fails closed on a NESTED computed first member off a proven schema', () => {
+        const src = [
+          "import * as z from 'zod';",
+          "import { key, registry } from './dyn';",
+          'export const zBase = z.object({ a: z.string() });',
+          'export const zFoo = z.object({ v: zBase[key](registry, { id: "x" }) });',
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+      });
     });
 
     // Regression (adversarial round 10): `namespaceServiceRoot`'s walk only peeled

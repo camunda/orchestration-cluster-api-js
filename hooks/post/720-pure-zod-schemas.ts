@@ -368,6 +368,18 @@ function findUnreviewedEagerCall(init: ts.Expression, schemaNames: Set<string>):
         bad = nonSchema;
         return;
       }
+      // A nested chain rooted at a PROVEN schema whose first member is a mutator
+      // (`z.object({ v: zBase.register(registry, meta) })`) re-registers an existing schema
+      // as an eager side effect. Its root is `zBase` (reviewed), so without this it would
+      // pass the `isReviewedRoot` check and be wrapped `/*#__PURE__*/`, letting a bundler
+      // drop the registration. Classify EVERY visited call — not just the outer initialiser
+      // — through the same mutator guard so a nested one fails closed too. A computed first
+      // member (`zBase[key](...)`) is not statically known and also fails closed here.
+      const nestedMutator = schemaMutatorRoot(node, schemaNames);
+      if (nestedMutator !== null) {
+        bad = nestedMutator;
+        return;
+      }
       const root = callChainRoot(node.expression);
       if (!isReviewedRoot(root)) {
         flag(root);
@@ -383,6 +395,14 @@ function findUnreviewedEagerCall(init: ts.Expression, schemaNames: Set<string>):
       const nonSchemaTag = nonSchemaZChainRoot(node.tag);
       if (nonSchemaTag !== null) {
         bad = nonSchemaTag;
+        return;
+      }
+      // Same mutator guard for a tag rooted at a proven schema (`` zBase.register`x` ``):
+      // its first member off the schema is a mutator, so it fails closed exactly like the
+      // call form above rather than being wrapped pure.
+      const tagMutator = schemaMutatorRoot(node.tag, schemaNames);
+      if (tagMutator !== null) {
+        bad = tagMutator;
         return;
       }
       const root = callChainRoot(node.tag);
@@ -638,8 +658,8 @@ function schemaMutatorRoot(chain: ts.Expression, schemaNames: Set<string>): stri
   // Walk from the root toward the outermost call to find the FIRST member off the schema:
   // `zBase.register(...)` → `register` (a mutator, rejected); `zBase.extend({…})` →
   // `extend` (a combinator, allowed). Element access with a static string argument
-  // (`zBase['register'](...)`) names the same property; a computed one is not statically
-  // known and is left to the caller's fail-closed root check.
+  // (`zBase['register'](...)`) names the same property; a COMPUTED one (`zBase[key](...)`)
+  // is not statically known, so it fails closed here rather than being assumed safe.
   let cur: ts.Expression = chain;
   while (true) {
     if (ts.isCallExpression(cur)) {
@@ -658,10 +678,14 @@ function schemaMutatorRoot(chain: ts.Expression, schemaNames: Set<string>): stri
       const base = peelTransparent(cur.expression);
       if (ts.isIdentifier(base) && schemaNames.has(base.text)) {
         const propName = staticElementName(cur.argumentExpression);
-        if (propName !== null && SCHEMA_MUTATOR_METHODS.has(propName)) {
-          return `${base.text}.${propName}`;
+        if (propName !== null) {
+          // Statically-known key: a known mutator fails closed; a combinator is a construction.
+          return SCHEMA_MUTATOR_METHODS.has(propName) ? `${base.text}.${propName}` : null;
         }
-        return null;
+        // A COMPUTED first member off a proven schema (`zBase[key](...)`) is not statically
+        // known to be a schema-producing combinator — `key` could be `register`. The hook
+        // promises fail-closed behaviour, so reject it rather than assume it is safe to wrap.
+        return `${base.text}[<computed>]`;
       }
       cur = cur.expression;
       continue;

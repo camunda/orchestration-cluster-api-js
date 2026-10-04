@@ -280,10 +280,15 @@ export class BackpressureManager {
   /**
    * Release a permit previously granted by `acquire()`. `token` is the grant token
    * `acquire()` resolved: the permit EPOCH when a permit was consumed, or `null` when none
-   * was. A `null` token (or a missing one, for back-compat with the legacy no-arg form) is a
-   * no-op. A non-null token releases only when its epoch still matches the current regime —
-   * after a finite→unlimited→finite transition the epoch has advanced, so a STALE lease's
-   * release is dropped instead of decrementing a permit owned by the later epoch.
+   * was. The two falsy-ish cases are NOT equivalent:
+   *   - `null` (no permit was held) is a true no-op — nothing is decremented.
+   *   - a MISSING token (the legacy no-argument `release()` form, used by the recovery paths
+   *     below) is epoch-UNGUARDED: it unconditionally decrements a permit when one is held.
+   *     Callers on the current grant-token API should always pass the resolved token so a
+   *     stale lease is dropped; only the internal back-compat callers rely on the no-arg form.
+   * A non-null token releases only when its epoch still matches the current regime — after a
+   * finite→unlimited→finite transition the epoch has advanced, so a STALE lease's release is
+   * dropped instead of decrementing a permit owned by the later epoch.
    */
   release(token?: number | null) {
     if (!this.isEnabled()) return; // disabled or observeOnly (we don't track permits in observeOnly)

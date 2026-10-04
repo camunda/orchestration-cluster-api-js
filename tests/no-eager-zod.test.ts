@@ -332,20 +332,38 @@ const SYNC_ITERATOR_METHODS = new Set([
 
 /**
  * True when `node` is a function/arrow passed as an ARGUMENT to a call whose callee runs it
- * SYNCHRONOUSLY during module evaluation — so its body is eager, not deferred. The one
- * statically-provable shape is a known synchronous iterator method: `[1].forEach(() => …)`,
- * `xs.map(function () {…})` — in EITHER dot or bracket notation (`xs['forEach'](cb)`).
- * Anything else (a method call we cannot prove synchronous, an async scheduler, a callback
- * stored for later, a direct call of an opaque local function) stays deferred — the gate errs
- * toward not flagging a pattern it cannot prove is eager.
+ * SYNCHRONOUSLY during module evaluation — so its body is eager, not deferred. Two
+ * statically-provable shapes: a known synchronous iterator method (`[1].forEach(() => …)`,
+ * `xs.map(function () {…})` — in EITHER dot or bracket notation, `xs['forEach'](cb)`), and
+ * the `new Promise(executor)` constructor, whose executor runs inline during construction
+ * (`new Promise(() => import('zod'))` loads Zod eagerly). Anything else (a method call we
+ * cannot prove synchronous, an async scheduler, a callback stored for later, a direct call
+ * of an opaque local function) stays deferred — the gate errs toward not flagging a pattern
+ * it cannot prove is eager.
  */
 function isSynchronouslyInvokedCallback(node: ts.Node): boolean {
   if (!ts.isFunctionExpression(node) && !ts.isArrowFunction(node)) return false;
   let cur: ts.Node = node;
   while (cur.parent && ts.isParenthesizedExpression(cur.parent)) cur = cur.parent;
   const parent = cur.parent;
+  if (parent === undefined) return false;
+  // `new Promise(executor)`: the Promise constructor runs its executor SYNCHRONOUSLY during
+  // construction, so a dynamic import inside `new Promise(() => import('zod'))` is eager and
+  // starts loading Zod at module evaluation. Only the FIRST argument (the executor) runs
+  // synchronously, and only for the global `Promise` identifier — a shadowed/other
+  // constructor is not statically provable and stays deferred.
+  if (
+    ts.isNewExpression(parent) &&
+    ts.isIdentifier(parent.expression) &&
+    parent.expression.text === 'Promise' &&
+    parent.arguments !== undefined &&
+    parent.arguments.length > 0 &&
+    parent.arguments[0] === cur
+  ) {
+    return true;
+  }
   // The function must be an argument of a call: `callee(…, fn, …)`.
-  if (parent === undefined || !ts.isCallExpression(parent)) return false;
+  if (!ts.isCallExpression(parent)) return false;
   if (!parent.arguments.some((arg) => arg === cur)) return false;
   // `[1].forEach(cb)` / `xs.map(cb)` / `xs['forEach'](cb)`: a known synchronous iterator
   // method, resolved the same whether written in dot or bracket notation.
@@ -766,6 +784,45 @@ describe('top-level (eager) dynamic imports', () => {
     const entry = write(
       'iife-new-entry.ts',
       "void new (function () {\n  import('zod');\n})();\nexport const y = 2;\n"
+    );
+    expect(eagerZodImportersFrom(entry)).not.toEqual([]);
+  });
+
+  // Regression (Copilot round 15, inline): `new Promise(executor)` runs its executor
+  // SYNCHRONOUSLY during construction, so `new Promise(() => import('zod'))` starts loading
+  // Zod at module evaluation. The arrow is an ARGUMENT of a NewExpression, so neither the
+  // immediate-invocation nor the sync-iterator helper recognised it — the gate missed the
+  // eager import. The Promise executor is now treated as a synchronously-invoked callback.
+  it("reports `new Promise(() => import('zod'))` (Promise executor) as eager", () => {
+    const file = write(
+      'sync-promise-executor.ts',
+      "new Promise(() => import('zod'));\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it("reports `new Promise((res, rej) => { import('zod'); })` (two-arg executor) as eager", () => {
+    const file = write(
+      'sync-promise-executor-args.ts',
+      "new Promise((res, rej) => {\n  void rej;\n  import('zod').then(res);\n});\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('does NOT report an import deferred inside the Promise executor via a nested callback', () => {
+    // The executor runs sync, but the import is nested in a `setTimeout` callback the
+    // executor merely schedules — it stays deferred, so the gate must not flag it.
+    const file = write(
+      'promise-executor-deferred.ts',
+      "new Promise(() => {\n  setTimeout(() => import('zod'), 0);\n});\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual([]);
+  });
+
+  it('end-to-end: fails the gate on a Promise-executor eager zod load', () => {
+    const entry = write(
+      'sync-promise-entry.ts',
+      "new Promise(() => import('zod'));\nexport const y = 2;\n"
     );
     expect(eagerZodImportersFrom(entry)).not.toEqual([]);
   });
