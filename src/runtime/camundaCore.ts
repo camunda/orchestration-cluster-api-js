@@ -463,6 +463,19 @@ export class CamundaCore {
     if (!exempt) {
       await this._bp.acquire(signal);
     }
+    // Re-check cancellation AFTER acquiring. acquire()'s fast paths — unlimited, disabled,
+    // observe-only, and immediate acquire — resolve synchronously after
+    // only acquire()'s initial abort check, so a cancel that lands in the microtask gap
+    // between acquire() resolving and this continuation running would otherwise fall through
+    // and invoke the transport (an injected fetch that ignores `signal` observes the call).
+    // Release the permit the immediate-acquire path may have consumed before throwing: the
+    // try/finally below has NOT been entered yet, so its release() will not run — and
+    // release() is a no-op on the fast paths that consumed nothing, exactly mirroring the
+    // finally. Symmetric with acquire()'s own post-await re-checks (backoff / queued drain).
+    if (signal?.aborted) {
+      if (!exempt) this._bp.release();
+      throw signal.reason || new Error('aborted');
+    }
     try {
       const result = await executeWithHttpRetry(
         async () => op(),

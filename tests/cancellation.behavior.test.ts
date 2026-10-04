@@ -8,9 +8,19 @@ describe('cancellation behavior', () => {
     const BASE = 'https://mock.local';
     const fetchMock = vi.fn();
 
+    // Resolves once the transport is actually in-flight, so the test cancels an
+    // in-flight fetch (its stated intent) rather than racing the pre-transport
+    // cancellation short-circuit in _invokeWithRetry (which, by design, never
+    // reaches fetch — covered by tests/cancellation-backpressure.test.ts).
+    let markFetchEntered!: () => void;
+    const fetchEntered = new Promise<void>((resolve) => {
+      markFetchEntered = resolve;
+    });
+
     fetchMock.mockImplementation(async (_input: RequestInfo | URL, init?: RequestInit) => {
       const signal = init?.signal as AbortSignal | undefined;
       return new Promise<Response>((resolve, reject) => {
+        markFetchEntered();
         const finalize = () => {
           resolve(
             new Response(JSON.stringify({ status: 'ok' }), {
@@ -38,7 +48,9 @@ describe('cancellation behavior', () => {
     });
 
     const p: any = camunda.getStatus();
-    // Immediately cancel before mock resolves
+    // Cancel only once the fetch is genuinely in-flight, so we exercise abort
+    // propagation into the transport rather than the pre-transport short-circuit.
+    await fetchEntered;
     p.cancel();
 
     await expect(p).rejects.toMatchObject({ name: 'CancelSdkError' });

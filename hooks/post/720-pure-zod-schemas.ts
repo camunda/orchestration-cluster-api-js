@@ -110,10 +110,10 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
             // effect in its body (`(() => sideEffect())()`). Validate the wrapped body with
             // the same eager-call traversal before accepting the name as a proven schema —
             // an unreviewed eager call inside fails closed instead of being marked pure.
-            const svc = namespaceServiceRoot(wrappedBody);
+            const svc = nonSchemaNamespaceRoot(wrappedBody);
             if (svc !== null) {
               problems.push(
-                `${decl.name.getText(sf)}: pure-IIFE initialiser is rooted at a zod namespace service/mutator object (${svc}), not a schema construction — ${init.getText(sf).slice(0, 120)}`
+                `${decl.name.getText(sf)}: pure-IIFE initialiser is rooted at a non-schema zod namespace member (${svc}), not a reviewed schema constructor — ${init.getText(sf).slice(0, 120)}`
               );
               continue;
             }
@@ -127,17 +127,19 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
             if (ts.isIdentifier(decl.name)) schemaNames.add(decl.name.text);
             continue;
           }
-          const svc = namespaceServiceRoot(init);
+          const svc = nonSchemaNamespaceRoot(init);
           if (svc !== null) {
             // Fail closed: exportedness + a `z`-rooted chain do NOT prove a schema
-            // construction. `export const registration = z.globalRegistry.add(zFoo, meta)`
-            // is exported and `z`-rooted, but its chain is rooted at a namespace
-            // service/mutator object (`z.globalRegistry`), so it is a registry MUTATION —
-            // wrapping it `/*#__PURE__*/` would let a bundler drop the mutation while the
-            // referenced `zFoo` stays. Only a chain rooted at a schema constructor
-            // (`z.object`, …) or a proven schema (`zFoo.extend`, …) is a construction.
+            // construction. Only a chain whose first `z` member is a reviewed schema
+            // constructor (`z.object`, `z.string`, …) — see `ZOD_SCHEMA_NAMESPACE_MEMBERS`
+            // — is a construction. `export const registration = z.globalRegistry.add(zFoo,
+            // meta)` and `export const c = z.config(...)` are exported and `z`-rooted, but
+            // their first member (`globalRegistry`/`config`) is a service/mutator, not a
+            // constructor, so they are global MUTATIONS — wrapping them `/*#__PURE__*/`
+            // would let a bundler drop the mutation while a referenced schema stays. A
+            // computed root (`z[key](...)`) and any unknown future member fail closed too.
             problems.push(
-              `${decl.name.getText(sf)}: initialiser is rooted at a zod namespace service/mutator object (${svc}), not a schema construction — ${init.getText(sf).slice(0, 120)}`
+              `${decl.name.getText(sf)}: initialiser is rooted at a non-schema zod namespace member (${svc}), not a reviewed schema constructor — ${init.getText(sf).slice(0, 120)}`
             );
             continue;
           }
@@ -222,10 +224,11 @@ function pureIifeBody(call: ts.CallExpression): ts.Expression | null {
  * argument (`z.object({ v: registerGlobalState() })`) is rooted at `z` yet still runs
  * `registerGlobalState()` at module evaluation, and wrapping the initialiser in
  * `/*#__PURE__*\/ (() => …)()` would let a bundler drop that side effect with the schema.
- * The same applies to a nested namespace service MUTATION whose root happens to be `z`
- * (`z.any().default(z.globalRegistry.add(…))`): it would pass the `z`-root check yet is a
- * registry mutation, so every eager call is also run through `namespaceServiceRoot` and a
- * nested `z.<service>` chain fails closed just like the outer initialiser.
+ * The same applies to a nested namespace MUTATION whose root happens to be `z`
+ * (`z.any().default(z.globalRegistry.add(…))`, `z.config(…)`): its first `z` member is a
+ * service/mutator, not a schema constructor, so every eager call is also run through
+ * `nonSchemaNamespaceRoot` (an ALLOWLIST of schema constructors) and a nested
+ * `z.<non-constructor>` / computed-`z[key]` chain fails closed just like the outer one.
  * Traverse the whole initialiser, but stop at deferred callback bodies (arrow/function
  * expressions such as `z.lazy(() => …)` or `.refine((v) => …)`) — those run when the
  * callback is invoked, not at module load, so calls inside them are not eager side effects.
@@ -242,18 +245,18 @@ function findUnreviewedEagerCall(init: ts.Expression, schemaNames: Set<string>):
     // Deferred callback bodies evaluate later, not at module load: do not descend.
     if (ts.isArrowFunction(node) || ts.isFunctionExpression(node)) return;
     if (ts.isCallExpression(node) || ts.isNewExpression(node)) {
-      // Classify EVERY eager call, not just the outer initialiser chain. A nested call
-      // rooted at `z` is not automatically a construction: `z.globalRegistry.add(…)` /
-      // `z.registry().add(…)` (e.g. inside `z.any().default(z.globalRegistry.add(…))`) is
-      // a namespace service MUTATION whose root is `z`, so it would otherwise pass the
-      // `isReviewedRoot` check and be wrapped `/*#__PURE__*/`, letting a bundler drop the
-      // eager mutation with the schema. Fail closed on it exactly like the outer guard.
-      if (ts.isCallExpression(node)) {
-        const svc = namespaceServiceRoot(node);
-        if (svc !== null) {
-          bad = svc;
-          return;
-        }
+      // Classify EVERY eager call against the schema-constructor ALLOWLIST, not just the
+      // outer initialiser chain. A nested call rooted at `z` is not automatically a
+      // construction: `z.config(…)`, `z.globalRegistry.add(…)` / `z.registry().add(…)`
+      // (e.g. inside `z.any().default(z.globalRegistry.add(…))`), and computed `z[key](…)`
+      // all resolve to a `z` root yet are global mutations / unreviewed members, so they
+      // would otherwise pass the `isReviewedRoot` check and be wrapped `/*#__PURE__*/`,
+      // letting a bundler drop the eager mutation with the schema. Fail closed on them
+      // exactly like the outer guard; only an allowlisted `z.<constructor>` continues.
+      const nonSchema = nonSchemaNamespaceRoot(node);
+      if (nonSchema !== null) {
+        bad = nonSchema;
+        return;
       }
       const root = callChainRoot(node.expression);
       if (!isReviewedRoot(root)) {
@@ -264,8 +267,14 @@ function findUnreviewedEagerCall(init: ts.Expression, schemaNames: Set<string>):
       // A tagged template IS an eager invocation — `tag`...`` calls `tag` at module
       // evaluation — but it is not a CallExpression, so without this branch
       // `z.object({ v: tag`x` })` would be wrapped pure and a bundler could drop the
-      // tag's side effect. Check the tag's chain root like a call root; its
+      // tag's side effect. Reject a tag that is a non-schema `z` member (`` z.config`x` ``)
+      // via the same allowlist, then check the tag's chain root like a call root; its
       // substitutions are eager too and are visited below.
+      const nonSchemaTag = nonSchemaZChainRoot(node.tag);
+      if (nonSchemaTag !== null) {
+        bad = nonSchemaTag;
+        return;
+      }
       const root = callChainRoot(node.tag);
       if (!isReviewedRoot(root)) {
         flag(root);
@@ -300,43 +309,157 @@ function callChainRoot(expr: ts.Expression): ts.Expression {
 }
 
 /**
- * Zod namespace service/mutator objects that must NOT be treated as schema-construction
- * roots. A call chain rooted at one of these (e.g. `z.globalRegistry.add(schema, meta)`)
- * performs a registry/service mutation rather than producing a schema, so marking it pure
- * would let a bundler drop the mutation while the schema it registers stays referenced.
- * This is distinct from a schema chain that merely PASSES a registry as an argument
- * (`.register(z.globalRegistry, …)`), whose root is the schema constructor, not the
- * registry object.
+ * ALLOWLIST of reviewed zod namespace members that PRODUCE a schema, so a call chain
+ * rooted at one of them (`z.object(...)`, `z.string()`, `z.coerce.number()`,
+ * `z.iso.datetime()`) is a construction that may be wrapped `/*#__PURE__*\/`. This is an
+ * allowlist, NOT a blacklist of known mutators: every direct `z` member that is NOT listed
+ * here fails closed. A blacklist (e.g. just `globalRegistry`/`registry`) fails OPEN on any
+ * member it has not yet enumerated — Zod 4's `z.config(...)` mutates global configuration,
+ * `z.setErrorMap(...)` mutates the global error map, and a future zod version could add
+ * more — so `export const x = z.config(...)` would be wrapped as droppable and a bundler
+ * could drop the mutation while `x` stays referenced. The allowlist rejects the unreviewed
+ * by default; a legitimately new schema factory fails the build with a clear message and is
+ * added here deliberately after review.
+ *
+ * `coerce` and `iso` are sub-namespaces whose own members are schema factories
+ * (`z.coerce.number()`, `z.iso.date()`); the FIRST member off `z` is `coerce`/`iso`, so
+ * allowlisting those two covers the whole sub-namespace.
  */
-const ZOD_NAMESPACE_SERVICE_OBJECTS = new Set(['globalRegistry', 'registry']);
+const ZOD_SCHEMA_NAMESPACE_MEMBERS = new Set<string>([
+  // Primitive / literal schema factories
+  'string',
+  'number',
+  'bigint',
+  'boolean',
+  'date',
+  'symbol',
+  'undefined',
+  'null',
+  'void',
+  'any',
+  'unknown',
+  'never',
+  'nan',
+  'literal',
+  'enum',
+  'nativeEnum',
+  // Composite schema factories
+  'object',
+  'strictObject',
+  'looseObject',
+  'interface',
+  'array',
+  'tuple',
+  'union',
+  'discriminatedUnion',
+  'intersection',
+  'record',
+  'partialRecord',
+  'map',
+  'set',
+  'function',
+  'lazy',
+  'promise',
+  // Numeric-format schema factories
+  'int',
+  'int32',
+  'uint32',
+  'int64',
+  'uint64',
+  'float32',
+  'float64',
+  // Wrappers / combinators that PRODUCE a schema
+  'nullable',
+  'optional',
+  'nonoptional',
+  'readonly',
+  'templateLiteral',
+  'custom',
+  'instanceof',
+  'preprocess',
+  'pipe',
+  'transform',
+  'codec',
+  'stringbool',
+  'file',
+  // String-format schema factories
+  'email',
+  'uuid',
+  'guid',
+  'url',
+  'httpUrl',
+  'emoji',
+  'nanoid',
+  'cuid',
+  'cuid2',
+  'ulid',
+  'xid',
+  'ksuid',
+  'base64',
+  'base64url',
+  'base32',
+  'jwt',
+  'ascii',
+  'utf8',
+  'e164',
+  'lowercase',
+  'uppercase',
+  'hex',
+  'hostname',
+  'ipv4',
+  'ipv6',
+  'cidrv4',
+  'cidrv6',
+  // Sub-namespaces whose members are schema factories (z.coerce.number(), z.iso.date())
+  'coerce',
+  'iso',
+]);
 
 /**
- * If `init`'s outer call chain is rooted at a zod namespace service/mutator object
- * (`z.globalRegistry.add(...)`, `z.registry().add(...)`), returns a description of that
- * root; otherwise returns `null`. Only the OUTER chain root is inspected: a schema
- * construction rooted at `z.object`/`zFoo.extend` that merely passes `z.globalRegistry`
- * as an argument is unaffected. A chain rooted at a proven schema or at a direct schema
- * constructor (`z.object`) is a construction, not a service call.
+ * If `node`'s call/`new` chain is rooted at the `z` namespace but its first member off `z`
+ * is NOT a reviewed schema-producing constructor (see `ZOD_SCHEMA_NAMESPACE_MEMBERS`),
+ * returns a description of that offending root; otherwise returns `null`. This is the
+ * allowlist complement: it fails closed on a global mutator/service (`z.config(...)`,
+ * `z.globalRegistry.add(...)`, `z.registry().add(...)`, `z.setErrorMap(...)`), on an
+ * unknown member a future zod version might add, and on a COMPUTED member (`z[key](...)`,
+ * whose name is not statically known) — all of which would otherwise resolve to a `z` root
+ * and be wrapped `/*#__PURE__*\/` as droppable.
+ *
+ * Only the chain's first `z` member is inspected, so a schema construction rooted at
+ * `z.object`/`zFoo.extend` that merely PASSES `z.globalRegistry` as an argument
+ * (`.register(z.globalRegistry, …)`) is unaffected: its root member is `object`/`extend`.
+ * A chain rooted at a proven schema or a non-`z` identifier is handled by the caller.
  *
  * The walk handles element access (`z['globalRegistry'].add(...)`) the same as property
- * access, mirroring `callChainRoot` — otherwise the bracket-notation form of a mutation
- * this guard exists to reject would resolve to a `z` root yet slip past the property
- * check and be wrapped `/*#__PURE__*\/`, letting a bundler drop the registry mutation
- * while the schema it registers stays referenced. Transparent wrappers are peeled before
- * the `z` test too, so `(z).globalRegistry.add(...)` and ``z[`globalRegistry`].add(...)``
- * are recognised exactly like their plain dot/bracket forms.
+ * access, mirroring `callChainRoot`, and peels transparent wrappers before the `z` test, so
+ * `(z).globalRegistry.add(...)` and ``z[`globalRegistry`].add(...)`` are recognised exactly
+ * like their plain dot/bracket forms.
  */
-function namespaceServiceRoot(init: ts.Expression): string | null {
-  if (!ts.isCallExpression(init)) return null;
-  const root = callChainRoot(init.expression);
+function nonSchemaNamespaceRoot(node: ts.Expression): string | null {
+  if (!ts.isCallExpression(node) && !ts.isNewExpression(node)) return null;
+  const chain = node.expression;
+  if (!chain) return null;
+  return nonSchemaZChainRoot(chain);
+}
+
+/**
+ * The allowlist walk shared by `nonSchemaNamespaceRoot` (call/`new` callees) and the
+ * tagged-template branch of `findUnreviewedEagerCall` (the tag expression): given a chain
+ * expression, returns a description when it is rooted at the `z` namespace but its first
+ * member is NOT an allowlisted schema constructor (including a computed `z[key]`),
+ * otherwise `null` (allowlisted member, or not rooted at `z`).
+ */
+function nonSchemaZChainRoot(chain: ts.Expression): string | null {
+  const root = callChainRoot(chain);
   // A chain rooted at a proven schema (`zFoo.extend(...)`) or a non-`z` identifier is a
-  // construction (or handled elsewhere); only a `z.<service>` root is a namespace mutation.
+  // construction (or handled elsewhere); only a `z.<member>` root is classified here.
   if (!ts.isIdentifier(root) || root.text !== ZOD_NAMESPACE) return null;
   // Walk the member/call chain from the namespace to its first property: `z.object` →
-  // `object` (a constructor), `z.globalRegistry` → `globalRegistry` (a service object),
-  // `z.registry()` → `registry` (a service factory). Element access with a string-literal
-  // argument (`z['globalRegistry']`) names the same property as dot access.
-  let cur: ts.Expression = init.expression;
+  // `object` (allowlisted constructor), `z.config` → `config` (a mutator, rejected),
+  // `z.globalRegistry` → `globalRegistry` (a service object, rejected). Element access with
+  // a static string argument (`z['globalRegistry']`) names the same property as dot access;
+  // a computed one (`z[key]`) is not statically known and fails closed.
+  let cur: ts.Expression = chain;
   while (true) {
     if (ts.isCallExpression(cur)) {
       cur = cur.expression;
@@ -345,18 +468,21 @@ function namespaceServiceRoot(init: ts.Expression): string | null {
     if (ts.isPropertyAccessExpression(cur)) {
       const base = peelTransparent(cur.expression);
       if (ts.isIdentifier(base) && base.text === ZOD_NAMESPACE) {
-        return ZOD_NAMESPACE_SERVICE_OBJECTS.has(cur.name.text)
-          ? `${ZOD_NAMESPACE}.${cur.name.text}`
-          : null;
+        return ZOD_SCHEMA_NAMESPACE_MEMBERS.has(cur.name.text)
+          ? null
+          : `${ZOD_NAMESPACE}.${cur.name.text}`;
       }
       cur = cur.expression;
       continue;
     }
     if (ts.isElementAccessExpression(cur)) {
       const base = peelTransparent(cur.expression);
-      const propName = staticElementName(cur.argumentExpression);
-      if (ts.isIdentifier(base) && base.text === ZOD_NAMESPACE && propName !== null) {
-        return ZOD_NAMESPACE_SERVICE_OBJECTS.has(propName) ? `${ZOD_NAMESPACE}.${propName}` : null;
+      if (ts.isIdentifier(base) && base.text === ZOD_NAMESPACE) {
+        const propName = staticElementName(cur.argumentExpression);
+        // A computed member (`z[key]`) is not statically known: fail closed rather than
+        // treat it as a schema constructor.
+        if (propName === null) return `${ZOD_NAMESPACE}[computed]`;
+        return ZOD_SCHEMA_NAMESPACE_MEMBERS.has(propName) ? null : `${ZOD_NAMESPACE}.${propName}`;
       }
       cur = cur.expression;
       continue;

@@ -81,19 +81,26 @@ function valueImports(sf: ts.SourceFile): string[] {
  * `import('zod')` inside an operation function is lazy and excluded. Only
  * statically-known string specifiers are reported (a computed `import(expr)` cannot be
  * followed and is skipped).
+ *
+ * A function/arrow body defers its children ONLY when it is not immediately invoked. An
+ * IIFE's body runs during module evaluation, so `void (async () => import('zod'))()` is an
+ * EAGER zod load despite living in an arrow body — it must not be skipped as deferred, or
+ * the gate would pass a module that eager-loads zod through an IIFE.
  */
 function topLevelDynamicImports(sf: ts.SourceFile): string[] {
   const specs: string[] = [];
   const visit = (node: ts.Node, deferred: boolean): void => {
-    // A function-like body defers execution to call time: imports inside it are lazy.
+    // A function-like body defers execution to call time: imports inside it are lazy —
+    // UNLESS the function is immediately invoked (an IIFE), whose body runs eagerly now.
     const defersChildren =
-      ts.isFunctionDeclaration(node) ||
-      ts.isFunctionExpression(node) ||
-      ts.isArrowFunction(node) ||
-      ts.isMethodDeclaration(node) ||
-      ts.isConstructorDeclaration(node) ||
-      ts.isGetAccessorDeclaration(node) ||
-      ts.isSetAccessorDeclaration(node);
+      (ts.isFunctionDeclaration(node) ||
+        ts.isFunctionExpression(node) ||
+        ts.isArrowFunction(node) ||
+        ts.isMethodDeclaration(node) ||
+        ts.isConstructorDeclaration(node) ||
+        ts.isGetAccessorDeclaration(node) ||
+        ts.isSetAccessorDeclaration(node)) &&
+      !isImmediatelyInvoked(node);
     if (
       !deferred &&
       ts.isCallExpression(node) &&
@@ -107,6 +114,22 @@ function topLevelDynamicImports(sf: ts.SourceFile): string[] {
   };
   visit(sf, false);
   return specs;
+}
+
+/**
+ * True when `node` is a function/arrow expression that is IMMEDIATELY INVOKED — the callee
+ * of an enclosing call, i.e. an IIFE such as `(() => …)()`, `(async () => …)()`, or
+ * `(function () { … })()`. Its body executes during module evaluation, not at a later call,
+ * so for the eager-import scan it must NOT be treated as a deferred (lazy) body. A function
+ * DECLARATION is never a call callee, so it can never be an IIFE. Parentheses wrapping the
+ * callee (`((() => …))()`) are peeled before testing identity against the call's callee.
+ */
+function isImmediatelyInvoked(node: ts.Node): boolean {
+  if (!ts.isFunctionExpression(node) && !ts.isArrowFunction(node)) return false;
+  let cur: ts.Node = node;
+  while (cur.parent && ts.isParenthesizedExpression(cur.parent)) cur = cur.parent;
+  const parent = cur.parent;
+  return parent !== undefined && ts.isCallExpression(parent) && parent.expression === cur;
 }
 
 /** Specifiers imported EAGERLY at module load: static value imports plus top-level
@@ -183,23 +206,41 @@ function scanStats(entry: string): { files: number; parses: number } {
 }
 
 describe('zod is not loaded eagerly', () => {
+  // These two suites each run a full BFS over the real source graph, parsing every
+  // reachable file (hundreds, once src/gen is present) with the TypeScript compiler. That
+  // is inherently CPU-heavy, so under parallel suite load on a busy runner a correct scan
+  // can exceed vitest's 5000ms default and time out (measured here, and on this file before
+  // this change — it is load-dependent, not a logic signal). The timeout below is a SAFETY
+  // NET to absorb runner contention, NOT a correctness assertion: correctness is asserted
+  // by the parse-count invariant (`parses === files`) and the offender-list expectations,
+  // which are deterministic on any machine. Do not tighten it back into a wall-clock race.
+  const SCAN_TIMEOUT_MS = 60_000;
+
   for (const entry of ENTRIES) {
-    it(`${entry}: no static value import of zod on the eager path`, () => {
-      expect(eagerZodImporters(entry)).toEqual([]);
-    });
+    it(
+      `${entry}: no static value import of zod on the eager path`,
+      () => {
+        expect(eagerZodImporters(entry)).toEqual([]);
+      },
+      SCAN_TIMEOUT_MS
+    );
   }
 
   // Regression (adversarial round 12): the eager-import scan must parse each reachable
   // file ONCE. See scanStats above — this asserts the parse-count invariant directly
   // (deterministic on any machine), not a load-dependent wall-clock budget.
   for (const entry of ENTRIES) {
-    it(`${entry}: eager-import scan parses each reachable file exactly once`, () => {
-      const { files, parses } = scanStats(entry);
-      // A regression that re-parses per scan (e.g. valueImports + topLevelDynamicImports
-      // each calling ts.createSourceFile) yields parses === 2 * files.
-      expect(parses).toBe(files);
-      expect(parses).toBeGreaterThan(0);
-    });
+    it(
+      `${entry}: eager-import scan parses each reachable file exactly once`,
+      () => {
+        const { files, parses } = scanStats(entry);
+        // A regression that re-parses per scan (e.g. valueImports + topLevelDynamicImports
+        // each calling ts.createSourceFile) yields parses === 2 * files.
+        expect(parses).toBe(files);
+        expect(parses).toBeGreaterThan(0);
+      },
+      SCAN_TIMEOUT_MS
+    );
   }
 });
 
@@ -247,6 +288,48 @@ describe('top-level (eager) dynamic imports', () => {
   it('ignores a dynamic import inside an arrow-function body', () => {
     const file = write('arrow.ts', "export const op = async () => await import('zod');\n");
     expect(dynamicImportsOf(file)).toEqual([]);
+  });
+
+  // Regression (Copilot round 12): a function/arrow body was treated as deferred even when
+  // IMMEDIATELY INVOKED. An IIFE's body runs during module evaluation, so a dynamic import
+  // inside one is EAGER — the gate must report it, not skip it as lazy.
+  it("reports a top-level arrow IIFE `(async () => import('zod'))()` as eager", () => {
+    const file = write(
+      'iife-arrow.ts',
+      "void (async () => import('zod'))();\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it("reports a top-level function-expression IIFE `(function(){ import('zod') })()` as eager", () => {
+    const file = write(
+      'iife-fn.ts',
+      "void (function () {\n  import('zod');\n})();\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('reports an IIFE wrapped in extra parentheses as eager', () => {
+    const file = write('iife-parens.ts', "void ((() => import('zod')))();\nexport const x = 1;\n");
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('does NOT report an import deferred inside a non-invoked arrow RETURNED from an IIFE', () => {
+    // The outer arrow is an IIFE (eager body), but it merely RETURNS an inner arrow whose
+    // body is still deferred to a later call — so the import stays lazy.
+    const file = write(
+      'iife-returns-lazy.ts',
+      "void (() => () => import('zod'))();\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual([]);
+  });
+
+  it('end-to-end: fails the gate on a top-level IIFE eager zod load', () => {
+    const entry = write(
+      'iife-entry.ts',
+      "void (async () => import('zod'))();\nexport const y = 2;\n"
+    );
+    expect(eagerZodImportersFrom(entry)).not.toEqual([]);
   });
 
   it('skips a computed (non-literal) top-level dynamic import', () => {

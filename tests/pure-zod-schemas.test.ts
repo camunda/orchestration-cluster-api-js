@@ -427,5 +427,93 @@ describe('wrapSchemaInitialisers', () => {
         expect(out).toContain(`export const zFoo = ${WRAP}z.object(`);
       });
     });
+
+    // Regression (Copilot round 12): the namespace classifier was a BLACKLIST of two known
+    // service objects (`globalRegistry`, `registry`), so it FAILED OPEN on every other
+    // direct `z` member. Zod 4's `z.config(...)` mutates global configuration,
+    // `z.setErrorMap(...)` mutates the global error map, and a computed root such as
+    // `z[key](...)` is not even statically known — yet each resolved to a `z` root and was
+    // wrapped `/*#__PURE__*/`, letting a bundler drop the global mutation. The classifier is
+    // now an ALLOWLIST of reviewed schema constructors: any direct `z` member not on the
+    // allowlist — a known mutator, an unknown/future member, or a computed `z[key]` — fails
+    // closed. These assert the whole class, not just the cited `z.config` instance.
+    describe('allowlist for z namespace members (fail the whole non-constructor class)', () => {
+      it('fails closed on an EXPORTED const rooted at z.config (global mutation)', () => {
+        const src = [
+          "import * as z from 'zod';",
+          'export const registration = z.config({ customError: () => "x" });',
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/registration/);
+      });
+
+      it('fails closed on an EXPORTED const rooted at z.setErrorMap (global mutation)', () => {
+        const src = [
+          "import * as z from 'zod';",
+          'export const applied = z.setErrorMap(() => ({ message: "x" }));',
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/applied/);
+      });
+
+      it('fails closed on a COMPUTED root member — z[key](...)', () => {
+        // `z[key]` is not statically known, so it cannot be proven a schema constructor and
+        // must fail closed rather than be wrapped as droppable.
+        const src = [
+          "import * as z from 'zod';",
+          'const key = "object";',
+          'export const zFoo = z[key]({ a: 1 });',
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+      });
+
+      it('fails closed on a bracket-notation non-constructor member — z["config"](...)', () => {
+        const src = [
+          "import * as z from 'zod';",
+          'export const registration = z["config"]({ customError: () => "x" });',
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/registration/);
+      });
+
+      it('fails closed on a NESTED non-constructor member in an eager argument', () => {
+        // `z.config(...)` nested as an eager argument is rooted at `z` for the nested call
+        // too, so the per-eager-call allowlist classification must reject it — not only the
+        // outer initialiser chain.
+        const src = [
+          "import * as z from 'zod';",
+          'export const zFoo = z.object({ v: z.any().default(z.config({ customError: () => "x" })) });',
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+      });
+
+      it('fails closed when a wrapped (idempotent) body is rooted at a non-constructor member', () => {
+        // The idempotency branch re-validates the wrapped body with the same allowlist, so a
+        // `/*#__PURE__*/ (() => …)()` wrapper hiding a global mutation also fails closed.
+        const src = [
+          "import * as z from 'zod';",
+          `export const registration = ${WRAP}z.config({ customError: () => "x" }))();`,
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/registration/);
+      });
+
+      it('still wraps allowlisted sub-namespace constructors — z.coerce and z.iso', () => {
+        // `z.coerce.number()` / `z.iso.date()` are rooted at the `z` identifier whose first
+        // member is the allowlisted sub-namespace `coerce`/`iso`; they stay wrapped.
+        const src = [
+          "import * as z from 'zod';",
+          'export const zFoo = z.object({ n: z.coerce.number(), d: z.iso.date() });',
+        ].join('\n');
+        const out = wrapSchemaInitialisers(src);
+        expect(out).toContain(`export const zFoo = ${WRAP}z.object(`);
+      });
+
+      it('fails closed on a tagged template rooted at a non-constructor member — z.config`x`', () => {
+        // A tagged template invokes its tag eagerly; a `z.<non-constructor>` tag is a global
+        // mutation just like the call form and must fail closed.
+        const src = [
+          "import * as z from 'zod';",
+          'export const zFoo = z.object({ v: z.string().default(z.config`x`) });',
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+      });
+    });
   });
 });

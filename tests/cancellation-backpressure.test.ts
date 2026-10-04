@@ -38,6 +38,60 @@ describe('cancellation through backpressure gating', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  // Regression (Copilot round 12): the acquire() fast paths (unlimited, disabled,
+  // observe-only, immediate acquire) resolve synchronously after only acquire()'s
+  // initial abort check. A cancel landing in the microtask gap between that resolution and
+  // _invokeWithRetry's `await` continuation was NOT re-checked, so the transport ran anyway.
+  // These assert the whole class at the operation level: a cancel() immediately after the
+  // call must not invoke the transport, on both the unlimited path and the immediate-acquire
+  // finite path (which must also refund the permit it consumed).
+  const makeOkFetch = () =>
+    vi.fn(
+      async () =>
+        new Response(JSON.stringify({ status: 'ok' }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
+    );
+
+  it('cancel() on the UNLIMITED fast path rejects without invoking transport', async () => {
+    const fetchMock = makeOkFetch();
+    const camunda = createCamundaClient({
+      config: { CAMUNDA_REST_ADDRESS: 'https://mock.local' },
+      fetch: fetchMock as any,
+    });
+    const core = camunda as any;
+    // Force the unlimited fast path: acquire() returns immediately on permitsMax === null
+    // without consuming a permit, after only its initial abort check.
+    core._bp.permitsMax = null;
+
+    const p: any = camunda.getStatus();
+    p.cancel();
+    await expect(p).rejects.toMatchObject({ name: 'CancelSdkError' });
+    // The race fix: the post-acquire re-check must short-circuit before op() runs.
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('cancel() on the immediate-acquire finite path rejects AND refunds the permit', async () => {
+    const fetchMock = makeOkFetch();
+    const camunda = createCamundaClient({
+      config: { CAMUNDA_REST_ADDRESS: 'https://mock.local' },
+      fetch: fetchMock as any,
+    });
+    const core = camunda as any;
+    // Finite cap with a free permit => immediate-acquire fast path consumes one permit.
+    core._bp.recordBackpressure();
+    core._bp.permitsMax = 2;
+    core._bp.permitsCurrent = 0;
+
+    const p: any = camunda.getStatus();
+    p.cancel();
+    await expect(p).rejects.toMatchObject({ name: 'CancelSdkError' });
+    expect(fetchMock).not.toHaveBeenCalled();
+    // The permit the immediate-acquire path consumed must be released, not stranded.
+    expect(core._bp.permitsCurrent).toBe(0);
+  });
+
   it('cancel() during backoff-at-floor sleep rejects instead of acquiring afterwards', async () => {
     const ac = new AbortController();
     let resolveSleep: (() => void) | undefined;
