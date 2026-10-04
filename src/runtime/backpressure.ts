@@ -122,11 +122,18 @@ export class BackpressureManager {
     if (this.observeOnly) return; // never gate in observe-only mode
     if (!this.isEnabled()) return;
     if (this.permitsMax === null) return; // unlimited fast path
-    // Backoff-at-floor: delay before acquiring to rate-limit at floor
+    // Fail fast on an already-aborted operation: it must never consume a permit.
+    if (signal?.aborted) throw signal.reason || new Error('aborted');
+    // Backoff-at-floor: delay before acquiring to rate-limit at floor. The wait is
+    // abort-aware: a canceled operation rejects here instead of waking up later to
+    // consume a permit and invoke the transport.
     if (this.backoffMs > 0) {
-      await this.sleep(this.backoffMs);
+      await this._sleepAbortable(this.backoffMs, signal);
       // Re-check after sleep — may have gone unlimited
       if (this.permitsMax === null) return;
+      // A cancel that landed during the sleep (e.g. via an injected sleep that does
+      // not reject on its own) must not proceed to consume a permit.
+      if (signal?.aborted) throw signal.reason || new Error('aborted');
     }
     // Attempt immediate acquire
     if (this.permitsCurrent < (this.permitsMax || 0)) {
@@ -156,6 +163,29 @@ export class BackpressureManager {
         signal.addEventListener('abort', onAbort, { once: true });
       }
       this.waiters.push(waiter);
+    });
+  }
+
+  /** Sleep that rejects promptly when the given signal aborts. */
+  private _sleepAbortable(ms: number, signal?: AbortSignal): Promise<void> {
+    if (!signal) return this.sleep(ms);
+    return new Promise<void>((resolve, reject) => {
+      if (signal.aborted) {
+        reject(signal.reason || new Error('aborted'));
+        return;
+      }
+      const onAbort = () => reject(signal.reason || new Error('aborted'));
+      signal.addEventListener('abort', onAbort, { once: true });
+      this.sleep(ms).then(
+        () => {
+          signal.removeEventListener('abort', onAbort);
+          resolve();
+        },
+        (e) => {
+          signal.removeEventListener('abort', onAbort);
+          reject(e);
+        }
+      );
     });
   }
 

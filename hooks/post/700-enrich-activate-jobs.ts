@@ -73,12 +73,18 @@ function patchFile(
 
   // Inject enrichment logic inside implementation before returning data
   if (opts.injectEnrichment && !alreadyInjected) {
+    // Anchor on the implementation signature — note the trailing ` {`. Without it the
+    // match can land on an overload/declaration line (which ends in `;`), and the
+    // splice below would then hit some other operation's body.
     const implStart = src.indexOf(
-      `${head}arg: any, options?: OperationOptions): CancelablePromise<any>`
+      `${head}arg: any, options?: OperationOptions): CancelablePromise<any> {`
     );
     if (implStart === -1) throw new Error(`activateJobs implementation not found in ${filePath}`);
     {
       const slice = src.slice(implStart);
+      // Anchor on the FIRST `return data;` after the implementation signature. Later
+      // hooks (e.g. 710's present-when guards) splice their own statements ABOVE this
+      // final return, so the enrichment lands after them and wraps every success path.
       const returnPos = slice.indexOf('return data;');
       if (returnPos !== -1) {
         const before = src.slice(0, implStart) + slice.slice(0, returnPos);
@@ -86,7 +92,12 @@ function patchFile(
         // A CamundaClient (the class delegates here with `this`) is passed through
         // unchanged, so job actions call its methods exactly as before. A bare
         // CamundaCore gets an adapter routing the actions to the standalone functions.
-        const inject = `if (data && data.jobs) { data.jobs = data.jobs.map((j: any) => enrichActivatedJob(j, _jobActionsClient(core), core.logger().scope(\`job:${'$'}{j.jobKey}\`))); }\n      return data;`;
+        // The adapter is computed once per response (not per job): for a bare core it
+        // allocates five closures, so building it inside `map` would multiply that by
+        // the batch size for no benefit — it captures only `core`, never the job.
+        // NOTE: the `if (data && data.jobs) {` … `data.jobs = data.jobs.map(` shape is
+        // a splice anchor for hook 710's present-when guards — keep it verbatim.
+        const inject = `if (data && data.jobs) { const _client = _jobActionsClient(core); data.jobs = data.jobs.map((j: any) => enrichActivatedJob(j, _client, core.logger().scope(\`job:${'$'}{j.jobKey}\`))); }\n      return data;`;
         src = before + inject + after;
       }
     }
@@ -97,7 +108,20 @@ function patchFile(
 /** Client view used by enriched jobs' action methods (complete, fail, error, cancel, update). */
 function _jobActionsClient(core: CamundaCore): any {
   const c = core as any;
-  if (typeof c.completeJob === 'function') return c;
+  // Pass a client through unchanged ONLY when it implements every job action an
+  // enriched job may call (complete, fail, error, cancel, update). A partial
+  // CamundaCore — a subclass or test double that defines only some of them — must
+  // fall through to the adapter, which routes each action to the standalone
+  // function, so an enriched job never invokes a missing method.
+  if (
+    typeof c.completeJob === 'function' &&
+    typeof c.failJob === 'function' &&
+    typeof c.throwJobError === 'function' &&
+    typeof c.cancelProcessInstance === 'function' &&
+    typeof c.updateJob === 'function'
+  ) {
+    return c;
+  }
   return {
     clock: core.clock,
     logger: (scope?: string) => core.logger(scope),

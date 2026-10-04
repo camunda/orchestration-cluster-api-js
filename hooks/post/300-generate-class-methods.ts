@@ -530,7 +530,7 @@ export type ${o.opId}Consistency = {
       } else {
         // Inject HTTP retry wrapper
         methods.push(
-          `      return this._invokeWithRetry(() => call(), { opId: '${o.originalOpId}', exempt: ${isExempt(o.opId)}, retryOverride: options?.retry });`
+          `      return this._invokeWithRetry(() => call(), { opId: '${o.originalOpId}', exempt: ${isExempt(o.opId)}, retryOverride: options?.retry, signal });`
         );
       }
     } else {
@@ -597,7 +597,7 @@ export type ${o.opId}Consistency = {
         methods.push('      return invoke();');
       } else {
         methods.push(
-          `      return this._invokeWithRetry(() => call(), { opId: '${o.originalOpId}', exempt: ${isExempt(o.opId)}, retryOverride: options?.retry });`
+          `      return this._invokeWithRetry(() => call(), { opId: '${o.originalOpId}', exempt: ${isExempt(o.opId)}, retryOverride: options?.retry, signal });`
         );
       }
     }

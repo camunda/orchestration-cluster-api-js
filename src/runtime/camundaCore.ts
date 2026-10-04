@@ -39,10 +39,9 @@ function deepFreeze<T>(obj: T): T {
   return obj;
 }
 
-// Input is a set of optional overrides, not a pre-hydrated CamundaConfig: `config`
-// takes strongly typed `EnvOverrides` (CAMUNDA_* keys) and the constructor hydrates
-// them (with `env`) via hydrateConfig — the single source of truth. Callers should
-// NOT call hydrateConfig themselves and pass the result here.
+// Input for constructing a CamundaCore (or CamundaClient). `config` takes strongly typed
+// env-style overrides (CAMUNDA_* keys); the constructor hydrates them internally via
+// hydrateConfig (single source of truth) — callers never handle a raw CamundaConfig.
 export interface CamundaOptions {
   // Strongly typed env-style overrides (CAMUNDA_* keys). Optional.
   config?: EnvOverrides;
@@ -67,6 +66,14 @@ export interface CamundaOptions {
   // to drive those loops in tests without waiting for real time. Defaults to the live clock.
   // Liveness bounds — shutdown drains and request timeouts — deliberately do not use it.
   clock?: Clock;
+  /**
+   * Explicit component discriminator for support diagnostics. Set only by SDK-internal
+   * subclasses: `CamundaClientBase` passes `'CamundaClient'` so the construction log names
+   * the real component even when a consumer subclasses the public `CamundaCore` (where
+   * `new.target !== CamundaCore` alone could not distinguish core-subclass from client).
+   * @internal
+   */
+  __camundaComponent?: 'CamundaCore' | 'CamundaClient';
 }
 
 /**
@@ -91,6 +98,8 @@ export interface OperationRuntime {
       exempt?: boolean;
       classify?: (e: any) => { retryable: boolean; reason: string };
       retryOverride?: Partial<HttpRetryPolicy> | false;
+      /** Operation abort signal — threaded into backpressure acquisition. */
+      signal?: AbortSignal;
     }
   ): Promise<T>;
 }
@@ -125,6 +134,16 @@ export class CamundaCore {
   protected _supportLogger: SupportLogger = new (class implements SupportLogger {
     log() {}
   })();
+  /**
+   * Stable delegating sink handed to `wrapFetch`. The wrapped fetch captures this object
+   * once, but every `log()` forwards to the *current* `_supportLogger` — so a support
+   * logger assigned (or injected) after fetch is wrapped still receives http end/error
+   * events. Passing `_supportLogger` directly would permanently capture whatever instance
+   * existed at wrap time (the initial no-op), silently dropping those events.
+   */
+  protected readonly _supportLogSink: SupportLogger = {
+    log: (message, addTimestamp) => this._supportLogger.log(message, addTimestamp),
+  };
 
   // Internal fixed error mode for eventual consistency ('throw' | 'result'). Not user mutable after construction.
   protected readonly _errorMode: 'throw' | 'result';
@@ -151,7 +170,7 @@ export class CamundaCore {
         hooks: opts.telemetry.hooks,
         correlation: opts.telemetry.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
-        supportLogger: this._supportLogger,
+        supportLogger: this._supportLogSink,
         mirrorToLog: opts.telemetry.mirrorToLog,
       });
     } else if (this._config.telemetry?.log) {
@@ -159,7 +178,7 @@ export class CamundaCore {
         hooks: undefined,
         correlation: this._config.telemetry.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
-        supportLogger: this._supportLogger,
+        supportLogger: this._supportLogSink,
         mirrorToLog: true,
       });
     } else if (
@@ -177,7 +196,7 @@ export class CamundaCore {
         hooks: undefined,
         correlation: this._config.telemetry?.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
-        supportLogger: this._supportLogger,
+        supportLogger: this._supportLogSink,
         mirrorToLog: true,
       });
     }
@@ -214,7 +233,15 @@ export class CamundaCore {
     // Support logger initialization (after config hydration & before major components start emitting)
     this._supportLogger = createSupportLogger(this._config, opts.supportLogger);
     try {
-      this._supportLogger.log('CamundaCore constructed');
+      // Report the component actually constructed. The `__camundaComponent` discriminator is
+      // authoritative: `CamundaCore` defaults to `'CamundaCore'` and `CamundaClientBase` passes
+      // `'CamundaClient'`. An explicit marker (not `new.target`) is required because a consumer
+      // may subclass the now-public `CamundaCore` — `new.target !== CamundaCore` for such a
+      // subclass, so a `new.target`-based check would mislabel it "CamundaClient" in support
+      // diagnostics even though it has no client operation surface. The marker is also immune to
+      // minifiers renaming class identifiers and to test-transform (SSR) class re-instantiation.
+      const component = opts.__camundaComponent ?? 'CamundaCore';
+      this._supportLogger.log(`${component} constructed`);
     } catch {
       /* ignore */
     }
@@ -282,7 +309,7 @@ export class CamundaCore {
         hooks: next.telemetry.hooks,
         correlation: next.telemetry.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
-        supportLogger: this._supportLogger,
+        supportLogger: this._supportLogSink,
         mirrorToLog: next.telemetry.mirrorToLog,
       });
     } else if (this._config.telemetry?.log) {
@@ -290,7 +317,7 @@ export class CamundaCore {
         hooks: undefined,
         correlation: this._config.telemetry.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
-        supportLogger: this._supportLogger,
+        supportLogger: this._supportLogSink,
         mirrorToLog: true,
       });
     } else if (
@@ -305,7 +332,7 @@ export class CamundaCore {
         hooks: undefined,
         correlation: this._config.telemetry?.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
-        supportLogger: this._supportLogger,
+        supportLogger: this._supportLogSink,
         mirrorToLog: true,
       });
     }
@@ -419,16 +446,20 @@ export class CamundaCore {
       exempt?: boolean;
       classify?: (e: any) => { retryable: boolean; reason: string };
       retryOverride?: Partial<HttpRetryPolicy> | false;
+      /** Operation abort signal (from toCancelable). Threaded into backpressure
+       *  acquisition so an operation canceled while queued — or during the
+       *  backoff-at-floor delay — is removed promptly instead of later consuming a
+       *  permit and invoking the transport. */
+      signal?: AbortSignal;
     }
   ): Promise<T> {
-    const { opId, exempt, classify, retryOverride } = opts;
+    const { opId, exempt, classify, retryOverride, signal } = opts;
     const policy: HttpRetryPolicy =
       retryOverride === false
         ? { maxAttempts: 1, baseDelayMs: 0, maxDelayMs: 0 }
         : retryOverride
           ? { ...this._config.httpRetry, ...retryOverride }
           : this._config.httpRetry;
-    const signal: AbortSignal | undefined = undefined; // placeholder if we later pass through
     if (!exempt) {
       await this._bp.acquire(signal);
     }
