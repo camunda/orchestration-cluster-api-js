@@ -95,21 +95,22 @@ function patchFile(
         // The adapter is computed once per response (not per job): for a bare core it
         // allocates five closures, so building it inside `map` would multiply that by
         // the batch size for no benefit — it captures only `core`, never the job.
-        // Guard on `Array.isArray(data.jobs) && data.jobs.length > 0`: an empty `jobs`
-        // array is the common polling result, and `_jobActionsClient(core)` on a bare core
-        // allocates the adapter object and five closures (and on a client performs five
-        // method checks) even though `map` over an empty array never runs — so skip
-        // adapter creation entirely when there is nothing to enrich. The guard must be an
-        // ACTUAL-array check, not merely truthiness: a truthy non-array `jobs` value with
-        // no `length` property (a malformed response) would otherwise satisfy
-        // `data.jobs.length > 0` as `undefined > 0` → false and be returned silently,
-        // violating the declared response type — whereas the previous unconditional
-        // `.map()` threw a TypeError and surfaced it. `Array.isArray` keeps malformed
-        // values on the throwing `.map` path while an empty real array still skips the
-        // adapter.
+        // Skip the enrichment ONLY for an empty `jobs` array — the common polling result.
+        // `_jobActionsClient(core)` on a bare core allocates the adapter object and five
+        // closures (and on a client performs five method checks) even though `map` over an
+        // empty array never runs, so skip adapter creation when there is nothing to enrich.
+        // The guard gates ONLY the empty-array case (`Array.isArray(data.jobs) &&
+        // data.jobs.length === 0`) and is NEGATED, so EVERY other value falls through to
+        // `.map()`: a non-empty real array is enriched, and a truthy NON-ARRAY `jobs`
+        // (a malformed response) reaches `.map`, where `.map is not a function` throws a
+        // TypeError — preserving the previous unconditional `.map()` behavior that
+        // surfaced malformed data instead of returning a value that violates the declared
+        // response type. The inverse form (requiring `Array.isArray(...) && length > 0` to
+        // ENTER the map) is WRONG: a truthy non-array fails that test, skips the map, and
+        // is returned silently — the opposite of the invariant.
         // NOTE: the `if (data && data.jobs) {` … `data.jobs = data.jobs.map(` shape is
         // a splice anchor for hook 710's present-when guards — keep it verbatim.
-        const inject = `if (data && data.jobs) { if (Array.isArray(data.jobs) && data.jobs.length > 0) { const _client = _jobActionsClient(core); data.jobs = data.jobs.map((j: any) => enrichActivatedJob(j, _client, core.logger().scope(\`job:${'$'}{j.jobKey}\`))); } }\n      return data;`;
+        const inject = `if (data && data.jobs) { if (!(Array.isArray(data.jobs) && data.jobs.length === 0)) { const _client = _jobActionsClient(core); data.jobs = data.jobs.map((j: any) => enrichActivatedJob(j, _client, core.logger().scope(\`job:${'$'}{j.jobKey}\`))); } }\n      return data;`;
         src = before + inject + after;
       }
     }

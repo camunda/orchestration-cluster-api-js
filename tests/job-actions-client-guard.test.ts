@@ -100,7 +100,8 @@ describe('activateJobs enrichment skips adapter creation for an empty jobs array
     const enrichIdx = src.indexOf('if (data && data.jobs) {');
     expect(enrichIdx, 'activateJobs enrichment splice not found').toBeGreaterThan(-1);
     // The adapter creation must be guarded so it does not run for an empty array. The
-    // guard (`data.jobs.length > 0`) must appear between the `if (data && data.jobs) {`
+    // guard skips ONLY the empty-array case (`!(Array.isArray(data.jobs) &&
+    // data.jobs.length === 0)`) and must appear between the `if (data && data.jobs) {`
     // opener and the `_jobActionsClient(core)` call it protects.
     const clientIdx = src.indexOf('_jobActionsClient(core)', enrichIdx);
     expect(clientIdx, 'adapter creation not found after enrichment opener').toBeGreaterThan(
@@ -108,35 +109,36 @@ describe('activateJobs enrichment skips adapter creation for an empty jobs array
     );
     const between = src.slice(enrichIdx, clientIdx);
     expect(
-      /Array\.isArray\(data\.jobs\) && data\.jobs\.length > 0/.test(between),
-      'adapter creation must be guarded by `Array.isArray(data.jobs) && data.jobs.length > 0` so an empty poll does not allocate it'
+      /!\(Array\.isArray\(data\.jobs\) && data\.jobs\.length === 0\)/.test(between),
+      'adapter creation must be guarded by `!(Array.isArray(data.jobs) && data.jobs.length === 0)` so an empty poll does not allocate it'
     ).toBe(true);
   });
 
-  // Regression (Copilot round 18, previously-missed): the empty-poll optimization guarded
-  // adapter creation with `data.jobs.length > 0` alone. A truthy NON-ARRAY `jobs` value
-  // with no `length` property (a malformed response) satisfies that guard as
-  // `undefined > 0` → false, so it was returned silently — whereas the previous
-  // unconditional `.map()` threw a TypeError on the malformed value instead of returning
-  // data that violates the declared response type. The guard must require an ACTUAL array
-  // so malformed values stay on the throwing `.map` path while a real empty array still
-  // skips the adapter.
-  it('restricts the empty-response optimization to actual arrays', () => {
+  // Regression (Copilot rounds 18–19, previously-missed): the empty-poll optimization first
+  // guarded adapter creation with `data.jobs.length > 0` alone, then with
+  // `Array.isArray(data.jobs) && data.jobs.length > 0`. BOTH positive forms gate *entry*
+  // to the map, so a truthy NON-ARRAY `jobs` value (a malformed response) fails the test,
+  // skips the map, and is returned silently — whereas the previous unconditional `.map()`
+  // threw a TypeError on the malformed value instead of returning data that violates the
+  // declared response type. The guard must skip ONLY an empty real array (a NEGATED
+  // `=== 0` check) so every non-array still reaches the throwing `.map` path.
+  it('restricts the empty-response optimization to actual empty arrays only', () => {
     const src = readGenerated();
     const enrichIdx = src.indexOf('if (data && data.jobs) {');
     expect(enrichIdx, 'activateJobs enrichment splice not found').toBeGreaterThan(-1);
     const clientIdx = src.indexOf('_jobActionsClient(core)', enrichIdx);
     expect(clientIdx).toBeGreaterThan(enrichIdx);
     const between = src.slice(enrichIdx, clientIdx);
-    // An `Array.isArray(data.jobs)` conjunct must gate the enrichment …
+    // The skip must be a NEGATED empty-array check so a non-array falls through to `.map()`.
     expect(
-      /Array\.isArray\(data\.jobs\)/.test(between),
-      'enrichment guard must require `Array.isArray(data.jobs)` so a malformed truthy non-array `jobs` still reaches the throwing `.map` path'
+      /!\(Array\.isArray\(data\.jobs\) && data\.jobs\.length === 0\)/.test(between),
+      'enrichment skip must be `!(Array.isArray(data.jobs) && data.jobs.length === 0)` so a malformed truthy non-array `jobs` still reaches the throwing `.map` path'
     ).toBe(true);
-    // … and the unguarded truthiness-only form must not come back.
+    // … and neither positive-entry form (either truthiness-only or `isArray && length > 0`)
+    // must come back — both silently accept a truthy non-array `jobs`.
     expect(
-      /if \(data\.jobs\.length > 0\)/.test(between),
-      'a bare `data.jobs.length > 0` guard silently accepts a truthy non-array `jobs` (undefined > 0 is false)'
+      /data\.jobs\.length > 0/.test(between),
+      'a positive `data.jobs.length > 0` entry guard silently accepts a truthy non-array `jobs` (undefined > 0 is false)'
     ).toBe(false);
   });
 });
