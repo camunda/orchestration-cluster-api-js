@@ -92,6 +92,48 @@ describe('cancellation through backpressure gating', () => {
     expect(core._bp.permitsCurrent).toBe(0);
   });
 
+  // Regression (Copilot round 14): the boolean grant token goes stale across a
+  // finite→unlimited→finite transition. Phase 3 (sustained healthy) sets
+  // `permitsMax = null; permitsCurrent = 0`, so an invocation that acquired a permit under
+  // the OLD finite epoch still holds `acquired === true`; when it finishes after a NEW
+  // finite cap is established, its `release()` decrements a permit owned by the new epoch —
+  // an ABA leak that silently over-frees capacity. The grant token must carry the permit
+  // epoch (invalidated by the unlimited transition) so a stale lease cannot release a later
+  // epoch's permit.
+  it('a stale finite-era lease cannot release a permit from a later finite epoch', async () => {
+    const bp = new BackpressureManager({ config: { initialMaxConcurrency: 1 } });
+    // Establish a finite cap of 1 (epoch E1) and have A consume the only permit.
+    bp.recordBackpressure();
+    (bp as any).permitsMax = 1;
+    (bp as any).permitsCurrent = 0;
+    const aToken = await bp.acquire(); // A holds the E1 permit
+    expect(aToken).not.toBeNull();
+    expect((bp as any).permitsCurrent).toBe(1);
+
+    // Phase 3: sustained healthy → unlimited. permitsCurrent resets to 0 and the epoch
+    // advances (the real Phase-3 path bumps `epoch`), invalidating A's now-stale E1 lease.
+    (bp as any).permitsMax = null;
+    (bp as any).permitsCurrent = 0;
+    (bp as any).epoch++;
+
+    // New backpressure restores a finite cap (epoch E2); B acquires the E2 permit.
+    bp.recordBackpressure();
+    (bp as any).permitsMax = 1;
+    (bp as any).permitsCurrent = 0;
+    const bToken = await bp.acquire(); // B holds the E2 permit
+    expect(bToken).not.toBeNull();
+    expect((bp as any).permitsCurrent).toBe(1);
+
+    // A finally finishes and releases with its STALE (E1) token. It must NOT decrement B's
+    // E2 permit. With a bare boolean token (or no epoch guard), release() blindly drops to 0.
+    bp.release(aToken); // A's stale release
+    expect((bp as any).permitsCurrent).toBe(1); // B's permit must survive
+
+    // B's own release still works (current epoch), draining normally.
+    bp.release(bToken);
+    expect((bp as any).permitsCurrent).toBe(0);
+  });
+
   it('cancel() during backoff-at-floor sleep rejects instead of acquiring afterwards', async () => {
     const ac = new AbortController();
     let resolveSleep: (() => void) | undefined;
@@ -218,8 +260,8 @@ describe('queued-waiter drain races (adversarial round 5)', () => {
     await firstRejection;
 
     // Waiter #2 must have been served by the refund's re-drain, holding the one permit.
-    // The grant token is true: the re-drain granted #2 a permit.
-    await expect(second).resolves.toBe(true);
+    // The grant token is the current epoch (non-null): the re-drain granted #2 a permit.
+    await expect(second).resolves.not.toBeNull();
     expect((bp as any).waiters).toHaveLength(0);
     expect((bp as any).permitsCurrent).toBe(1);
   });
@@ -263,8 +305,9 @@ describe('queued-waiter drain races (adversarial round 5)', () => {
       // granted a permit, so decrementing would steal the OTHER operation's permit.
       ac.abort();
       await expect(acquiring).rejects.toThrow();
-      // `other` took the permit on the immediate-acquire finite path, so its token is true.
-      await expect(other).resolves.toBe(true);
+      // `other` took the permit on the immediate-acquire finite path, so its token is the
+      // current epoch (non-null).
+      await expect(other).resolves.not.toBeNull();
       expect((bp as any).permitsCurrent).toBe(1);
     });
 
@@ -291,35 +334,37 @@ describe('queued-waiter drain races (adversarial round 5)', () => {
   // invocation a permit — and in the microtask gap before the recheck runs, backpressure
   // can restore a finite cap and a DIFFERENT invocation can consume a permit. An
   // unconditional release() then decrements that other invocation's permit. acquire() now
-  // returns a per-invocation grant token and the refund is gated on it.
+  // returns a per-invocation grant token (the permit EPOCH, or `null` when no permit is
+  // held) and the refund is gated on it. (Round 14: the token carries the epoch so a stale
+  // lease surviving a finite→unlimited→finite reset cannot release a later epoch's permit.)
   describe('acquire() per-invocation grant token (fail the whole class)', () => {
-    it('resolves false on the unlimited fast path (no permit held)', async () => {
+    it('resolves null on the unlimited fast path (no permit held)', async () => {
       const bp = new BackpressureManager({ config: {} });
       expect((bp as any).permitsMax).toBeNull();
-      await expect(bp.acquire()).resolves.toBe(false);
+      await expect(bp.acquire()).resolves.toBeNull();
     });
 
-    it('resolves false when backpressure is disabled (no permit held)', async () => {
+    it('resolves null when backpressure is disabled (no permit held)', async () => {
       const bp = new BackpressureManager({ config: { enabled: false } });
-      await expect(bp.acquire()).resolves.toBe(false);
+      await expect(bp.acquire()).resolves.toBeNull();
     });
 
-    it('resolves false in observe-only mode (no permit held)', async () => {
+    it('resolves null in observe-only mode (no permit held)', async () => {
       const bp = new BackpressureManager({
         config: { observeOnly: true, initialMaxConcurrency: 1 },
       });
-      await expect(bp.acquire()).resolves.toBe(false);
+      await expect(bp.acquire()).resolves.toBeNull();
     });
 
-    it('resolves true on the immediate-acquire finite path (permit held)', async () => {
+    it('resolves the current epoch on the immediate-acquire finite path (permit held)', async () => {
       const bp = new BackpressureManager({ config: { initialMaxConcurrency: 2 } });
       bp.recordBackpressure();
       (bp as any).permitsMax = 2;
-      await expect(bp.acquire()).resolves.toBe(true);
+      await expect(bp.acquire()).resolves.toBe((bp as any).epoch);
       expect((bp as any).permitsCurrent).toBe(1);
     });
 
-    it('resolves false for a waiter drained by the sustained-healthy (ungranted) path', async () => {
+    it('resolves null for a waiter drained by the sustained-healthy (ungranted) path', async () => {
       const bp = new BackpressureManager({ config: { initialMaxConcurrency: 1 } });
       (bp as any).permitsMax = 1;
       (bp as any).permitsCurrent = 1; // sole permit occupied -> acquire queues
@@ -331,16 +376,16 @@ describe('queued-waiter drain races (adversarial round 5)', () => {
       (bp as any).permitsCurrent = 0;
       const w = (bp as any).waiters.shift();
       w.resolve();
-      await expect(acquiring).resolves.toBe(false);
+      await expect(acquiring).resolves.toBeNull();
     });
 
-    it('resolves true for a waiter granted a permit by the normal finite-cap drain', async () => {
+    it('resolves the current epoch for a waiter granted a permit by the normal finite-cap drain', async () => {
       const bp = new BackpressureManager({ config: { initialMaxConcurrency: 1 } });
       (bp as any).permitsMax = 1;
       (bp as any).permitsCurrent = 1;
       const acquiring = bp.acquire();
       bp.release(); // normal drain grants the permit
-      await expect(acquiring).resolves.toBe(true);
+      await expect(acquiring).resolves.toBe((bp as any).epoch);
     });
   });
 

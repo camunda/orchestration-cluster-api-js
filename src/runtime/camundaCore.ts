@@ -460,24 +460,27 @@ export class CamundaCore {
         : retryOverride
           ? { ...this._config.httpRetry, ...retryOverride }
           : this._config.httpRetry;
-    // Acquire a permit, retaining the per-invocation grant token. acquire() resolves `true`
-    // only when THIS invocation consumed a finite permit; the disabled / observe-only /
-    // unlimited fast paths and the sustained-healthy (Phase-3) drain resolve `false`. The
-    // token ties the refund below to a permit THIS invocation actually holds: backpressure
-    // state can change in the microtask gap between acquire() resolving and a continuation
-    // running (a finite cap may be restored and a DIFFERENT invocation may then hold a
-    // permit), so an unconditional release() could decrement another operation's permit.
-    const acquired = exempt ? false : await this._bp.acquire(signal);
+    // Acquire a permit, retaining the per-invocation grant token. acquire() resolves the
+    // permit EPOCH (a number) only when THIS invocation consumed a finite permit; the
+    // disabled / observe-only / unlimited fast paths and the sustained-healthy (Phase-3)
+    // drain resolve `null`. The token ties the refund below to a permit THIS invocation
+    // actually holds AND to the finite regime it was issued in: backpressure state can
+    // change in the microtask gap between acquire() resolving and a continuation running (a
+    // finite cap may be restored and a DIFFERENT invocation may then hold a permit), so an
+    // unconditional release() could decrement another operation's permit. The epoch guard
+    // also drops a release whose regime has since reset (finite→unlimited→finite), so a
+    // stale lease cannot free a permit owned by a later epoch.
+    const acquired = exempt ? null : await this._bp.acquire(signal);
     // Re-check cancellation AFTER acquiring. acquire()'s fast paths — unlimited, disabled,
     // observe-only, and immediate acquire — resolve synchronously after only acquire()'s
     // initial abort check, so a cancel that lands in the microtask gap between acquire()
     // resolving and this continuation running would otherwise fall through and invoke the
     // transport (an injected fetch that ignores `signal` observes the call). Refund ONLY
-    // when this invocation holds a permit (`acquired`): the try/finally below has NOT been
-    // entered yet, so its release() will not run for this abort. Symmetric with acquire()'s
-    // own post-await re-checks (backoff / queued drain).
+    // when this invocation holds a permit (`acquired !== null`): the try/finally below has
+    // NOT been entered yet, so its release() will not run for this abort. Symmetric with
+    // acquire()'s own post-await re-checks (backoff / queued drain).
     if (signal?.aborted) {
-      if (acquired) this._bp.release();
+      if (acquired !== null) this._bp.release(acquired);
       throw signal.reason || new Error('aborted');
     }
     try {
@@ -502,10 +505,11 @@ export class CamundaCore {
       if (e && (e as any).status && (e as any).status === 429) this._bp.recordBackpressure();
       throw normalizeError(e, { opId });
     } finally {
-      // Release only a permit THIS invocation acquired. On the fast paths `acquired` is
-      // false and release() would be a no-op anyway; gating on the token makes the pairing
-      // explicit and immune to any state change between acquire and release.
-      if (acquired) this._bp.release();
+      // Release only a permit THIS invocation acquired, in the epoch it was issued. On the
+      // fast paths `acquired` is null and release() is a no-op anyway; gating on the token
+      // (and its epoch) makes the pairing explicit and immune to any state change — including
+      // a finite→unlimited→finite reset — between acquire and release.
+      if (acquired !== null) this._bp.release(acquired);
     }
   }
   /** Shared evaluation for raw transport responses (throwOnError:false) */

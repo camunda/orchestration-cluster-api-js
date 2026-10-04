@@ -287,6 +287,47 @@ describe('wrapSchemaInitialisers', () => {
       expect(out).toContain(`export const zFoo = ${WRAP}z.object(`);
     });
 
+    // Regression (Copilot round 14): a chain rooted at a PROVEN SCHEMA whose FIRST member is
+    // a registry MUTATOR re-registers an existing schema rather than producing a fresh one.
+    // `export const zAlias = zBase.register(z.globalRegistry, meta)` passed the root check
+    // (rooted at the proven schema `zBase`) and was wrapped `/*#__PURE__*/`; if `zAlias` is
+    // tree-shaken while `zBase` stays referenced, the required registry mutation disappears.
+    // Distinguish schema-PRODUCING combinators from mutators on an existing schema: a chain
+    // rooted at a proven schema whose first operation is a mutator (`register`, …) fails
+    // closed. A chain that DERIVES a fresh schema first (`zBase.extend({…}).register(…)`)
+    // stays wrapped — its registry entry is consumed via the exported const.
+    describe('schema-mutator-first chains (fail the whole class)', () => {
+      it('fails closed on a proven-schema-rooted .register (re-registration)', () => {
+        const src = [
+          "import * as z from 'zod';",
+          'export const zBase = z.object({ a: z.string() });',
+          'export const zAlias = zBase.register(z.globalRegistry, { id: "base" });',
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/zAlias/);
+      });
+
+      it('fails closed on a proven-schema-rooted bracket-notation .register', () => {
+        const src = [
+          "import * as z from 'zod';",
+          'export const zBase = z.object({ a: z.string() });',
+          'export const zAlias = zBase["register"](z.globalRegistry, { id: "base" });',
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/zAlias/);
+      });
+
+      it('still wraps a chain that DERIVES a fresh schema before .register', () => {
+        // `.extend({…})` produces a fresh schema; the trailing `.register(…)` registers THAT
+        // new schema and is consumed via the exported const — it must stay wrapped.
+        const src = [
+          "import * as z from 'zod';",
+          'export const zBase = z.object({ a: z.string() });',
+          'export const zDerived = zBase.extend({ b: z.number() }).register(z.globalRegistry, { id: "d" });',
+        ].join('\n');
+        const out = wrapSchemaInitialisers(src);
+        expect(out).toContain(`export const zDerived = ${WRAP}zBase.extend(`);
+      });
+    });
+
     // Regression (adversarial round 10): `namespaceServiceRoot`'s walk only peeled
     // CallExpression/PropertyAccessExpression/paren/non-null, while its sibling
     // `callChainRoot` (used by `findUnreviewedEagerCall`) also peels

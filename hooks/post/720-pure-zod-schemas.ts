@@ -117,6 +117,16 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
               );
               continue;
             }
+            const mut = schemaMutatorRoot(wrappedBody, schemaNames);
+            if (mut !== null) {
+              // A wrapped body whose chain is a schema-mutator call on a proven schema
+              // (`(() => zBase.register(…))()`) hides a registry mutation behind the pure
+              // annotation — fail closed exactly like the unwrapped form.
+              problems.push(
+                `${decl.name.getText(sf)}: pure-IIFE initialiser is a schema-mutator call rooted at a proven schema (${mut}), not a fresh schema construction — ${init.getText(sf).slice(0, 120)}`
+              );
+              continue;
+            }
             const unreviewed = findUnreviewedEagerCall(wrappedBody, schemaNames);
             if (unreviewed !== null) {
               problems.push(
@@ -153,6 +163,19 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
             // computed root (`z[key](...)`) and any unknown future member fail closed too.
             problems.push(
               `${decl.name.getText(sf)}: initialiser is rooted at a non-schema zod namespace member (${svc}), not a reviewed schema constructor — ${init.getText(sf).slice(0, 120)}`
+            );
+            continue;
+          }
+          const mutator = schemaMutatorRoot(init, schemaNames);
+          if (mutator !== null) {
+            // Fail closed: a chain rooted at a PROVEN schema whose FIRST member is a schema
+            // mutator (`zBase.register(z.globalRegistry, meta)`) re-registers an existing
+            // schema rather than producing a fresh one. Wrapped `/*#__PURE__*/`, a bundler
+            // could drop the registry mutation while the base schema stays referenced. Only
+            // a chain that DERIVES a fresh schema first (`zBase.extend({…}).register(…)`)
+            // is a construction.
+            problems.push(
+              `${decl.name.getText(sf)}: initialiser is a schema-mutator call rooted at a proven schema (${mutator}), not a fresh schema construction — ${init.getText(sf).slice(0, 120)}`
             );
             continue;
           }
@@ -570,6 +593,75 @@ function nonSchemaZChainRoot(chain: ts.Expression): string | null {
         // treat it as a schema constructor.
         if (propName === null) return `${ZOD_NAMESPACE}[computed]`;
         return ZOD_SCHEMA_NAMESPACE_MEMBERS.has(propName) ? null : `${ZOD_NAMESPACE}.${propName}`;
+      }
+      cur = cur.expression;
+      continue;
+    }
+    if (ts.isParenthesizedExpression(cur) || ts.isNonNullExpression(cur)) {
+      cur = cur.expression;
+      continue;
+    }
+    break;
+  }
+  return null;
+}
+
+/**
+ * Methods that MUTATE an existing schema (or its registry) rather than PRODUCE a fresh
+ * schema. `register` is the canonical case: `zBase.register(registry, meta)` records `zBase`
+ * in a registry and returns it — a side effect on an already-built schema. A chain whose
+ * FIRST operation on a proven schema is one of these re-registers/annotates that schema, so
+ * wrapping it `/*#__PURE__*\/` would let a bundler drop the mutation while the base schema
+ * stays referenced. This is a deliberately small allowlist-complement: only a statically
+ * known mutator name is rejected here; every other proven-schema method (`.extend`,
+ * `.partial`, `.and`, …) is a combinator that produces a fresh schema and stays wrappable.
+ */
+const SCHEMA_MUTATOR_METHODS = new Set<string>(['register']);
+
+/**
+ * If `chain` is rooted at a proven schema (`schemaNames`) whose FIRST member access is a
+ * known schema MUTATOR (see `SCHEMA_MUTATOR_METHODS`), returns a description of that
+ * offending member; otherwise returns `null`. This is the proven-schema complement of
+ * `nonSchemaZChainRoot`: that guard rejects a `z.<mutator>` root, this one rejects a
+ * `<provenSchema>.<mutator>` root — `zBase.register(z.globalRegistry, meta)` mutates the
+ * already-built `zBase`, so it is not a pure construction even though its root is a proven
+ * schema. A chain that first DERIVES a fresh schema (`zBase.extend({…}).register(…)`) has
+ * the combinator `extend` as its first member, so it is NOT flagged here and stays wrapped.
+ */
+function schemaMutatorRoot(chain: ts.Expression, schemaNames: Set<string>): string | null {
+  const root = callChainRoot(chain);
+  // Only a chain rooted at a proven schema is classified here; a `z` root is handled by
+  // `nonSchemaZChainRoot`, and any other identifier fails closed in the caller.
+  if (!ts.isIdentifier(root) || root.text === ZOD_NAMESPACE || !schemaNames.has(root.text)) {
+    return null;
+  }
+  // Walk from the root toward the outermost call to find the FIRST member off the schema:
+  // `zBase.register(...)` → `register` (a mutator, rejected); `zBase.extend({…})` →
+  // `extend` (a combinator, allowed). Element access with a static string argument
+  // (`zBase['register'](...)`) names the same property; a computed one is not statically
+  // known and is left to the caller's fail-closed root check.
+  let cur: ts.Expression = chain;
+  while (true) {
+    if (ts.isCallExpression(cur)) {
+      cur = cur.expression;
+      continue;
+    }
+    if (ts.isPropertyAccessExpression(cur)) {
+      const base = peelTransparent(cur.expression);
+      if (ts.isIdentifier(base) && schemaNames.has(base.text)) {
+        return SCHEMA_MUTATOR_METHODS.has(cur.name.text) ? `${base.text}.${cur.name.text}` : null;
+      }
+      cur = cur.expression;
+      continue;
+    }
+    if (ts.isElementAccessExpression(cur)) {
+      const base = peelTransparent(cur.expression);
+      if (ts.isIdentifier(base) && schemaNames.has(base.text)) {
+        const propName = staticElementName(cur.argumentExpression);
+        if (propName !== null && SCHEMA_MUTATOR_METHODS.has(propName)) {
+          return `${base.text}.${propName}`;
+        }
+        return null;
       }
       cur = cur.expression;
       continue;

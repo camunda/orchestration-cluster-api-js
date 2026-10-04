@@ -168,6 +168,10 @@ function topLevelDynamicImports(sf: ts.SourceFile): string[] {
  * executes during module evaluation, not at a later call. Recognised forms:
  *   - direct IIFE: `(() => …)()`, `(async () => …)()`, `(function () { … })()` — the
  *     function is the call's callee;
+ *   - constructor IIFE: `new (function () { … })()` — a NewExpression runs the constructor
+ *     body at module load;
+ *   - tagged template: `` (async () => …)`tpl` `` — the function is invoked as the
+ *     template's tag;
  *   - `.call` / `.apply` invocation: `(async () => …).call(thisArg)`, `(function () { …
  *     }).apply(null, args)` — the function is the base of a `.call`/`.apply` property access
  *     that is itself called. These run the body eagerly exactly like `()()`, so they must not
@@ -189,6 +193,12 @@ function isImmediatelyInvoked(node: ts.Node): boolean {
   if (parent === undefined) return false;
   // Direct IIFE: the (paren-peeled) function is the call's callee.
   if (ts.isCallExpression(parent) && parent.expression === cur) return true;
+  // Constructor IIFE: `new (function () { … })()` / `new (() => …)()` — a NewExpression whose
+  // callee is the function executes the constructor body during module evaluation.
+  if (ts.isNewExpression(parent) && parent.expression === cur) return true;
+  // Tagged template: `` (async () => …)`tpl` `` invokes the function as the template's tag,
+  // running its body at module load exactly like a call.
+  if (ts.isTaggedTemplateExpression(parent) && parent.tag === cur) return true;
   // `.call` / `.apply` / `.bind` chain: the function is the base of `fn.call(...)`,
   // `fn.apply(...)`, or `fn.bind(...)`. `.call`/`.apply` invoke immediately; `.bind` only
   // CREATES a bound function, so it is eager only when the chain continues and is ultimately
@@ -600,6 +610,41 @@ describe('top-level (eager) dynamic imports', () => {
       "setTimeout(() => import('zod'), 0);\nexport const x = 1;\n"
     );
     expect(dynamicImportsOf(file)).toEqual([]);
+  });
+
+  // Regression (Copilot round 14, inline): the IIFE check only recognised a function whose
+  // parent is a CallExpression. Two more contexts run the body at module load but were
+  // missed: `new (function () { import('zod') })()` (a NewExpression executes the
+  // constructor body eagerly) and `` (async () => import('zod'))`tag` `` (a tagged template
+  // invokes the function as its tag). Recognise NewExpression and TaggedTemplateExpression
+  // as immediate-invocation contexts.
+  it("reports `void new (function () { import('zod') })()` (constructor IIFE) as eager", () => {
+    const file = write(
+      'iife-new.ts',
+      "void new (function () {\n  import('zod');\n})();\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it("reports `new (() => import('zod'))()` (arrow constructor) as eager", () => {
+    const file = write('iife-new-arrow.ts', "new (() => import('zod'))();\nexport const x = 1;\n");
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it("reports a tagged-template invocation `` (async () => import('zod'))`tpl` `` as eager", () => {
+    const file = write(
+      'iife-tagged.ts',
+      "void (async () => import('zod'))`tpl`;\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('end-to-end: fails the gate on a constructor-IIFE eager zod load', () => {
+    const entry = write(
+      'iife-new-entry.ts',
+      "void new (function () {\n  import('zod');\n})();\nexport const y = 2;\n"
+    );
+    expect(eagerZodImportersFrom(entry)).not.toEqual([]);
   });
 
   it('does NOT report an import inside a `Promise.resolve().then` callback (microtask stays deferred)', () => {
