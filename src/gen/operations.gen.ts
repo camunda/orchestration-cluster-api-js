@@ -1461,8 +1461,8 @@ export function activateJobs(core: CamundaCore, arg: any, options?: OperationOpt
           if (rt._validation.settings.res === 'strict') data = maybeR;
         }
       }
-      if (data && data.jobs) { const _client = _jobActionsClient(core); /* present-when-guard:activateJobs:withLease=true:jobLeaseToken */ if (data && data.jobs && _body && (_body as any).withLease === true) { for (const _el of data.jobs) { if (_el.jobLeaseToken == null) { const _e: any = new Error("activateJobs: withLease=true was requested but the server returned an item without 'jobLeaseToken' — the server may predate this feature. Refusing to silently mis-type the dependent field."); _e.name = 'PresentWhenUnsupportedError'; _e.nonRetryable = true; throw _e; } } }
-        data.jobs = data.jobs.map((j: any) => enrichActivatedJob(j, _client, core.logger().scope(`job:${j.jobKey}`))); }
+      if (data && data.jobs) { if (data.jobs.length > 0) { const _client = _jobActionsClient(core); /* present-when-guard:activateJobs:withLease=true:jobLeaseToken */ if (data && data.jobs && _body && (_body as any).withLease === true) { for (const _el of data.jobs) { if (_el.jobLeaseToken == null) { const _e: any = new Error("activateJobs: withLease=true was requested but the server returned an item without 'jobLeaseToken' — the server may predate this feature. Refusing to silently mis-type the dependent field."); _e.name = 'PresentWhenUnsupportedError'; _e.nonRetryable = true; throw _e; } } }
+        data.jobs = data.jobs.map((j: any) => enrichActivatedJob(j, _client, core.logger().scope(`job:${j.jobKey}`))); } }
       return data;
       } catch(e) {
         // Defer normalization to outer executeWithHttpRetry boundary
