@@ -336,15 +336,42 @@ const SYNC_ITERATOR_METHODS = new Set([
  * statically-provable shapes: a known synchronous iterator method (`[1].forEach(() => …)`,
  * `xs.map(function () {…})` — in EITHER dot or bracket notation, `xs['forEach'](cb)`), and
  * the `new Promise(executor)` constructor, whose executor runs inline during construction
- * (`new Promise(() => import('zod'))` loads Zod eagerly). Anything else (a method call we
- * cannot prove synchronous, an async scheduler, a callback stored for later, a direct call
- * of an opaque local function) stays deferred — the gate errs toward not flagging a pattern
- * it cannot prove is eager.
+ * (`new Promise(() => import('zod'))` loads Zod eagerly). A `.bind(...)` chain wrapping the
+ * callback does not defer it — binding changes `this`, not WHEN the body runs — so a bound
+ * callback handed to either shape (`[1].forEach(cb.bind(x))`) is eager too. Anything else (a
+ * method call we cannot prove synchronous, an async scheduler, a callback stored for later,
+ * a direct call of an opaque local function) stays deferred — the gate errs toward not
+ * flagging a pattern it cannot prove is eager.
  */
 function isSynchronouslyInvokedCallback(node: ts.Node): boolean {
   if (!ts.isFunctionExpression(node) && !ts.isArrowFunction(node)) return false;
   let cur: ts.Node = node;
   while (cur.parent && ts.isParenthesizedExpression(cur.parent)) cur = cur.parent;
+  // Peel a `.bind(...)` chain: `fn.bind(a)`, `fn.bind(a).bind(b)`, … each produce a bound
+  // function that is STILL a function value. Binding only changes `this`, NOT when the body
+  // runs — so when such a bound result is then passed to a synchronous callee (a sync
+  // iterator or a `new Promise` executor, tested below) its body runs during module
+  // evaluation exactly like the un-bound callback. Trace through every `.bind` link so the
+  // final bound value is tested against the callee. `.call`/`.apply` are NOT peeled here:
+  // they invoke the body immediately and are handled by `isImmediatelyInvoked`. A `.bind`
+  // chain that is itself invoked (`fn.bind(a)()`) is likewise an IIFE handled there, so the
+  // loop stops before an invoking `()` (that `()` is a CallExpression whose callee is the
+  // `.bind(...)` result, not a further `.bind` access) and leaves it to that helper.
+  for (;;) {
+    const access = cur.parent;
+    if (
+      access === undefined ||
+      !(ts.isPropertyAccessExpression(access) || ts.isElementAccessExpression(access)) ||
+      access.expression !== cur ||
+      calleeMethodName(access) !== 'bind'
+    ) {
+      break;
+    }
+    const call = access.parent;
+    if (call === undefined || !ts.isCallExpression(call) || call.expression !== access) break;
+    cur = call;
+    while (cur.parent && ts.isParenthesizedExpression(cur.parent)) cur = cur.parent;
+  }
   const parent = cur.parent;
   if (parent === undefined) return false;
   // `new Promise(executor)`: the Promise constructor runs its executor SYNCHRONOUSLY during
@@ -636,11 +663,55 @@ describe('top-level (eager) dynamic imports', () => {
     expect(dynamicImportsOf(file)).toEqual(['zod']);
   });
 
-  it('does NOT report an import inside a `.bind` chain passed as an argument (not invoked)', () => {
-    // The bound function is an ARGUMENT to forEach, never invoked — the import stays lazy.
+  it('reports an import inside a `.bind` chain passed to a sync iterator (invoked) as eager', () => {
+    // `forEach` invokes the bound callback SYNCHRONOUSLY during module evaluation — binding
+    // changes `this`, not WHEN the body runs — so the `import('zod')` is eager. The `.bind`
+    // wrapper must not hide the callback from the sync-iterator eager check (Copilot round 16).
     const file = write(
-      'not-iife-bind-arg.ts',
+      'iife-bind-forEach.ts',
       "[1].forEach((async () => import('zod')).bind(null));\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('reports a chained `.bind` callback passed to a sync iterator as eager', () => {
+    const file = write(
+      'iife-bind-bind-forEach.ts',
+      "[1].forEach((() => import('zod')).bind(null).bind(null));\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('reports a `.bind` callback passed to a bracket-notation sync iterator as eager', () => {
+    const file = write(
+      'iife-bind-forEach-bracket.ts',
+      "[1]['forEach']((() => import('zod')).bind(null));\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('reports a `.bind` executor passed to `new Promise` as eager', () => {
+    const file = write(
+      'iife-bind-promise.ts',
+      "void new Promise((() => import('zod')).bind(null));\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('does NOT report a `.bind` chain assigned to a variable (never invoked)', () => {
+    // The bound function is stored, not handed to a synchronous callee — the body stays deferred.
+    const file = write(
+      'not-iife-bind-assigned.ts',
+      "const f = (async () => import('zod')).bind(null);\nexport const x = f;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual([]);
+  });
+
+  it('does NOT report a `.bind` callback passed to an async scheduler (setTimeout)', () => {
+    // `setTimeout` defers its callback; binding does not make it synchronous, so the import is lazy.
+    const file = write(
+      'not-iife-bind-settimeout.ts',
+      "setTimeout((() => import('zod')).bind(null), 0);\nexport const x = 1;\n"
     );
     expect(dynamicImportsOf(file)).toEqual([]);
   });
