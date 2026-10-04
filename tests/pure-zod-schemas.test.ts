@@ -368,5 +368,64 @@ describe('wrapSchemaInitialisers', () => {
         expect(() => wrapSchemaInitialisers(src)).toThrow(/registration/);
       });
     });
+
+    // Regression (Copilot round 11): the service/mutator classification ran ONLY on the
+    // OUTER initialiser chain (`namespaceServiceRoot(init)`), while the nested eager-call
+    // traversal (`findUnreviewedEagerCall`) accepted any call merely because its chain
+    // root is `z`. So a nested namespace mutation — e.g. `z.any().default(z.globalRegistry
+    // .add(zBar, meta))` — is rooted at `z` for the outer chain AND for the nested call,
+    // slipped both checks, and was wrapped `/*#__PURE__*/`, letting a bundler drop the
+    // eager registry mutation together with the schema. Every eagerly-evaluated call must
+    // be classified, not only the outer one: a nested `z.<service>` mutation fails closed.
+    describe('nested namespace service/mutator mutations (fail the whole class)', () => {
+      it('fails closed on a nested z.globalRegistry.add in an eager argument', () => {
+        const src = [
+          "import * as z from 'zod';",
+          'export const zBar = z.object({ a: z.string() });',
+          'export const zFoo = z.any().default(z.globalRegistry.add(zBar, { id: "foo" }));',
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+      });
+
+      it('fails closed on a nested z.registry().add in an eager argument', () => {
+        const src = [
+          "import * as z from 'zod';",
+          'export const zBar = z.object({ a: z.string() });',
+          'export const zFoo = z.object({ v: z.registry().add(zBar, { id: "foo" }) });',
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+      });
+
+      it('fails closed on a deeply nested bracket-notation service mutation', () => {
+        const src = [
+          "import * as z from 'zod';",
+          'export const zBar = z.object({ a: z.string() });',
+          "export const zFoo = z.object({ a: z.object({ b: z.any().default(z['globalRegistry'].add(zBar, {})) }) });",
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+      });
+
+      it('fails closed when a wrapped (idempotent) body hides a nested service mutation', () => {
+        // The idempotency branch re-validates the wrapped body with the same traversal,
+        // so a `/*#__PURE__*/ (() => …)()` wrapper hiding a nested mutation also fails.
+        const src = [
+          "import * as z from 'zod';",
+          'export const zBar = z.object({ a: z.string() });',
+          `export const zFoo = ${WRAP}z.any().default(z.globalRegistry.add(zBar, {})))();`,
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+      });
+
+      it('still wraps a schema whose nested chain PASSES a registry as an argument', () => {
+        // `.register(z.globalRegistry, …)` nested inside an eager argument is rooted at the
+        // schema constructor `z.string`, not the registry object — it stays wrapped.
+        const src = [
+          "import * as z from 'zod';",
+          'export const zFoo = z.object({ v: z.string().register(z.globalRegistry, { id: "x" }) });',
+        ].join('\n');
+        const out = wrapSchemaInitialisers(src);
+        expect(out).toContain(`export const zFoo = ${WRAP}z.object(`);
+      });
+    });
   });
 });

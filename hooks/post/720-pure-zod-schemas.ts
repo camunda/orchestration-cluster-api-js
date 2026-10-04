@@ -222,6 +222,10 @@ function pureIifeBody(call: ts.CallExpression): ts.Expression | null {
  * argument (`z.object({ v: registerGlobalState() })`) is rooted at `z` yet still runs
  * `registerGlobalState()` at module evaluation, and wrapping the initialiser in
  * `/*#__PURE__*\/ (() => …)()` would let a bundler drop that side effect with the schema.
+ * The same applies to a nested namespace service MUTATION whose root happens to be `z`
+ * (`z.any().default(z.globalRegistry.add(…))`): it would pass the `z`-root check yet is a
+ * registry mutation, so every eager call is also run through `namespaceServiceRoot` and a
+ * nested `z.<service>` chain fails closed just like the outer initialiser.
  * Traverse the whole initialiser, but stop at deferred callback bodies (arrow/function
  * expressions such as `z.lazy(() => …)` or `.refine((v) => …)`) — those run when the
  * callback is invoked, not at module load, so calls inside them are not eager side effects.
@@ -238,6 +242,19 @@ function findUnreviewedEagerCall(init: ts.Expression, schemaNames: Set<string>):
     // Deferred callback bodies evaluate later, not at module load: do not descend.
     if (ts.isArrowFunction(node) || ts.isFunctionExpression(node)) return;
     if (ts.isCallExpression(node) || ts.isNewExpression(node)) {
+      // Classify EVERY eager call, not just the outer initialiser chain. A nested call
+      // rooted at `z` is not automatically a construction: `z.globalRegistry.add(…)` /
+      // `z.registry().add(…)` (e.g. inside `z.any().default(z.globalRegistry.add(…))`) is
+      // a namespace service MUTATION whose root is `z`, so it would otherwise pass the
+      // `isReviewedRoot` check and be wrapped `/*#__PURE__*/`, letting a bundler drop the
+      // eager mutation with the schema. Fail closed on it exactly like the outer guard.
+      if (ts.isCallExpression(node)) {
+        const svc = namespaceServiceRoot(node);
+        if (svc !== null) {
+          bad = svc;
+          return;
+        }
+      }
       const root = callChainRoot(node.expression);
       if (!isReviewedRoot(root)) {
         flag(root);
