@@ -35,9 +35,9 @@ function resolveLocal(from: string, spec: string): string[] {
   return [];
 }
 
-/** Static value-import specifiers of a module (type-only and dynamic imports excluded). */
-function valueImports(file: string): string[] {
-  const sf = ts.createSourceFile(file, readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true);
+/** Static value-import specifiers found on a parsed module (type-only and dynamic
+ *  imports excluded). */
+function valueImports(sf: ts.SourceFile): string[] {
   const specs: string[] = [];
   for (const st of sf.statements) {
     if (ts.isImportDeclaration(st) && ts.isStringLiteral(st.moduleSpecifier)) {
@@ -74,15 +74,15 @@ function valueImports(file: string): string[] {
 }
 
 /**
- * Specifiers of dynamic `import()` calls that are evaluated at MODULE LOAD — i.e. not
- * nested inside any function-like body (function/arrow/method/constructor/accessor), whose
- * execution is deferred to call time. A top-level `void import('zod')` immediately starts
- * loading zod, so it is an eager import on the load path; a `import('zod')` inside an
- * operation function is lazy and excluded. Only statically-known string specifiers are
- * reported (a computed `import(expr)` cannot be followed and is skipped).
+ * Specifiers of dynamic `import()` calls on a parsed module that are evaluated at MODULE
+ * LOAD — i.e. not nested inside any function-like body (function/arrow/method/constructor/
+ * accessor), whose execution is deferred to call time. A top-level `void import('zod')`
+ * immediately starts loading zod, so it is an eager import on the load path; a
+ * `import('zod')` inside an operation function is lazy and excluded. Only
+ * statically-known string specifiers are reported (a computed `import(expr)` cannot be
+ * followed and is skipped).
  */
-function topLevelDynamicImports(file: string): string[] {
-  const sf = ts.createSourceFile(file, readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true);
+function topLevelDynamicImports(sf: ts.SourceFile): string[] {
   const specs: string[] = [];
   const visit = (node: ts.Node, deferred: boolean): void => {
     // A function-like body defers execution to call time: imports inside it are lazy.
@@ -110,12 +110,34 @@ function topLevelDynamicImports(file: string): string[] {
 }
 
 /** Specifiers imported EAGERLY at module load: static value imports plus top-level
- *  (non-deferred) dynamic `import()` calls. */
+ *  (non-deferred) dynamic `import()` calls. Parses the file ONCE and feeds both scans
+ *  from the same SourceFile — the BFS visits every reachable file, so re-parsing per
+ *  scan would double the gate's cost and push the largest entry past the test timeout. */
 function eagerImports(file: string): string[] {
-  return [...valueImports(file), ...topLevelDynamicImports(file)];
+  const sf = parseOnce(file);
+  return [...valueImports(sf), ...topLevelDynamicImports(sf)];
+}
+
+// Parse counting, for the regression guard below. parseOnce is the ONLY path that turns
+// a file into a SourceFile for the eager-import scan, so incrementing here counts every
+// parse the scan performs. (ts.createSourceFile is a getter-only ESM export and cannot be
+// monkey-patched, so the count lives at this single call site instead.)
+let parseCount = 0;
+function parseOnce(file: string): ts.SourceFile {
+  parseCount++;
+  return ts.createSourceFile(file, readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true);
 }
 
 function eagerZodImportersFrom(start: string): string[] {
+  return scanEagerGraph(start).offenders;
+}
+
+/**
+ * The single BFS over the eager-import graph, shared by the gate and the parse-count
+ * regression guard so the two can never drift onto different traversals. Returns the
+ * offender chains plus the number of distinct files visited (the reachable-graph size).
+ */
+function scanEagerGraph(start: string): { offenders: string[]; files: number } {
   const parent = new Map<string, string | undefined>([[start, undefined]]);
   const queue = [start];
   const offenders: string[] = [];
@@ -136,17 +158,47 @@ function eagerZodImportersFrom(start: string): string[] {
       }
     }
   }
-  return offenders;
+  return { offenders, files: parent.size };
 }
 
 function eagerZodImporters(entry: string): string[] {
   return eagerZodImportersFrom(join(root, entry));
 }
 
+/**
+ * Regression guard (adversarial round 12): the eager-import scan must parse each
+ * reachable file ONCE. An earlier version ran valueImports() and topLevelDynamicImports()
+ * as two independent passes, each calling ts.createSourceFile per file — so every
+ * reachable file was parsed twice (the second pass a full recursive AST descent), roughly
+ * tripling the gate's cost and pushing the src/index.ts entry past the default 5000ms
+ * vitest timeout under parallel load (measured 5316ms there; ~3.6s even isolated, vs ~1s
+ * single-parse). A wall-clock budget is load-dependent, so this asserts the INVARIANT
+ * directly: the number of parses during a scan equals the number of reachable files — a
+ * double-parse regression yields exactly 2x and fails deterministically on any machine.
+ */
+function scanStats(entry: string): { files: number; parses: number } {
+  parseCount = 0;
+  const { files } = scanEagerGraph(join(root, entry));
+  return { files, parses: parseCount };
+}
+
 describe('zod is not loaded eagerly', () => {
   for (const entry of ENTRIES) {
     it(`${entry}: no static value import of zod on the eager path`, () => {
       expect(eagerZodImporters(entry)).toEqual([]);
+    });
+  }
+
+  // Regression (adversarial round 12): the eager-import scan must parse each reachable
+  // file ONCE. See scanStats above — this asserts the parse-count invariant directly
+  // (deterministic on any machine), not a load-dependent wall-clock budget.
+  for (const entry of ENTRIES) {
+    it(`${entry}: eager-import scan parses each reachable file exactly once`, () => {
+      const { files, parses } = scanStats(entry);
+      // A regression that re-parses per scan (e.g. valueImports + topLevelDynamicImports
+      // each calling ts.createSourceFile) yields parses === 2 * files.
+      expect(parses).toBe(files);
+      expect(parses).toBeGreaterThan(0);
     });
   }
 });
@@ -173,9 +225,15 @@ describe('top-level (eager) dynamic imports', () => {
     rmSync(dir, { recursive: true, force: true });
   });
 
+  // Helper: parse a written file once and return its top-level dynamic imports.
+  const dynamicImportsOf = (file: string): string[] =>
+    topLevelDynamicImports(
+      ts.createSourceFile(file, readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true)
+    );
+
   it("reports a top-level `import('zod')` as eager", () => {
     const file = write('eager.ts', "void import('zod');\nexport const x = 1;\n");
-    expect(topLevelDynamicImports(file)).toEqual(['zod']);
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
   });
 
   it("ignores a dynamic `import('zod')` deferred inside a function body", () => {
@@ -183,17 +241,17 @@ describe('top-level (eager) dynamic imports', () => {
       'lazy.ts',
       "export async function op() {\n  const z = await import('zod');\n  return z;\n}\n"
     );
-    expect(topLevelDynamicImports(file)).toEqual([]);
+    expect(dynamicImportsOf(file)).toEqual([]);
   });
 
   it('ignores a dynamic import inside an arrow-function body', () => {
     const file = write('arrow.ts', "export const op = async () => await import('zod');\n");
-    expect(topLevelDynamicImports(file)).toEqual([]);
+    expect(dynamicImportsOf(file)).toEqual([]);
   });
 
   it('skips a computed (non-literal) top-level dynamic import', () => {
     const file = write('computed.ts', 'const s = "zod";\nvoid import(s);\n');
-    expect(topLevelDynamicImports(file)).toEqual([]);
+    expect(dynamicImportsOf(file)).toEqual([]);
   });
 
   it("fails the gate end-to-end on a top-level `import('zod')` on the eager path", () => {
