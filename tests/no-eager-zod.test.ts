@@ -139,10 +139,21 @@ function topLevelDynamicImports(sf: ts.SourceFile): string[] {
       ts.isConstructorDeclaration(node) ||
       ts.isGetAccessorDeclaration(node) ||
       ts.isSetAccessorDeclaration(node);
+    // A local invoked directly at top level runs its body during module evaluation, so its
+    // children are eager. Two bindings carry such a local: a hoisted `function load() {…}`
+    // (matched by its own name) AND a `const load = () => …` / `const load = function () {…}`
+    // arrow/function-expression bound to a name (matched by the variable it is assigned to).
+    // The pre-pass records the called name in `topLevelCalledLocals` for both shapes; matching
+    // only `FunctionDeclaration` here would skip the arrow/expression body as deferred.
+    const boundLocalName =
+      ts.isArrowFunction(node) || ts.isFunctionExpression(node)
+        ? boundVariableName(node)
+        : undefined;
     const calledAtTopLevel =
-      ts.isFunctionDeclaration(node) &&
-      node.name !== undefined &&
-      topLevelCalledLocals.has(node.name.text);
+      (ts.isFunctionDeclaration(node) &&
+        node.name !== undefined &&
+        topLevelCalledLocals.has(node.name.text)) ||
+      (boundLocalName !== undefined && topLevelCalledLocals.has(boundLocalName));
     const defersChildren =
       isFunctionLike &&
       !isImmediatelyInvoked(node) &&
@@ -161,6 +172,46 @@ function topLevelDynamicImports(sf: ts.SourceFile): string[] {
   };
   visit(sf, false);
   return specs;
+}
+
+/**
+ * The name of a local variable to which `node` (a function/arrow expression) is directly
+ * bound — `const load = () => …` / `let load = function () {…}` → 'load'. Parentheses around
+ * the initializer (`const load = (() => …)`) are peeled. Returns undefined when the function
+ * is not the initializer of a simple identifier binding (e.g. it is an argument, a property
+ * value, or bound via a destructuring pattern). Pairs with the top-level-call pre-pass:
+ * a bound local whose name is invoked at module load runs its body eagerly.
+ */
+function boundVariableName(node: ts.Node): string | undefined {
+  let cur: ts.Node = node;
+  while (cur.parent && ts.isParenthesizedExpression(cur.parent)) cur = cur.parent;
+  const parent = cur.parent;
+  if (
+    parent !== undefined &&
+    ts.isVariableDeclaration(parent) &&
+    parent.initializer === cur &&
+    ts.isIdentifier(parent.name)
+  ) {
+    return parent.name.text;
+  }
+  return undefined;
+}
+
+/**
+ * The statically-known method name of a call's callee, resolved consistently across BOTH
+ * member-access forms: `foo.bar` → 'bar' (property access) and `foo['bar']` /
+ * `` foo[`bar`] `` → 'bar' (element access with a static string key). Returns null for a
+ * dynamic/computed key (`foo[k]`) or a non-member callee. Mirrors `staticElementName` in
+ * hooks/post/720-pure-zod-schemas.ts so method dispatch is detected the same whether written
+ * in dot or bracket notation — otherwise the bracket form silently bypasses the gate.
+ */
+function calleeMethodName(callee: ts.Expression): string | null {
+  if (ts.isPropertyAccessExpression(callee)) return callee.name.text;
+  if (ts.isElementAccessExpression(callee)) {
+    const arg = callee.argumentExpression;
+    if (ts.isStringLiteral(arg) || ts.isNoSubstitutionTemplateLiteral(arg)) return arg.text;
+  }
+  return null;
 }
 
 /**
@@ -200,47 +251,52 @@ function isImmediatelyInvoked(node: ts.Node): boolean {
   // running its body at module load exactly like a call.
   if (ts.isTaggedTemplateExpression(parent) && parent.tag === cur) return true;
   // `.call` / `.apply` / `.bind` chain: the function is the base of `fn.call(...)`,
-  // `fn.apply(...)`, or `fn.bind(...)`. `.call`/`.apply` invoke immediately; `.bind` only
-  // CREATES a bound function, so it is eager only when the chain continues and is ultimately
-  // invoked. Walk the whole chain: each link is a `.bind`/`.call`/`.apply` access over the
-  // previous result, followed by its `(...)` call. The chain is eager iff it ends in an
-  // invocation — either a `.call`/`.apply` link being called, or the final bound result being
-  // the callee of an enclosing CallExpression.
+  // `fn.apply(...)`, or `fn.bind(...)` — in EITHER dot or bracket notation (`fn['call'](...)`).
+  // `.call`/`.apply` invoke immediately; `.bind` only CREATES a bound function, so it is eager
+  // only when the chain continues and is ultimately invoked. Walk the whole chain: each link
+  // is a `.bind`/`.call`/`.apply` access over the previous result, followed by its `(...)`
+  // call. The chain is eager iff it ends in an invocation — either a `.call`/`.apply` link
+  // being called, or the final bound result being the callee of an enclosing CallExpression.
   if (
-    ts.isPropertyAccessExpression(parent) &&
-    parent.expression === cur &&
-    (parent.name.text === 'call' || parent.name.text === 'apply' || parent.name.text === 'bind')
+    (ts.isPropertyAccessExpression(parent) || ts.isElementAccessExpression(parent)) &&
+    parent.expression === cur
   ) {
-    // `access` is the current `.bind`/`.call`/`.apply` PropertyAccess whose base is the
-    // function (or the previous link's bound result). Loop invariant: `access` is the
-    // PropertyAccess of the link we are classifying.
-    let access: ts.PropertyAccessExpression = parent;
-    for (;;) {
-      const call = access.parent;
-      // The access must be invoked: `fn.bind(a)` / `fn.call(a)` / `fn.apply(a)`.
-      if (call === undefined || !ts.isCallExpression(call) || call.expression !== access) {
+    const name0 = calleeMethodName(parent);
+    if (name0 === 'call' || name0 === 'apply' || name0 === 'bind') {
+      // `access` is the current `.bind`/`.call`/`.apply` member access (property OR element)
+      // whose base is the function (or the previous link's bound result). Loop invariant:
+      // `access` is the member access of the link we are classifying.
+      let access: ts.PropertyAccessExpression | ts.ElementAccessExpression = parent;
+      for (;;) {
+        const call = access.parent;
+        // The access must be invoked: `fn.bind(a)` / `fn.call(a)` / `fn.apply(a)`.
+        if (call === undefined || !ts.isCallExpression(call) || call.expression !== access) {
+          return false;
+        }
+        const accessName = calleeMethodName(access);
+        // `.call` / `.apply` run the body as soon as they are invoked — eager.
+        if (accessName === 'call' || accessName === 'apply') return true;
+        // `.bind(...)`: eager only if the bound result is itself invoked or chained into an
+        // invocation. `next` is whatever consumes the bound function.
+        const next = call.parent;
+        if (next === undefined) return false;
+        // Directly invoked bound result: `fn.bind(a)()`.
+        if (ts.isCallExpression(next) && next.expression === call) return true;
+        // Chained: `fn.bind(a).bind(b)…` / `fn.bind(a).call(b)` / `fn.bind(a).apply(b)` — keep
+        // walking from the new access (either member-access form).
+        if (
+          (ts.isPropertyAccessExpression(next) || ts.isElementAccessExpression(next)) &&
+          next.expression === call
+        ) {
+          const nextName = calleeMethodName(next);
+          if (nextName === 'call' || nextName === 'apply' || nextName === 'bind') {
+            access = next;
+            continue;
+          }
+        }
+        // Anything else (assigned, passed as an argument, a non-invoking access) stays deferred.
         return false;
       }
-      // `.call` / `.apply` run the body as soon as they are invoked — eager.
-      if (access.name.text === 'call' || access.name.text === 'apply') return true;
-      // `.bind(...)`: eager only if the bound result is itself invoked or chained into an
-      // invocation. `next` is whatever consumes the bound function.
-      const next = call.parent;
-      if (next === undefined) return false;
-      // Directly invoked bound result: `fn.bind(a)()`.
-      if (ts.isCallExpression(next) && next.expression === call) return true;
-      // Chained: `fn.bind(a).bind(b)…` / `fn.bind(a).call(b)` / `fn.bind(a).apply(b)` — keep
-      // walking from the new access.
-      if (
-        ts.isPropertyAccessExpression(next) &&
-        next.expression === call &&
-        (next.name.text === 'call' || next.name.text === 'apply' || next.name.text === 'bind')
-      ) {
-        access = next;
-        continue;
-      }
-      // Anything else (assigned, passed as an argument, a non-invoking access) stays deferred.
-      return false;
     }
   }
   return false;
@@ -278,9 +334,10 @@ const SYNC_ITERATOR_METHODS = new Set([
  * True when `node` is a function/arrow passed as an ARGUMENT to a call whose callee runs it
  * SYNCHRONOUSLY during module evaluation — so its body is eager, not deferred. The one
  * statically-provable shape is a known synchronous iterator method: `[1].forEach(() => …)`,
- * `xs.map(function () {…})`. Anything else (a method call we cannot prove synchronous, an
- * async scheduler, a callback stored for later, a direct call of an opaque local function)
- * stays deferred — the gate errs toward not flagging a pattern it cannot prove is eager.
+ * `xs.map(function () {…})` — in EITHER dot or bracket notation (`xs['forEach'](cb)`).
+ * Anything else (a method call we cannot prove synchronous, an async scheduler, a callback
+ * stored for later, a direct call of an opaque local function) stays deferred — the gate errs
+ * toward not flagging a pattern it cannot prove is eager.
  */
 function isSynchronouslyInvokedCallback(node: ts.Node): boolean {
   if (!ts.isFunctionExpression(node) && !ts.isArrowFunction(node)) return false;
@@ -290,9 +347,10 @@ function isSynchronouslyInvokedCallback(node: ts.Node): boolean {
   // The function must be an argument of a call: `callee(…, fn, …)`.
   if (parent === undefined || !ts.isCallExpression(parent)) return false;
   if (!parent.arguments.some((arg) => arg === cur)) return false;
-  const callee = parent.expression;
-  // `[1].forEach(cb)` / `xs.map(cb)`: a known synchronous iterator method.
-  return ts.isPropertyAccessExpression(callee) && SYNC_ITERATOR_METHODS.has(callee.name.text);
+  // `[1].forEach(cb)` / `xs.map(cb)` / `xs['forEach'](cb)`: a known synchronous iterator
+  // method, resolved the same whether written in dot or bracket notation.
+  const method = calleeMethodName(parent.expression);
+  return method !== null && SYNC_ITERATOR_METHODS.has(method);
 }
 
 /** Specifiers imported EAGERLY at module load: static value imports plus top-level
@@ -595,6 +653,71 @@ describe('top-level (eager) dynamic imports', () => {
     const file = write(
       'sync-local-call.ts',
       "function load() {\n  return import('zod');\n}\nvoid load();\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  // Regression (adversarial, round 14): the top-level-call pre-pass recorded the called name
+  // for `const load = () => …; load();`, but the deferral check only treated a
+  // FunctionDeclaration as called-at-top-level — so an arrow or function EXPRESSION bound to
+  // that same name still had its body skipped as deferred, eager-loading zod past the gate.
+  // Match the binding (via `boundVariableName`), not only the FunctionDeclaration shape.
+  it('reports a const-bound arrow called at top level as eager', () => {
+    const file = write(
+      'sync-const-arrow-call.ts',
+      "const load = () => import('zod');\nload();\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('reports a const-bound function expression called at top level as eager', () => {
+    const file = write(
+      'sync-const-fnexpr-call.ts',
+      "const load = function () {\n  return import('zod');\n};\nvoid load();\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('reports a const-bound arrow invoked via a top-level initializer call as eager', () => {
+    const file = write(
+      'sync-const-arrow-init-call.ts',
+      "const load = () => import('zod');\nconst p = load();\nexport const x = p;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('does NOT report a const-bound arrow that is never invoked', () => {
+    const file = write(
+      'deferred-const-arrow.ts',
+      "const load = () => import('zod');\nexport const x = load;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual([]);
+  });
+
+  // Regression (adversarial, round 14): `isSynchronouslyInvokedCallback` only recognised a
+  // PropertyAccess callee, so the computed-member form `[1]['forEach'](() => import('zod'))`
+  // bypassed the gate even though it is identical to `[1].forEach(...)`. Resolve the method
+  // name through `calleeMethodName`, which handles both dot and static-key bracket notation.
+  it("reports `[1]['forEach'](() => import('zod'))` (bracket-notation sync callback) as eager", () => {
+    const file = write(
+      'sync-foreach-bracket.ts',
+      "[1]['forEach'](() => import('zod'));\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it("reports `(async () => import('zod'))['call'](undefined)` (bracket-notation `.call`) as eager", () => {
+    const file = write(
+      'iife-bracket-call.ts',
+      "(async () => import('zod'))['call'](undefined);\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it("reports `(async () => import('zod'))['bind'](null)()` (bracket-notation invoked `.bind`) as eager", () => {
+    const file = write(
+      'iife-bracket-bind.ts',
+      "(async () => import('zod'))['bind'](null)();\nexport const x = 1;\n"
     );
     expect(dynamicImportsOf(file)).toEqual(['zod']);
   });
