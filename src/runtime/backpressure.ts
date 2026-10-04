@@ -37,6 +37,8 @@ interface Waiter {
   resolve: () => void;
   reject: (e: any) => void;
   signal?: AbortSignal;
+  /** Detaches the abort listener registered for this waiter (if any). */
+  cleanup?: () => void;
 }
 
 export class BackpressureManager {
@@ -149,8 +151,31 @@ export class BackpressureManager {
       throw err;
     }
     // Queue
+    await this._acquireQueued(signal);
+    // Re-check after the wait: a cancel that lands between release() draining this
+    // waiter and this continuation running must not proceed to consume the permit
+    // and invoke the transport. Symmetric with the backoff re-check above. This lives
+    // in the await continuation (a microtask) rather than the waiter callback so it
+    // observes an abort that fires synchronously after the drain.
+    if (signal?.aborted) {
+      // The drain consumed a permit for this waiter (release() did permitsCurrent++
+      // before resolving it); refund it so the canceled operation holds nothing.
+      this.permitsCurrent--;
+      throw signal.reason || new Error('aborted');
+    }
+  }
+
+  /** @internal Queued acquire: parks until release() drains this waiter or the signal aborts. */
+  private _acquireQueued(signal?: AbortSignal): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      const waiter: Waiter = { resolve: () => resolve(), reject, signal };
+      const waiter: Waiter = {
+        resolve: () => {
+          waiter.cleanup?.();
+          resolve();
+        },
+        reject,
+        signal,
+      };
       if (signal) {
         if (signal.aborted) {
           reject(signal.reason || new Error('aborted'));
@@ -161,6 +186,7 @@ export class BackpressureManager {
           reject(signal.reason || new Error('aborted'));
         };
         signal.addEventListener('abort', onAbort, { once: true });
+        waiter.cleanup = () => signal.removeEventListener('abort', onAbort);
       }
       this.waiters.push(waiter);
     });
@@ -203,6 +229,8 @@ export class BackpressureManager {
       } catch {
         /* ignore waiter resolve errors */
       }
+      // If the waiter's post-drain abort re-check rejected, the permit was refunded;
+      // keep draining so the freed capacity reaches the next waiter.
     }
   }
 

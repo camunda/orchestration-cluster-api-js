@@ -72,3 +72,41 @@ describe('cancellation through backpressure gating', () => {
     expect((bp as any).permitsCurrent).toBe(0);
   });
 });
+
+describe('queued-waiter drain races (adversarial round 5)', () => {
+  it('cancel() after release() drains the waiter but before the continuation runs rejects and refunds the permit', async () => {
+    const ac = new AbortController();
+    const bp = new BackpressureManager({ config: { initialMaxConcurrency: 1 } });
+    (bp as any).permitsMax = 1;
+    (bp as any).permitsCurrent = 1; // sole permit occupied -> next acquire queues
+
+    const acquiring = bp.acquire(ac.signal);
+    const rejection = expect(acquiring).rejects.toThrow();
+    // Drain the waiter (permitsCurrent 1 -> 0 -> waiter shifted -> permitsCurrent 1),
+    // then abort before the microtask continuation runs.
+    bp.release();
+    ac.abort();
+    await rejection;
+    // The post-drain abort must not leave a permit consumed for the canceled op.
+    expect((bp as any).permitsCurrent).toBe(0);
+    expect((bp as any).waiters).toHaveLength(0);
+  });
+
+  it('removes the abort listener when a queued waiter drains normally', async () => {
+    const ac = new AbortController();
+    const bp = new BackpressureManager({ config: { initialMaxConcurrency: 1 } });
+    (bp as any).permitsMax = 1;
+    (bp as any).permitsCurrent = 1;
+
+    const addSpy = vi.spyOn(ac.signal, 'addEventListener');
+    const removeSpy = vi.spyOn(ac.signal, 'removeEventListener');
+
+    const acquiring = bp.acquire(ac.signal);
+    expect(addSpy).toHaveBeenCalledTimes(1);
+    bp.release();
+    await acquiring; // normal drain
+    // The drain must detach the listener it registered, like _sleepAbortable does.
+    expect(removeSpy).toHaveBeenCalledTimes(1);
+    expect(removeSpy).toHaveBeenCalledWith('abort', addSpy.mock.calls[0][1]);
+  });
+});
