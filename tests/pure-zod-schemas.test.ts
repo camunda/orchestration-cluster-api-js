@@ -732,4 +732,61 @@ describe('wrapSchemaInitialisers', () => {
       expect(out).toContain(`export const zFoo = ${WRAP}z.object(`);
     });
   });
+
+  // Regression (Copilot round 17): the fail-closed traversal classified only INVOCATIONS
+  // and assignment/update/delete, so an eager SPREAD was accepted.
+  // `z.object({ ...sideEffectingProxy })` contains only a reviewed Zod call and no
+  // assignment/update/delete, yet object spread SYNCHRONOUSLY runs the operand's
+  // getters/Proxy traps at module evaluation — so the initialiser was wrapped
+  // `/*#__PURE__*/` and a bundler could drop those effects with the schema. The same holds
+  // for a call/array spread (`z.union([...schemas])`, `f(...args)`), which runs the
+  // operand's iterator protocol eagerly. Reject every eager SpreadAssignment/SpreadElement
+  // before annotating the initialiser; a spread inside a DEFERRED callback stays allowed.
+  describe('eager spread side effects (fail the whole class)', () => {
+    it('fails closed on an object spread in an eager argument', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { sideEffectingProxy } from './side-effect';",
+        'export const zFoo = z.object({ ...sideEffectingProxy });',
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+    });
+
+    it('fails closed on an array spread in an eager argument', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { schemas } from './side-effect';",
+        'export const zFoo = z.union([...schemas]);',
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+    });
+
+    it('fails closed on a call spread in an eager argument', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { args } from './side-effect';",
+        'export const zFoo = z.string(...args);',
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+    });
+
+    it('fails closed on an object spread hidden in a wrapped (idempotent) body', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { sideEffectingProxy } from './side-effect';",
+        `export const zFoo = ${WRAP}z.object({ ...sideEffectingProxy }))();`,
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+    });
+
+    it('still treats a spread inside a DEFERRED callback body as lazy', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { sideEffectingProxy } from './side-effect';",
+        'export const zFoo = z.lazy(() => z.object({ ...sideEffectingProxy }));',
+      ].join('\n');
+      const out = wrapSchemaInitialisers(src);
+      expect(out).toContain(`export const zFoo = ${WRAP}z.lazy(`);
+    });
+  });
 });

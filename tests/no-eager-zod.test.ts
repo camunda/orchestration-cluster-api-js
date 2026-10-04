@@ -89,41 +89,45 @@ function valueImports(sf: ts.SourceFile): string[] {
  */
 function topLevelDynamicImports(sf: ts.SourceFile): string[] {
   const specs: string[] = [];
-  // Pre-pass: collect the names of locally-declared functions that are invoked DIRECTLY at
-  // top level — `function load() {…}; load();`. Such a call runs the function's body during
-  // module evaluation, so a dynamic import inside that body is eager, not deferred. (The
-  // import lives in the CALLEE's own body, not in a callback argument, so this is a separate
-  // shape from the synchronous-iterator case handled below.) Only a bare `name()` /
-  // `void name()` statement counts — a call nested inside another function stays deferred.
+  // Pre-pass: collect the names of locally-declared functions that are invoked ANYWHERE in
+  // a module-evaluated top-level expression — `function load() {…}; load();`, but also
+  // `const p = await load();`, `cond && load()`, `const x = (load(), 1);` or
+  // `const xs = [load()];`. Such a call runs the function's body during module evaluation,
+  // so a dynamic import inside that body is eager, not deferred. (The import lives in the
+  // CALLEE's own body, not in a callback argument, so this is a separate shape from the
+  // synchronous-iterator case handled below.) Recognising only a bare `name()` statement or
+  // a bare `const p = name()` initialiser misses the wrapped forms — an `await load()`
+  // initialiser is an AwaitExpression, not a CallExpression, so the callee is never recorded
+  // and the body is wrongly treated as deferred. Walk each top-level statement's full
+  // expression tree instead, recording EVERY bare-identifier call callee found; the walk
+  // stops at function-like boundaries only when the body genuinely defers execution —
+  // IIFEs, `.call`/`.apply`/invoked-`.bind` chains, and callbacks handed to known
+  // synchronous callees run during module evaluation, so calls inside them are
+  // module-evaluated too and the walk descends. A call nested inside any other
+  // (non-invoked) function stays deferred.
   const topLevelCalledLocals = new Set<string>();
+  const collectTopLevelCalls = (node: ts.Node): void => {
+    if (ts.isCallExpression(node) && ts.isIdentifier(node.expression)) {
+      topLevelCalledLocals.add(node.expression.text);
+    }
+    if (
+      ts.isFunctionDeclaration(node) ||
+      ts.isFunctionExpression(node) ||
+      ts.isArrowFunction(node) ||
+      ts.isMethodDeclaration(node) ||
+      ts.isConstructorDeclaration(node) ||
+      ts.isGetAccessorDeclaration(node) ||
+      ts.isSetAccessorDeclaration(node)
+    ) {
+      // A function-like boundary defers its body UNLESS the function runs during module
+      // evaluation — an IIFE (incl. `new`/tagged/`.call`/`.apply`/invoked-`.bind` forms) or
+      // a callback a known-synchronous callee invokes inline.
+      if (!isImmediatelyInvoked(node) && !isSynchronouslyInvokedCallback(node)) return;
+    }
+    ts.forEachChild(node, collectTopLevelCalls);
+  };
   for (const st of sf.statements) {
-    let expr: ts.Expression | undefined;
-    if (ts.isExpressionStatement(st)) expr = st.expression;
-    else if (ts.isVariableStatement(st)) {
-      // `const p = load();` — a top-level variable initialised by a direct call.
-      for (const decl of st.declarationList.declarations) {
-        if (
-          decl.initializer &&
-          ts.isCallExpression(decl.initializer) &&
-          ts.isIdentifier(decl.initializer.expression)
-        ) {
-          topLevelCalledLocals.add(decl.initializer.expression.text);
-        }
-      }
-      continue;
-    } else continue;
-    // Peel a leading `void` / `await` / unary wrapper to reach the call. `void x()` is a
-    // VoidExpression (NOT a PrefixUnaryExpression), so each wrapper kind is unwrapped by its
-    // own check.
-    for (;;) {
-      if (expr && ts.isVoidExpression(expr)) expr = expr.expression;
-      else if (expr && ts.isAwaitExpression(expr)) expr = expr.expression;
-      else if (expr && ts.isPrefixUnaryExpression(expr)) expr = expr.operand;
-      else break;
-    }
-    if (expr && ts.isCallExpression(expr) && ts.isIdentifier(expr.expression)) {
-      topLevelCalledLocals.add(expr.expression.text);
-    }
+    collectTopLevelCalls(st);
   }
   const visit = (node: ts.Node, deferred: boolean): void => {
     // A function-like body defers execution to call time: imports inside it are lazy —
@@ -771,6 +775,94 @@ describe('top-level (eager) dynamic imports', () => {
     const file = write(
       'sync-const-arrow-init-call.ts',
       "const load = () => import('zod');\nconst p = load();\nexport const x = p;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  // Regression (Copilot round 17): the top-level-call pre-pass only recognised a bare
+  // `name();` statement or a bare `const p = name()` initialiser. A local loader invoked
+  // INSIDE a larger module-evaluated expression — `const p = await load();` (the
+  // initialiser is an AwaitExpression, not a CallExpression), `cond && load()`,
+  // `(load(), 1)`, `[load()]` — was never recorded, so the loader's body was treated as
+  // deferred and its top-level `import('zod')` passed the gate even though the call runs
+  // during module evaluation. The pre-pass now walks each top-level statement's full
+  // expression tree and records every bare-identifier call callee.
+  it('reports a local loader invoked via a top-level `await load()` initialiser as eager', () => {
+    const file = write(
+      'sync-await-load.ts',
+      "async function load() {\n  return import('zod');\n}\nconst p = await load();\nexport const x = p;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('reports a local loader invoked in a top-level conditional expression as eager', () => {
+    const file = write(
+      'sync-cond-load.ts',
+      "declare const flag: boolean;\nfunction load() {\n  return import('zod');\n}\nconst p = flag && load();\nexport const x = p;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('reports a local loader invoked in a top-level comma expression as eager', () => {
+    const file = write(
+      'sync-comma-load.ts',
+      "function load() {\n  return import('zod');\n}\nconst p = (load(), 1);\nexport const x = p;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('reports a local loader invoked inside a top-level array/object literal as eager', () => {
+    const file = write(
+      'sync-literal-load.ts',
+      "function load() {\n  return import('zod');\n}\nconst xs = [load()];\nexport const x = xs;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('end-to-end: fails the gate on a wrapped-initializer eager zod load', () => {
+    const entry = write(
+      'sync-await-load-entry.ts',
+      "async function load() {\n  return import('zod');\n}\nconst p = await load();\nexport const y = p;\n"
+    );
+    expect(eagerZodImportersFrom(entry)).not.toEqual([]);
+  });
+
+  it('does NOT report a local loader invoked only inside a nested (deferred) function', () => {
+    // `load` is called inside `later`, which is never invoked at module load — the call is
+    // not module-evaluated, so the import stays deferred.
+    const file = write(
+      'deferred-nested-call.ts',
+      "function load() {\n  return import('zod');\n}\nexport function later() {\n  return load();\n}\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual([]);
+  });
+
+  it('does NOT report a local loader invoked only inside a deferred callback argument', () => {
+    // The call sits inside a `setTimeout` callback: the callback body is deferred, so the
+    // `load()` call (and its import) never runs at module evaluation.
+    const file = write(
+      'deferred-callback-call.ts',
+      "function load() {\n  return import('zod');\n}\nsetTimeout(() => load(), 0);\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual([]);
+  });
+
+  it('reports a local loader invoked inside a top-level IIFE body as eager', () => {
+    // The IIFE body runs during module evaluation, so the `load()` call inside it is
+    // module-evaluated and the loader's import is eager.
+    const file = write(
+      'sync-iife-nested-load.ts',
+      "function load() {\n  return import('zod');\n}\nvoid (() => {\n  load();\n})();\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('reports a local loader invoked inside a sync-iterator callback as eager', () => {
+    // `forEach` runs its callback synchronously during module evaluation, so the `load()`
+    // call inside the callback is module-evaluated.
+    const file = write(
+      'sync-iterator-nested-load.ts',
+      "function load() {\n  return import('zod');\n}\n[1].forEach(() => {\n  load();\n});\nexport const x = 1;\n"
     );
     expect(dynamicImportsOf(file)).toEqual(['zod']);
   });

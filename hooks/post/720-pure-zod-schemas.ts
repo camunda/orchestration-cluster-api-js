@@ -33,8 +33,10 @@
  * it (the outer chain AND nested arguments like `z.object({ v: sideEffect() })`) is rooted
  * at the `z` namespace or a schema reference declared in this module; any other eager call
  * (which could carry a required side effect) is reported as unreviewed rather than being
- * blindly marked pure. Calls inside deferred callback bodies (`z.lazy(() => …)`) are not
- * eager and are skipped.
+ * blindly marked pure. Eager NON-call side effects fail closed the same way: an
+ * assignment/update/delete, and any object/call/array SPREAD (`z.object({ ...proxy })`
+ * runs the operand's getters/Proxy traps at module evaluation). Calls inside deferred
+ * callback bodies (`z.lazy(() => …)`) are not eager and are skipped.
  *
  * Idempotent: already-wrapped initialisers are left untouched — but their wrapped bodies
  * are still validated with the same eager-call traversal before the name is accepted as a
@@ -130,7 +132,7 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
             const unreviewed = findUnreviewedEagerCall(wrappedBody, schemaNames);
             if (unreviewed !== null) {
               problems.push(
-                `${decl.name.getText(sf)}: pure-IIFE initialiser wraps an eagerly-evaluated call whose chain is not rooted at the zod namespace or a schema reference (root: ${unreviewed}) — ${init.getText(sf).slice(0, 120)}`
+                `${decl.name.getText(sf)}: pure-IIFE initialiser wraps an eagerly-evaluated side effect that is not a reviewed schema-construction call (${unreviewed}) — ${init.getText(sf).slice(0, 120)}`
               );
               continue;
             }
@@ -181,12 +183,13 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
           }
           const unreviewed = findUnreviewedEagerCall(init, schemaNames);
           if (unreviewed !== null) {
-            // Fail closed: an eagerly-evaluated call (the outer chain OR a nested argument)
-            // whose root is not the zod namespace or a proven schema could carry a required
-            // side effect; marking the initialiser pure would let a bundler drop it. Report
-            // it so the hook is extended deliberately.
+            // Fail closed: an eagerly-evaluated side effect that is not a reviewed
+            // schema-construction call — an unreviewed call root (the outer chain OR a
+            // nested argument), an assignment/update/delete, or a spread — could carry a
+            // required side effect; marking the initialiser pure would let a bundler drop
+            // it. Report it so the hook is extended deliberately.
             problems.push(
-              `${decl.name.getText(sf)}: initialiser contains an eagerly-evaluated call whose chain is not rooted at the zod namespace or a schema reference (root: ${unreviewed}) — ${init.getText(sf).slice(0, 120)}`
+              `${decl.name.getText(sf)}: initialiser contains an eagerly-evaluated side effect that is not a reviewed schema-construction call (${unreviewed}) — ${init.getText(sf).slice(0, 120)}`
             );
             continue;
           }
@@ -352,6 +355,25 @@ function findUnreviewedEagerCall(init: ts.Expression, schemaNames: Set<string>):
     }
     if (ts.isDeleteExpression(node)) {
       bad = 'delete';
+      return;
+    }
+    // An eager SPREAD is an unreviewed side effect even when its operand is a plain
+    // identifier: `{ ...proxy }` / `f(...args)` synchronously runs the operand's
+    // getters/Proxy traps (ownKeys/getOwnPropertyDescriptor/get for an object spread,
+    // the iterator protocol for a call/array spread) at module evaluation, yet carries
+    // no call for the invocation classifier to flag — so without this branch
+    // `z.object({ ...sideEffectingProxy })` passes as pure and a bundler can drop the
+    // spread's effects with the schema. The spread's OPERAND is still visited below
+    // (`ts.forEachChild` descends into `.expression`), so a call operand
+    // (`{ ...makeSchema() }`) is classified on its own merits; the spread ITSELF fails
+    // closed here because its evaluation semantics cannot be proven side-effect-free.
+    // A spread inside a deferred callback is not eager and is skipped above.
+    if (ts.isSpreadAssignment(node)) {
+      bad = 'object spread (runs the operand’s getters/Proxy traps eagerly)';
+      return;
+    }
+    if (ts.isSpreadElement(node)) {
+      bad = 'call/array spread (runs the operand’s iterator protocol eagerly)';
       return;
     }
     if (ts.isCallExpression(node) || ts.isNewExpression(node)) {
