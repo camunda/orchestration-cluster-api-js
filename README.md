@@ -1348,9 +1348,18 @@ For bundle-size-sensitive apps (browsers, edge functions), the
 function that takes a shared core as its first argument. Bundlers keep only the operations
 you import, and each operation lazily loads only its own validation schemas.
 
-<!-- snippet-source: examples/readme.ts | regions: ReadmePerOperationFunctions -->
+<!-- snippet-source: examples/readme-imports.txt,examples/readme.ts | regions: ReadmePerOperationFunctionsImport+ReadmePerOperationFunctions -->
 
 ```ts
+import { ProcessDefinitionKey } from '@camunda8/orchestration-cluster-api';
+import {
+  createCamundaCore,
+  createProcessInstance,
+  getTopology,
+} from '@camunda8/orchestration-cluster-api/fn';
+
+const defKey = ProcessDefinitionKey.assumeExists('2251799813686749');
+
 // Same options as createCamundaClient(); a CamundaClient also works as the core.
 const core = createCamundaCore();
 
