@@ -905,4 +905,146 @@ describe('wrapSchemaInitialisers', () => {
       expect(out).toContain(`export const zFoo = ${WRAP}z.object(`);
     });
   });
+
+  // Regression (Copilot "Previously missed", round 20): `findUnreviewedEagerCall` flagged
+  // ASSIGNMENT binary operators but not other binary operators, and unary `+`/`-`/`~` and
+  // template substitutions were not flagged at all. A COERCIVE operator runs user code on a
+  // non-inert operand at module evaluation — arithmetic/relational/bitwise coerce via
+  // `Symbol.toPrimitive`/`valueOf`/`toString`, `in` runs a Proxy `has` trap, `instanceof`
+  // runs `Symbol.hasInstance`, a template substitution runs `toString` — yet none is a call
+  // for the invocation classifier to flag, so `z.literal(importedObj + 1)` was wrapped
+  // `/*#__PURE__*/` and a bundler could drop the side effect. Fail closed on the whole
+  // class unless every operand is statically inert.
+  describe('eager coercive operators (fail the whole class)', () => {
+    const cases: Array<[string, string]> = [
+      ['binary + (valueOf/Symbol.toPrimitive)', 'z.literal(importedObj + 1)'],
+      ['binary * (valueOf)', 'z.literal(importedObj * 2)'],
+      ['relational < (Symbol.toPrimitive)', 'z.literal(importedObj < 5)'],
+      ['loose equality == (valueOf)', 'z.literal(importedObj == 5)'],
+      ['bitwise & (valueOf)', 'z.literal(importedObj & 1)'],
+      ['in operator (Proxy has trap)', 'z.literal("k" in importedObj)'],
+      ['instanceof (Symbol.hasInstance)', 'z.literal(importedObj instanceof importedCtor)'],
+      ['unary minus (valueOf)', 'z.literal(-importedObj)'],
+      ['unary plus (valueOf)', 'z.literal(+importedObj)'],
+      ['unary bitwise-not (valueOf)', 'z.literal(~importedObj)'],
+      ['template substitution (toString)', 'z.literal(`v=${importedObj}`)'],
+      ['nested coercion in an object schema', 'z.object({ v: z.literal(importedObj + 1) })'],
+    ];
+    for (const [name, initExpr] of cases) {
+      it(`fails closed on ${name}`, () => {
+        const src = [
+          "import * as z from 'zod';",
+          "import { importedObj, importedCtor } from './side-effect';",
+          `export const zEvil = ${initExpr};`,
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/zEvil/);
+      });
+    }
+
+    it('still wraps coercion of statically inert operands (literals)', () => {
+      // Literal-only operators cannot run user code, so they stay wrappable: `1 + 2`, `-1`,
+      // `` `x${2}` ``, `'a' === 'b'`.
+      const src = [
+        "import * as z from 'zod';",
+        'export const zFoo = z.object({',
+        '  a: z.string().min(1 + 2),',
+        '  b: z.number().gt(-1),',
+        '  c: z.literal(`x${2}`),',
+        '  d: z.literal(2 ** 3),',
+        '});',
+      ].join('\n');
+      const out = wrapSchemaInitialisers(src);
+      expect(out).toContain(`export const zFoo = ${WRAP}z.object(`);
+    });
+
+    it('still wraps non-coercive operators (=== && ?? ,) on identifiers', () => {
+      // These operators never coerce an operand, so an identifier operand is safe; the
+      // operand is still visited for its own side effects (here it has none).
+      const src = [
+        "import * as z from 'zod';",
+        "import { flagA, flagB } from './flags';",
+        'export const zFoo = z.object({ a: z.literal(flagA ?? flagB), b: z.literal(flagA === flagB) });',
+      ].join('\n');
+      const out = wrapSchemaInitialisers(src);
+      expect(out).toContain(`export const zFoo = ${WRAP}z.object(`);
+    });
+
+    it('still wraps coercion inside a deferred callback body (not eager)', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { importedObj } from './side-effect';",
+        'export const zFoo = z.lazy(() => z.literal(importedObj + 1));',
+      ].join('\n');
+      const out = wrapSchemaInitialisers(src);
+      expect(out).toContain(`export const zFoo = ${WRAP}z.lazy(`);
+    });
+  });
+
+  // Regression (Copilot "Previously missed", round 20): the proven-schema method guard was a
+  // BLACKLIST (`register` only), so any other first method off a proven schema was marked
+  // pure — `zBase.parse(importedValue)` runs refinements/transforms with required side
+  // effects, and `safeParse`/decode/encode/unknown methods have the same problem, yet were
+  // wrapped `/*#__PURE__*/`. The guard is now an ALLOWLIST of reviewed combinators, so every
+  // effectful or unknown first method fails closed.
+  describe('non-combinator schema methods (fail the whole class)', () => {
+    const effectful = [
+      'parse',
+      'parseAsync',
+      'safeParse',
+      'safeParseAsync',
+      'decode',
+      'encode',
+      'decodeAsync',
+      'encodeAsync',
+      'register',
+      'someFutureEffectfulMethod',
+    ];
+    for (const method of effectful) {
+      it(`fails closed on a proven-schema-rooted .${method}`, () => {
+        const src = [
+          "import * as z from 'zod';",
+          "import { importedValue } from './side-effect';",
+          'export const zBase = z.object({ a: z.string() });',
+          `export const zEvil = zBase.${method}(importedValue);`,
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/zEvil/);
+      });
+
+      it(`fails closed on a NESTED proven-schema-rooted .${method}`, () => {
+        const src = [
+          "import * as z from 'zod';",
+          "import { importedValue } from './side-effect';",
+          'export const zBase = z.object({ a: z.string() });',
+          `export const zFoo = z.object({ v: zBase.${method}(importedValue) });`,
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+      });
+    }
+
+    it('fails closed on a bracket-notation effectful method (zBase["parse"])', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { importedValue } from './side-effect';",
+        'export const zBase = z.object({ a: z.string() });',
+        'export const zEvil = zBase["parse"](importedValue);',
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zEvil/);
+    });
+
+    it('still wraps proven-schema-rooted combinators (.extend/.optional/.and/.nullable/.array)', () => {
+      const src = [
+        "import * as z from 'zod';",
+        'export const zBase = z.object({ a: z.string() });',
+        'export const zA = zBase.extend({ b: z.number() });',
+        'export const zB = zBase.optional();',
+        'export const zC = zBase.and(z.object({ c: z.string() }));',
+        'export const zD = zBase.nullable();',
+        'export const zE = zBase.array().min(1);',
+      ].join('\n');
+      const out = wrapSchemaInitialisers(src);
+      expect(out.match(/\/\*#__PURE__\*\/ \(\(\) => /g)?.length).toBe(6);
+      expect(out).toContain(`export const zA = ${WRAP}zBase.extend(`);
+      expect(out).toContain(`export const zE = ${WRAP}zBase.array(`);
+    });
+  });
 });

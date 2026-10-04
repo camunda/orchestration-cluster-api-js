@@ -121,7 +121,7 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
               );
               continue;
             }
-            const mut = schemaMutatorRoot(wrappedBody, schemaNames);
+            const mut = unreviewedSchemaMethodRoot(wrappedBody, schemaNames);
             if (mut !== null) {
               // A wrapped body whose chain is a schema-mutator call on a proven schema
               // (`(() => zBase.register(…))()`) hides a registry mutation behind the pure
@@ -170,7 +170,7 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
             );
             continue;
           }
-          const mutator = schemaMutatorRoot(init, schemaNames);
+          const mutator = unreviewedSchemaMethodRoot(init, schemaNames);
           if (mutator !== null) {
             // Fail closed: a chain rooted at a PROVEN schema whose FIRST member is a schema
             // mutator (`zBase.register(z.globalRegistry, meta)`) re-registers an existing
@@ -299,6 +299,77 @@ function isAssignmentOperator(kind: ts.SyntaxKind): boolean {
 }
 
 /**
+ * True when `kind` is a binary operator that can COERCE an operand — and thereby run user
+ * code — at evaluation. Arithmetic (`+ - * / % **`), loose (in)equality (`== !=`),
+ * relational (`< > <= >=`) and bitwise (`& | ^ << >> >>>`) operators invoke an object
+ * operand's `Symbol.toPrimitive`/`valueOf`/`toString`; `in` invokes a Proxy `has` trap and
+ * `instanceof` invokes `Symbol.hasInstance`. None is a call for the invocation classifier to
+ * flag, so `z.literal(importedObj + 1)` / `z.literal(key in importedProxy)` would otherwise
+ * be wrapped `/*#__PURE__*\/` and a bundler could drop the coercion's side effect with the
+ * schema. Fails CLOSED: only the operators that provably never coerce — strict (in)equality
+ * (`=== !==`), the logical connectives (`&& || ??`, which short-circuit without coercion) and
+ * the comma operator (its operands' own effects are caught by descending) — are excluded;
+ * every other binary operator, including any a future TypeScript adds, is treated as
+ * coercive. Assignment operators are handled by `isAssignmentOperator` before this guard.
+ */
+function isCoerciveBinaryOperator(kind: ts.SyntaxKind): boolean {
+  switch (kind) {
+    case ts.SyntaxKind.EqualsEqualsEqualsToken:
+    case ts.SyntaxKind.ExclamationEqualsEqualsToken:
+    case ts.SyntaxKind.AmpersandAmpersandToken:
+    case ts.SyntaxKind.BarBarToken:
+    case ts.SyntaxKind.QuestionQuestionToken:
+    case ts.SyntaxKind.CommaToken:
+      return false;
+    default:
+      return true;
+  }
+}
+
+/**
+ * True when `expr` is STATICALLY INERT — evaluating it cannot run user code (no getter,
+ * Proxy trap, `Symbol.toPrimitive`/`valueOf`/`hasInstance`, or call). Only then may a
+ * coercive operator (`+`, `<`, `instanceof`, a template substitution, unary `+`/`-`/`~`)
+ * sit in an eager schema position without failing closed: `z.literal(-1)` / `z.string().
+ * min(1 + 2)` coerce only literals and must stay wrappable, while `z.literal(importedObj +
+ * 1)` must not. Fails CLOSED: a bare identifier (other than the un-importable global
+ * `undefined`), a property/element read, or a call is NOT inert — an imported binding can be
+ * a Proxy or an object with a coercion hook. Inert shapes: literals (number/bigint/string/
+ * no-substitution template/regex), `true`/`false`/`null`/`undefined`, a parenthesised inert
+ * expression, a unary `+`/`-`/`~`/`!` on an inert operand, and a (non-assignment) binary of
+ * two inert operands.
+ */
+function isStaticallyInertOperand(expr: ts.Expression): boolean {
+  switch (expr.kind) {
+    case ts.SyntaxKind.NumericLiteral:
+    case ts.SyntaxKind.BigIntLiteral:
+    case ts.SyntaxKind.StringLiteral:
+    case ts.SyntaxKind.NoSubstitutionTemplateLiteral:
+    case ts.SyntaxKind.RegularExpressionLiteral:
+    case ts.SyntaxKind.TrueKeyword:
+    case ts.SyntaxKind.FalseKeyword:
+    case ts.SyntaxKind.NullKeyword:
+      return true;
+  }
+  // `undefined` is a global identifier that cannot be shadowed by an imported binding.
+  if (ts.isIdentifier(expr) && expr.text === 'undefined') return true;
+  if (ts.isParenthesizedExpression(expr)) return isStaticallyInertOperand(expr.expression);
+  if (
+    ts.isPrefixUnaryExpression(expr) &&
+    (expr.operator === ts.SyntaxKind.PlusToken ||
+      expr.operator === ts.SyntaxKind.MinusToken ||
+      expr.operator === ts.SyntaxKind.TildeToken ||
+      expr.operator === ts.SyntaxKind.ExclamationToken)
+  ) {
+    return isStaticallyInertOperand(expr.operand);
+  }
+  if (ts.isBinaryExpression(expr) && !isAssignmentOperator(expr.operatorToken.kind)) {
+    return isStaticallyInertOperand(expr.left) && isStaticallyInertOperand(expr.right);
+  }
+  return false;
+}
+
+/**
  * A call initialiser is a recognised zod schema construction only when EVERY eagerly
  * evaluated call/`new`/tagged-template in it is rooted at the `z` namespace or a schema
  * already proven pure in this module. Walking each chain to its leftmost expression
@@ -375,12 +446,57 @@ function findUnreviewedEagerCall(init: ts.Expression, schemaNames: Set<string>):
       bad = `assignment (${ts.SyntaxKind[node.operatorToken.kind]})`;
       return;
     }
+    // A COERCIVE binary operator (`+`, `<`, `==`, `&`, `in`, `instanceof`, …) can run user
+    // code on a non-inert operand at module evaluation — arithmetic/relational/bitwise coerce
+    // via `Symbol.toPrimitive`/`valueOf`/`toString`, `in` runs a Proxy `has` trap and
+    // `instanceof` runs `Symbol.hasInstance` — yet none is a call for the invocation
+    // classifier to flag. So `z.literal(importedObj + 1)` / `z.literal(key in importedProxy)`
+    // would otherwise be wrapped `/*#__PURE__*/` and a bundler could drop that side effect
+    // with the schema. Fail closed unless BOTH operands are statically inert (literals etc.),
+    // which cannot trigger user code; non-coercive operators (`===`, `&&`, `??`, `,`) never
+    // coerce and stay allowed, their operands still visited below for their own effects.
+    if (
+      ts.isBinaryExpression(node) &&
+      isCoerciveBinaryOperator(node.operatorToken.kind) &&
+      !(isStaticallyInertOperand(node.left) && isStaticallyInertOperand(node.right))
+    ) {
+      bad = `coercive operator (${ts.SyntaxKind[node.operatorToken.kind]}) on a non-inert operand (runs Symbol.toPrimitive/valueOf/has/hasInstance eagerly)`;
+      return;
+    }
     if (
       ts.isPrefixUnaryExpression(node) &&
       (node.operator === ts.SyntaxKind.PlusPlusToken ||
         node.operator === ts.SyntaxKind.MinusMinusToken)
     ) {
       bad = 'update (prefix ++/--)';
+      return;
+    }
+    // Unary `+`/`-`/`~` numeric coercion runs `Symbol.toPrimitive`/`valueOf` on a non-inert
+    // operand exactly like a coercive binary operator (`+importedObj`), so it fails closed
+    // too unless the operand is statically inert (`-1`, `~0`). (`!x` only tests truthiness —
+    // no coercion hook — and `typeof`/`void` never coerce, so they are not flagged here.)
+    if (
+      ts.isPrefixUnaryExpression(node) &&
+      (node.operator === ts.SyntaxKind.PlusToken ||
+        node.operator === ts.SyntaxKind.MinusToken ||
+        node.operator === ts.SyntaxKind.TildeToken) &&
+      !isStaticallyInertOperand(node.operand)
+    ) {
+      bad = `unary coercion (${ts.SyntaxKind[node.operator]}) on a non-inert operand (runs Symbol.toPrimitive/valueOf eagerly)`;
+      return;
+    }
+    // A template literal with substitutions coerces each substitution to a string at module
+    // evaluation (`z.literal(\`${importedObj}\`)` runs the operand's `Symbol.toPrimitive`/
+    // `toString`), yet carries no call to flag. Fail closed unless every substitution is
+    // statically inert. A no-substitution template is a plain string literal (not a
+    // `TemplateExpression`) and stays allowed. A TAGGED template is an eager invocation and
+    // is classified by the tagged-template branch below.
+    if (
+      ts.isTemplateExpression(node) &&
+      node.templateSpans.some((span) => !isStaticallyInertOperand(span.expression))
+    ) {
+      bad =
+        'template-literal substitution on a non-inert operand (runs Symbol.toPrimitive/toString eagerly)';
       return;
     }
     if (ts.isPostfixUnaryExpression(node)) {
@@ -431,7 +547,7 @@ function findUnreviewedEagerCall(init: ts.Expression, schemaNames: Set<string>):
       // drop the registration. Classify EVERY visited call — not just the outer initialiser
       // — through the same mutator guard so a nested one fails closed too. A computed first
       // member (`zBase[key](...)`) is not statically known and also fails closed here.
-      const nestedMutator = schemaMutatorRoot(node, schemaNames);
+      const nestedMutator = unreviewedSchemaMethodRoot(node, schemaNames);
       if (nestedMutator !== null) {
         bad = nestedMutator;
         return;
@@ -456,7 +572,7 @@ function findUnreviewedEagerCall(init: ts.Expression, schemaNames: Set<string>):
       // Same mutator guard for a tag rooted at a proven schema (`` zBase.register`x` ``):
       // its first member off the schema is a mutator, so it fails closed exactly like the
       // call form above rather than being wrapped pure.
-      const tagMutator = schemaMutatorRoot(node.tag, schemaNames);
+      const tagMutator = unreviewedSchemaMethodRoot(node.tag, schemaNames);
       if (tagMutator !== null) {
         bad = tagMutator;
         return;
@@ -683,28 +799,141 @@ function nonSchemaZChainRoot(chain: ts.Expression): string | null {
 }
 
 /**
- * Methods that MUTATE an existing schema (or its registry) rather than PRODUCE a fresh
- * schema. `register` is the canonical case: `zBase.register(registry, meta)` records `zBase`
- * in a registry and returns it — a side effect on an already-built schema. A chain whose
- * FIRST operation on a proven schema is one of these re-registers/annotates that schema, so
- * wrapping it `/*#__PURE__*\/` would let a bundler drop the mutation while the base schema
- * stays referenced. This is a deliberately small allowlist-complement: only a statically
- * known mutator name is rejected here; every other proven-schema method (`.extend`,
- * `.partial`, `.and`, …) is a combinator that produces a fresh schema and stays wrappable.
+ * ALLOWLIST of reviewed proven-schema instance methods that PRODUCE or purely ANNOTATE a
+ * schema, so a chain whose FIRST operation on a proven schema is one of these may be wrapped
+ * `/*#__PURE__*\/`. This is an allowlist, NOT a blacklist of known mutators: every other
+ * first method off a proven schema fails closed. A blacklist (e.g. just `register`) fails
+ * OPEN on any effectful method it has not enumerated — `zBase.parse(importedValue)` /
+ * `zBase.safeParse(...)` synchronously run refinements/transforms with required side effects,
+ * decode/encode APIs do too, and a future zod version could add more — so
+ * `export const parsed = zBase.parse(importedValue)` would be wrapped as droppable and a
+ * bundler could drop the parse while `parsed` stays referenced. The allowlist rejects the
+ * unreviewed by default; a legitimately new schema combinator fails the build with a clear
+ * message and is added here deliberately after review. Mirrors the `z`-namespace allowlist
+ * (`ZOD_SCHEMA_NAMESPACE_MEMBERS`) philosophy for the proven-schema case.
+ *
+ * Deliberately EXCLUDED (fail closed): the parse/validate family (`parse`, `parseAsync`,
+ * `safeParse`, `safeParseAsync`, `spa`), codec execution (`decode`, `encode`, `decodeAsync`,
+ * `encodeAsync`), and the registry mutator `register`.
  */
-const SCHEMA_MUTATOR_METHODS = new Set<string>(['register']);
+const SCHEMA_PURE_METHODS = new Set<string>([
+  // Base wrappers / combinators / pure annotators
+  'optional',
+  'nullable',
+  'nullish',
+  'nonoptional',
+  'array',
+  'promise',
+  'or',
+  'and',
+  'transform',
+  'default',
+  'prefault',
+  'catch',
+  'describe',
+  'meta',
+  'brand',
+  'readonly',
+  'pipe',
+  'refine',
+  'superRefine',
+  'check',
+  'overwrite',
+  'clone',
+  'unwrap',
+  // Object combinators
+  'extend',
+  'merge',
+  'pick',
+  'omit',
+  'partial',
+  'required',
+  'passthrough',
+  'strict',
+  'strip',
+  'catchall',
+  'keyof',
+  'deepPartial',
+  // Size / range / numeric constraints (produce a refined schema)
+  'min',
+  'max',
+  'length',
+  'size',
+  'element',
+  'nonempty',
+  'gt',
+  'gte',
+  'lt',
+  'lte',
+  'int',
+  'positive',
+  'negative',
+  'nonnegative',
+  'nonpositive',
+  'multipleOf',
+  'step',
+  'finite',
+  'safe',
+  // String-format / transform constraints
+  'regex',
+  'includes',
+  'startsWith',
+  'endsWith',
+  'trim',
+  'toLowerCase',
+  'toUpperCase',
+  'normalize',
+  'lowercase',
+  'uppercase',
+  'email',
+  'url',
+  'httpUrl',
+  'emoji',
+  'nanoid',
+  'cuid',
+  'cuid2',
+  'ulid',
+  'uuid',
+  'guid',
+  'xid',
+  'ksuid',
+  'base64',
+  'base64url',
+  'base32',
+  'jwt',
+  'date',
+  'time',
+  'datetime',
+  'duration',
+  'ip',
+  'ipv4',
+  'ipv6',
+  'cidr',
+  'cidrv4',
+  'cidrv6',
+  'e164',
+  'hostname',
+  'hex',
+  'ascii',
+  'utf8',
+  // Enum narrowing (produce a fresh schema / pure accessor)
+  'exclude',
+  'extract',
+  'options',
+]);
 
 /**
- * If `chain` is rooted at a proven schema (`schemaNames`) whose FIRST member access is a
- * known schema MUTATOR (see `SCHEMA_MUTATOR_METHODS`), returns a description of that
+ * If `chain` is rooted at a proven schema (`schemaNames`) whose FIRST member access is NOT a
+ * reviewed pure combinator (see `SCHEMA_PURE_METHODS`), returns a description of that
  * offending member; otherwise returns `null`. This is the proven-schema complement of
- * `nonSchemaZChainRoot`: that guard rejects a `z.<mutator>` root, this one rejects a
- * `<provenSchema>.<mutator>` root — `zBase.register(z.globalRegistry, meta)` mutates the
- * already-built `zBase`, so it is not a pure construction even though its root is a proven
- * schema. A chain that first DERIVES a fresh schema (`zBase.extend({…}).register(…)`) has
- * the combinator `extend` as its first member, so it is NOT flagged here and stays wrapped.
+ * `nonSchemaZChainRoot`: that guard allowlists a `z.<constructor>` root, this one allowlists
+ * a `<provenSchema>.<combinator>` root — `zBase.register(z.globalRegistry, meta)` mutates the
+ * already-built `zBase` and `zBase.parse(importedValue)` runs refinements/transforms, so
+ * neither is a pure construction even though its root is a proven schema. A chain that first
+ * DERIVES a fresh schema (`zBase.extend({…}).register(…)`) has the combinator `extend` as its
+ * first member, so it is NOT flagged here and stays wrapped.
  */
-function schemaMutatorRoot(chain: ts.Expression, schemaNames: Set<string>): string | null {
+function unreviewedSchemaMethodRoot(chain: ts.Expression, schemaNames: Set<string>): string | null {
   const root = callChainRoot(chain);
   // Only a chain rooted at a proven schema is classified here; a `z` root is handled by
   // `nonSchemaZChainRoot`, and any other identifier fails closed in the caller.
@@ -712,9 +941,9 @@ function schemaMutatorRoot(chain: ts.Expression, schemaNames: Set<string>): stri
     return null;
   }
   // Walk from the root toward the outermost call to find the FIRST member off the schema:
-  // `zBase.register(...)` → `register` (a mutator, rejected); `zBase.extend({…})` →
-  // `extend` (a combinator, allowed). Element access with a static string argument
-  // (`zBase['register'](...)`) names the same property; a COMPUTED one (`zBase[key](...)`)
+  // `zBase.extend({…})` → `extend` (an allowlisted combinator, accepted); `zBase.parse(...)`
+  // / `zBase.register(...)` → not allowlisted, rejected. Element access with a static string
+  // argument (`zBase['parse'](...)`) names the same property; a COMPUTED one (`zBase[key]`)
   // is not statically known, so it fails closed here rather than being assumed safe.
   let cur: ts.Expression = chain;
   while (true) {
@@ -725,7 +954,7 @@ function schemaMutatorRoot(chain: ts.Expression, schemaNames: Set<string>): stri
     if (ts.isPropertyAccessExpression(cur)) {
       const base = peelTransparent(cur.expression);
       if (ts.isIdentifier(base) && schemaNames.has(base.text)) {
-        return SCHEMA_MUTATOR_METHODS.has(cur.name.text) ? `${base.text}.${cur.name.text}` : null;
+        return SCHEMA_PURE_METHODS.has(cur.name.text) ? null : `${base.text}.${cur.name.text}`;
       }
       cur = cur.expression;
       continue;
@@ -735,11 +964,12 @@ function schemaMutatorRoot(chain: ts.Expression, schemaNames: Set<string>): stri
       if (ts.isIdentifier(base) && schemaNames.has(base.text)) {
         const propName = staticElementName(cur.argumentExpression);
         if (propName !== null) {
-          // Statically-known key: a known mutator fails closed; a combinator is a construction.
-          return SCHEMA_MUTATOR_METHODS.has(propName) ? `${base.text}.${propName}` : null;
+          // Statically-known key: an allowlisted combinator is a construction; anything else
+          // (a mutator/parse/unknown method) fails closed.
+          return SCHEMA_PURE_METHODS.has(propName) ? null : `${base.text}.${propName}`;
         }
         // A COMPUTED first member off a proven schema (`zBase[key](...)`) is not statically
-        // known to be a schema-producing combinator — `key` could be `register`. The hook
+        // known to be a reviewed combinator — `key` could be `parse`/`register`. The hook
         // promises fail-closed behaviour, so reject it rather than assume it is safe to wrap.
         return `${base.text}[<computed>]`;
       }
