@@ -44,17 +44,14 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
   const edits: { start: number; end: number; text: string }[] = [];
   const problems: string[] = [];
 
-  // First pass: collect every const name declared in the module. A schema initialiser's
-  // call chain may be rooted either at the `z` namespace (`z.object(...)`) or at another
-  // schema declared here (`zFoo.extend(...)`); both are recognised pure constructions.
-  const declaredNames = new Set<string>();
-  for (const st of sf.statements) {
-    if (ts.isVariableStatement(st) && st.declarationList.flags & ts.NodeFlags.Const) {
-      for (const decl of st.declarationList.declarations) {
-        if (ts.isIdentifier(decl.name)) declaredNames.add(decl.name.text);
-      }
-    }
-  }
+  // Names of consts already proven to be zod schema constructions (or aliases of one).
+  // A call initialiser's chain may be rooted either at the `z` namespace (`z.object(...)`)
+  // or at one of these proven schemas (`zFoo.extend(...)`); both are recognised pure
+  // constructions. This is deliberately NOT the set of every module-level const: a const
+  // such as `const helper = importedSideEffect` is not a schema, and a call rooted at it
+  // (`helper()`) could carry a required side effect, so it must fail closed below. The set
+  // is built up in the main pass below, in declaration order, as each schema is proven.
+  const schemaNames = new Set<string>();
 
   for (const st of sf.statements) {
     if (ts.isImportDeclaration(st)) continue;
@@ -69,10 +66,23 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
     if (ts.isVariableStatement(st) && st.declarationList.flags & ts.NodeFlags.Const) {
       for (const decl of st.declarationList.declarations) {
         const init = decl.initializer;
-        if (!init || ts.isIdentifier(init)) continue; // alias: no side effect
+        if (!init) continue;
+        if (ts.isIdentifier(init)) {
+          // Alias: no side effect of its own. It is a proven schema only when its target
+          // is — so an alias of a schema (`const a = zFoo`) stays a valid call root, while
+          // an alias of anything else (`const h = sideEffect`) does not.
+          if (schemaNames.has(init.text) && ts.isIdentifier(decl.name)) {
+            schemaNames.add(decl.name.text);
+          }
+          continue;
+        }
         if (ts.isCallExpression(init)) {
-          if (isPureIife(init)) continue; // already wrapped (idempotent rerun)
-          if (!isRecognizedSchemaCall(init, declaredNames)) {
+          if (isPureIife(init)) {
+            // Already wrapped (idempotent rerun): it was proven a schema when first wrapped.
+            if (ts.isIdentifier(decl.name)) schemaNames.add(decl.name.text);
+            continue;
+          }
+          if (!isRecognizedSchemaCall(init, schemaNames)) {
             // Fail closed: an unrecognised call could have a required side effect, so
             // do NOT mark it pure — report it so the hook is extended deliberately.
             problems.push(
@@ -86,6 +96,9 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
             end: init.getEnd(),
             text: `${PURE_IIFE_PREFIX}${exprText})()`,
           });
+          // Recognised as a schema construction: record it so a later schema rooted at
+          // this one (`zNext = zThis.and(...)`) is also recognised.
+          if (ts.isIdentifier(decl.name)) schemaNames.add(decl.name.text);
           continue;
         }
         problems.push(`${decl.name.getText(sf)}: initialiser kind ${ts.SyntaxKind[init.kind]}`);
@@ -119,12 +132,14 @@ function isPureIife(call: ts.CallExpression): boolean {
 
 /**
  * A call initialiser is a recognised zod schema construction only when the root of its
- * call/property-access chain is the `z` namespace or a schema declared in this module.
- * Walking to the leftmost expression rejects chains rooted at an arbitrary call
+ * call/property-access chain is the `z` namespace or a schema already proven pure in this
+ * module. Walking to the leftmost expression rejects chains rooted at an arbitrary call
  * (`makeThing()(...)`) or an unknown identifier (`sideEffect(...)`), which could carry a
- * required side effect that must not be silently marked pure.
+ * required side effect that must not be silently marked pure. `schemaNames` holds only
+ * proven schema constructions — never an arbitrary module-level const — so a chain rooted
+ * at a non-schema const fails closed.
  */
-function isRecognizedSchemaCall(init: ts.CallExpression, declaredNames: Set<string>): boolean {
+function isRecognizedSchemaCall(init: ts.CallExpression, schemaNames: Set<string>): boolean {
   let cur: ts.Expression = init;
   while (true) {
     if (ts.isCallExpression(cur) || ts.isPropertyAccessExpression(cur)) {
@@ -138,7 +153,7 @@ function isRecognizedSchemaCall(init: ts.CallExpression, declaredNames: Set<stri
     }
   }
   if (!ts.isIdentifier(cur)) return false;
-  return cur.text === ZOD_NAMESPACE || declaredNames.has(cur.text);
+  return cur.text === ZOD_NAMESPACE || schemaNames.has(cur.text);
 }
 
 function main(): void {

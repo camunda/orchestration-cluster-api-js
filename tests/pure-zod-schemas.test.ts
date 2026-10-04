@@ -49,6 +49,41 @@ describe('wrapSchemaInitialisers', () => {
     expect(() => wrapSchemaInitialisers(src)).toThrow(/zEvil/);
   });
 
+  it('fails closed on a call rooted at a module-level const that is NOT a proven schema', () => {
+    // Regression: `declaredNames` used to hold every module-level const, so a call chain
+    // rooted at a non-schema const (an alias of an imported side effect) was wrongly
+    // accepted and marked pure — silently dropping a required side effect. Only a root
+    // already proven to be a zod schema construction may qualify.
+    const src = [
+      "import * as z from 'zod';",
+      'import { importedSideEffect } from "./side-effect";',
+      'const helper = importedSideEffect;',
+      'export const zFoo = helper();',
+    ].join('\n');
+    expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+  });
+
+  it('fails closed on a call rooted at a non-schema const even when it is exported', () => {
+    const src = [
+      "import * as z from 'zod';",
+      "import { sideEffect } from './side-effect';",
+      'export const helper = sideEffect;',
+      'export const zFoo = helper();',
+    ].join('\n');
+    expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+  });
+
+  it('still wraps a chain rooted at an alias of a proven schema', () => {
+    const src = [
+      "import * as z from 'zod';",
+      'export const zFoo = z.object({});',
+      'const helper = zFoo;',
+      'export const zBar = helper.extend({ b: z.number() });',
+    ].join('\n');
+    const out = wrapSchemaInitialisers(src);
+    expect(out).toContain(`export const zBar = ${WRAP}helper.extend(`);
+  });
+
   it('fails closed on a chain rooted at another call (not an identifier)', () => {
     const src = ["import * as z from 'zod';", 'export const zEvil = makeThing()("x");'].join('\n');
     expect(() => wrapSchemaInitialisers(src)).toThrow(/zEvil/);
