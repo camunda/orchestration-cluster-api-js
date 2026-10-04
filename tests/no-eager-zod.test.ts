@@ -122,28 +122,52 @@ function topLevelDynamicImports(sf: ts.SourceFile): string[] {
   // through an alias (the recorded callee is `run`, which has no body). Both run the target's
   // body during module evaluation, so both must mark the TARGET reachable — otherwise the
   // loader's `import('zod')` is treated as deferred and the gate passes an eager load.
-  // `localAliases` maps an alias name to the local it is bound to (`const run = load` ⇒
-  // run→load); only a direct identifier binding is statically known (anything else — a call,
-  // a member read, a computed expr — is not a provable alias and is ignored, failing closed).
-  const localAliases = new Map<string, string>();
-  for (const st of sf.statements) {
-    if (ts.isVariableStatement(st)) {
-      for (const decl of st.declarationList.declarations) {
-        if (ts.isIdentifier(decl.name) && decl.initializer !== undefined) {
-          let init: ts.Expression = decl.initializer;
-          while (ts.isParenthesizedExpression(init)) init = init.expression;
-          if (ts.isIdentifier(init)) localAliases.set(decl.name.text, init.text);
-        }
+  // An alias maps a name to the local it is bound to (`const run = load` ⇒ run→load); only a
+  // direct identifier binding is statically known (anything else — a call, a member read, a
+  // computed expr — is not a provable alias and is ignored, failing closed). Aliases are
+  // SCOPED: `recordInvokedLocal` runs not only at top level but inside reachable function
+  // bodies (the fixed point below descends into them), so an alias declared INSIDE such a
+  // body (`function outer(){ const run = load; run(); } outer();`) must resolve too — a
+  // top-level-only map would miss it and treat the loader's `import('zod')` as deferred,
+  // failing the gate OPEN. So collect each scope's direct identifier-bindings and merge them
+  // with the enclosing scope's as the walk descends (inner shadows outer).
+  const scopeAliases = (scope: ts.Node): Map<string, string> => {
+    const m = new Map<string, string>();
+    const gather = (n: ts.Node): void => {
+      // Do not descend into nested function scopes — their bindings belong to their own
+      // scope and are merged when the walk reaches them.
+      if (
+        ts.isFunctionDeclaration(n) ||
+        ts.isFunctionExpression(n) ||
+        ts.isArrowFunction(n) ||
+        ts.isMethodDeclaration(n) ||
+        ts.isConstructorDeclaration(n) ||
+        ts.isGetAccessorDeclaration(n) ||
+        ts.isSetAccessorDeclaration(n)
+      ) {
+        return;
       }
-    }
-  }
+      if (ts.isVariableDeclaration(n) && ts.isIdentifier(n.name) && n.initializer !== undefined) {
+        let init: ts.Expression = n.initializer;
+        while (ts.isParenthesizedExpression(init)) init = init.expression;
+        if (ts.isIdentifier(init)) m.set(n.name.text, init.text);
+      }
+      ts.forEachChild(n, gather);
+    };
+    ts.forEachChild(scope, gather);
+    return m;
+  };
+  const mergeAliases = (
+    outer: Map<string, string>,
+    inner: Map<string, string>
+  ): Map<string, string> => (inner.size === 0 ? outer : new Map([...outer, ...inner]));
   // Resolve an alias chain to its ultimate local target (`const a = load; const b = a` ⇒
   // b→load). Bounded by the alias count, so a cycle (`const a = b; const b = a`) terminates.
-  const resolveAlias = (name: string): string => {
+  const resolveAlias = (name: string, aliases: Map<string, string>): string => {
     let cur = name;
     const seen = new Set<string>([name]);
-    while (localAliases.has(cur)) {
-      const next = localAliases.get(cur) as string;
+    while (aliases.has(cur)) {
+      const next = aliases.get(cur) as string;
       if (seen.has(next)) break;
       seen.add(next);
       cur = next;
@@ -159,14 +183,18 @@ function topLevelDynamicImports(sf: ts.SourceFile): string[] {
   // — i.e. this `.bind(...)` call is the callee of an enclosing `()`. Anything else (a
   // computed callee, a member call we cannot prove synchronous) records nothing and stays
   // deferred.
-  const recordInvokedLocal = (call: ts.CallExpression, sink: Set<string>): void => {
+  const recordInvokedLocal = (
+    call: ts.CallExpression,
+    sink: Set<string>,
+    aliases: Map<string, string>
+  ): void => {
     // Peel parentheses around the callee so `(load)()` / `((load)).call(x)` are recognised
     // like their bare forms — the `.call`/`.apply`/`.bind` branch below peels its base too,
     // so the direct-identifier branch must as well or it would be inconsistently blind to a
     // parenthesised direct invocation.
     const callee = peelParens(call.expression);
     if (ts.isIdentifier(callee)) {
-      sink.add(resolveAlias(callee.text));
+      sink.add(resolveAlias(callee.text, aliases));
       return;
     }
     if (ts.isPropertyAccessExpression(callee) || ts.isElementAccessExpression(callee)) {
@@ -175,20 +203,24 @@ function topLevelDynamicImports(sf: ts.SourceFile): string[] {
       if (!ts.isIdentifier(base)) return;
       if (method === 'call' || method === 'apply') {
         // `fn.call(thisArg)` / `fn.apply(thisArg, args)` invoke `fn` immediately.
-        sink.add(resolveAlias(base.text));
+        sink.add(resolveAlias(base.text, aliases));
         return;
       }
       if (method === 'bind') {
         // `fn.bind(thisArg)` creates a bound function; it runs `fn` only when that result is
         // itself invoked. The result is invoked iff THIS `.bind(...)` call is (transitively,
         // through further `.bind` links) the callee of an enclosing `()` / `.call` / `.apply`.
-        if (bindResultIsInvoked(call)) sink.add(resolveAlias(base.text));
+        if (bindResultIsInvoked(call)) sink.add(resolveAlias(base.text, aliases));
       }
     }
   };
-  const collectTopLevelCalls = (node: ts.Node, sink: Set<string>): void => {
+  const collectTopLevelCalls = (
+    node: ts.Node,
+    sink: Set<string>,
+    aliases: Map<string, string>
+  ): void => {
     if (ts.isCallExpression(node)) {
-      recordInvokedLocal(node, sink);
+      recordInvokedLocal(node, sink, aliases);
     }
     if (
       ts.isFunctionDeclaration(node) ||
@@ -199,6 +231,10 @@ function topLevelDynamicImports(sf: ts.SourceFile): string[] {
       ts.isGetAccessorDeclaration(node) ||
       ts.isSetAccessorDeclaration(node)
     ) {
+      // Extend the alias scope with bindings declared directly in this function body, so an
+      // alias bound inside a reachable function (`const run = load`) resolves when `run()` is
+      // recorded during the descent below. Inner bindings shadow enclosing ones.
+      const innerAliases = mergeAliases(aliases, scopeAliases(node));
       // A function-like boundary defers its body UNLESS the function runs during module
       // evaluation — an IIFE (incl. `new`/tagged/`.call`/`.apply`/invoked-`.bind` forms) or
       // a callback a known-synchronous callee invokes inline. Either way, calls recorded
@@ -224,14 +260,17 @@ function topLevelDynamicImports(sf: ts.SourceFile): string[] {
         } else {
           sink2 = new Set<string>();
         }
-        ts.forEachChild(node, (child) => collectTopLevelCalls(child, sink2));
+        ts.forEachChild(node, (child) => collectTopLevelCalls(child, sink2, innerAliases));
         return;
       }
+      ts.forEachChild(node, (child) => collectTopLevelCalls(child, sink, innerAliases));
+      return;
     }
-    ts.forEachChild(node, (child) => collectTopLevelCalls(child, sink));
+    ts.forEachChild(node, (child) => collectTopLevelCalls(child, sink, aliases));
   };
+  const topLevelAliases = scopeAliases(sf);
   for (const st of sf.statements) {
-    collectTopLevelCalls(st, topLevelCalledLocals);
+    collectTopLevelCalls(st, topLevelCalledLocals, topLevelAliases);
   }
   // Fixed point: a reachable local's body calls become reachable too. Bounded by the
   // number of distinct local names, so this always terminates.
@@ -1216,6 +1255,64 @@ describe('top-level (eager) dynamic imports', () => {
       "function load() {\n  return import('zod');\n}\nconst bound = load.bind(null);\nexport const x = bound;\n"
     );
     expect(dynamicImportsOf(file)).toEqual([]);
+  });
+
+  // Regression (adversarial, round 21): the alias map was built only from TOP-LEVEL
+  // statements, but `recordInvokedLocal` also runs inside reachable function bodies (the
+  // fixed point descends into them). An alias declared INSIDE a reachable function
+  // (`function outer(){ const run = load; run(); } outer();`) was never resolved, so the
+  // loader's `import('zod')` was treated as deferred and the gate failed OPEN. Aliases are
+  // now collected per-scope and merged as the walk descends, so a nested alias resolves to
+  // its underlying local — the exact alias class above, nested one scope deeper.
+  it('reports a local loader invoked through an alias declared inside a reachable function body as eager', () => {
+    const file = write(
+      'sync-nested-alias-call.ts',
+      "function load() {\n  return import('zod');\n}\nfunction outer() {\n  const run = load;\n  run();\n}\nouter();\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('reports a const-bound arrow invoked through an alias declared inside a reachable function body as eager', () => {
+    const file = write(
+      'sync-nested-alias-arrow.ts',
+      "const load = () => import('zod');\nfunction outer() {\n  const run = load;\n  run();\n}\nouter();\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('reports a local loader invoked via `.call` through an alias declared inside a reachable function body as eager', () => {
+    const file = write(
+      'sync-nested-alias-call-method.ts',
+      "function load() {\n  return import('zod');\n}\nfunction outer() {\n  const run = load;\n  run.call(undefined);\n}\nouter();\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('reports a nested alias reached two scopes deep via a transitive wrapper as eager', () => {
+    // `outer` is reachable; inside it `const w = inner` aliases a wrapper that calls `load`.
+    const file = write(
+      'sync-nested-alias-transitive.ts',
+      "function load() {\n  return import('zod');\n}\nfunction inner() {\n  load();\n}\nfunction outer() {\n  const w = inner;\n  w();\n}\nouter();\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('does NOT report a nested alias whose enclosing function is never invoked', () => {
+    // `outer` is never called, so the `run()` inside it (and the loader it aliases) is not
+    // module-evaluated — the import stays deferred.
+    const file = write(
+      'deferred-nested-alias.ts',
+      "function load() {\n  return import('zod');\n}\nfunction outer() {\n  const run = load;\n  run();\n}\nexport const x = outer;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual([]);
+  });
+
+  it('end-to-end: fails the gate on a nested-alias-invoked local-loader eager zod load', () => {
+    const entry = write(
+      'sync-nested-alias-entry.ts',
+      "function load() {\n  return import('zod');\n}\nfunction outer() {\n  const run = load;\n  run();\n}\nouter();\nexport const y = 2;\n"
+    );
+    expect(eagerZodImportersFrom(entry)).not.toEqual([]);
   });
 
   it('reports a local loader invoked via a parenthesised direct call `(load)()` as eager', () => {
