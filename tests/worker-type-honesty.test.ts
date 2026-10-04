@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { CamundaClient, createCamundaClient } from '../src';
+import { CamundaCore, createCamundaCore } from '../src/runtime/camundaCore';
 import { JobWorker } from '../src/runtime/jobWorker';
 import { ThreadedJobWorker } from '../src/runtime/threadedJobWorker';
 
@@ -36,6 +37,12 @@ describe('type honesty: optional fields must not throw when omitted', () => {
     // CamundaOptions is entirely optional — zero required fields.
     const client = createCamundaClient();
     expect(client).toBeInstanceOf(CamundaClient);
+  });
+
+  it('createCamundaCore succeeds with no arguments', () => {
+    // CamundaOptions is entirely optional — zero required fields.
+    const core = createCamundaCore();
+    expect(core).toBeInstanceOf(CamundaCore);
   });
 
   it('createJobWorker succeeds with only compile-required fields', () => {
