@@ -124,7 +124,11 @@ function topLevelDynamicImports(sf: ts.SourceFile): string[] {
  *   - `.call` / `.apply` invocation: `(async () => …).call(thisArg)`, `(function () { …
  *     }).apply(null, args)` — the function is the base of a `.call`/`.apply` property access
  *     that is itself called. These run the body eagerly exactly like `()()`, so they must not
- *     be treated as deferred.
+ *     be treated as deferred;
+ *   - invoked `.bind` chain: `(async () => …).bind(thisArg)()` — `.bind(...)` only CREATES a
+ *     bound function, but when that bound result is itself the callee of an enclosing call the
+ *     body still runs at module load. An uninvoked `.bind(...)` (no trailing `()`) stays
+ *     deferred and is NOT eager.
  * A function DECLARATION is never a call callee, so it can never be an IIFE. Parentheses
  * wrapping the callee (`((() => …))()`) are peeled before testing identity against the
  * call's callee. A function that is merely an ARGUMENT (`xs.forEach(() => …)`) or the base
@@ -138,16 +142,49 @@ function isImmediatelyInvoked(node: ts.Node): boolean {
   if (parent === undefined) return false;
   // Direct IIFE: the (paren-peeled) function is the call's callee.
   if (ts.isCallExpression(parent) && parent.expression === cur) return true;
-  // `.call` / `.apply` IIFE: the function is the base of `fn.call(...)` / `fn.apply(...)`.
+  // `.call` / `.apply` / `.bind` chain: the function is the base of `fn.call(...)`,
+  // `fn.apply(...)`, or `fn.bind(...)`. `.call`/`.apply` invoke immediately; `.bind` only
+  // CREATES a bound function, so it is eager only when the chain continues and is ultimately
+  // invoked. Walk the whole chain: each link is a `.bind`/`.call`/`.apply` access over the
+  // previous result, followed by its `(...)` call. The chain is eager iff it ends in an
+  // invocation — either a `.call`/`.apply` link being called, or the final bound result being
+  // the callee of an enclosing CallExpression.
   if (
     ts.isPropertyAccessExpression(parent) &&
     parent.expression === cur &&
-    (parent.name.text === 'call' || parent.name.text === 'apply')
+    (parent.name.text === 'call' || parent.name.text === 'apply' || parent.name.text === 'bind')
   ) {
-    const callSite = parent.parent;
-    return (
-      callSite !== undefined && ts.isCallExpression(callSite) && callSite.expression === parent
-    );
+    // `access` is the current `.bind`/`.call`/`.apply` PropertyAccess whose base is the
+    // function (or the previous link's bound result). Loop invariant: `access` is the
+    // PropertyAccess of the link we are classifying.
+    let access: ts.PropertyAccessExpression = parent;
+    for (;;) {
+      const call = access.parent;
+      // The access must be invoked: `fn.bind(a)` / `fn.call(a)` / `fn.apply(a)`.
+      if (call === undefined || !ts.isCallExpression(call) || call.expression !== access) {
+        return false;
+      }
+      // `.call` / `.apply` run the body as soon as they are invoked — eager.
+      if (access.name.text === 'call' || access.name.text === 'apply') return true;
+      // `.bind(...)`: eager only if the bound result is itself invoked or chained into an
+      // invocation. `next` is whatever consumes the bound function.
+      const next = call.parent;
+      if (next === undefined) return false;
+      // Directly invoked bound result: `fn.bind(a)()`.
+      if (ts.isCallExpression(next) && next.expression === call) return true;
+      // Chained: `fn.bind(a).bind(b)…` / `fn.bind(a).call(b)` / `fn.bind(a).apply(b)` — keep
+      // walking from the new access.
+      if (
+        ts.isPropertyAccessExpression(next) &&
+        next.expression === call &&
+        (next.name.text === 'call' || next.name.text === 'apply' || next.name.text === 'bind')
+      ) {
+        access = next;
+        continue;
+      }
+      // Anything else (assigned, passed as an argument, a non-invoking access) stays deferred.
+      return false;
+    }
   }
   return false;
 }
@@ -362,6 +399,76 @@ describe('top-level (eager) dynamic imports', () => {
       "void (async () => import('zod')).call(this);\nexport const x = 1;\n"
     );
     expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it("reports `(async () => import('zod')).bind(null)()` (invoked `.bind` chain) as eager", () => {
+    // `.bind(null)` returns a new function; the trailing `()` invokes it, so the body runs at
+    // module load exactly like `()()` — the gate must not treat the import as deferred.
+    const file = write(
+      'iife-bind.ts',
+      "void (async () => import('zod')).bind(null)();\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it("reports `(function () { import('zod') }).bind(null)()` (function-expression invoked `.bind`) as eager", () => {
+    const file = write(
+      'iife-bind-fn.ts',
+      "void (function () {\n  import('zod');\n}).bind(null)();\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('does NOT report an import inside a `.bind` chain that is NOT invoked', () => {
+    // `.bind(null)` merely creates a bound function; without a trailing `()` the body stays
+    // deferred, so the import is lazy.
+    const file = write(
+      'not-iife-bind-uninvoked.ts',
+      "const f = (async () => import('zod')).bind(null);\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual([]);
+  });
+
+  it("reports `(async () => import('zod')).bind(null).call(undefined)` (mixed `.bind`→`.call`) as eager", () => {
+    // The bound function is invoked via `.call`, so the body runs at module load.
+    const file = write(
+      'iife-bind-call.ts',
+      "void (async () => import('zod')).bind(null).call(undefined);\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it("reports `(async () => import('zod')).bind(null).bind(null)()` (chained `.bind` then invoked) as eager", () => {
+    const file = write(
+      'iife-bind-bind.ts',
+      "void (async () => import('zod')).bind(null).bind(null)();\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it("reports `(async () => import('zod')).bind(null).apply(null)` (mixed `.bind`→`.apply`) as eager", () => {
+    const file = write(
+      'iife-bind-apply.ts',
+      "void (async () => import('zod')).bind(null).apply(null);\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('does NOT report an import inside a `.bind` chain passed as an argument (not invoked)', () => {
+    // The bound function is an ARGUMENT to forEach, never invoked — the import stays lazy.
+    const file = write(
+      'not-iife-bind-arg.ts',
+      "[1].forEach((async () => import('zod')).bind(null));\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual([]);
+  });
+
+  it('end-to-end: fails the gate on a `.bind`-invoked eager zod load', () => {
+    const entry = write(
+      'iife-bind-entry.ts',
+      "void (async () => import('zod')).bind(null)();\nexport const y = 2;\n"
+    );
+    expect(eagerZodImportersFrom(entry)).not.toEqual([]);
   });
 
   it('end-to-end: fails the gate on a `.call`-invoked eager zod load', () => {
