@@ -116,9 +116,79 @@ function topLevelDynamicImports(sf: ts.SourceFile): string[] {
   // inside it is too). One pass is not enough: the scan may see `outer`'s body BEFORE
   // learning `outer` is invoked, so `load` is only discovered on a later iteration.
   const bodyCalls = new Map<string, Set<string>>();
+  // A local function can also be invoked INDIRECTLY, with no bare `name()` callee for the
+  // scan below to record: `load.call(undefined)` / `load.apply(null)` / `load.bind(null)()`
+  // invoke `load` through a property-access callee, and `const run = load; run()` invokes it
+  // through an alias (the recorded callee is `run`, which has no body). Both run the target's
+  // body during module evaluation, so both must mark the TARGET reachable — otherwise the
+  // loader's `import('zod')` is treated as deferred and the gate passes an eager load.
+  // `localAliases` maps an alias name to the local it is bound to (`const run = load` ⇒
+  // run→load); only a direct identifier binding is statically known (anything else — a call,
+  // a member read, a computed expr — is not a provable alias and is ignored, failing closed).
+  const localAliases = new Map<string, string>();
+  for (const st of sf.statements) {
+    if (ts.isVariableStatement(st)) {
+      for (const decl of st.declarationList.declarations) {
+        if (ts.isIdentifier(decl.name) && decl.initializer !== undefined) {
+          let init: ts.Expression = decl.initializer;
+          while (ts.isParenthesizedExpression(init)) init = init.expression;
+          if (ts.isIdentifier(init)) localAliases.set(decl.name.text, init.text);
+        }
+      }
+    }
+  }
+  // Resolve an alias chain to its ultimate local target (`const a = load; const b = a` ⇒
+  // b→load). Bounded by the alias count, so a cycle (`const a = b; const b = a`) terminates.
+  const resolveAlias = (name: string): string => {
+    let cur = name;
+    const seen = new Set<string>([name]);
+    while (localAliases.has(cur)) {
+      const next = localAliases.get(cur) as string;
+      if (seen.has(next)) break;
+      seen.add(next);
+      cur = next;
+    }
+    return cur;
+  };
+  // Record the local function a top-level call invokes, resolving the statically-known
+  // indirect forms. `callee` is the call's `expression`. A bare identifier (`load()` /
+  // `run()`) resolves through the alias map. A `.call`/`.apply` access on an identifier
+  // (`load.call(...)`, `run.apply(...)`) invokes the BASE immediately, so it resolves the base
+  // identifier through the alias map. `.bind` is different: `load.bind(null)` only CREATES a
+  // bound function, so it marks `load` reachable ONLY when the bound result is itself invoked
+  // — i.e. this `.bind(...)` call is the callee of an enclosing `()`. Anything else (a
+  // computed callee, a member call we cannot prove synchronous) records nothing and stays
+  // deferred.
+  const recordInvokedLocal = (call: ts.CallExpression, sink: Set<string>): void => {
+    // Peel parentheses around the callee so `(load)()` / `((load)).call(x)` are recognised
+    // like their bare forms — the `.call`/`.apply`/`.bind` branch below peels its base too,
+    // so the direct-identifier branch must as well or it would be inconsistently blind to a
+    // parenthesised direct invocation.
+    const callee = peelParens(call.expression);
+    if (ts.isIdentifier(callee)) {
+      sink.add(resolveAlias(callee.text));
+      return;
+    }
+    if (ts.isPropertyAccessExpression(callee) || ts.isElementAccessExpression(callee)) {
+      const method = calleeMethodName(callee);
+      const base = peelParens(callee.expression);
+      if (!ts.isIdentifier(base)) return;
+      if (method === 'call' || method === 'apply') {
+        // `fn.call(thisArg)` / `fn.apply(thisArg, args)` invoke `fn` immediately.
+        sink.add(resolveAlias(base.text));
+        return;
+      }
+      if (method === 'bind') {
+        // `fn.bind(thisArg)` creates a bound function; it runs `fn` only when that result is
+        // itself invoked. The result is invoked iff THIS `.bind(...)` call is (transitively,
+        // through further `.bind` links) the callee of an enclosing `()` / `.call` / `.apply`.
+        if (bindResultIsInvoked(call)) sink.add(resolveAlias(base.text));
+      }
+    }
+  };
   const collectTopLevelCalls = (node: ts.Node, sink: Set<string>): void => {
-    if (ts.isCallExpression(node) && ts.isIdentifier(node.expression)) {
-      sink.add(node.expression.text);
+    if (ts.isCallExpression(node)) {
+      recordInvokedLocal(node, sink);
     }
     if (
       ts.isFunctionDeclaration(node) ||
@@ -225,6 +295,70 @@ function topLevelDynamicImports(sf: ts.SourceFile): string[] {
   };
   visit(sf, false);
   return specs;
+}
+
+/**
+ * Peels parenthesised wrappers around an expression (`((load))` → `load`). Used before
+ * testing whether a `.call`/`.apply`/`.bind` base is a bare identifier, so a parenthesised
+ * local (`(load).call(undefined)`) is recognised like the bare form.
+ */
+function peelParens(expr: ts.Expression): ts.Expression {
+  let cur = expr;
+  while (ts.isParenthesizedExpression(cur)) cur = cur.expression;
+  return cur;
+}
+
+/**
+ * True when the bound function produced by a `.bind(...)` call is itself INVOKED, so the
+ * underlying function's body runs during module evaluation. `load.bind(null)` alone only
+ * CREATES a bound function (deferred); `load.bind(null)()` and `load.bind(null).call(x)` /
+ * `load.bind(null).bind(y)()` invoke it. Walks outward from the `.bind(...)` call: the bound
+ * result is invoked iff it is the callee of an enclosing CallExpression, possibly through
+ * further `.bind` links (each of which must itself continue the chain to an invocation).
+ * Anything else (assigned to a variable, passed as an argument, a non-invoking access) leaves
+ * the body deferred and returns false.
+ */
+function bindResultIsInvoked(bindCall: ts.CallExpression): boolean {
+  let cur: ts.Expression = bindCall;
+  // Peel parentheses around the call result (`(load.bind(null))()`).
+  for (;;) {
+    let node: ts.Node = cur;
+    while (node.parent && ts.isParenthesizedExpression(node.parent)) node = node.parent;
+    const parent = node.parent;
+    if (parent === undefined) return false;
+    // Directly invoked bound result: `load.bind(null)()`.
+    if (ts.isCallExpression(parent) && parent.expression === node) return true;
+    // Chained into another `.bind` link: `load.bind(null).bind(x)` — keep walking; that link
+    // is invoked only if its own result is.
+    if (
+      (ts.isPropertyAccessExpression(parent) || ts.isElementAccessExpression(parent)) &&
+      parent.expression === node &&
+      calleeMethodName(parent) === 'bind'
+    ) {
+      const nextCall = parent.parent;
+      if (
+        nextCall !== undefined &&
+        ts.isCallExpression(nextCall) &&
+        nextCall.expression === parent
+      ) {
+        cur = nextCall;
+        continue;
+      }
+      return false;
+    }
+    // Chained into `.call` / `.apply`: `load.bind(null).call(x)` invokes the bound function.
+    if (
+      (ts.isPropertyAccessExpression(parent) || ts.isElementAccessExpression(parent)) &&
+      parent.expression === node &&
+      (calleeMethodName(parent) === 'call' || calleeMethodName(parent) === 'apply')
+    ) {
+      const nextCall = parent.parent;
+      return (
+        nextCall !== undefined && ts.isCallExpression(nextCall) && nextCall.expression === parent
+      );
+    }
+    return false;
+  }
 }
 
 /**
@@ -980,6 +1114,126 @@ describe('top-level (eager) dynamic imports', () => {
       "function outer() {\n  load();\n}\nfunction load() {\n  return import('zod');\n}\nsetTimeout(outer, 0);\nexport const x = 1;\n"
     );
     expect(dynamicImportsOf(file)).toEqual([]);
+  });
+
+  // Regression (Copilot round 21, inline): the top-level-call pre-pass recorded only DIRECT
+  // `name()` calls. A local loader invoked INDIRECTLY — `load.call(undefined)`,
+  // `load.apply(null)`, `load.bind(null)()`, or through an alias `const run = load; run()` —
+  // runs its body during module evaluation, but `load` was never added to
+  // `topLevelCalledLocals` (a `.call` callee is a property access, not a bare identifier, and
+  // an alias records the alias name, which has no body). The loader's `import('zod')` was then
+  // treated as deferred and passed the gate. The pre-pass now resolves these statically-known
+  // indirect invocation forms to the underlying local function.
+  it('reports a local loader invoked via `.call(undefined)` at top level as eager', () => {
+    const file = write(
+      'sync-call-method.ts',
+      "function load() {\n  return import('zod');\n}\nload.call(undefined);\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('reports a local loader invoked via `.apply(null)` at top level as eager', () => {
+    const file = write(
+      'sync-apply-method.ts',
+      "function load() {\n  return import('zod');\n}\nload.apply(null);\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('reports a local loader invoked via an invoked `.bind(null)()` at top level as eager', () => {
+    const file = write(
+      'sync-bind-invoked.ts',
+      "function load() {\n  return import('zod');\n}\nload.bind(null)();\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('reports a const-bound arrow invoked via `.call(undefined)` at top level as eager', () => {
+    const file = write(
+      'sync-const-arrow-call-method.ts',
+      "const load = () => import('zod');\nload.call(undefined);\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('reports a local loader invoked through a const alias (`const run = load; run()`) as eager', () => {
+    const file = write(
+      'sync-alias-call.ts',
+      "function load() {\n  return import('zod');\n}\nconst run = load;\nrun();\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('reports a const-bound arrow invoked through a const alias as eager', () => {
+    const file = write(
+      'sync-alias-arrow-call.ts',
+      "const load = () => import('zod');\nconst run = load;\nrun();\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('reports a transitive local call reached through an alias as eager', () => {
+    // `outer` is invoked via its alias `run`; `outer` calls `load`. The fixed point must
+    // resolve the alias to `outer`, then `outer`'s body to `load`.
+    const file = write(
+      'sync-alias-transitive.ts',
+      "function outer() {\n  load();\n}\nfunction load() {\n  return import('zod');\n}\nconst run = outer;\nrun();\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('end-to-end: fails the gate on an indirect (`.call`) local-loader eager zod load', () => {
+    const entry = write(
+      'sync-call-method-entry.ts',
+      "function load() {\n  return import('zod');\n}\nload.call(undefined);\nexport const y = 2;\n"
+    );
+    expect(eagerZodImportersFrom(entry)).not.toEqual([]);
+  });
+
+  it('end-to-end: fails the gate on an alias-invoked local-loader eager zod load', () => {
+    const entry = write(
+      'sync-alias-entry.ts',
+      "function load() {\n  return import('zod');\n}\nconst run = load;\nrun();\nexport const y = 2;\n"
+    );
+    expect(eagerZodImportersFrom(entry)).not.toEqual([]);
+  });
+
+  it('does NOT report a local loader referenced by an alias that is never invoked', () => {
+    // `const run = load;` alone does not run `load` — without an invocation of the alias the
+    // import stays deferred.
+    const file = write(
+      'deferred-alias-uninvoked.ts',
+      "function load() {\n  return import('zod');\n}\nconst run = load;\nexport const x = run;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual([]);
+  });
+
+  it('does NOT report a local loader whose `.bind` result is never invoked', () => {
+    // `load.bind(null)` merely creates a bound function; without a trailing `()` the body
+    // stays deferred.
+    const file = write(
+      'deferred-bind-uninvoked.ts',
+      "function load() {\n  return import('zod');\n}\nconst bound = load.bind(null);\nexport const x = bound;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual([]);
+  });
+
+  it('reports a local loader invoked via a parenthesised direct call `(load)()` as eager', () => {
+    // The callee is a ParenthesizedExpression, not a bare identifier; peeling parens must
+    // still resolve it to the underlying local function.
+    const file = write(
+      'sync-paren-direct.ts',
+      "function load() {\n  return import('zod');\n}\n(load)();\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('reports a local loader invoked via a parenthesised `.call` base `((load)).call(undefined)` as eager', () => {
+    const file = write(
+      'sync-paren-call.ts',
+      "function load() {\n  return import('zod');\n}\n((load)).call(undefined);\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
   });
 
   it('end-to-end: fails the gate on a transitive-wrapper eager zod load', () => {

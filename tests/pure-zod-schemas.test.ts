@@ -1047,4 +1047,61 @@ describe('wrapSchemaInitialisers', () => {
       expect(out).toContain(`export const zE = ${WRAP}zBase.array(`);
     });
   });
+
+  // Regression (Copilot round 21, inline): the inert-operand classifier treated the bare
+  // identifier `undefined` as statically inert, so `z.literal(+undefined)` /
+  // `z.literal(undefined + 1)` were wrapped `/*#__PURE__*/`. But an ES module can SHADOW
+  // `undefined` (`const undefined = importedObj`), and then the coercion runs the shadowed
+  // value's `Symbol.toPrimitive`/`valueOf` at module evaluation — a side effect a bundler
+  // could then drop with the schema. Without binding analysis proving the identifier resolves
+  // to the global value, NO identifier is statically inert — including `undefined`. The
+  // classifier now fails closed on every identifier.
+  describe('shadowed-undefined is not statically inert (fail the whole class)', () => {
+    const cases: Array<[string, string]> = [
+      ['unary + on undefined', 'z.literal(+undefined)'],
+      ['unary - on undefined', 'z.literal(-undefined)'],
+      ['unary ~ on undefined', 'z.literal(~undefined)'],
+      ['binary + with undefined', 'z.literal(undefined + 1)'],
+      ['relational with undefined', 'z.literal(undefined < 5)'],
+      ['template substitution of undefined', 'z.literal(`v=${undefined}`)'],
+    ];
+    for (const [name, initExpr] of cases) {
+      it(`fails closed on ${name} (a module can shadow undefined)`, () => {
+        const src = [
+          "import * as z from 'zod';",
+          "import { importedObj } from './side-effect';",
+          // A module-level shadowing declaration: `undefined` here is NOT the global value.
+          'const undefined = importedObj;',
+          `export const zEvil = ${initExpr};`,
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/zEvil/);
+      });
+    }
+
+    it('fails closed on a coercive `undefined` operand even WITHOUT a visible shadowing declaration', () => {
+      // The classifier does no binding analysis, so it cannot distinguish the global
+      // `undefined` from a shadowed one. Fail closed on the identifier form regardless —
+      // the safe literal-only schemas below stay wrappable, so this costs nothing real.
+      const src = [
+        "import * as z from 'zod';",
+        'export const zEvil = z.literal(undefined + 1);',
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zEvil/);
+    });
+
+    it('still wraps literal-only coercion (no identifier operand)', () => {
+      // Removing the `undefined` carve-out must not regress the genuinely inert cases:
+      // numeric/string literal arithmetic stays wrappable.
+      const src = [
+        "import * as z from 'zod';",
+        'export const zFoo = z.object({',
+        '  a: z.string().min(1 + 2),',
+        '  b: z.number().gt(-1),',
+        '  c: z.literal(2 ** 3),',
+        '});',
+      ].join('\n');
+      const out = wrapSchemaInitialisers(src);
+      expect(out).toContain(`export const zFoo = ${WRAP}z.object(`);
+    });
+  });
 });

@@ -332,12 +332,15 @@ function isCoerciveBinaryOperator(kind: ts.SyntaxKind): boolean {
  * coercive operator (`+`, `<`, `instanceof`, a template substitution, unary `+`/`-`/`~`)
  * sit in an eager schema position without failing closed: `z.literal(-1)` / `z.string().
  * min(1 + 2)` coerce only literals and must stay wrappable, while `z.literal(importedObj +
- * 1)` must not. Fails CLOSED: a bare identifier (other than the un-importable global
- * `undefined`), a property/element read, or a call is NOT inert — an imported binding can be
- * a Proxy or an object with a coercion hook. Inert shapes: literals (number/bigint/string/
- * no-substitution template/regex), `true`/`false`/`null`/`undefined`, a parenthesised inert
- * expression, a unary `+`/`-`/`~`/`!` on an inert operand, and a (non-assignment) binary of
- * two inert operands.
+ * 1)` must not. Fails CLOSED: a bare identifier is NOT inert — an imported binding can be a
+ * Proxy or an object with a coercion hook, and even the identifier `undefined` is not safe:
+ * an ES module can shadow it (`const undefined = importedObj`), so `z.literal(+undefined)`
+ * would run the shadowed value's `Symbol.toPrimitive` at module evaluation. Without binding
+ * analysis proving an identifier resolves to the global value, no identifier is inert. Inert
+ * shapes: literals (number/bigint/string/no-substitution template/regex), the keywords
+ * `true`/`false`/`null` (which — unlike `undefined` — cannot be rebound), a parenthesised
+ * inert expression, a unary `+`/`-`/`~`/`!` on an inert operand, and a (non-assignment)
+ * binary of two inert operands.
  */
 function isStaticallyInertOperand(expr: ts.Expression): boolean {
   switch (expr.kind) {
@@ -351,8 +354,10 @@ function isStaticallyInertOperand(expr: ts.Expression): boolean {
     case ts.SyntaxKind.NullKeyword:
       return true;
   }
-  // `undefined` is a global identifier that cannot be shadowed by an imported binding.
-  if (ts.isIdentifier(expr) && expr.text === 'undefined') return true;
+  // NOTE: `undefined` is deliberately NOT carved out. It is an identifier (a global
+  // property), not a keyword, and a module can shadow it (`const undefined = importedObj`),
+  // so `+undefined` may run a coercion hook. `true`/`false`/`null` are keywords that cannot
+  // be rebound, so they stay inert. Fail closed on every identifier.
   if (ts.isParenthesizedExpression(expr)) return isStaticallyInertOperand(expr.expression);
   if (
     ts.isPrefixUnaryExpression(expr) &&
