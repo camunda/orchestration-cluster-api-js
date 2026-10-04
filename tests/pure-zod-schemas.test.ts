@@ -516,4 +516,120 @@ describe('wrapSchemaInitialisers', () => {
       });
     });
   });
+
+  // Regression (Copilot round 13): the idempotency branch validated that a wrapped body had
+  // no UNREVIEWED eager call, then recorded the declaration as a proven schema — but a body
+  // with NO call at all (`/*#__PURE__*/ (() => importedSideEffect)()`) has nothing to flag,
+  // so it passed and entered `schemaNames`. A later `export const zFoo = zEvil()` was then
+  // wrongly accepted as pure even though it invokes an arbitrary imported function. Only a
+  // wrapped body that IS a schema-construction call (rooted at `z` or a proven schema) may
+  // be recorded as a proven schema; anything else fails closed.
+  describe('pure-IIFE body must be a schema construction (fail the whole class)', () => {
+    it('fails closed on a pure-IIFE whose body is a bare identifier (no call)', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { importedSideEffect } from './side-effect';",
+        'export const zEvil = /*#__PURE__*/ (() => importedSideEffect)();',
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zEvil/);
+    });
+
+    it('does not let a no-call pure-IIFE become a proven schema root for a later schema', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { importedSideEffect } from './side-effect';",
+        'export const zEvil = /*#__PURE__*/ (() => importedSideEffect)();',
+        'export const zFoo = zEvil();',
+      ].join('\n');
+      // zEvil must be reported (not recorded as a proven schema), so the chain rooted at it
+      // is not silently accepted either.
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zEvil/);
+    });
+
+    it('fails closed on a pure-IIFE whose body is a bare proven-schema identifier (no construction)', () => {
+      // Even a body that is just a reference to a real schema is NOT itself a construction:
+      // `(() => zFoo)()` is an alias shape, not a call, and must not be recorded as a fresh
+      // proven-schema construction via the call branch (the identifier-alias branch handles
+      // genuine aliases). Recording it here would let a no-call wrapper masquerade as a root.
+      const src = [
+        "import * as z from 'zod';",
+        'export const zFoo = z.object({ a: z.string() });',
+        'export const zAlias = /*#__PURE__*/ (() => zFoo)();',
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zAlias/);
+    });
+
+    it('still accepts a pure-IIFE whose body IS a schema-construction call (idempotent)', () => {
+      const src = [
+        "import * as z from 'zod';",
+        'export const zFoo = /*#__PURE__*/ (() => z.object({ a: z.string() }))();',
+        'export const zBar = /*#__PURE__*/ (() => zFoo.extend({ b: z.number() }))();',
+      ].join('\n');
+      const out = wrapSchemaInitialisers(src);
+      expect(out).toBe(src);
+    });
+  });
+
+  // Regression (Copilot round 13): the fail-closed traversal classified only INVOCATIONS
+  // (call/new/tagged-template), so other eager side effects were accepted. An assignment,
+  // update, or delete expression in an eager position (`z.literal(globalState = true)`,
+  // `z.literal(counter++)`, `z.literal(delete obj.x)`) runs at module evaluation, yet only
+  // allowlisted Zod calls were found — so the initialiser was wrapped `/*#__PURE__*/` and a
+  // bundler could drop the side effect. Reject every eager assignment/update/delete before
+  // annotating the initialiser.
+  describe('eager assignment/update/delete side effects (fail the whole class)', () => {
+    it('fails closed on an assignment in an eager argument', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { globalState } from './side-effect';",
+        'export const zFoo = z.literal((globalState.value = true));',
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+    });
+
+    it('fails closed on a compound assignment in an eager argument', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { state } from './side-effect';",
+        'export const zFoo = z.literal((state.n += 1));',
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+    });
+
+    it('fails closed on an update expression in an eager argument', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { state } from './side-effect';",
+        'export const zFoo = z.literal(state.counter++);',
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+    });
+
+    it('fails closed on a delete expression in an eager argument', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { state } from './side-effect';",
+        'export const zFoo = z.literal(delete state.x);',
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+    });
+
+    it('fails closed on an assignment hidden in a wrapped (idempotent) body', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { globalState } from './side-effect';",
+        `export const zFoo = ${WRAP}z.literal((globalState.value = true)))();`,
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+    });
+
+    it('still wraps a schema whose eager arguments are side-effect-free', () => {
+      const src = [
+        "import * as z from 'zod';",
+        'export const zFoo = z.object({ a: z.string(), b: z.literal("x") });',
+      ].join('\n');
+      const out = wrapSchemaInitialisers(src);
+      expect(out).toContain(`export const zFoo = ${WRAP}z.object(`);
+    });
+  });
 });

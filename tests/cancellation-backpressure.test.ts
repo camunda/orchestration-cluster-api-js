@@ -218,7 +218,8 @@ describe('queued-waiter drain races (adversarial round 5)', () => {
     await firstRejection;
 
     // Waiter #2 must have been served by the refund's re-drain, holding the one permit.
-    await expect(second).resolves.toBeUndefined();
+    // The grant token is true: the re-drain granted #2 a permit.
+    await expect(second).resolves.toBe(true);
     expect((bp as any).waiters).toHaveLength(0);
     expect((bp as any).permitsCurrent).toBe(1);
   });
@@ -262,7 +263,8 @@ describe('queued-waiter drain races (adversarial round 5)', () => {
       // granted a permit, so decrementing would steal the OTHER operation's permit.
       ac.abort();
       await expect(acquiring).rejects.toThrow();
-      await expect(other).resolves.toBeUndefined();
+      // `other` took the permit on the immediate-acquire finite path, so its token is true.
+      await expect(other).resolves.toBe(true);
       expect((bp as any).permitsCurrent).toBe(1);
     });
 
@@ -280,6 +282,65 @@ describe('queued-waiter drain races (adversarial round 5)', () => {
       await rejection;
       // Granted permit refunded: nothing held for the canceled op.
       expect((bp as any).permitsCurrent).toBe(0);
+    });
+  });
+
+  // Regression (Copilot round 13): _invokeWithRetry's post-acquire recheck called
+  // release() unconditionally (when not exempt). But acquire() can return from the
+  // unlimited / disabled / observe-only / sustained-healthy path WITHOUT granting this
+  // invocation a permit — and in the microtask gap before the recheck runs, backpressure
+  // can restore a finite cap and a DIFFERENT invocation can consume a permit. An
+  // unconditional release() then decrements that other invocation's permit. acquire() now
+  // returns a per-invocation grant token and the refund is gated on it.
+  describe('acquire() per-invocation grant token (fail the whole class)', () => {
+    it('resolves false on the unlimited fast path (no permit held)', async () => {
+      const bp = new BackpressureManager({ config: {} });
+      expect((bp as any).permitsMax).toBeNull();
+      await expect(bp.acquire()).resolves.toBe(false);
+    });
+
+    it('resolves false when backpressure is disabled (no permit held)', async () => {
+      const bp = new BackpressureManager({ config: { enabled: false } });
+      await expect(bp.acquire()).resolves.toBe(false);
+    });
+
+    it('resolves false in observe-only mode (no permit held)', async () => {
+      const bp = new BackpressureManager({
+        config: { observeOnly: true, initialMaxConcurrency: 1 },
+      });
+      await expect(bp.acquire()).resolves.toBe(false);
+    });
+
+    it('resolves true on the immediate-acquire finite path (permit held)', async () => {
+      const bp = new BackpressureManager({ config: { initialMaxConcurrency: 2 } });
+      bp.recordBackpressure();
+      (bp as any).permitsMax = 2;
+      await expect(bp.acquire()).resolves.toBe(true);
+      expect((bp as any).permitsCurrent).toBe(1);
+    });
+
+    it('resolves false for a waiter drained by the sustained-healthy (ungranted) path', async () => {
+      const bp = new BackpressureManager({ config: { initialMaxConcurrency: 1 } });
+      (bp as any).permitsMax = 1;
+      (bp as any).permitsCurrent = 1; // sole permit occupied -> acquire queues
+      const acquiring = bp.acquire();
+      expect((bp as any).waiters).toHaveLength(1);
+      // Sustained-healthy transition: unlimited, counter reset, waiters resolved with NO
+      // permit granted (mirrors maybeRecover Phase 3).
+      (bp as any).permitsMax = null;
+      (bp as any).permitsCurrent = 0;
+      const w = (bp as any).waiters.shift();
+      w.resolve();
+      await expect(acquiring).resolves.toBe(false);
+    });
+
+    it('resolves true for a waiter granted a permit by the normal finite-cap drain', async () => {
+      const bp = new BackpressureManager({ config: { initialMaxConcurrency: 1 } });
+      (bp as any).permitsMax = 1;
+      (bp as any).permitsCurrent = 1;
+      const acquiring = bp.acquire();
+      bp.release(); // normal drain grants the permit
+      await expect(acquiring).resolves.toBe(true);
     });
   });
 

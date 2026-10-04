@@ -117,19 +117,39 @@ function topLevelDynamicImports(sf: ts.SourceFile): string[] {
 }
 
 /**
- * True when `node` is a function/arrow expression that is IMMEDIATELY INVOKED — the callee
- * of an enclosing call, i.e. an IIFE such as `(() => …)()`, `(async () => …)()`, or
- * `(function () { … })()`. Its body executes during module evaluation, not at a later call,
- * so for the eager-import scan it must NOT be treated as a deferred (lazy) body. A function
- * DECLARATION is never a call callee, so it can never be an IIFE. Parentheses wrapping the
- * callee (`((() => …))()`) are peeled before testing identity against the call's callee.
+ * True when `node` is a function/arrow expression that is IMMEDIATELY INVOKED — its body
+ * executes during module evaluation, not at a later call. Recognised forms:
+ *   - direct IIFE: `(() => …)()`, `(async () => …)()`, `(function () { … })()` — the
+ *     function is the call's callee;
+ *   - `.call` / `.apply` invocation: `(async () => …).call(thisArg)`, `(function () { …
+ *     }).apply(null, args)` — the function is the base of a `.call`/`.apply` property access
+ *     that is itself called. These run the body eagerly exactly like `()()`, so they must not
+ *     be treated as deferred.
+ * A function DECLARATION is never a call callee, so it can never be an IIFE. Parentheses
+ * wrapping the callee (`((() => …))()`) are peeled before testing identity against the
+ * call's callee. A function that is merely an ARGUMENT (`xs.forEach(() => …)`) or the base
+ * of a non-invoking access (`(fn).name`) is NOT immediately invoked.
  */
 function isImmediatelyInvoked(node: ts.Node): boolean {
   if (!ts.isFunctionExpression(node) && !ts.isArrowFunction(node)) return false;
   let cur: ts.Node = node;
   while (cur.parent && ts.isParenthesizedExpression(cur.parent)) cur = cur.parent;
   const parent = cur.parent;
-  return parent !== undefined && ts.isCallExpression(parent) && parent.expression === cur;
+  if (parent === undefined) return false;
+  // Direct IIFE: the (paren-peeled) function is the call's callee.
+  if (ts.isCallExpression(parent) && parent.expression === cur) return true;
+  // `.call` / `.apply` IIFE: the function is the base of `fn.call(...)` / `fn.apply(...)`.
+  if (
+    ts.isPropertyAccessExpression(parent) &&
+    parent.expression === cur &&
+    (parent.name.text === 'call' || parent.name.text === 'apply')
+  ) {
+    const callSite = parent.parent;
+    return (
+      callSite !== undefined && ts.isCallExpression(callSite) && callSite.expression === parent
+    );
+  }
+  return false;
 }
 
 /** Specifiers imported EAGERLY at module load: static value imports plus top-level
@@ -312,6 +332,53 @@ describe('top-level (eager) dynamic imports', () => {
   it('reports an IIFE wrapped in extra parentheses as eager', () => {
     const file = write('iife-parens.ts', "void ((() => import('zod')))();\nexport const x = 1;\n");
     expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  // Regression (Copilot round 13): the IIFE check only recognised a function used DIRECTLY
+  // as a call's callee. `(async () => import('zod')).call(undefined)` and
+  // `(function () { … }).apply(null, [])` invoke the body at module load just like `()()`,
+  // but the function's parent is a property access (`.call`/`.apply`), so the gate returned
+  // false and skipped the eager import. Recognise immediate invocation through `.call` /
+  // `.apply` (and `.bind` chains that are then invoked) as eager.
+  it("reports `(async () => import('zod')).call(undefined)` as eager", () => {
+    const file = write(
+      'iife-call.ts',
+      "void (async () => import('zod')).call(undefined);\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it("reports `(function () { import('zod') }).apply(null)` as eager", () => {
+    const file = write(
+      'iife-apply.ts',
+      "void (function () {\n  import('zod');\n}).apply(null);\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it("reports `(async () => import('zod')).call(this)` (thisArg variant) as eager", () => {
+    const file = write(
+      'iife-call-this.ts',
+      "void (async () => import('zod')).call(this);\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('end-to-end: fails the gate on a `.call`-invoked eager zod load', () => {
+    const entry = write(
+      'iife-call-entry.ts',
+      "void (async () => import('zod')).call(undefined);\nexport const y = 2;\n"
+    );
+    expect(eagerZodImportersFrom(entry)).not.toEqual([]);
+  });
+
+  it('does NOT report an import inside a non-invoked function passed as a `.call` argument', () => {
+    // The arrow is an ARGUMENT to forEach, not the callee of `.call` — it stays deferred.
+    const file = write(
+      'not-iife-call-arg.ts',
+      "[1].forEach(() => import('zod'));\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual([]);
   });
 
   it('does NOT report an import deferred inside a non-invoked arrow RETURNED from an IIFE', () => {

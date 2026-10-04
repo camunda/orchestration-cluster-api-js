@@ -85,3 +85,31 @@ describe('generated _jobActionsClient pass-through guard', () => {
     );
   });
 });
+
+/**
+ * Regression (Copilot round 13): the enrichment splice hoisted
+ * `const _client = _jobActionsClient(core)` ahead of `data.jobs.map(...)` guarded only by
+ * `if (data && data.jobs)`. An empty `jobs` array is the common polling result and is
+ * truthy, so every empty bare-core poll allocated the adapter object and five closures (and
+ * every client poll performed five method checks) even though `map` over an empty array
+ * never runs. The adapter must be created only when there is at least one job to enrich.
+ */
+describe('activateJobs enrichment skips adapter creation for an empty jobs array', () => {
+  it('guards _jobActionsClient(core) behind a non-empty jobs check', () => {
+    const src = readGenerated();
+    const enrichIdx = src.indexOf('if (data && data.jobs) {');
+    expect(enrichIdx, 'activateJobs enrichment splice not found').toBeGreaterThan(-1);
+    // The adapter creation must be guarded so it does not run for an empty array. The
+    // guard (`data.jobs.length > 0`) must appear between the `if (data && data.jobs) {`
+    // opener and the `_jobActionsClient(core)` call it protects.
+    const clientIdx = src.indexOf('_jobActionsClient(core)', enrichIdx);
+    expect(clientIdx, 'adapter creation not found after enrichment opener').toBeGreaterThan(
+      enrichIdx
+    );
+    const between = src.slice(enrichIdx, clientIdx);
+    expect(
+      /data\.jobs\.length > 0/.test(between),
+      'adapter creation must be guarded by `data.jobs.length > 0` so an empty poll does not allocate it'
+    ).toBe(true);
+  });
+});

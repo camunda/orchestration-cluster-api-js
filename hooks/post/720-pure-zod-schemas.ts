@@ -124,6 +124,19 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
               );
               continue;
             }
+            // Passing the traversal is necessary but NOT sufficient to be a proven schema:
+            // it only proves there is no unreviewed eager call. A body with NO call at all
+            // (`(() => importedSideEffect)()`, `(() => zFoo)()`) has nothing to flag, yet it
+            // is not a schema CONSTRUCTION — recording it would let a later `zEvil()` be
+            // accepted as pure even though it invokes an arbitrary value. Require the body
+            // to be a call/`new` rooted at the zod namespace or a proven schema (the same
+            // construction shape the hook itself emits) before recording the name.
+            if (!isSchemaConstructionCall(wrappedBody, schemaNames)) {
+              problems.push(
+                `${decl.name.getText(sf)}: pure-IIFE initialiser body is not a schema-construction call rooted at the zod namespace or a proven schema — ${init.getText(sf).slice(0, 120)}`
+              );
+              continue;
+            }
             if (ts.isIdentifier(decl.name)) schemaNames.add(decl.name.text);
             continue;
           }
@@ -211,6 +224,53 @@ function pureIifeBody(call: ts.CallExpression): ts.Expression | null {
 }
 
 /**
+ * True when `expr` is a schema-CONSTRUCTION call: a `call`/`new` expression whose chain is
+ * rooted at the `z` namespace or a schema already proven pure in this module. This is the
+ * shape the hook itself emits (`z.object(...).register(...)`, `zFoo.extend(...)`), and the
+ * only shape a wrapped body may have to be recorded as a proven schema. A bare identifier
+ * (`(() => zFoo)()`), a literal, or any non-call expression is NOT a construction — it has
+ * no eager call to flag, so it would otherwise slip past the traversal and be recorded as a
+ * proven root for a later schema. The chain-root walk mirrors `findUnreviewedEagerCall`'s
+ * `isReviewedRoot`, so the two agree on what counts as a construction root.
+ */
+function isSchemaConstructionCall(expr: ts.Expression, schemaNames: Set<string>): boolean {
+  if (!ts.isCallExpression(expr) && !ts.isNewExpression(expr)) return false;
+  const root = callChainRoot(expr.expression);
+  return ts.isIdentifier(root) && (root.text === ZOD_NAMESPACE || schemaNames.has(root.text));
+}
+
+/**
+ * True when `kind` is an assignment operator (`=`, `+=`, `-=`, `??=`, `&&=`, `||=`, …) — a
+ * binary expression with one mutates its left-hand side. Used to reject eager assignments
+ * inside a schema initialiser, which run at module evaluation yet carry no call for the
+ * invocation classifier to flag. Comparison (`===`, `<`, …) and arithmetic (`+`, `??`)
+ * operators are NOT assignments and are excluded.
+ */
+function isAssignmentOperator(kind: ts.SyntaxKind): boolean {
+  switch (kind) {
+    case ts.SyntaxKind.EqualsToken:
+    case ts.SyntaxKind.PlusEqualsToken:
+    case ts.SyntaxKind.MinusEqualsToken:
+    case ts.SyntaxKind.AsteriskEqualsToken:
+    case ts.SyntaxKind.AsteriskAsteriskEqualsToken:
+    case ts.SyntaxKind.SlashEqualsToken:
+    case ts.SyntaxKind.PercentEqualsToken:
+    case ts.SyntaxKind.LessThanLessThanEqualsToken:
+    case ts.SyntaxKind.GreaterThanGreaterThanEqualsToken:
+    case ts.SyntaxKind.GreaterThanGreaterThanGreaterThanEqualsToken:
+    case ts.SyntaxKind.AmpersandEqualsToken:
+    case ts.SyntaxKind.BarEqualsToken:
+    case ts.SyntaxKind.CaretEqualsToken:
+    case ts.SyntaxKind.QuestionQuestionEqualsToken:
+    case ts.SyntaxKind.AmpersandAmpersandEqualsToken:
+    case ts.SyntaxKind.BarBarEqualsToken:
+      return true;
+    default:
+      return false;
+  }
+}
+
+/**
  * A call initialiser is a recognised zod schema construction only when EVERY eagerly
  * evaluated call/`new`/tagged-template in it is rooted at the `z` namespace or a schema
  * already proven pure in this module. Walking each chain to its leftmost expression
@@ -244,6 +304,33 @@ function findUnreviewedEagerCall(init: ts.Expression, schemaNames: Set<string>):
     if (bad !== null) return;
     // Deferred callback bodies evaluate later, not at module load: do not descend.
     if (ts.isArrowFunction(node) || ts.isFunctionExpression(node)) return;
+    // An eager side effect that is NOT an invocation still mutates state at module
+    // evaluation, so it must fail closed exactly like an unreviewed call. An assignment
+    // (`z.literal(globalState = true)` / `+=` / `??=` …), an update (`counter++`,
+    // `--state.n`), or a `delete` (`z.literal(delete obj.x)`) in an eager position runs now,
+    // yet carries no call for the invocation classifier to flag — so without this branch the
+    // initialiser is wrapped `/*#__PURE__*/` and a bundler can drop the mutation. A nested
+    // assignment INSIDE a deferred callback is not eager and is skipped above.
+    if (ts.isBinaryExpression(node) && isAssignmentOperator(node.operatorToken.kind)) {
+      bad = `assignment (${ts.SyntaxKind[node.operatorToken.kind]})`;
+      return;
+    }
+    if (
+      ts.isPrefixUnaryExpression(node) &&
+      (node.operator === ts.SyntaxKind.PlusPlusToken ||
+        node.operator === ts.SyntaxKind.MinusMinusToken)
+    ) {
+      bad = 'update (prefix ++/--)';
+      return;
+    }
+    if (ts.isPostfixUnaryExpression(node)) {
+      bad = 'update (postfix ++/--)';
+      return;
+    }
+    if (ts.isDeleteExpression(node)) {
+      bad = 'delete';
+      return;
+    }
     if (ts.isCallExpression(node) || ts.isNewExpression(node)) {
       // Classify EVERY eager call against the schema-constructor ALLOWLIST, not just the
       // outer initialiser chain. A nested call rooted at `z` is not automatically a

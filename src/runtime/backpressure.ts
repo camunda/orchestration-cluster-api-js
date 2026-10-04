@@ -129,23 +129,34 @@ export class BackpressureManager {
     }
   }
 
-  async acquire(signal?: AbortSignal) {
+  /**
+   * Acquire a permit for one invocation, gating on backpressure. Resolves `true` when THIS
+   * invocation consumed a finite permit (the caller MUST later `release()` exactly once);
+   * resolves `false` when it did not — the disabled / observe-only / unlimited fast paths and
+   * the sustained-healthy (Phase-3) drain all return without granting one. The boolean is a
+   * per-invocation grant token: a caller that aborts after acquire must refund ONLY when it
+   * holds `true`, because backpressure state can change in the gap between acquire resolving
+   * and the refund running (a finite cap may be restored and a DIFFERENT invocation may have
+   * taken a permit), and an unconditional `release()` would then decrement that other
+   * invocation's permit.
+   */
+  async acquire(signal?: AbortSignal): Promise<boolean> {
     // Fail fast on an already-aborted operation before ANY fast path: a canceled
     // operation must never proceed to invoke the transport, even when backpressure
     // is disabled, observe-only, or currently unlimited (the default). These fast
     // paths return without consuming a permit, but returning normally still lets the
     // caller's op() run — so the aborted check must come first.
     if (signal?.aborted) throw signal.reason || new Error('aborted');
-    if (this.observeOnly) return; // never gate in observe-only mode
-    if (!this.isEnabled()) return;
-    if (this.permitsMax === null) return; // unlimited fast path
+    if (this.observeOnly) return false; // never gate in observe-only mode
+    if (!this.isEnabled()) return false;
+    if (this.permitsMax === null) return false; // unlimited fast path
     // Backoff-at-floor: delay before acquiring to rate-limit at floor. The wait is
     // abort-aware: a canceled operation rejects here instead of waking up later to
     // consume a permit and invoke the transport.
     if (this.backoffMs > 0) {
       await this._sleepAbortable(this.backoffMs, signal);
       // Re-check after sleep — may have gone unlimited
-      if (this.permitsMax === null) return;
+      if (this.permitsMax === null) return false;
       // A cancel that landed during the sleep (e.g. via an injected sleep that does
       // not reject on its own) must not proceed to consume a permit.
       if (signal?.aborted) throw signal.reason || new Error('aborted');
@@ -153,7 +164,7 @@ export class BackpressureManager {
     // Attempt immediate acquire
     if (this.permitsCurrent < (this.permitsMax || 0)) {
       this.permitsCurrent++;
-      return;
+      return true;
     }
     // Fail-fast if waiter queue is at capacity
     if (this.waiters.length >= this.cfg.maxWaiters) {
@@ -186,6 +197,9 @@ export class BackpressureManager {
       }
       throw signal.reason || new Error('aborted');
     }
+    // The queued path grants a permit only when the finite-cap drain set waiter.granted;
+    // the sustained-healthy (Phase-3) drain resolves without granting one.
+    return waiter.granted === true;
   }
 
   /** @internal Queued acquire: parks until release() drains this waiter or the signal aborts.
