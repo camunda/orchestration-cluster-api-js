@@ -136,4 +136,116 @@ describe('queued-waiter drain races (adversarial round 5)', () => {
     expect((bp as any).waiters).toHaveLength(0);
     expect((bp as any).permitsCurrent).toBe(1);
   });
+
+  // Regression (Copilot round 8): the post-drain abort refund decremented permitsCurrent
+  // unconditionally (guarded only against going negative), without tracking whether THIS
+  // waiter was actually granted a permit. The sustained-healthy (Phase-3) drain resolves
+  // queued waiters WITHOUT taking a permit; if a new backpressure event then restores a
+  // finite cap and another acquire consumes a permit before the waiter's continuation
+  // runs, an abort there refunded the OTHER operation's permit — undercounting active
+  // work and over-admitting. The refund must be tied to a per-waiter grant token.
+  describe('permit-grant token (fail the whole class)', () => {
+    it('does not refund a permit when the waiter was drained by the sustained-healthy (ungranted) path', async () => {
+      const ac = new AbortController();
+      const bp = new BackpressureManager({ config: { initialMaxConcurrency: 1 } });
+      (bp as any).permitsMax = 1;
+      (bp as any).permitsCurrent = 1; // sole permit occupied -> acquire queues
+
+      const acquiring = bp.acquire(ac.signal);
+      expect((bp as any).waiters).toHaveLength(1);
+
+      // Sustained-healthy transition: unlimited, counter reset, waiters resolved with NO
+      // permit granted (mirrors maybeRecover Phase 3). Resolve FIRST: waiter.resolve()
+      // runs cleanup(), detaching the abort listener — so the abort() below (same sync
+      // block) lands while the continuation is queued but not yet run: the exact race the
+      // post-drain re-check exists to catch.
+      (bp as any).permitsMax = null;
+      (bp as any).permitsCurrent = 0;
+      const w = (bp as any).waiters.shift();
+      w.resolve();
+      expect((bp as any).waiters).toHaveLength(0);
+
+      // A new backpressure event restores a finite cap; START another acquire (it takes
+      // the permit synchronously, before its first await) but do NOT await it yet —
+      // yielding here would let the stale waiter's continuation run before the abort.
+      (bp as any).permitsMax = 1;
+      const other = bp.acquire(); // permitsCurrent 0 -> 1 (the OTHER operation's permit)
+
+      // Abort while the stale waiter's continuation is still queued (listener detached by
+      // the resolve above). The post-drain re-check must NOT refund: this waiter was never
+      // granted a permit, so decrementing would steal the OTHER operation's permit.
+      ac.abort();
+      await expect(acquiring).rejects.toThrow();
+      await expect(other).resolves.toBeUndefined();
+      expect((bp as any).permitsCurrent).toBe(1);
+    });
+
+    it('still refunds when the waiter WAS granted a permit by the normal drain', async () => {
+      const ac = new AbortController();
+      const bp = new BackpressureManager({ config: { initialMaxConcurrency: 1 } });
+      (bp as any).permitsMax = 1;
+      (bp as any).permitsCurrent = 1;
+
+      const acquiring = bp.acquire(ac.signal);
+      const rejection = expect(acquiring).rejects.toThrow();
+      // Normal drain: release() grants this waiter the permit (1 -> 0 -> grant -> 1).
+      bp.release();
+      ac.abort();
+      await rejection;
+      // Granted permit refunded: nothing held for the canceled op.
+      expect((bp as any).permitsCurrent).toBe(0);
+    });
+  });
+
+  // Regression (Copilot round 8, previously-missed advisory): the abort race in
+  // _sleepAbortable rejected the wrapper promptly but never propagated the signal to the
+  // underlying sleep, so the production Clock.sleep timer kept running until the full
+  // delay expired. Repeated cancellations during backoff leaked live timers/closures.
+  // The signal must be forwarded so a signal-aware sleep cancels its scheduled timer,
+  // while the race still rejects promptly for an injected sleep that ignores it.
+  describe('sleep abort signal propagation (fail the whole class)', () => {
+    it('forwards the abort signal to the injected sleep so it can cancel its timer', async () => {
+      const ac = new AbortController();
+      const seenSignals: (AbortSignal | undefined)[] = [];
+      let resolveSleep: (() => void) | undefined;
+      const bp = new BackpressureManager({
+        sleep: (_ms: number, signal?: AbortSignal) => {
+          seenSignals.push(signal);
+          return new Promise<void>((resolve) => {
+            resolveSleep = resolve;
+          });
+        },
+        config: { initialMaxConcurrency: 1, backoffInitialMs: 25 },
+      });
+      (bp as any).permitsMax = 1;
+      (bp as any).backoffMs = 25;
+
+      const acquiring = bp.acquire(ac.signal);
+      const rejection = expect(acquiring).rejects.toThrow();
+      ac.abort();
+      resolveSleep?.();
+      await rejection;
+      // The abortable sleep must have handed the operation's signal to the sleep
+      // implementation, so a signal-aware clock cancels the underlying timer on abort.
+      expect(seenSignals).toEqual([ac.signal]);
+    });
+
+    it('still rejects promptly on abort when the injected sleep ignores the signal', async () => {
+      const ac = new AbortController();
+      // A sleep that never settles on its own and ignores any signal: only the abort
+      // race can reject the acquire.
+      const bp = new BackpressureManager({
+        sleep: () => new Promise<void>(() => {}),
+        config: { initialMaxConcurrency: 1, backoffInitialMs: 25 },
+      });
+      (bp as any).permitsMax = 1;
+      (bp as any).backoffMs = 25;
+
+      const acquiring = bp.acquire(ac.signal);
+      const rejection = expect(acquiring).rejects.toThrow();
+      ac.abort();
+      await rejection; // rejects via the race, not via the sleep settling
+      expect((bp as any).permitsCurrent).toBe(0);
+    });
+  });
 });

@@ -209,4 +209,43 @@ describe('wrapSchemaInitialisers', () => {
       expect(out).toBe(src);
     });
   });
+
+  // Regression (Copilot round 8): the fail-closed check validated each eager call's ROOT
+  // but not the EXPORTEDNESS of the declaration it initialises, so any const call rooted
+  // at `z` was eligible for a pure wrapper — including a namespace service/mutator chain
+  // such as `const registration = z.globalRegistry.add(zFoo, metadata)`. Wrapped
+  // `/*#__PURE__*/`, a bundler may drop that statement while `zFoo` stays referenced,
+  // losing the required registry mutation. Only an EXPORTED schema declaration may be
+  // wrapped; a non-exported const call initialiser is unreviewed and fails closed.
+  describe('declaration guard (fail the whole class)', () => {
+    it('fails closed on a non-exported const rooted at a zod namespace mutator chain', () => {
+      const src = [
+        "import * as z from 'zod';",
+        'export const zFoo = z.object({ a: z.string() });',
+        'const registration = z.globalRegistry.add(zFoo, { id: "foo" });',
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/registration/);
+    });
+
+    it('fails closed on a non-exported const rooted at an ordinary zod constructor call', () => {
+      // Not only mutator chains: ANY non-exported const call initialiser is unreviewed,
+      // even one rooted at a pure constructor — the hook only reviews exported schemas.
+      const src = [
+        "import * as z from 'zod';",
+        'export const zFoo = z.object({ a: z.string() });',
+        'const helper = z.object({ b: z.number() });',
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/helper/);
+    });
+
+    it('still wraps every exported schema declaration in the same module', () => {
+      const src = [
+        "import * as z from 'zod';",
+        'export const zFoo = z.object({ a: z.string() });',
+        'export const zBar = zFoo.extend({ b: z.number() }).register(z.globalRegistry, {});',
+      ].join('\n');
+      const out = wrapSchemaInitialisers(src);
+      expect(out.match(/\/\*#__PURE__\*\/ \(\(\) => /g)?.length).toBe(2);
+    });
+  });
 });

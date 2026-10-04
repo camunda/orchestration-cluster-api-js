@@ -251,7 +251,7 @@ export class CamundaCore {
     this._bp = new BackpressureManager({
       logger: this._log.scope('bp'),
       now: () => this._clock.now(),
-      sleep: (ms) => this._clock.sleep(ms),
+      sleep: (ms, signal) => this._clock.sleep(ms, signal),
       config: {
         enabled: this._config.backpressure.enabled,
         observeOnly: this._config.backpressure.observeOnly,

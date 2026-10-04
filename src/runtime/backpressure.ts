@@ -30,7 +30,7 @@ export interface BackpressureManagerOptions {
   logger?: Logger;
   config?: BackpressureConfig;
   now?: () => number;
-  sleep?: (ms: number) => Promise<void>; // injectable for testing
+  sleep?: (ms: number, signal?: AbortSignal) => Promise<void>; // injectable for testing; signal lets a clock cancel its timer on abort
 }
 
 interface Waiter {
@@ -39,12 +39,21 @@ interface Waiter {
   signal?: AbortSignal;
   /** Detaches the abort listener registered for this waiter (if any). */
   cleanup?: () => void;
+  /**
+   * Set true only when the finite-cap drain actually grants this waiter a permit
+   * (permitsCurrent++). The sustained-healthy (Phase-3) drain resolves waiters WITHOUT
+   * granting one, so a post-drain abort must consult this token before refunding —
+   * otherwise it would decrement a permit some OTHER operation later took.
+   */
+  granted?: boolean;
+  /** The parked acquire's promise; the continuation awaits this. */
+  promise: Promise<void>;
 }
 
 export class BackpressureManager {
   private logger?: Logger;
   private now: () => number;
-  private sleep: (ms: number) => Promise<void>;
+  private sleep: (ms: number, signal?: AbortSignal) => Promise<void>;
   private cfg: Required<BackpressureConfig>;
   private severity: BackpressureSeverity = 'healthy';
   private consecutive = 0;
@@ -151,37 +160,46 @@ export class BackpressureManager {
       throw err;
     }
     // Queue
-    await this._acquireQueued(signal);
+    const waiter = this._acquireQueued(signal);
+    await waiter.promise;
     // Re-check after the wait: a cancel that lands between release() draining this
     // waiter and this continuation running must not proceed to consume the permit
     // and invoke the transport. Symmetric with the backoff re-check above. This lives
     // in the await continuation (a microtask) rather than the waiter callback so it
     // observes an abort that fires synchronously after the drain.
     if (signal?.aborted) {
-      // The drain consumed a permit for this waiter (release() did permitsCurrent++
-      // before resolving it); refund it so the canceled operation holds nothing, then
-      // hand the freed capacity to the next queued waiter. release()'s own drain loop
-      // has already finished and will NOT re-enter, so without this re-drain, releasing
-      // and aborting the first of two queued acquires would strand the second forever.
-      // Guarded decrement: the unlimited Phase-3 drain resolves waiters WITHOUT taking a
-      // permit (permitsCurrent is 0 there), so never drive the counter negative.
-      if (this.permitsCurrent > 0) this.permitsCurrent--;
-      this._drainWaiters();
+      // Refund ONLY if this waiter was actually granted a permit (the finite-cap drain
+      // sets waiter.granted when it does permitsCurrent++). The sustained-healthy
+      // (Phase-3) drain resolves waiters WITHOUT granting a permit, so refunding there
+      // would decrement a permit a DIFFERENT operation took after a new backpressure
+      // event restored a finite cap — undercounting active work. When a permit was
+      // granted, hand the freed capacity to the next queued waiter: release()'s own
+      // drain loop has already finished and will NOT re-enter, so without this re-drain,
+      // releasing and aborting the first of two queued acquires would strand the second.
+      if (waiter.granted) {
+        if (this.permitsCurrent > 0) this.permitsCurrent--;
+        this._drainWaiters();
+      }
       throw signal.reason || new Error('aborted');
     }
   }
 
-  /** @internal Queued acquire: parks until release() drains this waiter or the signal aborts. */
-  private _acquireQueued(signal?: AbortSignal): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      const waiter: Waiter = {
-        resolve: () => {
-          waiter.cleanup?.();
-          resolve();
-        },
-        reject,
-        signal,
+  /** @internal Queued acquire: parks until release() drains this waiter or the signal aborts.
+   * Returns the Waiter (whose `granted` token the drain mutates in place before resolving)
+   * so the post-drain abort re-check in acquire() can refund only a permit THIS waiter held. */
+  private _acquireQueued(signal?: AbortSignal): Waiter {
+    const waiter: Waiter = {
+      resolve: () => {},
+      reject: () => {},
+      signal,
+      promise: Promise.resolve(),
+    };
+    waiter.promise = new Promise<void>((resolve, reject) => {
+      waiter.resolve = () => {
+        waiter.cleanup?.();
+        resolve();
       };
+      waiter.reject = reject;
       if (signal) {
         if (signal.aborted) {
           reject(signal.reason || new Error('aborted'));
@@ -196,9 +214,16 @@ export class BackpressureManager {
       }
       this.waiters.push(waiter);
     });
+    return waiter;
   }
 
-  /** Sleep that rejects promptly when the given signal aborts. */
+  /**
+   * Sleep that rejects promptly when the given signal aborts. The signal is ALSO forwarded
+   * to the underlying sleep so a signal-aware implementation (the production Clock.sleep)
+   * cancels its scheduled timer on abort instead of leaving it alive until the full delay
+   * expires; the race below still rejects promptly for an injected sleep that ignores the
+   * signal.
+   */
   private _sleepAbortable(ms: number, signal?: AbortSignal): Promise<void> {
     if (!signal) return this.sleep(ms);
     return new Promise<void>((resolve, reject) => {
@@ -208,7 +233,7 @@ export class BackpressureManager {
       }
       const onAbort = () => reject(signal.reason || new Error('aborted'));
       signal.addEventListener('abort', onAbort, { once: true });
-      this.sleep(ms).then(
+      this.sleep(ms, signal).then(
         () => {
           signal.removeEventListener('abort', onAbort);
           resolve();
@@ -239,6 +264,10 @@ export class BackpressureManager {
       const next = this.waiters.shift();
       if (!next) break;
       this.permitsCurrent++;
+      // Record the grant BEFORE resolving: the post-drain abort re-check refunds only
+      // when this token is set, so a waiter resolved by the ungranted Phase-3 drain never
+      // refunds a permit it never held.
+      next.granted = true;
       try {
         next.resolve();
       } catch {

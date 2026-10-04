@@ -24,6 +24,11 @@
  * zod-augment retention statement, `export const` aliasing another schema, or
  * `export const` whose initialiser is a zod schema-construction call chain) fails the
  * build, so a generator change cannot silently reintroduce module-level side effects.
+ * Only an EXPORTED const is a reviewed schema declaration: a non-exported const call
+ * initialiser (e.g. `const registration = z.globalRegistry.add(zFoo, meta)`) is a
+ * namespace service/mutator statement, not a schema construction, and fails closed rather
+ * than being wrapped — otherwise a bundler could drop the mutation while the schema it
+ * registers stays referenced.
  * A call initialiser is only accepted — and wrapped — when EVERY eagerly evaluated call in
  * it (the outer chain AND nested arguments like `z.object({ v: sideEffect() })`) is rooted
  * at the `z` namespace or a schema reference declared in this module; any other eager call
@@ -69,6 +74,13 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
       continue;
     }
     if (ts.isVariableStatement(st) && st.declarationList.flags & ts.NodeFlags.Const) {
+      // Only an EXPORTED const is a reviewed schema declaration. A non-exported const
+      // call initialiser is NOT: `const registration = z.globalRegistry.add(zFoo, meta)`
+      // is rooted at the zod namespace and would pass the eager-call traversal, but it is
+      // a registry MUTATION, not a schema construction — wrapping it `/*#__PURE__*/` would
+      // let a bundler drop the mutation while `zFoo` stays referenced. Fail closed on any
+      // non-exported const call initialiser (aliases are still handled below).
+      const isExported = st.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword) === true;
       for (const decl of st.declarationList.declarations) {
         const init = decl.initializer;
         if (!init) continue;
@@ -82,6 +94,14 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
           continue;
         }
         if (ts.isCallExpression(init)) {
+          if (!isExported) {
+            // Fail closed: a non-exported const call initialiser is not a reviewed schema
+            // declaration (see the exportedness guard above), so it is never wrapped.
+            problems.push(
+              `${decl.name.getText(sf)}: non-exported const call initialiser is not a reviewed schema declaration — ${init.getText(sf).slice(0, 120)}`
+            );
+            continue;
+          }
           const wrappedBody = pureIifeBody(init);
           if (wrappedBody !== null) {
             // Already wrapped (idempotent rerun). Do NOT trust the `/*#__PURE__*/ (() => …)()`
