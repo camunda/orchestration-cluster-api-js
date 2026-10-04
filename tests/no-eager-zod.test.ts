@@ -106,9 +106,19 @@ function topLevelDynamicImports(sf: ts.SourceFile): string[] {
   // module-evaluated too and the walk descends. A call nested inside any other
   // (non-invoked) function stays deferred.
   const topLevelCalledLocals = new Set<string>();
-  const collectTopLevelCalls = (node: ts.Node): void => {
+  // A call recorded inside a function body counts only when THAT function is itself
+  // reachable from module evaluation — otherwise `function outer(){ load(); }` with no
+  // top-level caller would mark `load` eager even though `outer` never runs. Compute
+  // local-call reachability to a FIXED POINT: seed with the callees recorded in genuinely
+  // module-evaluated positions (top-level expressions, IIFE bodies, sync-callback bodies),
+  // then repeatedly add the callees recorded in the bodies of locals now known to be
+  // reachable (`outer()` at top level ⇒ `outer`'s body is module-evaluated ⇒ the `load()`
+  // inside it is too). One pass is not enough: the scan may see `outer`'s body BEFORE
+  // learning `outer` is invoked, so `load` is only discovered on a later iteration.
+  const bodyCalls = new Map<string, Set<string>>();
+  const collectTopLevelCalls = (node: ts.Node, sink: Set<string>): void => {
     if (ts.isCallExpression(node) && ts.isIdentifier(node.expression)) {
-      topLevelCalledLocals.add(node.expression.text);
+      sink.add(node.expression.text);
     }
     if (
       ts.isFunctionDeclaration(node) ||
@@ -121,13 +131,52 @@ function topLevelDynamicImports(sf: ts.SourceFile): string[] {
     ) {
       // A function-like boundary defers its body UNLESS the function runs during module
       // evaluation — an IIFE (incl. `new`/tagged/`.call`/`.apply`/invoked-`.bind` forms) or
-      // a callback a known-synchronous callee invokes inline.
-      if (!isImmediatelyInvoked(node) && !isSynchronouslyInvokedCallback(node)) return;
+      // a callback a known-synchronous callee invokes inline. Either way, calls recorded
+      // inside go to the current sink; a NON-invoked function's body calls are recorded
+      // separately (keyed by the function's bound name) for the fixed point below.
+      if (!isImmediatelyInvoked(node) && !isSynchronouslyInvokedCallback(node)) {
+        const name =
+          ts.isFunctionDeclaration(node) || ts.isFunctionExpression(node)
+            ? node.name?.text
+            : undefined;
+        const bound =
+          name ??
+          (ts.isFunctionExpression(node) || ts.isArrowFunction(node)
+            ? boundVariableName(node)
+            : undefined);
+        // A method/get/set has no bare-identifier binding to call it by at top level (it
+        // runs via its object), so its body calls can never become reachable through a
+        // local call — record them under a throwaway sink that is never seeded.
+        let sink2: Set<string>;
+        if (bound !== undefined) {
+          sink2 = bodyCalls.get(bound) ?? new Set<string>();
+          if (!bodyCalls.has(bound)) bodyCalls.set(bound, sink2);
+        } else {
+          sink2 = new Set<string>();
+        }
+        ts.forEachChild(node, (child) => collectTopLevelCalls(child, sink2));
+        return;
+      }
     }
-    ts.forEachChild(node, collectTopLevelCalls);
+    ts.forEachChild(node, (child) => collectTopLevelCalls(child, sink));
   };
   for (const st of sf.statements) {
-    collectTopLevelCalls(st);
+    collectTopLevelCalls(st, topLevelCalledLocals);
+  }
+  // Fixed point: a reachable local's body calls become reachable too. Bounded by the
+  // number of distinct local names, so this always terminates.
+  for (let grew = true; grew; ) {
+    grew = false;
+    for (const name of topLevelCalledLocals) {
+      const inner = bodyCalls.get(name);
+      if (inner === undefined) continue;
+      for (const callee of inner) {
+        if (!topLevelCalledLocals.has(callee)) {
+          topLevelCalledLocals.add(callee);
+          grew = true;
+        }
+      }
+    }
   }
   const visit = (node: ts.Node, deferred: boolean): void => {
     // A function-like body defers execution to call time: imports inside it are lazy —
@@ -873,6 +922,72 @@ describe('top-level (eager) dynamic imports', () => {
       "const load = () => import('zod');\nexport const x = load;\n"
     );
     expect(dynamicImportsOf(file)).toEqual([]);
+  });
+
+  // Regression (Copilot round 18, inline): the top-level-call pre-pass recorded calls in a
+  // single pass, so it missed TRANSITIVE local calls: `function outer(){ load(); }
+  // outer();` recorded only `outer` — the scan skipped `outer`'s body before learning it
+  // is invoked, so `load` was never marked and its eager import was treated as deferred.
+  // The pre-pass now computes local-call reachability to a FIXED POINT: calls inside a
+  // reachable local's body become reachable too, however many wrappers deep.
+  it('reports a transitive local call (wrapper function invoked at top level) as eager', () => {
+    const file = write(
+      'sync-transitive-call.ts',
+      "function outer() {\n  load();\n}\nfunction load() {\n  return import('zod');\n}\nouter();\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('reports a two-deep transitive local call chain as eager', () => {
+    const file = write(
+      'sync-transitive-chain.ts',
+      "function a() {\n  b();\n}\nfunction b() {\n  c();\n}\nfunction c() {\n  return import('zod');\n}\na();\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('reports a transitive local call through const-bound arrows as eager', () => {
+    const file = write(
+      'sync-transitive-arrows.ts',
+      "const outer = () => {\n  load();\n};\nconst load = () => import('zod');\nouter();\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('reports a mutually recursive local pair invoked at top level as eager (fixed point terminates)', () => {
+    const file = write(
+      'sync-transitive-mutual.ts',
+      "function a() {\n  b();\n}\nfunction b() {\n  a();\n  load();\n}\nfunction load() {\n  return import('zod');\n}\na();\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('does NOT report a transitive local call whose wrapper is never invoked', () => {
+    // `outer` calls `load`, but `outer` itself is never called at module load — so the
+    // `load()` call is not module-evaluated and the import stays deferred.
+    const file = write(
+      'deferred-transitive-call.ts',
+      "function outer() {\n  load();\n}\nfunction load() {\n  return import('zod');\n}\nexport const x = outer;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual([]);
+  });
+
+  it('does NOT report a transitive local call reachable only from a deferred callback', () => {
+    // `outer` (and transitively `load`) is invoked only inside a `setTimeout` callback —
+    // deferred — so the import never runs at module evaluation.
+    const file = write(
+      'deferred-transitive-callback.ts',
+      "function outer() {\n  load();\n}\nfunction load() {\n  return import('zod');\n}\nsetTimeout(outer, 0);\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual([]);
+  });
+
+  it('end-to-end: fails the gate on a transitive-wrapper eager zod load', () => {
+    const entry = write(
+      'sync-transitive-entry.ts',
+      "function outer() {\n  load();\n}\nfunction load() {\n  return import('zod');\n}\nouter();\nexport const y = 2;\n"
+    );
+    expect(eagerZodImportersFrom(entry)).not.toEqual([]);
   });
 
   // Regression (adversarial, round 14): `isSynchronouslyInvokedCallback` only recognised a

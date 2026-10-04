@@ -95,14 +95,21 @@ function patchFile(
         // The adapter is computed once per response (not per job): for a bare core it
         // allocates five closures, so building it inside `map` would multiply that by
         // the batch size for no benefit — it captures only `core`, never the job.
-        // Guard on `data.jobs.length > 0`: an empty `jobs` array is the common polling
-        // result, and `_jobActionsClient(core)` on a bare core allocates the adapter
-        // object and five closures (and on a client performs five method checks) even
-        // though `map` over an empty array never runs — so skip adapter creation entirely
-        // when there is nothing to enrich.
+        // Guard on `Array.isArray(data.jobs) && data.jobs.length > 0`: an empty `jobs`
+        // array is the common polling result, and `_jobActionsClient(core)` on a bare core
+        // allocates the adapter object and five closures (and on a client performs five
+        // method checks) even though `map` over an empty array never runs — so skip
+        // adapter creation entirely when there is nothing to enrich. The guard must be an
+        // ACTUAL-array check, not merely truthiness: a truthy non-array `jobs` value with
+        // no `length` property (a malformed response) would otherwise satisfy
+        // `data.jobs.length > 0` as `undefined > 0` → false and be returned silently,
+        // violating the declared response type — whereas the previous unconditional
+        // `.map()` threw a TypeError and surfaced it. `Array.isArray` keeps malformed
+        // values on the throwing `.map` path while an empty real array still skips the
+        // adapter.
         // NOTE: the `if (data && data.jobs) {` … `data.jobs = data.jobs.map(` shape is
         // a splice anchor for hook 710's present-when guards — keep it verbatim.
-        const inject = `if (data && data.jobs) { if (data.jobs.length > 0) { const _client = _jobActionsClient(core); data.jobs = data.jobs.map((j: any) => enrichActivatedJob(j, _client, core.logger().scope(\`job:${'$'}{j.jobKey}\`))); } }\n      return data;`;
+        const inject = `if (data && data.jobs) { if (Array.isArray(data.jobs) && data.jobs.length > 0) { const _client = _jobActionsClient(core); data.jobs = data.jobs.map((j: any) => enrichActivatedJob(j, _client, core.logger().scope(\`job:${'$'}{j.jobKey}\`))); } }\n      return data;`;
         src = before + inject + after;
       }
     }

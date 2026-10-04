@@ -34,9 +34,11 @@
  * at the `z` namespace or a schema reference declared in this module; any other eager call
  * (which could carry a required side effect) is reported as unreviewed rather than being
  * blindly marked pure. Eager NON-call side effects fail closed the same way: an
- * assignment/update/delete, and any object/call/array SPREAD (`z.object({ ...proxy })`
- * runs the operand's getters/Proxy traps at module evaluation). Calls inside deferred
- * callback bodies (`z.lazy(() => …)`) are not eager and are skipped.
+ * assignment/update/delete, any object/call/array SPREAD (`z.object({ ...proxy })`
+ * runs the operand's getters/Proxy traps at module evaluation), and any eager
+ * property/element READ not rooted at the `z` namespace or a proven schema
+ * (`z.literal(proxy.value)` runs the getter/Proxy `get` trap at module evaluation).
+ * Calls inside deferred callback bodies (`z.lazy(() => …)`) are not eager and are skipped.
  *
  * Idempotent: already-wrapped initialisers are left untouched — but their wrapped bodies
  * are still validated with the same eager-call traversal before the name is accepted as a
@@ -330,6 +332,38 @@ function findUnreviewedEagerCall(init: ts.Expression, schemaNames: Set<string>):
     if (bad !== null) return;
     // Deferred callback bodies evaluate later, not at module load: do not descend.
     if (ts.isArrowFunction(node) || ts.isFunctionExpression(node)) return;
+    // An eager PROPERTY/ELEMENT READ is an unreviewed side effect exactly like an eager
+    // spread: `z.literal(sideEffectingProxy.value)` synchronously runs the operand's getter
+    // or Proxy `get` trap at module evaluation, yet carries no call for the invocation
+    // classifier to flag — so without this branch the initialiser is annotated
+    // `/*#__PURE__*/` and tree-shaking can discard the getter side effect with the schema.
+    // Reject EVERY eager read, then carve out the reviewed shapes below: the callee chain
+    // of an already-classified call (`z.object(…)`, `zFoo.extend(…)` — the CALL branch
+    // classifies its root), and a read rooted at the `z` namespace or a proven schema
+    // (`.register(z.globalRegistry, …)`, `zBase.shape.a` — plain data on the zod module /
+    // a schema object). A read rooted anywhere else (`z.literal(proxy.value)`,
+    // `z.literal(MyEnum.A)` — an imported enum-like object can be a Proxy) fails closed.
+    // A read inside a deferred callback is not eager and is skipped above.
+    if (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node)) {
+      const parent = node.parent;
+      // Callee of an enclosing call/new/tagged-template: classified by that branch.
+      const isCalleeChain =
+        (parent !== undefined &&
+          ((ts.isCallExpression(parent) && parent.expression === node) ||
+            (ts.isNewExpression(parent) && parent.expression === node) ||
+            (ts.isTaggedTemplateExpression(parent) && parent.tag === node) ||
+            ((ts.isPropertyAccessExpression(parent) || ts.isElementAccessExpression(parent)) &&
+              parent.expression === node))) === true;
+      if (!isCalleeChain) {
+        const root = callChainRoot(node);
+        if (!isReviewedRoot(root)) {
+          bad = `eager property/element read (runs the operand’s getter/Proxy trap): ${
+            ts.isIdentifier(root) ? root.text : ts.SyntaxKind[root.kind]
+          }`;
+          return;
+        }
+      }
+    }
     // An eager side effect that is NOT an invocation still mutates state at module
     // evaluation, so it must fail closed exactly like an unreviewed call. An assignment
     // (`z.literal(globalState = true)` / `+=` / `??=` …), an update (`counter++`,

@@ -731,6 +731,20 @@ describe('wrapSchemaInitialisers', () => {
       const out = wrapSchemaInitialisers(src);
       expect(out).toContain(`export const zFoo = ${WRAP}z.object(`);
     });
+
+    it('still wraps a schema whose eager argument is a bare identifier (enum-like value)', () => {
+      // A bare identifier argument (`z.nativeEnum(MyEnum)`) is a REFERENCE, not a read —
+      // passing the value does not run a getter, so it stays wrappable. (Reading a MEMBER
+      // of such an object — `z.literal(MyEnum.A)` — is the unproven eager read rejected in
+      // the dedicated suite below.)
+      const src = [
+        "import * as z from 'zod';",
+        "import { MyEnum } from './enums';",
+        'export const zFoo = z.nativeEnum(MyEnum);',
+      ].join('\n');
+      const out = wrapSchemaInitialisers(src);
+      expect(out).toContain(`export const zFoo = ${WRAP}z.nativeEnum(`);
+    });
   });
 
   // Regression (Copilot round 17): the fail-closed traversal classified only INVOCATIONS
@@ -787,6 +801,108 @@ describe('wrapSchemaInitialisers', () => {
       ].join('\n');
       const out = wrapSchemaInitialisers(src);
       expect(out).toContain(`export const zFoo = ${WRAP}z.lazy(`);
+    });
+  });
+
+  // Regression (Copilot round 18, previously-missed): the fail-closed traversal rejected
+  // unreviewed CALLS, assignments/updates/deletes, and spreads — but not an eager
+  // PROPERTY/ELEMENT READ. `z.literal(sideEffectingProxy.value)` contains only an
+  // allowlisted Zod call and no rejected node, yet reading `.value` synchronously runs the
+  // operand's getter or Proxy `get` trap at module evaluation — so the initialiser was
+  // annotated `/*#__PURE__*/` and tree-shaking could discard the getter side effect with
+  // the schema. Reject every eager property/element read whose chain is NOT rooted at the
+  // `z` namespace or a proven schema (a callee chain of a classified call, `.register(
+  // z.globalRegistry, …)`, and literal/identifier/proven-schema arguments stay allowed).
+  describe('eager property/element reads (fail the whole class)', () => {
+    it('fails closed on an unproven property read in an eager argument', () => {
+      // `z.literal(proxy.value)` reads `.value` at module evaluation — a getter/Proxy trap
+      // on the operand runs eagerly, yet no call is flagged without the read guard.
+      const src = [
+        "import * as z from 'zod';",
+        "import { sideEffectingProxy } from './side-effect';",
+        'export const zFoo = z.literal(sideEffectingProxy.value);',
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+    });
+
+    it('fails closed on an unproven element read in an eager argument', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { sideEffectingProxy } from './side-effect';",
+        "export const zFoo = z.literal(sideEffectingProxy['value']);",
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+    });
+
+    it('fails closed on a computed element read in an eager argument', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { sideEffectingProxy, key } from './side-effect';",
+        'export const zFoo = z.literal(sideEffectingProxy[key]);',
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+    });
+
+    it('fails closed on an unproven property read of an imported enum-like object', () => {
+      // `z.literal(MyEnum.A)` reads a MEMBER of an imported object at module evaluation —
+      // an imported enum-like object can be a Proxy, so the read is unproven and fails
+      // closed. (Passing the object itself — `z.nativeEnum(MyEnum)` — is a bare reference,
+      // not a read, and stays allowed; see the assignment/update/delete suite.)
+      const src = [
+        "import * as z from 'zod';",
+        "import { MyEnum } from './enums';",
+        'export const zFoo = z.literal(MyEnum.A);',
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+    });
+
+    it('fails closed on an unproven property read hidden in a wrapped (idempotent) body', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { sideEffectingProxy } from './side-effect';",
+        `export const zFoo = ${WRAP}z.literal(sideEffectingProxy.value)))();`,
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+    });
+
+    it('still treats a property read inside a DEFERRED callback body as lazy', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { sideEffectingProxy } from './side-effect';",
+        'export const zFoo = z.lazy(() => z.literal(sideEffectingProxy.value));',
+      ].join('\n');
+      const out = wrapSchemaInitialisers(src);
+      expect(out).toContain(`export const zFoo = ${WRAP}z.lazy(`);
+    });
+
+    it('still wraps a schema that reads a member of the z namespace as an argument', () => {
+      // `.register(z.globalRegistry, …)` passes a `z`-rooted read as an argument — plain
+      // data on the zod module, not an unproven getter — so it must stay wrappable.
+      const src = [
+        "import * as z from 'zod';",
+        "export const zFoo = z.object({ a: z.string() }).register(z.globalRegistry, { id: 'Foo' });",
+      ].join('\n');
+      const out = wrapSchemaInitialisers(src);
+      expect(out).toContain(`export const zFoo = ${WRAP}z.object(`);
+    });
+
+    it('still wraps a schema that reads a member of a PROVEN schema as an argument', () => {
+      const src = [
+        "import * as z from 'zod';",
+        'export const zBase = z.object({ a: z.string() });',
+        'export const zFoo = z.object({ b: zBase.shape.a });',
+      ].join('\n');
+      const out = wrapSchemaInitialisers(src);
+      expect(out).toContain(`export const zFoo = ${WRAP}z.object(`);
+    });
+
+    it('still wraps a schema whose arguments are literals and identifiers only', () => {
+      const src = [
+        "import * as z from 'zod';",
+        'export const zFoo = z.object({ a: z.string(), b: z.literal("x"), c: z.enum(["y", "z"]) });',
+      ].join('\n');
+      const out = wrapSchemaInitialisers(src);
+      expect(out).toContain(`export const zFoo = ${WRAP}z.object(`);
     });
   });
 });

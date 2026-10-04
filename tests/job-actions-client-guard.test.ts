@@ -108,8 +108,35 @@ describe('activateJobs enrichment skips adapter creation for an empty jobs array
     );
     const between = src.slice(enrichIdx, clientIdx);
     expect(
-      /data\.jobs\.length > 0/.test(between),
-      'adapter creation must be guarded by `data.jobs.length > 0` so an empty poll does not allocate it'
+      /Array\.isArray\(data\.jobs\) && data\.jobs\.length > 0/.test(between),
+      'adapter creation must be guarded by `Array.isArray(data.jobs) && data.jobs.length > 0` so an empty poll does not allocate it'
     ).toBe(true);
+  });
+
+  // Regression (Copilot round 18, previously-missed): the empty-poll optimization guarded
+  // adapter creation with `data.jobs.length > 0` alone. A truthy NON-ARRAY `jobs` value
+  // with no `length` property (a malformed response) satisfies that guard as
+  // `undefined > 0` → false, so it was returned silently — whereas the previous
+  // unconditional `.map()` threw a TypeError on the malformed value instead of returning
+  // data that violates the declared response type. The guard must require an ACTUAL array
+  // so malformed values stay on the throwing `.map` path while a real empty array still
+  // skips the adapter.
+  it('restricts the empty-response optimization to actual arrays', () => {
+    const src = readGenerated();
+    const enrichIdx = src.indexOf('if (data && data.jobs) {');
+    expect(enrichIdx, 'activateJobs enrichment splice not found').toBeGreaterThan(-1);
+    const clientIdx = src.indexOf('_jobActionsClient(core)', enrichIdx);
+    expect(clientIdx).toBeGreaterThan(enrichIdx);
+    const between = src.slice(enrichIdx, clientIdx);
+    // An `Array.isArray(data.jobs)` conjunct must gate the enrichment …
+    expect(
+      /Array\.isArray\(data\.jobs\)/.test(between),
+      'enrichment guard must require `Array.isArray(data.jobs)` so a malformed truthy non-array `jobs` still reaches the throwing `.map` path'
+    ).toBe(true);
+    // … and the unguarded truthiness-only form must not come back.
+    expect(
+      /if \(data\.jobs\.length > 0\)/.test(between),
+      'a bare `data.jobs.length > 0` guard silently accepts a truthy non-array `jobs` (undefined > 0 is false)'
+    ).toBe(false);
   });
 });
