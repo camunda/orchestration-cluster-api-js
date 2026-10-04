@@ -69,7 +69,7 @@ export class BackpressureManager {
   constructor(opts: BackpressureManagerOptions = {}) {
     this.logger = opts.logger;
     this.now = opts.now || (() => liveClock.now());
-    this.sleep = opts.sleep || ((ms) => liveClock.sleep(ms));
+    this.sleep = opts.sleep || ((ms, signal) => liveClock.sleep(ms, signal));
     this.cfg = {
       enabled: true,
       initialMaxConcurrency: null,

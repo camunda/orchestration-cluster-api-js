@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createCamundaClient } from '../src';
 import { BackpressureManager } from '../src/runtime/backpressure';
+import { liveClock } from '../src/runtime/clock';
 
 // Regression: an operation canceled while it is still waiting for a backpressure permit
 // (or sleeping in the backoff-at-floor delay) must not remain queued, consume a permit,
@@ -246,6 +247,39 @@ describe('queued-waiter drain races (adversarial round 5)', () => {
       ac.abort();
       await rejection; // rejects via the race, not via the sleep settling
       expect((bp as any).permitsCurrent).toBe(0);
+    });
+
+    // Sibling of the above: the constructor's DEFAULT sleep (used when no `sleep` is
+    // injected — the option is optional and the class is publicly exported) must also
+    // forward the signal to liveClock.sleep. A default that passed only `ms` would drop
+    // the signal, leaking the scheduled timer until the full delay expired even after
+    // the acquire rejected on abort. Covers the untested non-injected path.
+    it('default (non-injected) sleep forwards the abort signal to liveClock.sleep', async () => {
+      const ac = new AbortController();
+      const seenSignals: (AbortSignal | undefined)[] = [];
+      const sleepSpy = vi
+        .spyOn(liveClock, 'sleep')
+        .mockImplementation((_ms: number, signal?: AbortSignal) => {
+          seenSignals.push(signal);
+          return new Promise<void>(() => {});
+        });
+      try {
+        const bp = new BackpressureManager({
+          config: { initialMaxConcurrency: 1, backoffInitialMs: 25 },
+        });
+        (bp as any).permitsMax = 1;
+        (bp as any).backoffMs = 25;
+
+        const acquiring = bp.acquire(ac.signal);
+        const rejection = expect(acquiring).rejects.toThrow();
+        ac.abort();
+        await rejection;
+        // The default sleep must hand the operation's signal to liveClock.sleep so a
+        // signal-aware clock cancels its underlying timer on abort.
+        expect(seenSignals).toEqual([ac.signal]);
+      } finally {
+        sleepSpy.mockRestore();
+      }
     });
   });
 });
