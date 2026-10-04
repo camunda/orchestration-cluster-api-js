@@ -89,18 +89,65 @@ function valueImports(sf: ts.SourceFile): string[] {
  */
 function topLevelDynamicImports(sf: ts.SourceFile): string[] {
   const specs: string[] = [];
+  // Pre-pass: collect the names of locally-declared functions that are invoked DIRECTLY at
+  // top level — `function load() {…}; load();`. Such a call runs the function's body during
+  // module evaluation, so a dynamic import inside that body is eager, not deferred. (The
+  // import lives in the CALLEE's own body, not in a callback argument, so this is a separate
+  // shape from the synchronous-iterator case handled below.) Only a bare `name()` /
+  // `void name()` statement counts — a call nested inside another function stays deferred.
+  const topLevelCalledLocals = new Set<string>();
+  for (const st of sf.statements) {
+    let expr: ts.Expression | undefined;
+    if (ts.isExpressionStatement(st)) expr = st.expression;
+    else if (ts.isVariableStatement(st)) {
+      // `const p = load();` — a top-level variable initialised by a direct call.
+      for (const decl of st.declarationList.declarations) {
+        if (
+          decl.initializer &&
+          ts.isCallExpression(decl.initializer) &&
+          ts.isIdentifier(decl.initializer.expression)
+        ) {
+          topLevelCalledLocals.add(decl.initializer.expression.text);
+        }
+      }
+      continue;
+    } else continue;
+    // Peel a leading `void` / `await` / unary wrapper to reach the call. `void x()` is a
+    // VoidExpression (NOT a PrefixUnaryExpression), so each wrapper kind is unwrapped by its
+    // own check.
+    for (;;) {
+      if (expr && ts.isVoidExpression(expr)) expr = expr.expression;
+      else if (expr && ts.isAwaitExpression(expr)) expr = expr.expression;
+      else if (expr && ts.isPrefixUnaryExpression(expr)) expr = expr.operand;
+      else break;
+    }
+    if (expr && ts.isCallExpression(expr) && ts.isIdentifier(expr.expression)) {
+      topLevelCalledLocals.add(expr.expression.text);
+    }
+  }
   const visit = (node: ts.Node, deferred: boolean): void => {
     // A function-like body defers execution to call time: imports inside it are lazy —
-    // UNLESS the function is immediately invoked (an IIFE), whose body runs eagerly now.
+    // UNLESS the function is immediately invoked (an IIFE), whose body runs eagerly now, OR
+    // it is a callback handed to a KNOWN-synchronous top-level callee (an array iterator
+    // such as `[1].forEach(cb)`), OR it is a locally-declared function invoked directly at
+    // top level — each of which runs the body during module evaluation.
+    const isFunctionLike =
+      ts.isFunctionDeclaration(node) ||
+      ts.isFunctionExpression(node) ||
+      ts.isArrowFunction(node) ||
+      ts.isMethodDeclaration(node) ||
+      ts.isConstructorDeclaration(node) ||
+      ts.isGetAccessorDeclaration(node) ||
+      ts.isSetAccessorDeclaration(node);
+    const calledAtTopLevel =
+      ts.isFunctionDeclaration(node) &&
+      node.name !== undefined &&
+      topLevelCalledLocals.has(node.name.text);
     const defersChildren =
-      (ts.isFunctionDeclaration(node) ||
-        ts.isFunctionExpression(node) ||
-        ts.isArrowFunction(node) ||
-        ts.isMethodDeclaration(node) ||
-        ts.isConstructorDeclaration(node) ||
-        ts.isGetAccessorDeclaration(node) ||
-        ts.isSetAccessorDeclaration(node)) &&
-      !isImmediatelyInvoked(node);
+      isFunctionLike &&
+      !isImmediatelyInvoked(node) &&
+      !isSynchronouslyInvokedCallback(node) &&
+      !calledAtTopLevel;
     if (
       !deferred &&
       ts.isCallExpression(node) &&
@@ -187,6 +234,55 @@ function isImmediatelyInvoked(node: ts.Node): boolean {
     }
   }
   return false;
+}
+
+/**
+ * Callees that invoke their callback argument SYNCHRONOUSLY, before they return — so a
+ * callback's body runs during the enclosing module's evaluation, exactly like an IIFE.
+ * Array iteration methods are the canonical case: `[1].forEach(cb)`, `xs.map(cb)`,
+ * `xs.filter(cb)`, … run `cb` once per element, in-line. A callback passed to one of these
+ * at the top level is NOT deferred, so a dynamic import inside it is eager.
+ *
+ * Conservative by design: only these statically-known synchronous iterators are treated as
+ * eager. Known-async schedulers (`setTimeout`, `Promise.resolve().then`, `addEventListener`,
+ * …) and every unknown callee keep their callbacks deferred — the gate errs toward not
+ * flagging a pattern it cannot prove is synchronous, so it never false-positives on a
+ * genuinely lazy load.
+ */
+const SYNC_ITERATOR_METHODS = new Set([
+  'forEach',
+  'map',
+  'filter',
+  'reduce',
+  'reduceRight',
+  'find',
+  'findIndex',
+  'findLast',
+  'findLastIndex',
+  'some',
+  'every',
+  'flatMap',
+]);
+
+/**
+ * True when `node` is a function/arrow passed as an ARGUMENT to a call whose callee runs it
+ * SYNCHRONOUSLY during module evaluation — so its body is eager, not deferred. The one
+ * statically-provable shape is a known synchronous iterator method: `[1].forEach(() => …)`,
+ * `xs.map(function () {…})`. Anything else (a method call we cannot prove synchronous, an
+ * async scheduler, a callback stored for later, a direct call of an opaque local function)
+ * stays deferred — the gate errs toward not flagging a pattern it cannot prove is eager.
+ */
+function isSynchronouslyInvokedCallback(node: ts.Node): boolean {
+  if (!ts.isFunctionExpression(node) && !ts.isArrowFunction(node)) return false;
+  let cur: ts.Node = node;
+  while (cur.parent && ts.isParenthesizedExpression(cur.parent)) cur = cur.parent;
+  const parent = cur.parent;
+  // The function must be an argument of a call: `callee(…, fn, …)`.
+  if (parent === undefined || !ts.isCallExpression(parent)) return false;
+  if (!parent.arguments.some((arg) => arg === cur)) return false;
+  const callee = parent.expression;
+  // `[1].forEach(cb)` / `xs.map(cb)`: a known synchronous iterator method.
+  return ts.isPropertyAccessExpression(callee) && SYNC_ITERATOR_METHODS.has(callee.name.text);
 }
 
 /** Specifiers imported EAGERLY at module load: static value imports plus top-level
@@ -463,6 +559,73 @@ describe('top-level (eager) dynamic imports', () => {
     expect(dynamicImportsOf(file)).toEqual([]);
   });
 
+  // Regression (Copilot round 14, previously-missed): the deferred-body rule treated EVERY
+  // callback argument as deferred, but a function passed to a SYNCHRONOUSLY-invoking
+  // top-level call runs during module evaluation. `[1].forEach(() => import('zod'))`
+  // invokes its callback before `forEach` returns, so the import is EAGER — yet the gate
+  // marked the arrow deferred and passed. The same bypass exists for `.map`/`.filter`/…
+  // and for a locally declared function called at top level. The gate now treats a
+  // callback to a KNOWN-synchronous callee (array iterators, a direct top-level call of a
+  // local function) as eager, while known-async schedulers (setTimeout, .then,
+  // addEventListener) stay deferred.
+  it("reports `[1].forEach(() => import('zod'))` (synchronous callback) as eager", () => {
+    const file = write(
+      'sync-foreach.ts',
+      "[1].forEach(() => import('zod'));\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it("reports `[1].map(() => import('zod'))` (synchronous map callback) as eager", () => {
+    const file = write('sync-map.ts', "[1].map(() => import('zod'));\nexport const x = 1;\n");
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('reports a locally declared function called at top level as eager', () => {
+    const file = write(
+      'sync-local-call.ts',
+      "function load() {\n  return import('zod');\n}\nvoid load();\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it("reports `[1].filter(() => import('zod'))` and reduces (other sync iterators) as eager", () => {
+    const file = write('sync-filter.ts', "[1].filter(() => import('zod'));\nexport const x = 1;\n");
+    expect(dynamicImportsOf(file)).toEqual(['zod']);
+  });
+
+  it('does NOT report an import inside a `setTimeout` callback (async scheduler stays deferred)', () => {
+    const file = write(
+      'async-settimeout.ts',
+      "setTimeout(() => import('zod'), 0);\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual([]);
+  });
+
+  it('does NOT report an import inside a `Promise.resolve().then` callback (microtask stays deferred)', () => {
+    const file = write(
+      'async-then.ts',
+      "Promise.resolve().then(() => import('zod'));\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual([]);
+  });
+
+  it('does NOT report an import inside an `addEventListener` callback (event stays deferred)', () => {
+    const file = write(
+      'async-event.ts',
+      "window.addEventListener('load', () => import('zod'));\nexport const x = 1;\n"
+    );
+    expect(dynamicImportsOf(file)).toEqual([]);
+  });
+
+  it('end-to-end: fails the gate on a synchronous-callback eager zod load', () => {
+    const entry = write(
+      'sync-foreach-entry.ts',
+      "[1].forEach(() => import('zod'));\nexport const y = 2;\n"
+    );
+    expect(eagerZodImportersFrom(entry)).not.toEqual([]);
+  });
+
   it('end-to-end: fails the gate on a `.bind`-invoked eager zod load', () => {
     const entry = write(
       'iife-bind-entry.ts',
@@ -480,10 +643,12 @@ describe('top-level (eager) dynamic imports', () => {
   });
 
   it('does NOT report an import inside a non-invoked function passed as a `.call` argument', () => {
-    // The arrow is an ARGUMENT to forEach, not the callee of `.call` — it stays deferred.
+    // The arrow is an ARGUMENT to an async scheduler, not the callee of `.call` — it stays
+    // deferred. (A synchronous callee like `forEach` WOULD run it eagerly; that is the
+    // separate regression covered above, so this uses `setTimeout`, which genuinely defers.)
     const file = write(
       'not-iife-call-arg.ts',
-      "[1].forEach(() => import('zod'));\nexport const x = 1;\n"
+      "setTimeout(() => import('zod'), 0);\nexport const x = 1;\n"
     );
     expect(dynamicImportsOf(file)).toEqual([]);
   });
