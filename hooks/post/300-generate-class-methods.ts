@@ -315,15 +315,16 @@ export type ${o.opId}Consistency = {
       'options?: OperationOptions',
     ].join(', ');
     // No-input operations: the class method keeps its historical `(arg?, options?)`
-    // implementation signature (arg is unused, so `client.op({ retry })` binds the
-    // options object to `arg`). The standalone function takes no input parameter,
-    // so `op(core, { retry })` applies the options. The class forwards its own
-    // `options` parameter, preserving its existing behaviour exactly.
+    // implementation signature, but a lone first argument is the OperationOptions
+    // object (the public overload is `op(options?)`). Forward `options ?? arg` so
+    // `client.op({ retry })` applies the options instead of silently dropping them.
+    // The standalone function takes no input parameter, so `op(core, { retry })`
+    // applies the options directly. Both entry points now behave identically.
     const fnImplParams = hasInput ? implParams : publicParams;
     const forwardArgs = [
       ...(hasInput ? ['arg'] : []),
       ...(o.eventual ? ['consistencyManagement'] : []),
-      'options',
+      hasInput ? 'options' : 'options ?? arg',
     ].join(', ');
     methods.push(`  ${o.opId}(${publicParams}): CancelablePromise<${returnType}>;`);
     methods.push(`  ${o.opId}(${implParams}): CancelablePromise<any> {`);

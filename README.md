@@ -1377,11 +1377,10 @@ Notes:
 
 - Each function takes the same arguments as the `CamundaClient` method of the same name and
   behaves identically (retry, backpressure, validation, eventual consistency, cancelation) —
-  the client methods delegate to these functions. The one exception is operations that take
-  no input (e.g. `getTopology`): the function applies an options object passed as its second
-  argument (`getTopology(core, { retry: false })`), whereas the class method keeps its
-  historical signature and ignores an options object passed first — pass options to such class
-  methods as the second argument (`client.getTopology(undefined, { retry: false })`).
+  the client methods delegate to these functions. Operations that take no input (e.g.
+  `getTopology`) accept an options object as the function's second argument
+  (`getTopology(core, { retry: false })`) and, on the class, as the method's single argument
+  (`client.getTopology({ retry: false })`).
 - `createCamundaCore()` accepts the same options as `createCamundaClient()`. It does not
   include job workers, the thread pool, or the deployment/search convenience helpers; use the
   client for those. Jobs returned by `activateJobs(core, …)` still have `complete()`,

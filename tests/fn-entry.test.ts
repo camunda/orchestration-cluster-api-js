@@ -114,6 +114,53 @@ describe('./fn entry point — behaviour', () => {
     ]);
   });
 
+  // Regression for the class of bug where a no-input CamundaClient method exposes only a
+  // single-argument public overload `op(options?)` but its implementation binds that lone
+  // argument to an unused `arg` and forwards `options` (always undefined) — so per-call
+  // options such as `{ retry: false }` were silently dropped. Every no-input class method
+  // must forward a lone first argument as the OperationOptions object.
+  it('a no-input class method forwards a lone options object to per-call retry', async () => {
+    // Retryable on the first attempt (500 RESOURCE_EXHAUSTED), success on the second.
+    const rec = (() => {
+      let n = 0;
+      const calls: string[] = [];
+      const fetch = async (input: RequestInfo | URL) => {
+        const req = input instanceof Request ? input : new Request(input);
+        calls.push(req.url);
+        n++;
+        const body =
+          n === 1
+            ? { title: 'RESOURCE_EXHAUSTED', detail: 'RESOURCE_EXHAUSTED: backpressure' }
+            : { brokers: [] };
+        return new Response(JSON.stringify(body), {
+          status: n === 1 ? 500 : 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      };
+      return { calls, fetch: fetch as typeof globalThis.fetch };
+    })();
+    const client = createCamundaClient({
+      config: {
+        ...baseConfig,
+        // Generous retry policy so that, without the override, the call would retry.
+        CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS: 3,
+        CAMUNDA_SDK_HTTP_RETRY_BASE_DELAY_MS: 1,
+        CAMUNDA_SDK_HTTP_RETRY_MAX_DELAY_MS: 2,
+      },
+      fetch: rec.fetch,
+    });
+    // With retry disabled per-call, the retryable 500 must surface after exactly one attempt.
+    await expect(client.getTopology({ retry: false })).rejects.toThrow();
+    expect(rec.calls).toHaveLength(1);
+  });
+
+  it('a no-input class method works with no arguments', async () => {
+    const rec = recordingFetch(() => ({ brokers: [] }));
+    const client = createCamundaClient({ config: baseConfig, fetch: rec.fetch });
+    await client.getTopology();
+    expect(rec.calls).toHaveLength(1);
+  });
+
   it('eventually consistent operations take consistency management like the client', async () => {
     const rec = recordingFetch(() => ({ processInstanceKey: '1' }));
     const core = Fn.createCamundaCore({ config: baseConfig, fetch: rec.fetch });
