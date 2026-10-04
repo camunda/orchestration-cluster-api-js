@@ -286,5 +286,87 @@ describe('wrapSchemaInitialisers', () => {
       const out = wrapSchemaInitialisers(src);
       expect(out).toContain(`export const zFoo = ${WRAP}z.object(`);
     });
+
+    // Regression (adversarial round 10): `namespaceServiceRoot`'s walk only peeled
+    // CallExpression/PropertyAccessExpression/paren/non-null, while its sibling
+    // `callChainRoot` (used by `findUnreviewedEagerCall`) also peels
+    // ElementAccessExpression. So the bracket-notation form of the very mutation this
+    // guard rejects — `z['globalRegistry'].add(zFoo, meta)` / `z['registry']().add(...)` —
+    // resolved to a `z` root yet returned null from the guard and was wrapped
+    // `/*#__PURE__*/`, letting a bundler drop the registry mutation while `zFoo` stays.
+    // Element access with a string-literal argument names the same property as dot access
+    // and must be treated identically.
+    describe('bracket-notation (element access) forms of the same mutations', () => {
+      it("fails closed on an EXPORTED const rooted at z['globalRegistry'].add", () => {
+        const src = [
+          "import * as z from 'zod';",
+          'export const zFoo = z.object({ a: z.string() });',
+          'export const registration = z[\'globalRegistry\'].add(zFoo, { id: "foo" });',
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/registration/);
+      });
+
+      it("fails closed on an EXPORTED const rooted at z['registry']().add", () => {
+        const src = [
+          "import * as z from 'zod';",
+          'export const zFoo = z.object({ a: z.string() });',
+          'export const reg = z[\'registry\']({}).add(zFoo, { id: "foo" });',
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/reg/);
+      });
+
+      it("still wraps a schema CONSTRUCTION reached by bracket access (z['object'])", () => {
+        // The element-access peel must not fail open the guard's complement either:
+        // `z['object'](…)` is a schema construction rooted at a constructor, not a
+        // service/mutator object, so it stays wrapped — same as the dot form.
+        const src = [
+          "import * as z from 'zod';",
+          "export const zFoo = z['object']({ a: z.string() });",
+        ].join('\n');
+        const out = wrapSchemaInitialisers(src);
+        expect(out).toContain(`export const zFoo = ${WRAP}z['object'](`);
+      });
+
+      it('fails closed on a non-exported const rooted at a bracket-notation mutator chain', () => {
+        // Same class through the exportedness guard: a non-exported bracket-notation
+        // mutation is unreviewed before namespaceServiceRoot is even consulted.
+        const src = [
+          "import * as z from 'zod';",
+          'export const zFoo = z.object({ a: z.string() });',
+          'const registration = z[\'globalRegistry\'].add(zFoo, { id: "foo" });',
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/registration/);
+      });
+
+      // Same defect class, found on self-review: the `z` base test must peel transparent
+      // wrappers (parens/non-null) and recognise every statically-known element-access
+      // spelling, or a variant of the same mutation slips past the guard.
+      it('fails closed when the z base is parenthesised — (z).globalRegistry.add', () => {
+        const src = [
+          "import * as z from 'zod';",
+          'export const zFoo = z.object({ a: z.string() });',
+          'export const registration = (z).globalRegistry.add(zFoo, { id: "foo" });',
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/registration/);
+      });
+
+      it('fails closed on a no-substitution template element access — z[`globalRegistry`].add', () => {
+        const src = [
+          "import * as z from 'zod';",
+          'export const zFoo = z.object({ a: z.string() });',
+          'export const registration = z[`globalRegistry`].add(zFoo, { id: "foo" });',
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/registration/);
+      });
+
+      it('fails closed on a mixed dot/bracket chain — z["globalRegistry"]["add"](...)', () => {
+        const src = [
+          "import * as z from 'zod';",
+          'export const zFoo = z.object({ a: z.string() });',
+          'export const registration = z["globalRegistry"]["add"](zFoo, { id: "foo" });',
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/registration/);
+      });
+    });
   });
 });

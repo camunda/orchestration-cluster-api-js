@@ -300,6 +300,14 @@ const ZOD_NAMESPACE_SERVICE_OBJECTS = new Set(['globalRegistry', 'registry']);
  * construction rooted at `z.object`/`zFoo.extend` that merely passes `z.globalRegistry`
  * as an argument is unaffected. A chain rooted at a proven schema or at a direct schema
  * constructor (`z.object`) is a construction, not a service call.
+ *
+ * The walk handles element access (`z['globalRegistry'].add(...)`) the same as property
+ * access, mirroring `callChainRoot` — otherwise the bracket-notation form of a mutation
+ * this guard exists to reject would resolve to a `z` root yet slip past the property
+ * check and be wrapped `/*#__PURE__*\/`, letting a bundler drop the registry mutation
+ * while the schema it registers stays referenced. Transparent wrappers are peeled before
+ * the `z` test too, so `(z).globalRegistry.add(...)` and ``z[`globalRegistry`].add(...)``
+ * are recognised exactly like their plain dot/bracket forms.
  */
 function namespaceServiceRoot(init: ts.Expression): string | null {
   if (!ts.isCallExpression(init)) return null;
@@ -309,7 +317,8 @@ function namespaceServiceRoot(init: ts.Expression): string | null {
   if (!ts.isIdentifier(root) || root.text !== ZOD_NAMESPACE) return null;
   // Walk the member/call chain from the namespace to its first property: `z.object` →
   // `object` (a constructor), `z.globalRegistry` → `globalRegistry` (a service object),
-  // `z.registry()` → `registry` (a service factory).
+  // `z.registry()` → `registry` (a service factory). Element access with a string-literal
+  // argument (`z['globalRegistry']`) names the same property as dot access.
   let cur: ts.Expression = init.expression;
   while (true) {
     if (ts.isCallExpression(cur)) {
@@ -317,10 +326,20 @@ function namespaceServiceRoot(init: ts.Expression): string | null {
       continue;
     }
     if (ts.isPropertyAccessExpression(cur)) {
-      if (ts.isIdentifier(cur.expression) && cur.expression.text === ZOD_NAMESPACE) {
+      const base = peelTransparent(cur.expression);
+      if (ts.isIdentifier(base) && base.text === ZOD_NAMESPACE) {
         return ZOD_NAMESPACE_SERVICE_OBJECTS.has(cur.name.text)
           ? `${ZOD_NAMESPACE}.${cur.name.text}`
           : null;
+      }
+      cur = cur.expression;
+      continue;
+    }
+    if (ts.isElementAccessExpression(cur)) {
+      const base = peelTransparent(cur.expression);
+      const propName = staticElementName(cur.argumentExpression);
+      if (ts.isIdentifier(base) && base.text === ZOD_NAMESPACE && propName !== null) {
+        return ZOD_NAMESPACE_SERVICE_OBJECTS.has(propName) ? `${ZOD_NAMESPACE}.${propName}` : null;
       }
       cur = cur.expression;
       continue;
@@ -331,6 +350,34 @@ function namespaceServiceRoot(init: ts.Expression): string | null {
     }
     break;
   }
+  return null;
+}
+
+/**
+ * Peels the transparent wrappers — parentheses and non-null assertions — that do not
+ * change which expression a member access is rooted at: `(z).globalRegistry` is rooted at
+ * `z` exactly like `z.globalRegistry`. Used before testing whether a chain segment's base
+ * is the zod namespace identifier, so a wrapped `z` is recognised like the bare one.
+ */
+function peelTransparent(expr: ts.Expression): ts.Expression {
+  let cur: ts.Expression = expr;
+  while (ts.isParenthesizedExpression(cur) || ts.isNonNullExpression(cur)) {
+    cur = cur.expression;
+  }
+  return cur;
+}
+
+/**
+ * The static property name an element access denotes, or `null` when it is not statically
+ * known. A string literal (`['globalRegistry']`) names its text; a no-substitution template
+ * literal (`` [`globalRegistry`] ``) names its literal text — both are exactly equivalent to
+ * dot access. A computed expression (`z[key]`) or a template WITH substitutions
+ * (`` z[`${k}`] ``) is not statically known and returns `null`.
+ */
+function staticElementName(arg: ts.Expression | undefined): string | null {
+  if (arg === undefined) return null;
+  if (ts.isStringLiteral(arg)) return arg.text;
+  if (ts.isNoSubstitutionTemplateLiteral(arg)) return arg.text;
   return null;
 }
 
