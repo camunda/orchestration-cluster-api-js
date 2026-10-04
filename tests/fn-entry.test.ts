@@ -133,13 +133,44 @@ describe('./fn entry point — behaviour', () => {
     expect(viaFn.calls).toEqual(viaClient.calls);
   });
 
-  it('no-input operations take options directly', async () => {
-    const rec = recordingFetch(() => ({ brokers: [] }));
-    const core = Fn.createCamundaCore({ config: baseConfig, fetch: rec.fetch });
-    await Fn.getTopology(core, { retry: false });
-    expect(rec.calls.map((c) => [c.method, new URL(c.url).pathname])).toEqual([
-      ['GET', '/v2/topology'],
-    ]);
+  it('no-input operations take options directly and honour them (retry disabled)', async () => {
+    // The standalone-function path must honour a lone per-call OperationOptions object:
+    // with `{ retry: false }` a retryable 500 surfaces after exactly one attempt. A fetch
+    // that always succeeds would pass even if the option were silently dropped, so use a
+    // retryable-first-then-success fetch and assert one attempt — mirroring the class
+    // method's guard below so the functional-facade path is covered too.
+    const rec = (() => {
+      let n = 0;
+      const calls: { method: string; path: string }[] = [];
+      const fetch = async (input: RequestInfo | URL) => {
+        const req = input instanceof Request ? input : new Request(input);
+        calls.push({ method: req.method, path: new URL(req.url).pathname });
+        n++;
+        const body =
+          n === 1
+            ? { title: 'RESOURCE_EXHAUSTED', detail: 'RESOURCE_EXHAUSTED: backpressure' }
+            : { brokers: [] };
+        return new Response(JSON.stringify(body), {
+          status: n === 1 ? 500 : 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      };
+      return { calls, fetch: fetch as typeof globalThis.fetch };
+    })();
+    const core = Fn.createCamundaCore({
+      config: {
+        ...baseConfig,
+        // Generous retry policy so that, WITHOUT the override, the call would retry.
+        CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS: 3,
+        CAMUNDA_SDK_HTTP_RETRY_BASE_DELAY_MS: 1,
+        CAMUNDA_SDK_HTTP_RETRY_MAX_DELAY_MS: 2,
+      },
+      fetch: rec.fetch,
+    });
+    // With retry disabled per-call, the retryable 500 must surface after exactly one
+    // attempt — and the option reached the request on the expected method/path.
+    await expect(Fn.getTopology(core, { retry: false })).rejects.toThrow();
+    expect(rec.calls).toEqual([{ method: 'GET', path: '/v2/topology' }]);
   });
 
   // Regression for the class of bug where a no-input CamundaClient method exposes only a

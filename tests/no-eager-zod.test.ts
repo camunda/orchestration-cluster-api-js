@@ -1,7 +1,8 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { dirname, join, relative, resolve } from 'node:path';
 import ts from 'typescript';
-import { describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 /**
  * zod must only load when validation is enabled (issue #537).
@@ -14,8 +15,12 @@ import { describe, expect, it } from 'vitest';
  *
  * Class-scoped: walks the whole static import graph from every entry, so a value
  * import of zod anywhere on the eager path fails, not just the known sites.
- * Type-only imports/exports and dynamic `import()` are ignored (they cost nothing
- * at load time).
+ * Type-only imports/exports cost nothing at load time and are ignored. A dynamic
+ * `import()` is ignored ONLY when it is deferred — nested inside a function/method body,
+ * so it runs when the operation is called, not at module load. A TOP-LEVEL dynamic
+ * `import()` (e.g. `void import('zod')` at module scope) executes eagerly at load, so it
+ * is treated exactly like a static value import: a top-level `import('zod')` fails, and a
+ * top-level `import('./local')` is followed into the graph.
  */
 
 const root = join(__dirname, '..');
@@ -68,14 +73,55 @@ function valueImports(file: string): string[] {
   return specs;
 }
 
-function eagerZodImporters(entry: string): string[] {
-  const start = join(root, entry);
+/**
+ * Specifiers of dynamic `import()` calls that are evaluated at MODULE LOAD — i.e. not
+ * nested inside any function-like body (function/arrow/method/constructor/accessor), whose
+ * execution is deferred to call time. A top-level `void import('zod')` immediately starts
+ * loading zod, so it is an eager import on the load path; a `import('zod')` inside an
+ * operation function is lazy and excluded. Only statically-known string specifiers are
+ * reported (a computed `import(expr)` cannot be followed and is skipped).
+ */
+function topLevelDynamicImports(file: string): string[] {
+  const sf = ts.createSourceFile(file, readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true);
+  const specs: string[] = [];
+  const visit = (node: ts.Node, deferred: boolean): void => {
+    // A function-like body defers execution to call time: imports inside it are lazy.
+    const defersChildren =
+      ts.isFunctionDeclaration(node) ||
+      ts.isFunctionExpression(node) ||
+      ts.isArrowFunction(node) ||
+      ts.isMethodDeclaration(node) ||
+      ts.isConstructorDeclaration(node) ||
+      ts.isGetAccessorDeclaration(node) ||
+      ts.isSetAccessorDeclaration(node);
+    if (
+      !deferred &&
+      ts.isCallExpression(node) &&
+      node.expression.kind === ts.SyntaxKind.ImportKeyword &&
+      node.arguments.length > 0 &&
+      ts.isStringLiteral(node.arguments[0])
+    ) {
+      specs.push(node.arguments[0].text);
+    }
+    ts.forEachChild(node, (child) => visit(child, deferred || defersChildren));
+  };
+  visit(sf, false);
+  return specs;
+}
+
+/** Specifiers imported EAGERLY at module load: static value imports plus top-level
+ *  (non-deferred) dynamic `import()` calls. */
+function eagerImports(file: string): string[] {
+  return [...valueImports(file), ...topLevelDynamicImports(file)];
+}
+
+function eagerZodImportersFrom(start: string): string[] {
   const parent = new Map<string, string | undefined>([[start, undefined]]);
   const queue = [start];
   const offenders: string[] = [];
   while (queue.length) {
     const file = queue.shift() as string;
-    for (const spec of valueImports(file)) {
+    for (const spec of eagerImports(file)) {
       if (spec === 'zod' || spec.startsWith('zod/')) {
         const chain: string[] = [];
         for (let f: string | undefined = file; f; f = parent.get(f))
@@ -93,10 +139,82 @@ function eagerZodImporters(entry: string): string[] {
   return offenders;
 }
 
+function eagerZodImporters(entry: string): string[] {
+  return eagerZodImportersFrom(join(root, entry));
+}
+
 describe('zod is not loaded eagerly', () => {
   for (const entry of ENTRIES) {
     it(`${entry}: no static value import of zod on the eager path`, () => {
       expect(eagerZodImporters(entry)).toEqual([]);
     });
   }
+});
+
+// Regression (Copilot round 11, previously-missed): the gate ignored EVERY dynamic
+// `import()`, so a reachable module could run `void import('zod')` at top level — which
+// immediately starts loading zod at module evaluation — yet pass. A dynamic import is lazy
+// only when deferred inside a function body; a top-level one is as eager as a static value
+// import. The walker now distinguishes the two: a top-level `import('zod')` fails and a
+// top-level `import('./local')` is followed, while function-nested dynamic imports stay
+// ignored.
+describe('top-level (eager) dynamic imports', () => {
+  let dir: string;
+  const write = (rel: string, body: string): string => {
+    const file = join(dir, rel);
+    writeFileSync(file, body);
+    return file;
+  };
+
+  beforeAll(() => {
+    dir = mkdtempSync(join(tmpdir(), 'no-eager-zod-'));
+  });
+  afterAll(() => {
+    rmSync(dir, { recursive: true, force: true });
+  });
+
+  it("reports a top-level `import('zod')` as eager", () => {
+    const file = write('eager.ts', "void import('zod');\nexport const x = 1;\n");
+    expect(topLevelDynamicImports(file)).toEqual(['zod']);
+  });
+
+  it("ignores a dynamic `import('zod')` deferred inside a function body", () => {
+    const file = write(
+      'lazy.ts',
+      "export async function op() {\n  const z = await import('zod');\n  return z;\n}\n"
+    );
+    expect(topLevelDynamicImports(file)).toEqual([]);
+  });
+
+  it('ignores a dynamic import inside an arrow-function body', () => {
+    const file = write('arrow.ts', "export const op = async () => await import('zod');\n");
+    expect(topLevelDynamicImports(file)).toEqual([]);
+  });
+
+  it('skips a computed (non-literal) top-level dynamic import', () => {
+    const file = write('computed.ts', 'const s = "zod";\nvoid import(s);\n');
+    expect(topLevelDynamicImports(file)).toEqual([]);
+  });
+
+  it("fails the gate end-to-end on a top-level `import('zod')` on the eager path", () => {
+    const entry = write('entry.ts', "void import('zod');\nexport const y = 2;\n");
+    expect(eagerZodImportersFrom(entry)).not.toEqual([]);
+  });
+
+  it('follows a top-level local dynamic import into the graph and catches eager zod', () => {
+    write('mid.ts', "import * as z from 'zod';\nexport const schema = z.string();\n");
+    const entry = write('entry2.ts', "void import('./mid');\nexport const q = 3;\n");
+    // The top-level `import('./mid')` is eager, so its static `import 'zod'` is on the
+    // load path and must be reported — proving top-level local dynamic imports are followed.
+    expect(eagerZodImportersFrom(entry)).not.toEqual([]);
+  });
+
+  it('does NOT follow a function-deferred local dynamic import', () => {
+    write('mid-lazy.ts', "import * as z from 'zod';\nexport const schema = z.string();\n");
+    const entry = write(
+      'entry3.ts',
+      "export async function load() {\n  return await import('./mid-lazy');\n}\n"
+    );
+    expect(eagerZodImportersFrom(entry)).toEqual([]);
+  });
 });
