@@ -47,6 +47,16 @@ describe('structural zod detection', () => {
     expect(core).not.toBeInstanceOf(Error); // the property this regression pins
     expect(core.name).toBe('$ZodError');
     expect(isZodError(core)).toBe(true);
+
+    // Type-soundness guard: the narrowed value must be the structural `ZodErrorLike`,
+    // never the classic `ZodError` (which extends `Error`). A core `$ZodError` is not an
+    // `Error`, so narrowing it to `Error` members would be unsound. This block only has to
+    // compile — if `isZodError` is re-narrowed to a type requiring `Error`, the assignment
+    // to a structural type below (and reliance on only `name`/`issues`) would break.
+    if (isZodError(core)) {
+      const structural: { name: string; issues: unknown[] } = core;
+      expect(Array.isArray(structural.issues)).toBe(true);
+    }
   });
 
   it('strict validation turns a core $ZodError into CamundaValidationError', async () => {

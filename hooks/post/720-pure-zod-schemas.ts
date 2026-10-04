@@ -21,9 +21,13 @@
  * operations from `@camunda8/orchestration-cluster-api/fn` only bundles their schemas.
  *
  * Fail-fast: any top-level statement shape other than the reviewed ones (imports, the
- * zod-augment retention statement, `export const` with a call or identifier
- * initialiser) fails the build, so a generator change cannot silently reintroduce
- * module-level side effects.
+ * zod-augment retention statement, `export const` aliasing another schema, or
+ * `export const` whose initialiser is a zod schema-construction call chain) fails the
+ * build, so a generator change cannot silently reintroduce module-level side effects.
+ * A call initialiser is only accepted — and wrapped — when the root of its call chain
+ * is the `z` namespace or a schema reference declared in this module; any other call
+ * (which could carry a required side effect) is reported as unreviewed rather than
+ * being blindly marked pure.
  *
  * Idempotent: already-wrapped initialisers are left untouched.
  */
@@ -33,11 +37,24 @@ import ts from 'typescript';
 
 const ZOD_PATH = path.join(process.cwd(), 'src/gen/zod.gen.ts');
 const PURE_IIFE_PREFIX = '/*#__PURE__*/ (() => ';
+const ZOD_NAMESPACE = 'z';
 
 export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): string {
   const sf = ts.createSourceFile(fileName, src, ts.ScriptTarget.Latest, true);
   const edits: { start: number; end: number; text: string }[] = [];
   const problems: string[] = [];
+
+  // First pass: collect every const name declared in the module. A schema initialiser's
+  // call chain may be rooted either at the `z` namespace (`z.object(...)`) or at another
+  // schema declared here (`zFoo.extend(...)`); both are recognised pure constructions.
+  const declaredNames = new Set<string>();
+  for (const st of sf.statements) {
+    if (ts.isVariableStatement(st) && st.declarationList.flags & ts.NodeFlags.Const) {
+      for (const decl of st.declarationList.declarations) {
+        if (ts.isIdentifier(decl.name)) declaredNames.add(decl.name.text);
+      }
+    }
+  }
 
   for (const st of sf.statements) {
     if (ts.isImportDeclaration(st)) continue;
@@ -55,6 +72,14 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
         if (!init || ts.isIdentifier(init)) continue; // alias: no side effect
         if (ts.isCallExpression(init)) {
           if (isPureIife(init)) continue; // already wrapped (idempotent rerun)
+          if (!isRecognizedSchemaCall(init, declaredNames)) {
+            // Fail closed: an unrecognised call could have a required side effect, so
+            // do NOT mark it pure — report it so the hook is extended deliberately.
+            problems.push(
+              `${decl.name.getText(sf)}: initialiser is a call whose chain is not rooted at the zod namespace or a schema reference — ${init.getText(sf).slice(0, 120)}`
+            );
+            continue;
+          }
           const exprText = init.getText(sf);
           edits.push({
             start: init.getStart(sf),
@@ -90,6 +115,30 @@ function isPureIife(call: ts.CallExpression): boolean {
   if (!ts.isParenthesizedExpression(callee) || !ts.isArrowFunction(callee.expression)) return false;
   const full = call.getFullText();
   return /\/\*#__PURE__\*\/\s*\($/.test(full.slice(0, full.indexOf('(') + 1));
+}
+
+/**
+ * A call initialiser is a recognised zod schema construction only when the root of its
+ * call/property-access chain is the `z` namespace or a schema declared in this module.
+ * Walking to the leftmost expression rejects chains rooted at an arbitrary call
+ * (`makeThing()(...)`) or an unknown identifier (`sideEffect(...)`), which could carry a
+ * required side effect that must not be silently marked pure.
+ */
+function isRecognizedSchemaCall(init: ts.CallExpression, declaredNames: Set<string>): boolean {
+  let cur: ts.Expression = init;
+  while (true) {
+    if (ts.isCallExpression(cur) || ts.isPropertyAccessExpression(cur)) {
+      cur = cur.expression;
+    } else if (ts.isElementAccessExpression(cur)) {
+      cur = cur.expression;
+    } else if (ts.isNonNullExpression(cur) || ts.isParenthesizedExpression(cur)) {
+      cur = cur.expression;
+    } else {
+      break;
+    }
+  }
+  if (!ts.isIdentifier(cur)) return false;
+  return cur.text === ZOD_NAMESPACE || declaredNames.has(cur.text);
 }
 
 function main(): void {
