@@ -8,7 +8,10 @@ import { detectExtrasAndMaybeThrow } from '../src/runtime/validationExtras';
 /**
  * The validation runtime recognises zod errors and object schemas structurally
  * (no `instanceof`, so zod is not a load-time dependency). These pin that the
- * structural checks accept exactly what the `instanceof` checks accepted.
+ * structural checks preserve the required validation behaviour — they accept
+ * every value the `instanceof` checks accepted, and additionally recognise zod 4
+ * core `$ZodError` values (which, as the test below proves, do not extend the
+ * built-in `Error`), while still rejecting unrelated shapes.
  */
 
 const settings = { policy: 'error' as const, deep: true };

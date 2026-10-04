@@ -336,8 +336,10 @@ async function _readmeCancelable(defKey: ProcessDefinitionKey) {
 // Per-operation functions (tree-shakeable)
 // ---------------------------------------------------------------------------
 
-async function _readmePerOperationFunctions(defKey: ProcessDefinitionKey) {
+async function _readmePerOperationFunctions() {
   //#region ReadmePerOperationFunctions
+  const defKey = ProcessDefinitionKey.assumeExists('2251799813686749');
+
   // Same options as createCamundaClient(); a CamundaClient also works as the core.
   const core = createCamundaCore();
 
