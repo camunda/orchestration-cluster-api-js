@@ -98,4 +98,67 @@ describe('wrapSchemaInitialisers', () => {
     const src = ["import * as z from 'zod';", 'console.log("side effect");'].join('\n');
     expect(() => wrapSchemaInitialisers(src)).toThrow(/unreviewed top-level statement/);
   });
+
+  // Regression (Copilot round 6): the fail-closed check validated only the OUTER chain
+  // root, so a nested eager call such as `z.object({ v: registerGlobalState() })` passed
+  // (outer root is `z`) and was wrapped `/*#__PURE__*/` — letting a bundler drop the
+  // schema and, with it, the eager side effect. Every eagerly-evaluated call must be
+  // rooted at `z` or a proven schema; calls inside deferred callback bodies are exempt.
+  describe('nested eager side effects (fail the whole class)', () => {
+    it('fails closed on a nested eager call argument rooted at a non-schema', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { registerGlobalState } from './side-effect';",
+        'export const zFoo = z.object({ value: registerGlobalState() });',
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+    });
+
+    it('fails closed on a deeply nested eager call argument', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { sideEffect } from './side-effect';",
+        'export const zFoo = z.object({ a: z.object({ b: z.string().default(sideEffect()) }) });',
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+    });
+
+    it('fails closed on a nested eager `new` expression rooted at a non-schema', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { Thing } from './side-effect';",
+        'export const zFoo = z.object({ v: z.instanceof(new Thing()) });',
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+    });
+
+    it('fails closed on a nested eager tagged-template rooted at a non-schema', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { tag } from './side-effect';",
+        'export const zFoo = z.object({ v: z.string().default(tag`x`) });',
+      ].join('\n');
+      expect(() => wrapSchemaInitialisers(src)).toThrow(/zFoo/);
+    });
+
+    it('still wraps calls inside deferred callback bodies (not eager side effects)', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { later } from './side-effect';",
+        // `later()` runs when the lazy/refine callback is invoked, not at module load.
+        'export const zFoo = z.lazy(() => later()).refine((v) => later());',
+      ].join('\n');
+      const out = wrapSchemaInitialisers(src);
+      expect(out).toContain(`export const zFoo = ${WRAP}z.lazy(`);
+    });
+
+    it('still wraps nested eager calls rooted at the zod namespace', () => {
+      const src = [
+        "import * as z from 'zod';",
+        'export const zFoo = z.object({ a: z.string(), b: z.array(z.number()) });',
+      ].join('\n');
+      const out = wrapSchemaInitialisers(src);
+      expect(out).toContain(`export const zFoo = ${WRAP}z.object(`);
+    });
+  });
 });

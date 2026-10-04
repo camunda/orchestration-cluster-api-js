@@ -24,10 +24,12 @@
  * zod-augment retention statement, `export const` aliasing another schema, or
  * `export const` whose initialiser is a zod schema-construction call chain) fails the
  * build, so a generator change cannot silently reintroduce module-level side effects.
- * A call initialiser is only accepted — and wrapped — when the root of its call chain
- * is the `z` namespace or a schema reference declared in this module; any other call
- * (which could carry a required side effect) is reported as unreviewed rather than
- * being blindly marked pure.
+ * A call initialiser is only accepted — and wrapped — when EVERY eagerly evaluated call in
+ * it (the outer chain AND nested arguments like `z.object({ v: sideEffect() })`) is rooted
+ * at the `z` namespace or a schema reference declared in this module; any other eager call
+ * (which could carry a required side effect) is reported as unreviewed rather than being
+ * blindly marked pure. Calls inside deferred callback bodies (`z.lazy(() => …)`) are not
+ * eager and are skipped.
  *
  * Idempotent: already-wrapped initialisers are left untouched.
  */
@@ -82,11 +84,14 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
             if (ts.isIdentifier(decl.name)) schemaNames.add(decl.name.text);
             continue;
           }
-          if (!isRecognizedSchemaCall(init, schemaNames)) {
-            // Fail closed: an unrecognised call could have a required side effect, so
-            // do NOT mark it pure — report it so the hook is extended deliberately.
+          const unreviewed = findUnreviewedEagerCall(init, schemaNames);
+          if (unreviewed !== null) {
+            // Fail closed: an eagerly-evaluated call (the outer chain OR a nested argument)
+            // whose root is not the zod namespace or a proven schema could carry a required
+            // side effect; marking the initialiser pure would let a bundler drop it. Report
+            // it so the hook is extended deliberately.
             problems.push(
-              `${decl.name.getText(sf)}: initialiser is a call whose chain is not rooted at the zod namespace or a schema reference — ${init.getText(sf).slice(0, 120)}`
+              `${decl.name.getText(sf)}: initialiser contains an eagerly-evaluated call whose chain is not rooted at the zod namespace or a schema reference (root: ${unreviewed}) — ${init.getText(sf).slice(0, 120)}`
             );
             continue;
           }
@@ -131,16 +136,65 @@ function isPureIife(call: ts.CallExpression): boolean {
 }
 
 /**
- * A call initialiser is a recognised zod schema construction only when the root of its
- * call/property-access chain is the `z` namespace or a schema already proven pure in this
- * module. Walking to the leftmost expression rejects chains rooted at an arbitrary call
- * (`makeThing()(...)`) or an unknown identifier (`sideEffect(...)`), which could carry a
- * required side effect that must not be silently marked pure. `schemaNames` holds only
- * proven schema constructions — never an arbitrary module-level const — so a chain rooted
- * at a non-schema const fails closed.
+ * A call initialiser is a recognised zod schema construction only when EVERY eagerly
+ * evaluated call/`new`/tagged-template in it is rooted at the `z` namespace or a schema
+ * already proven pure in this module. Walking each chain to its leftmost expression
+ * rejects chains rooted at an arbitrary call (`makeThing()(...)`) or an unknown identifier
+ * (`sideEffect(...)`), which could carry a required side effect that must not be silently
+ * marked pure. `schemaNames` holds only proven schema constructions — never an arbitrary
+ * module-level const — so a chain rooted at a non-schema const fails closed.
+ *
+ * Returns a description of the first offending root, or `null` if every eager call is
+ * recognised. It is NOT enough to validate the outer chain root alone: a nested eager
+ * argument (`z.object({ v: registerGlobalState() })`) is rooted at `z` yet still runs
+ * `registerGlobalState()` at module evaluation, and wrapping the initialiser in
+ * `/*#__PURE__*\/ (() => …)()` would let a bundler drop that side effect with the schema.
+ * Traverse the whole initialiser, but stop at deferred callback bodies (arrow/function
+ * expressions such as `z.lazy(() => …)` or `.refine((v) => …)`) — those run when the
+ * callback is invoked, not at module load, so calls inside them are not eager side effects.
  */
-function isRecognizedSchemaCall(init: ts.CallExpression, schemaNames: Set<string>): boolean {
-  let cur: ts.Expression = init;
+function findUnreviewedEagerCall(init: ts.Expression, schemaNames: Set<string>): string | null {
+  let bad: string | null = null;
+  const isReviewedRoot = (root: ts.Expression): boolean =>
+    ts.isIdentifier(root) && (root.text === ZOD_NAMESPACE || schemaNames.has(root.text));
+  const flag = (root: ts.Expression): void => {
+    bad = ts.isIdentifier(root) ? root.text : ts.SyntaxKind[root.kind];
+  };
+  const visit = (node: ts.Node): void => {
+    if (bad !== null) return;
+    // Deferred callback bodies evaluate later, not at module load: do not descend.
+    if (ts.isArrowFunction(node) || ts.isFunctionExpression(node)) return;
+    if (ts.isCallExpression(node) || ts.isNewExpression(node)) {
+      const root = callChainRoot(node.expression);
+      if (!isReviewedRoot(root)) {
+        flag(root);
+        return;
+      }
+    } else if (ts.isTaggedTemplateExpression(node)) {
+      // A tagged template IS an eager invocation — `tag`...`` calls `tag` at module
+      // evaluation — but it is not a CallExpression, so without this branch
+      // `z.object({ v: tag`x` })` would be wrapped pure and a bundler could drop the
+      // tag's side effect. Check the tag's chain root like a call root; its
+      // substitutions are eager too and are visited below.
+      const root = callChainRoot(node.tag);
+      if (!isReviewedRoot(root)) {
+        flag(root);
+        return;
+      }
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(init);
+  return bad;
+}
+
+/**
+ * Walks to the leftmost expression of a call/member chain — the "root" that determines
+ * whether the chain is a zod construction. Peels call, property-access, element-access,
+ * non-null and parenthesized wrappers.
+ */
+function callChainRoot(expr: ts.Expression): ts.Expression {
+  let cur: ts.Expression = expr;
   while (true) {
     if (ts.isCallExpression(cur) || ts.isPropertyAccessExpression(cur)) {
       cur = cur.expression;
@@ -152,8 +206,7 @@ function isRecognizedSchemaCall(init: ts.CallExpression, schemaNames: Set<string
       break;
     }
   }
-  if (!ts.isIdentifier(cur)) return false;
-  return cur.text === ZOD_NAMESPACE || schemaNames.has(cur.text);
+  return cur;
 }
 
 function main(): void {

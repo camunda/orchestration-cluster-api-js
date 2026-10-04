@@ -109,4 +109,31 @@ describe('queued-waiter drain races (adversarial round 5)', () => {
     expect(removeSpy).toHaveBeenCalledTimes(1);
     expect(removeSpy).toHaveBeenCalledWith('abort', addSpy.mock.calls[0][1]);
   });
+
+  // Regression (Copilot round 6): with two queued acquires, releasing the first and
+  // aborting it before its microtask continuation runs refunds a permit — but release()'s
+  // own drain loop has already finished, so without routing the refund back through the
+  // shared drain helper the freed capacity never reaches the second waiter, stranding it.
+  it('post-drain refund wakes the next queued waiter (two-waiter race)', async () => {
+    const ac = new AbortController();
+    const bp = new BackpressureManager({ config: { initialMaxConcurrency: 1 } });
+    (bp as any).permitsMax = 1;
+    (bp as any).permitsCurrent = 1; // sole permit occupied -> both acquires queue
+
+    const first = bp.acquire(ac.signal); // waiter #1 (will be canceled)
+    const second = bp.acquire(); // waiter #2 (must still be served)
+    expect((bp as any).waiters).toHaveLength(2);
+    const firstRejection = expect(first).rejects.toThrow();
+
+    // Release once: drains waiter #1 (permitsCurrent 1 -> 0 -> shift #1 -> 1). Then abort
+    // #1 before its continuation runs, so its refund — not release() — must re-drain #2.
+    bp.release();
+    ac.abort();
+    await firstRejection;
+
+    // Waiter #2 must have been served by the refund's re-drain, holding the one permit.
+    await expect(second).resolves.toBeUndefined();
+    expect((bp as any).waiters).toHaveLength(0);
+    expect((bp as any).permitsCurrent).toBe(1);
+  });
 });

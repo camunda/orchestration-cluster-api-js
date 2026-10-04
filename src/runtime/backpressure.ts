@@ -159,8 +159,14 @@ export class BackpressureManager {
     // observes an abort that fires synchronously after the drain.
     if (signal?.aborted) {
       // The drain consumed a permit for this waiter (release() did permitsCurrent++
-      // before resolving it); refund it so the canceled operation holds nothing.
-      this.permitsCurrent--;
+      // before resolving it); refund it so the canceled operation holds nothing, then
+      // hand the freed capacity to the next queued waiter. release()'s own drain loop
+      // has already finished and will NOT re-enter, so without this re-drain, releasing
+      // and aborting the first of two queued acquires would strand the second forever.
+      // Guarded decrement: the unlimited Phase-3 drain resolves waiters WITHOUT taking a
+      // permit (permitsCurrent is 0 there), so never drive the counter negative.
+      if (this.permitsCurrent > 0) this.permitsCurrent--;
+      this._drainWaiters();
       throw signal.reason || new Error('aborted');
     }
   }
@@ -219,7 +225,16 @@ export class BackpressureManager {
     if (!this.isEnabled()) return; // disabled or observeOnly (we don't track permits in observeOnly)
     if (this.permitsMax === null) return;
     if (this.permitsCurrent > 0) this.permitsCurrent--;
-    // Drain a waiter if capacity
+    this._drainWaiters();
+  }
+
+  /**
+   * @internal Hand out available permits to queued waiters, FIFO, until capacity is
+   * exhausted or the queue empties. The single shared drain path: both a `release()` and
+   * an aborted waiter refunding its permit route through here, so freed capacity always
+   * reaches the next waiter regardless of which one freed it.
+   */
+  private _drainWaiters() {
     while (this.waiters.length && this.permitsCurrent < (this.permitsMax || 0)) {
       const next = this.waiters.shift();
       if (!next) break;
@@ -229,8 +244,8 @@ export class BackpressureManager {
       } catch {
         /* ignore waiter resolve errors */
       }
-      // If the waiter's post-drain abort re-check rejected, the permit was refunded;
-      // keep draining so the freed capacity reaches the next waiter.
+      // If the waiter's post-drain abort re-check refunds its permit, it re-enters this
+      // helper, so the freed capacity still reaches the next waiter.
     }
   }
 
