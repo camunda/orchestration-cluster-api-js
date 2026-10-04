@@ -72,6 +72,37 @@ describe('cancellation through backpressure gating', () => {
     await expect(bp.acquire(ac.signal)).rejects.toThrow();
     expect((bp as any).permitsCurrent).toBe(0);
   });
+
+  // Fail the whole class: an already-aborted operation must reject before ANY fast
+  // path (unlimited / disabled / observe-only) returns normally and lets the caller
+  // invoke the transport. Previously the aborted check ran after these returns, so a
+  // canceled op under the default unlimited config still proceeded to op().
+  describe('aborted-signal check precedes every fast path (fail the whole class)', () => {
+    it('rejects an already-aborted signal on the unlimited (default) fast path', async () => {
+      // Default: no finite cap => permitsMax === null (unlimited).
+      const bp = new BackpressureManager({ config: {} });
+      expect((bp as any).permitsMax).toBeNull();
+      const ac = new AbortController();
+      ac.abort();
+      await expect(bp.acquire(ac.signal)).rejects.toThrow();
+    });
+
+    it('rejects an already-aborted signal when backpressure is disabled', async () => {
+      const bp = new BackpressureManager({ config: { enabled: false } });
+      expect(bp.isEnabled()).toBe(false);
+      const ac = new AbortController();
+      ac.abort();
+      await expect(bp.acquire(ac.signal)).rejects.toThrow();
+    });
+
+    it('rejects an already-aborted signal in observe-only mode', async () => {
+      const bp = new BackpressureManager({ config: { observeOnly: true } });
+      expect((bp as any).observeOnly).toBe(true);
+      const ac = new AbortController();
+      ac.abort();
+      await expect(bp.acquire(ac.signal)).rejects.toThrow();
+    });
+  });
 });
 
 describe('queued-waiter drain races (adversarial round 5)', () => {

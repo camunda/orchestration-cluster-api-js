@@ -130,11 +130,15 @@ export class BackpressureManager {
   }
 
   async acquire(signal?: AbortSignal) {
+    // Fail fast on an already-aborted operation before ANY fast path: a canceled
+    // operation must never proceed to invoke the transport, even when backpressure
+    // is disabled, observe-only, or currently unlimited (the default). These fast
+    // paths return without consuming a permit, but returning normally still lets the
+    // caller's op() run — so the aborted check must come first.
+    if (signal?.aborted) throw signal.reason || new Error('aborted');
     if (this.observeOnly) return; // never gate in observe-only mode
     if (!this.isEnabled()) return;
     if (this.permitsMax === null) return; // unlimited fast path
-    // Fail fast on an already-aborted operation: it must never consume a permit.
-    if (signal?.aborted) throw signal.reason || new Error('aborted');
     // Backoff-at-floor: delay before acquiring to rate-limit at floor. The wait is
     // abort-aware: a canceled operation rejects here instead of waking up later to
     // consume a permit and invoke the transport.
