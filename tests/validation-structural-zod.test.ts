@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
+import { $ZodError } from 'zod/v4/core';
 import { CamundaValidationError } from '../src/runtime/errors';
 import { applySchemaValidation, isZodError } from '../src/runtime/validationCore';
 import { detectExtrasAndMaybeThrow } from '../src/runtime/validationExtras';
@@ -29,8 +30,40 @@ describe('structural zod detection', () => {
     expect(isZodError(sync)).toBe(true);
     expect(isZodError(asyncErr)).toBe(true);
     expect(isZodError(new Error('x'))).toBe(false);
-    expect(isZodError({ name: 'ZodError', issues: [] })).toBe(false); // not an Error
+    expect(isZodError({ name: 'OtherError', issues: [] })).toBe(false); // wrong name
+    expect(isZodError({ name: 'ZodError' })).toBe(false); // no issues array
     expect(isZodError(undefined)).toBe(false);
+    expect(isZodError(null)).toBe(false);
+    expect(isZodError('ZodError')).toBe(false); // not an object
+  });
+
+  it('isZodError recognises zod 4 core $ZodError, which does not extend Error', () => {
+    // Regression: zod 4's core `$ZodError` prototype chain ends at `Object`, so an
+    // `instanceof Error` guard makes it unreachable and it would bypass formatting.
+    const core = new $ZodError([{ code: 'custom', path: ['a'], message: 'bad', input: 1 }] as any);
+    expect(core).not.toBeInstanceOf(Error); // the property this regression pins
+    expect(core.name).toBe('$ZodError');
+    expect(isZodError(core)).toBe(true);
+  });
+
+  it('strict validation turns a core $ZodError into CamundaValidationError', async () => {
+    const core = new $ZodError([
+      { code: 'invalid_type', path: ['a'], expected: 'string', message: 'bad', input: 1 },
+    ] as any);
+    const throwingSchema = {
+      parse: () => {
+        throw core;
+      },
+    } as unknown as z.ZodTypeAny;
+    await expect(
+      applySchemaValidation({
+        side: 'request',
+        operationId: 'op',
+        mode: 'strict',
+        schema: throwingSchema,
+        value: {},
+      })
+    ).rejects.toBeInstanceOf(CamundaValidationError);
   });
 
   it('strict validation still turns zod failures into CamundaValidationError', async () => {

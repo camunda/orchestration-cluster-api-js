@@ -13,13 +13,17 @@ import type { ValidationMode } from './validationManager';
  * Structural check for a zod validation error. Deliberately not `instanceof ZodError`:
  * a value import of zod here would load zod eagerly for every consumer, even with
  * validation off (schemas, and with them zod, are only imported when validation is on).
+ *
+ * It is also deliberately not gated on `instanceof Error`: the classic `ZodError`
+ * extends `Error`, but zod 4's core `$ZodError` does not (its prototype chain ends at
+ * `Object`). Both are recognised by name plus a structural `issues` array, so a core
+ * validation error is formatted and wrapped in `CamundaValidationError` instead of
+ * bypassing formatting and being rethrown raw.
  */
 export function isZodError(err: unknown): err is ZodError {
-  return (
-    err instanceof Error &&
-    (err.name === 'ZodError' || err.name === '$ZodError') &&
-    Array.isArray((err as { issues?: unknown }).issues)
-  );
+  if (!err || typeof err !== 'object') return false;
+  const { name, issues } = err as { name?: unknown; issues?: unknown };
+  return (name === 'ZodError' || name === '$ZodError') && Array.isArray(issues);
 }
 
 export interface ApplySchemaValidationOptions<T = any> {

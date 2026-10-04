@@ -1374,8 +1374,8 @@ Notes:
   client for those. Jobs returned by `activateJobs(core, …)` still have `complete()`,
   `fail()` and the other job actions.
 - Measured with esbuild (minified, browser, everything that can load including validation
-  schemas): the core is ~135 KB and each operation adds ~4–60 KB, versus ~930 KB for the full
-  client.
+  schemas): the core is ~70 KB and each operation adds ~72–128 KB including its zod schemas
+  (zod itself is ~68 KB of that), versus ~930 KB for the full client.
 
 ## Effect Surface (Opt-In Subpath)
 
