@@ -1,10 +1,25 @@
-import type { ZodError, ZodIssue, ZodObject, ZodRawShape, ZodTypeAny, ZodUnion } from 'zod';
+import type { ZodIssue, ZodObject, ZodRawShape, ZodTypeAny, ZodUnion } from 'zod';
 import type { Logger } from './logger';
 
 export interface FormattedValidation {
   message: string;
   summary: string;
   issues: string[]; // trimmed issue lines
+}
+
+/**
+ * Structural shape of a zod validation error as this runtime consumes it.
+ *
+ * Deliberately NOT `ZodError`: the classic `ZodError` extends `Error`, but zod 4's
+ * core `$ZodError` does not (its prototype chain ends at `Object`). `isZodError`
+ * recognises BOTH structurally, so narrowing to `ZodError` would be unsound — a core
+ * `$ZodError` would be typed as an `Error` it is not. This structural type captures
+ * exactly what the runtime relies on (`name` plus an `issues` array), so it holds for
+ * either variant.
+ */
+export interface ZodErrorLike {
+  name: string;
+  issues: ZodIssue[];
 }
 
 // All validation output is now verbose: full issue listing (no truncation heuristic)
@@ -158,7 +173,7 @@ export function formatValidationError(params: {
   schemaName?: string;
   schema?: ZodTypeAny;
   value?: any;
-  error: ZodError;
+  error: ZodErrorLike;
 }): FormattedValidation {
   const { side, operationId, schemaName, schema, value, error } = params;
   const prefix = `Invalid ${operationId ? `${operationId} ` : ''}${side}`.trim();

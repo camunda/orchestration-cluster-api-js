@@ -3,9 +3,13 @@
  * Centralizes request/response schema validation so future callers (e.g. streaming, batch)
  * can reuse consistent semantics without depending on ValidationManager internals.
  */
-import type { ZodError, ZodTypeAny } from 'zod';
+import type { ZodTypeAny } from 'zod';
 import { CamundaValidationError } from './errors';
-import { formatValidationError, logFormattedValidation } from './formatValidation';
+import {
+  formatValidationError,
+  logFormattedValidation,
+  type ZodErrorLike,
+} from './formatValidation';
 import type { Logger } from './logger';
 import type { ValidationMode } from './validationManager';
 
@@ -19,8 +23,13 @@ import type { ValidationMode } from './validationManager';
  * `Object`). Both are recognised by name plus a structural `issues` array, so a core
  * validation error is formatted and wrapped in `CamundaValidationError` instead of
  * bypassing formatting and being rethrown raw.
+ *
+ * The narrowed type is the structural `ZodErrorLike`, NOT `ZodError`: because this
+ * accepts the core `$ZodError` (which is not an `Error`), narrowing to the classic
+ * `ZodError` would be unsound and let callers assume `Error`/prototype members the
+ * value does not have.
  */
-export function isZodError(err: unknown): err is ZodError {
+export function isZodError(err: unknown): err is ZodErrorLike {
   if (!err || typeof err !== 'object') return false;
   const { name, issues } = err as { name?: unknown; issues?: unknown };
   return (name === 'ZodError' || name === '$ZodError') && Array.isArray(issues);
