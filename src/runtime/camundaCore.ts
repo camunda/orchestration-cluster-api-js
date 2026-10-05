@@ -98,6 +98,8 @@ export interface OperationRuntime {
       exempt?: boolean;
       classify?: (e: any) => { retryable: boolean; reason: string };
       retryOverride?: Partial<HttpRetryPolicy> | false;
+      /** Operation abort signal — threaded into backpressure acquisition. */
+      signal?: AbortSignal;
     }
   ): Promise<T>;
 }
@@ -249,7 +251,7 @@ export class CamundaCore {
     this._bp = new BackpressureManager({
       logger: this._log.scope('bp'),
       now: () => this._clock.now(),
-      sleep: (ms) => this._clock.sleep(ms),
+      sleep: (ms, signal) => this._clock.sleep(ms, signal),
       config: {
         enabled: this._config.backpressure.enabled,
         observeOnly: this._config.backpressure.observeOnly,
@@ -444,18 +446,42 @@ export class CamundaCore {
       exempt?: boolean;
       classify?: (e: any) => { retryable: boolean; reason: string };
       retryOverride?: Partial<HttpRetryPolicy> | false;
+      /** Operation abort signal (from toCancelable). Threaded into backpressure
+       *  acquisition so an operation canceled while queued — or during the
+       *  backoff-at-floor delay — is removed promptly instead of later consuming a
+       *  permit and invoking the transport. */
+      signal?: AbortSignal;
     }
   ): Promise<T> {
-    const { opId, exempt, classify, retryOverride } = opts;
+    const { opId, exempt, classify, retryOverride, signal } = opts;
     const policy: HttpRetryPolicy =
       retryOverride === false
         ? { maxAttempts: 1, baseDelayMs: 0, maxDelayMs: 0 }
         : retryOverride
           ? { ...this._config.httpRetry, ...retryOverride }
           : this._config.httpRetry;
-    const signal: AbortSignal | undefined = undefined; // placeholder if we later pass through
-    if (!exempt) {
-      await this._bp.acquire(signal);
+    // Acquire a permit, retaining the per-invocation grant token. acquire() resolves the
+    // permit EPOCH (a number) only when THIS invocation consumed a finite permit; the
+    // disabled / observe-only / unlimited fast paths and the sustained-healthy (Phase-3)
+    // drain resolve `null`. The token ties the refund below to a permit THIS invocation
+    // actually holds AND to the finite regime it was issued in: backpressure state can
+    // change in the microtask gap between acquire() resolving and a continuation running (a
+    // finite cap may be restored and a DIFFERENT invocation may then hold a permit), so an
+    // unconditional release() could decrement another operation's permit. The epoch guard
+    // also drops a release whose regime has since reset (finite→unlimited→finite), so a
+    // stale lease cannot free a permit owned by a later epoch.
+    const acquired = exempt ? null : await this._bp.acquire(signal);
+    // Re-check cancellation AFTER acquiring. acquire()'s fast paths — unlimited, disabled,
+    // observe-only, and immediate acquire — resolve synchronously after only acquire()'s
+    // initial abort check, so a cancel that lands in the microtask gap between acquire()
+    // resolving and this continuation running would otherwise fall through and invoke the
+    // transport (an injected fetch that ignores `signal` observes the call). Refund ONLY
+    // when this invocation holds a permit (`acquired !== null`): the try/finally below has
+    // NOT been entered yet, so its release() will not run for this abort. Symmetric with
+    // acquire()'s own post-await re-checks (backoff / queued drain).
+    if (signal?.aborted) {
+      if (acquired !== null) this._bp.release(acquired);
+      throw signal.reason || new Error('aborted');
     }
     try {
       const result = await executeWithHttpRetry(
@@ -479,7 +505,11 @@ export class CamundaCore {
       if (e && (e as any).status && (e as any).status === 429) this._bp.recordBackpressure();
       throw normalizeError(e, { opId });
     } finally {
-      if (!exempt) this._bp.release();
+      // Release only a permit THIS invocation acquired, in the epoch it was issued. On the
+      // fast paths `acquired` is null and release() is a no-op anyway; gating on the token
+      // (and its epoch) makes the pairing explicit and immune to any state change — including
+      // a finite→unlimited→finite reset — between acquire and release.
+      if (acquired !== null) this._bp.release(acquired);
     }
   }
   /** Shared evaluation for raw transport responses (throwOnError:false) */

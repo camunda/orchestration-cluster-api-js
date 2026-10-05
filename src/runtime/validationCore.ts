@@ -3,11 +3,37 @@
  * Centralizes request/response schema validation so future callers (e.g. streaming, batch)
  * can reuse consistent semantics without depending on ValidationManager internals.
  */
-import { ZodError, type ZodTypeAny } from 'zod';
+import type { ZodTypeAny } from 'zod';
 import { CamundaValidationError } from './errors';
-import { formatValidationError, logFormattedValidation } from './formatValidation';
+import {
+  formatValidationError,
+  logFormattedValidation,
+  type ZodErrorLike,
+} from './formatValidation';
 import type { Logger } from './logger';
 import type { ValidationMode } from './validationManager';
+
+/**
+ * Structural check for a zod validation error. Deliberately not `instanceof ZodError`:
+ * a value import of zod here would load zod eagerly for every consumer, even with
+ * validation off (schemas, and with them zod, are only imported when validation is on).
+ *
+ * It is also deliberately not gated on `instanceof Error`: the classic `ZodError`
+ * extends `Error`, but zod 4's core `$ZodError` does not (its prototype chain ends at
+ * `Object`). Both are recognised by name plus a structural `issues` array, so a core
+ * validation error is formatted and wrapped in `CamundaValidationError` instead of
+ * bypassing formatting and being rethrown raw.
+ *
+ * The narrowed type is the structural `ZodErrorLike`, NOT `ZodError`: because this
+ * accepts the core `$ZodError` (which is not an `Error`), narrowing to the classic
+ * `ZodError` would be unsound and let callers assume `Error`/prototype members the
+ * value does not have.
+ */
+export function isZodError(err: unknown): err is ZodErrorLike {
+  if (!err || typeof err !== 'object') return false;
+  const { name, issues } = err as { name?: unknown; issues?: unknown };
+  return (name === 'ZodError' || name === '$ZodError') && Array.isArray(issues);
+}
 
 export interface ApplySchemaValidationOptions<T = any> {
   side: 'request' | 'response';
@@ -33,7 +59,7 @@ export async function applySchemaValidation<T = any>(
     const parsed = (schema.parseAsync ? await schema.parseAsync(value) : schema.parse(value)) as T;
     return mode === 'warn' ? value : parsed;
   } catch (err: any) {
-    if (err instanceof ZodError) {
+    if (isZodError(err)) {
       const formatted = formatValidationError({ side, operationId, schema, value, error: err });
       if (mode === 'warn') {
         if (logger) logFormattedValidation('warn', formatted, logger);

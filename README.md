@@ -1351,17 +1351,20 @@ you import, and each operation lazily loads only its own validation schemas.
 > **esbuild code-splitting caveat:** this holds for bundlers that tree-shake dead `import()`
 > targets (e.g. Rollup, and esbuild without code splitting). esbuild's `splitting: true` mode
 > retains the dynamic-import targets of unimported operation functions, so a code-split esbuild
-> build may still pull in schema chunks for operations you did not import. The size figures below
-> are measured unsplit; prefer an unsplit build (or Rollup) when minimal `./fn` bundles matter.
+> build may still pull in schema chunks for operations you did not import. Prefer an unsplit
+> build (or Rollup) when minimal `./fn` bundles matter.
 
-<!-- snippet-source: examples/readme.ts | regions: ReadmePerOperationFunctionsImport+ReadmePerOperationFunctions -->
+<!-- snippet-source: examples/readme-imports.txt,examples/readme.ts | regions: ReadmePerOperationFunctionsImport+ReadmePerOperationFunctions -->
 
 ```ts
+import { ProcessDefinitionKey } from '@camunda8/orchestration-cluster-api';
 import {
   createCamundaCore,
   createProcessInstance,
   getTopology,
 } from '@camunda8/orchestration-cluster-api/fn';
+
+const defKey = ProcessDefinitionKey.assumeExists('2251799813686749');
 
 // Same options as createCamundaClient(); a CamundaClient also works as the core.
 const core = createCamundaCore();
@@ -1379,19 +1382,18 @@ console.log(instance.processInstanceKey);
 Notes:
 
 - Each function takes the same arguments as the `CamundaClient` method of the same name and
-  behaves identically (retry, backpressure, validation, eventual consistency, cancellation) —
-  the client methods delegate to these functions. One intentional exception: for operations
-  that take no input (e.g. `getTopology`), the standalone functions honor their `options`
-  argument (`getTopology(core, { retry: false })` disables retry), while the class methods
-  ignore an options argument passed to them (`client.getTopology({ retry: false })` retries
-  as usual) — a legacy quirk preserved for backward compatibility.
+  behaves identically (retry, backpressure, validation, eventual consistency, cancelation) —
+  the client methods delegate to these functions. Operations that take no input (e.g.
+  `getTopology`) accept an options object as the function's second argument
+  (`getTopology(core, { retry: false })`) and, on the class, as the method's single argument
+  (`client.getTopology({ retry: false })`).
 - `createCamundaCore()` accepts the same options as `createCamundaClient()`. It does not
   include job workers, the thread pool, or the deployment/search convenience helpers; use the
   client for those. Jobs returned by `activateJobs(core, …)` still have `complete()`,
   `fail()` and the other job actions.
 - Measured with esbuild (minified, browser, everything that can load including validation
-  schemas): the core is ~135 KB and each operation adds ~4–60 KB, versus ~930 KB for the full
-  client.
+  schemas): the core is ~70 KB and each operation adds ~72–128 KB including its zod schemas
+  (zod itself is ~68 KB of that), versus ~930 KB for the full client.
 
 ## Effect Surface (Opt-In Subpath)
 

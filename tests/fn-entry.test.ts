@@ -87,6 +87,34 @@ describe('./fn entry point — class-scoped invariants', () => {
     });
     expect(misplaced).toEqual([]);
   });
+
+  // Regression for the whole class (Copilot round 7 "previously missed"): the disclosed
+  // bug affected every no-input method, but the behaviour test below exercises only
+  // `getTopology`. A no-input method is one whose generated implementation binds a lone
+  // first argument to an unused `arg` (`name(arg?: any, options?: OperationOptions)`);
+  // every one of them must forward `options ?? arg` so a lone first argument is honoured
+  // as the OperationOptions object. Asserting the delegation shape for ALL of them guards
+  // the class — a method that drops the lone argument (`Ops.x(this, options)`) or binds it
+  // wrongly fails here even if its behaviour test is never written.
+  it('every no-input CamundaClient method forwards options ?? arg', () => {
+    const src = read('src/gen/CamundaClient.ts');
+    // Identify every no-input method by its implementation signature, class-scoped.
+    const noInput = [
+      ...src.matchAll(
+        /\n {2}(\w+)\(arg\?: any, options\?: OperationOptions\): CancelablePromise<any> \{/g
+      ),
+    ].map((m) => m[1]);
+    // Sanity: the disclosed set is the 19 no-input operations; guard against the regex
+    // silently matching nothing if the generator changes the signature shape.
+    expect(noInput.length).toBeGreaterThanOrEqual(19);
+    const notForwarding = noInput.filter((op) => {
+      const re = new RegExp(
+        `\\n  ${op}\\(arg\\?: any, options\\?: OperationOptions\\): CancelablePromise<any> \\{\\n    return Ops\\.${op}\\(this, options \\?\\? arg\\);\\n  \\}\\n`
+      );
+      return !re.test(src);
+    });
+    expect(notForwarding).toEqual([]);
+  });
 });
 
 describe('./fn entry point — behaviour', () => {
@@ -105,27 +133,121 @@ describe('./fn entry point — behaviour', () => {
     expect(viaFn.calls).toEqual(viaClient.calls);
   });
 
-  it('no-input operations take options directly', async () => {
-    // Return a retryable 429 first: if `retry: false` were ignored the client would
-    // re-attempt and succeed on the second call, so a single-attempt assertion would
-    // fail. With retry honoured there is exactly one attempt and the 429 surfaces.
-    let n = 0;
-    const fetch = (async () => {
-      n++;
-      if (n === 1) {
-        return new Response(JSON.stringify({ title: 'rate limited' }), {
-          status: 429,
+  it('no-input operations take options directly and honour them (retry disabled)', async () => {
+    // The standalone-function path must honour a lone per-call OperationOptions object:
+    // with `{ retry: false }` a retryable 500 surfaces after exactly one attempt. A fetch
+    // that always succeeds would pass even if the option were silently dropped, so use a
+    // retryable-first-then-success fetch and assert one attempt — mirroring the class
+    // method's guard below so the functional-facade path is covered too.
+    const rec = (() => {
+      let n = 0;
+      const calls: { method: string; path: string }[] = [];
+      const fetch = async (input: RequestInfo | URL) => {
+        const req = input instanceof Request ? input : new Request(input);
+        calls.push({ method: req.method, path: new URL(req.url).pathname });
+        n++;
+        const body =
+          n === 1
+            ? { title: 'RESOURCE_EXHAUSTED', detail: 'RESOURCE_EXHAUSTED: backpressure' }
+            : { brokers: [] };
+        return new Response(JSON.stringify(body), {
+          status: n === 1 ? 500 : 200,
           headers: { 'Content-Type': 'application/json' },
         });
-      }
-      return new Response(JSON.stringify({ brokers: [] }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }) as typeof globalThis.fetch;
-    const core = Fn.createCamundaCore({ config: baseConfig, fetch });
-    await expect(Fn.getTopology(core, { retry: false })).rejects.toMatchObject({ status: 429 });
-    expect(n).toBe(1);
+      };
+      return { calls, fetch: fetch as typeof globalThis.fetch };
+    })();
+    const core = Fn.createCamundaCore({
+      config: {
+        ...baseConfig,
+        // Generous retry policy so that, WITHOUT the override, the call would retry.
+        CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS: 3,
+        CAMUNDA_SDK_HTTP_RETRY_BASE_DELAY_MS: 1,
+        CAMUNDA_SDK_HTTP_RETRY_MAX_DELAY_MS: 2,
+      },
+      fetch: rec.fetch,
+    });
+    // With retry disabled per-call, the retryable 500 must surface after exactly one
+    // attempt — and the option reached the request on the expected method/path.
+    await expect(Fn.getTopology(core, { retry: false })).rejects.toThrow();
+    expect(rec.calls).toEqual([{ method: 'GET', path: '/v2/topology' }]);
+  });
+
+  // Regression for the class of bug where a no-input CamundaClient method exposes only a
+  // single-argument public overload `op(options?)` but its implementation binds that lone
+  // argument to an unused `arg` and forwards `options` (always undefined) — so per-call
+  // options such as `{ retry: false }` were silently dropped. Every no-input class method
+  // must forward a lone first argument as the OperationOptions object.
+  it('a no-input class method forwards a lone options object to per-call retry', async () => {
+    // Retryable on the first attempt (500 RESOURCE_EXHAUSTED), success on the second.
+    const rec = (() => {
+      let n = 0;
+      const calls: string[] = [];
+      const fetch = async (input: RequestInfo | URL) => {
+        const req = input instanceof Request ? input : new Request(input);
+        calls.push(req.url);
+        n++;
+        const body =
+          n === 1
+            ? { title: 'RESOURCE_EXHAUSTED', detail: 'RESOURCE_EXHAUSTED: backpressure' }
+            : { brokers: [] };
+        return new Response(JSON.stringify(body), {
+          status: n === 1 ? 500 : 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      };
+      return { calls, fetch: fetch as typeof globalThis.fetch };
+    })();
+    const client = createCamundaClient({
+      config: {
+        ...baseConfig,
+        // Generous retry policy so that, without the override, the call would retry.
+        CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS: 3,
+        CAMUNDA_SDK_HTTP_RETRY_BASE_DELAY_MS: 1,
+        CAMUNDA_SDK_HTTP_RETRY_MAX_DELAY_MS: 2,
+      },
+      fetch: rec.fetch,
+    });
+    // With retry disabled per-call, the retryable 500 must surface after exactly one attempt.
+    await expect(client.getTopology({ retry: false })).rejects.toThrow();
+    expect(rec.calls).toHaveLength(1);
+  });
+
+  it('a no-input class method works with no arguments', async () => {
+    const rec = recordingFetch(() => ({ brokers: [] }));
+    const client = createCamundaClient({ config: baseConfig, fetch: rec.fetch });
+    await client.getTopology();
+    expect(rec.calls).toHaveLength(1);
+  });
+
+  it('support logger names the constructed component (core vs client)', () => {
+    // Regression for the `__camundaComponent` support-log discriminator: a bare core must
+    // not be attributed to a (nonexistent) client in support diagnostics, and a consumer
+    // subclass of the now-public CamundaCore is still a core (it has no client operation
+    // surface), so it must not be mislabelled a client either.
+    const coreMsgs: string[] = [];
+    Fn.createCamundaCore({
+      config: baseConfig,
+      supportLogger: { log: (m: string) => void coreMsgs.push(m) } as any,
+    });
+    expect(coreMsgs.some((m) => m.includes('CamundaCore constructed'))).toBe(true);
+    expect(coreMsgs.some((m) => m.includes('CamundaClient constructed'))).toBe(false);
+
+    const clientMsgs: string[] = [];
+    createCamundaClient({
+      config: baseConfig,
+      supportLogger: { log: (m: string) => void clientMsgs.push(m) } as any,
+    });
+    expect(clientMsgs.some((m) => m.includes('CamundaClient constructed'))).toBe(true);
+
+    class CustomCore extends Fn.CamundaCore {}
+    const subclassMsgs: string[] = [];
+    new CustomCore({
+      config: baseConfig,
+      supportLogger: { log: (m: string) => void subclassMsgs.push(m) } as any,
+    });
+    expect(subclassMsgs.some((m) => m.includes('CamundaCore constructed'))).toBe(true);
+    expect(subclassMsgs.some((m) => m.includes('CamundaClient constructed'))).toBe(false);
   });
 
   it('eventually consistent operations take consistency management like the client', async () => {
@@ -144,35 +266,6 @@ describe('./fn entry point — behaviour', () => {
     const client = createCamundaClient({ config: baseConfig, fetch: rec.fetch });
     await Fn.getTopology(client);
     expect(rec.calls).toHaveLength(1);
-  });
-
-  it('support logger names the constructed component (core vs client)', () => {
-    // A bare core must not be attributed to a (nonexistent) client in support diagnostics.
-    const coreMsgs: string[] = [];
-    Fn.createCamundaCore({
-      config: baseConfig,
-      supportLogger: { log: (m: string) => void coreMsgs.push(m) } as any,
-    });
-    expect(coreMsgs.some((m) => m.includes('CamundaCore constructed'))).toBe(true);
-    expect(coreMsgs.some((m) => m.includes('CamundaClient constructed'))).toBe(false);
-
-    const clientMsgs: string[] = [];
-    createCamundaClient({
-      config: baseConfig,
-      supportLogger: { log: (m: string) => void clientMsgs.push(m) } as any,
-    });
-    expect(clientMsgs.some((m) => m.includes('CamundaClient constructed'))).toBe(true);
-
-    // A consumer subclass of the now-public CamundaCore is still a core: it has no
-    // client operation surface, so support diagnostics must not mislabel it as a client.
-    class CustomCore extends Fn.CamundaCore {}
-    const subclassMsgs: string[] = [];
-    new CustomCore({
-      config: baseConfig,
-      supportLogger: { log: (m: string) => void subclassMsgs.push(m) } as any,
-    });
-    expect(subclassMsgs.some((m) => m.includes('CamundaCore constructed'))).toBe(true);
-    expect(subclassMsgs.some((m) => m.includes('CamundaClient constructed'))).toBe(false);
   });
 
   it('jobs activated through a bare core can complete themselves', async () => {

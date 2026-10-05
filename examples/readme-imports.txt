@@ -17,6 +17,15 @@ import { fileURLToPath } from 'node:url';
 import { ProcessDefinitionKey, ProcessInstanceKey } from '@camunda8/orchestration-cluster-api';
 //#endregion ReadmeBrandedKeysImport
 
+//#region ReadmePerOperationFunctionsImport
+import { ProcessDefinitionKey } from '@camunda8/orchestration-cluster-api';
+import {
+  createCamundaCore,
+  createProcessInstance,
+  getTopology,
+} from '@camunda8/orchestration-cluster-api/fn';
+//#endregion ReadmePerOperationFunctionsImport
+
 //#region ReadmeErrorHandlingImport
 import { createCamundaClient, isSdkError } from '@camunda8/orchestration-cluster-api';
 //#endregion ReadmeErrorHandlingImport

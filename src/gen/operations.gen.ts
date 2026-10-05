@@ -1397,7 +1397,7 @@ export function activateAdHocSubProcessActivities(core: CamundaCore, arg: any, o
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'activateAdHocSubProcessActivities', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'activateAdHocSubProcessActivities', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -1461,15 +1461,15 @@ export function activateJobs(core: CamundaCore, arg: any, options?: OperationOpt
           if (rt._validation.settings.res === 'strict') data = maybeR;
         }
       }
-      /* present-when-guard:activateJobs:withLease=true:jobLeaseToken */ if (data && data.jobs && _body && (_body as any).withLease === true) { for (const _el of data.jobs) { if (_el.jobLeaseToken == null) { const _e: any = new Error("activateJobs: withLease=true was requested but the server returned an item without 'jobLeaseToken' — the server may predate this feature. Refusing to silently mis-type the dependent field."); _e.name = 'PresentWhenUnsupportedError'; _e.nonRetryable = true; throw _e; } } }
-        if (data && data.jobs) { data.jobs = data.jobs.map((j: any) => enrichActivatedJob(j, _jobActionsClient(core), core.logger().scope(`job:${j.jobKey}`))); }
+      if (data && data.jobs) { if (!(Array.isArray(data.jobs) && data.jobs.length === 0)) { const _client = _jobActionsClient(core); /* present-when-guard:activateJobs:withLease=true:jobLeaseToken */ if (data && data.jobs && _body && (_body as any).withLease === true) { for (const _el of data.jobs) { if (_el.jobLeaseToken == null) { const _e: any = new Error("activateJobs: withLease=true was requested but the server returned an item without 'jobLeaseToken' — the server may predate this feature. Refusing to silently mis-type the dependent field."); _e.name = 'PresentWhenUnsupportedError'; _e.nonRetryable = true; throw _e; } } }
+        data.jobs = data.jobs.map((j: any) => enrichActivatedJob(j, _client, core.logger().scope(`job:${j.jobKey}`))); } }
       return data;
       } catch(e) {
         // Defer normalization to outer executeWithHttpRetry boundary
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'activateJobs', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'activateJobs', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -1534,7 +1534,7 @@ export function assignClientToGroup(core: CamundaCore, arg: any, options?: Opera
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'assignClientToGroup', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'assignClientToGroup', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -1599,7 +1599,7 @@ export function assignClientToTenant(core: CamundaCore, arg: any, options?: Oper
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'assignClientToTenant', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'assignClientToTenant', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -1664,7 +1664,7 @@ export function assignGroupToTenant(core: CamundaCore, arg: any, options?: Opera
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'assignGroupToTenant', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'assignGroupToTenant', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -1727,7 +1727,7 @@ export function assignMappingRuleToGroup(core: CamundaCore, arg: any, options?: 
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'assignMappingRuleToGroup', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'assignMappingRuleToGroup', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -1790,7 +1790,7 @@ export function assignMappingRuleToTenant(core: CamundaCore, arg: any, options?:
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'assignMappingRuleToTenant', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'assignMappingRuleToTenant', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -1867,7 +1867,7 @@ export function assignProcessInstanceBusinessId(core: CamundaCore, arg: any, opt
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'assignProcessInstanceBusinessId', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'assignProcessInstanceBusinessId', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -1930,7 +1930,7 @@ export function assignRoleToClient(core: CamundaCore, arg: any, options?: Operat
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'assignRoleToClient', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'assignRoleToClient', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -1993,7 +1993,7 @@ export function assignRoleToGroup(core: CamundaCore, arg: any, options?: Operati
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'assignRoleToGroup', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'assignRoleToGroup', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -2056,7 +2056,7 @@ export function assignRoleToMappingRule(core: CamundaCore, arg: any, options?: O
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'assignRoleToMappingRule', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'assignRoleToMappingRule', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -2121,7 +2121,7 @@ export function assignRoleToTenant(core: CamundaCore, arg: any, options?: Operat
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'assignRoleToTenant', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'assignRoleToTenant', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -2184,7 +2184,7 @@ export function assignRoleToUser(core: CamundaCore, arg: any, options?: Operatio
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'assignRoleToUser', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'assignRoleToUser', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -2254,7 +2254,7 @@ export function assignUserTask(core: CamundaCore, arg: any, options?: OperationO
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'assignUserTask', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'assignUserTask', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -2319,7 +2319,7 @@ export function assignUserToGroup(core: CamundaCore, arg: any, options?: Operati
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'assignUserToGroup', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'assignUserToGroup', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -2382,7 +2382,7 @@ export function assignUserToTenant(core: CamundaCore, arg: any, options?: Operat
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'assignUserToTenant', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'assignUserToTenant', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -2449,7 +2449,7 @@ export function broadcastSignal(core: CamundaCore, arg: any, options?: Operation
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'broadcastSignal', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'broadcastSignal', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -2520,7 +2520,7 @@ export function cancelBatchOperation(core: CamundaCore, arg: any, options?: Oper
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'cancelBatchOperation', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'cancelBatchOperation', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -2575,7 +2575,7 @@ export function cancelClusterRebalance(core: CamundaCore, options?: OperationOpt
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'cancelClusterRebalance', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'cancelClusterRebalance', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -2645,7 +2645,7 @@ export function cancelProcessInstance(core: CamundaCore, arg: any, options?: Ope
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'cancelProcessInstance', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'cancelProcessInstance', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -2716,7 +2716,7 @@ export function cancelProcessInstancesBatchOperation(core: CamundaCore, arg: any
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'cancelProcessInstancesBatchOperation', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'cancelProcessInstancesBatchOperation', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -2779,7 +2779,7 @@ export function changeClusterMode(core: CamundaCore, arg: any, options?: Operati
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'changeClusterMode', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'changeClusterMode', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -2846,7 +2846,7 @@ export function changeClusterModeAsClusterAdmin(core: CamundaCore, arg: any, opt
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'changeClusterModeAsClusterAdmin', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'changeClusterModeAsClusterAdmin', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -2916,7 +2916,7 @@ export function completeJob(core: CamundaCore, arg: any, options?: OperationOpti
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'completeJob', exempt: true, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'completeJob', exempt: true, retryOverride: options?.retry, signal });
   });
 }
 
@@ -2986,7 +2986,7 @@ export function completeUserTask(core: CamundaCore, arg: any, options?: Operatio
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'completeUserTask', exempt: true, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'completeUserTask', exempt: true, retryOverride: options?.retry, signal });
   });
 }
 
@@ -3057,7 +3057,7 @@ export function correlateMessage(core: CamundaCore, arg: any, options?: Operatio
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'correlateMessage', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'correlateMessage', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -3120,7 +3120,7 @@ export function createAdminUser(core: CamundaCore, arg: any, options?: Operation
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'createAdminUser', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'createAdminUser', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -3185,7 +3185,7 @@ export function createAgentInstance(core: CamundaCore, arg: any, options?: Opera
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'createAgentInstance', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'createAgentInstance', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -3248,7 +3248,7 @@ export function createAuthorization(core: CamundaCore, arg: any, options?: Opera
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'createAuthorization', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'createAuthorization', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -3334,7 +3334,7 @@ export function createDeployment(core: CamundaCore, arg: any, options?: Operatio
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'createDeployment', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'createDeployment', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -3406,7 +3406,7 @@ export function createDocument(core: CamundaCore, arg: any, options?: OperationO
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'createDocument', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'createDocument', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -3484,7 +3484,7 @@ export function createDocumentLink(core: CamundaCore, arg: any, options?: Operat
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'createDocumentLink', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'createDocumentLink', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -3568,7 +3568,7 @@ export function createDocuments(core: CamundaCore, arg: any, options?: Operation
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'createDocuments', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'createDocuments', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -3643,7 +3643,7 @@ export function createElementInstanceVariables(core: CamundaCore, arg: any, opti
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'createElementInstanceVariables', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'createElementInstanceVariables', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -3706,7 +3706,7 @@ export function createGlobalClusterVariable(core: CamundaCore, arg: any, options
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'createGlobalClusterVariable', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'createGlobalClusterVariable', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -3769,7 +3769,7 @@ export function createGlobalTaskListener(core: CamundaCore, arg: any, options?: 
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'createGlobalTaskListener', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'createGlobalTaskListener', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -3848,7 +3848,7 @@ export function createGroup(core: CamundaCore, arg: any, options?: OperationOpti
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'createGroup', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'createGroup', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -3912,7 +3912,7 @@ export function createMappingRule(core: CamundaCore, arg: any, options?: Operati
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'createMappingRule', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'createMappingRule', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -3987,7 +3987,7 @@ export function createProcessInstance(core: CamundaCore, arg: any, options?: Ope
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'createProcessInstance', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'createProcessInstance', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -4050,7 +4050,7 @@ export function createRole(core: CamundaCore, arg: any, options?: OperationOptio
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'createRole', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'createRole', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -4113,7 +4113,7 @@ export function createTenant(core: CamundaCore, arg: any, options?: OperationOpt
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'createTenant', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'createTenant', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -4182,7 +4182,7 @@ export function createTenantClusterVariable(core: CamundaCore, arg: any, options
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'createTenantClusterVariable', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'createTenantClusterVariable', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -4245,7 +4245,7 @@ export function createUser(core: CamundaCore, arg: any, options?: OperationOptio
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'createUser', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'createUser', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -4308,7 +4308,7 @@ export function deleteAuthorization(core: CamundaCore, arg: any, options?: Opera
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'deleteAuthorization', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'deleteAuthorization', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -4377,7 +4377,7 @@ export function deleteDecisionInstance(core: CamundaCore, arg: any, options?: Op
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'deleteDecisionInstance', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'deleteDecisionInstance', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -4442,7 +4442,7 @@ export function deleteDecisionInstancesBatchOperation(core: CamundaCore, arg: an
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'deleteDecisionInstancesBatchOperation', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'deleteDecisionInstancesBatchOperation', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -4514,7 +4514,7 @@ export function deleteDocument(core: CamundaCore, arg: any, options?: OperationO
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'deleteDocument', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'deleteDocument', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -4577,7 +4577,7 @@ export function deleteGlobalClusterVariable(core: CamundaCore, arg: any, options
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'deleteGlobalClusterVariable', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'deleteGlobalClusterVariable', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -4640,7 +4640,7 @@ export function deleteGlobalTaskListener(core: CamundaCore, arg: any, options?: 
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'deleteGlobalTaskListener', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'deleteGlobalTaskListener', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -4703,7 +4703,7 @@ export function deleteGroup(core: CamundaCore, arg: any, options?: OperationOpti
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'deleteGroup', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'deleteGroup', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -4770,7 +4770,7 @@ export function deleteHistoryBackup(core: CamundaCore, arg: any, options?: Opera
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'deleteHistoryBackup', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'deleteHistoryBackup', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -4843,7 +4843,7 @@ export function deleteHistoryBackupAsClusterAdmin(core: CamundaCore, arg: any, o
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'deleteHistoryBackupAsClusterAdmin', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'deleteHistoryBackupAsClusterAdmin', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -4907,7 +4907,7 @@ export function deleteMappingRule(core: CamundaCore, arg: any, options?: Operati
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'deleteMappingRule', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'deleteMappingRule', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -4976,7 +4976,7 @@ export function deleteProcessInstance(core: CamundaCore, arg: any, options?: Ope
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'deleteProcessInstance', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'deleteProcessInstance', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -5042,7 +5042,7 @@ export function deleteProcessInstancesBatchOperation(core: CamundaCore, arg: any
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'deleteProcessInstancesBatchOperation', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'deleteProcessInstancesBatchOperation', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -5131,7 +5131,7 @@ export function deleteResource(core: CamundaCore, arg: any, options?: OperationO
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'deleteResource', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'deleteResource', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -5194,7 +5194,7 @@ export function deleteRole(core: CamundaCore, arg: any, options?: OperationOptio
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'deleteRole', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'deleteRole', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -5257,7 +5257,7 @@ export function deleteRuntimeBackup(core: CamundaCore, arg: any, options?: Opera
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'deleteRuntimeBackup', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'deleteRuntimeBackup', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -5330,7 +5330,7 @@ export function deleteRuntimeBackupAsClusterAdmin(core: CamundaCore, arg: any, o
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'deleteRuntimeBackupAsClusterAdmin', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'deleteRuntimeBackupAsClusterAdmin', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -5384,7 +5384,7 @@ export function deleteRuntimeBackupState(core: CamundaCore, options?: OperationO
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'deleteRuntimeBackupState', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'deleteRuntimeBackupState', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -5451,7 +5451,7 @@ export function deleteRuntimeBackupStateAsClusterAdmin(core: CamundaCore, arg: a
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'deleteRuntimeBackupStateAsClusterAdmin', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'deleteRuntimeBackupStateAsClusterAdmin', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -5514,7 +5514,7 @@ export function deleteTenant(core: CamundaCore, arg: any, options?: OperationOpt
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'deleteTenant', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'deleteTenant', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -5577,7 +5577,7 @@ export function deleteTenantClusterVariable(core: CamundaCore, arg: any, options
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'deleteTenantClusterVariable', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'deleteTenantClusterVariable', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -5640,7 +5640,7 @@ export function deleteUser(core: CamundaCore, arg: any, options?: OperationOptio
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'deleteUser', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'deleteUser', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -5710,7 +5710,7 @@ export function evaluateConditionals(core: CamundaCore, arg: any, options?: Oper
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'evaluateConditionals', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'evaluateConditionals', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -5781,7 +5781,7 @@ export function evaluateDecision(core: CamundaCore, arg: any, options?: Operatio
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'evaluateDecision', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'evaluateDecision', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -5852,7 +5852,7 @@ export function evaluateExpression(core: CamundaCore, arg: any, options?: Operat
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'evaluateExpression', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'evaluateExpression', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -5922,7 +5922,7 @@ export function failJob(core: CamundaCore, arg: any, options?: OperationOptions)
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'failJob', exempt: true, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'failJob', exempt: true, retryOverride: options?.retry, signal });
   });
 }
 
@@ -6177,7 +6177,7 @@ export function getAuthentication(core: CamundaCore, options?: OperationOptions)
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'getAuthentication', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'getAuthentication', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -6366,7 +6366,7 @@ export function getClusterExportingStatus(core: CamundaCore, options?: Operation
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'getClusterExportingStatus', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'getClusterExportingStatus', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -6419,7 +6419,7 @@ export function getClusterRebalance(core: CamundaCore, options?: OperationOption
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'getClusterRebalance', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'getClusterRebalance', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -6472,7 +6472,7 @@ export function getClusterStatus(core: CamundaCore, options?: OperationOptions):
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'getClusterStatus', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'getClusterStatus', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -6525,7 +6525,7 @@ export function getClusterTopology(core: CamundaCore, options?: OperationOptions
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'getClusterTopology', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'getClusterTopology', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -6576,7 +6576,7 @@ export function getClusterUpgradeStatus(core: CamundaCore, options?: OperationOp
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'getClusterUpgradeStatus', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'getClusterUpgradeStatus', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -6988,7 +6988,7 @@ export function getDocument(core: CamundaCore, arg: any, options?: OperationOpti
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'getDocument', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'getDocument', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -7114,7 +7114,7 @@ export function getExportingStatus(core: CamundaCore, options?: OperationOptions
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'getExportingStatus', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'getExportingStatus', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -7522,7 +7522,7 @@ export function getHistoryBackup(core: CamundaCore, arg: any, options?: Operatio
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'getHistoryBackup', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'getHistoryBackup', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -7595,7 +7595,7 @@ export function getHistoryBackupAsClusterAdmin(core: CamundaCore, arg: any, opti
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'getHistoryBackupAsClusterAdmin', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'getHistoryBackupAsClusterAdmin', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -7993,7 +7993,7 @@ export function getLicense(core: CamundaCore, options?: OperationOptions): Cance
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'getLicense', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'getLicense', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -9238,7 +9238,7 @@ export function getRestoreStatus(core: CamundaCore, options?: OperationOptions):
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'getRestoreStatus', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'getRestoreStatus', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -9369,7 +9369,7 @@ export function getRuntimeBackup(core: CamundaCore, arg: any, options?: Operatio
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'getRuntimeBackup', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'getRuntimeBackup', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -9442,7 +9442,7 @@ export function getRuntimeBackupAsClusterAdmin(core: CamundaCore, arg: any, opti
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'getRuntimeBackupAsClusterAdmin', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'getRuntimeBackupAsClusterAdmin', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -9497,7 +9497,7 @@ export function getRuntimeBackupState(core: CamundaCore, options?: OperationOpti
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'getRuntimeBackupState', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'getRuntimeBackupState', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -9564,7 +9564,7 @@ export function getRuntimeBackupStateAsClusterAdmin(core: CamundaCore, arg: any,
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'getRuntimeBackupStateAsClusterAdmin', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'getRuntimeBackupStateAsClusterAdmin', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -9685,7 +9685,7 @@ export function getStatus(core: CamundaCore, options?: OperationOptions): Cancel
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'getStatus', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'getStatus', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -9741,7 +9741,7 @@ export function getSystemConfiguration(core: CamundaCore, options?: OperationOpt
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'getSystemConfiguration', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'getSystemConfiguration', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -9928,7 +9928,7 @@ export function getTopology(core: CamundaCore, options?: OperationOptions): Canc
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'getTopology', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'getTopology', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -10341,7 +10341,7 @@ export function listHistoryBackups(core: CamundaCore, arg: any, options?: Operat
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'listHistoryBackups', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'listHistoryBackups', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -10408,7 +10408,7 @@ export function listHistoryBackupsAsClusterAdmin(core: CamundaCore, arg: any, op
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'listHistoryBackupsAsClusterAdmin', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'listHistoryBackupsAsClusterAdmin', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -10473,7 +10473,7 @@ export function listRuntimeBackups(core: CamundaCore, arg: any, options?: Operat
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'listRuntimeBackups', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'listRuntimeBackups', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -10540,7 +10540,7 @@ export function listRuntimeBackupsAsClusterAdmin(core: CamundaCore, arg: any, op
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'listRuntimeBackupsAsClusterAdmin', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'listRuntimeBackupsAsClusterAdmin', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -10617,7 +10617,7 @@ export function listSecrets(core: CamundaCore, arg: any, options?: OperationOpti
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'listSecrets', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'listSecrets', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -10693,7 +10693,7 @@ export function migrateProcessInstance(core: CamundaCore, arg: any, options?: Op
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'migrateProcessInstance', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'migrateProcessInstance', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -10760,7 +10760,7 @@ export function migrateProcessInstancesBatchOperation(core: CamundaCore, arg: an
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'migrateProcessInstancesBatchOperation', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'migrateProcessInstancesBatchOperation', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -10835,7 +10835,7 @@ export function modifyProcessInstance(core: CamundaCore, arg: any, options?: Ope
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'modifyProcessInstance', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'modifyProcessInstance', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -10904,7 +10904,7 @@ export function modifyProcessInstancesBatchOperation(core: CamundaCore, arg: any
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'modifyProcessInstancesBatchOperation', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'modifyProcessInstancesBatchOperation', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -10969,7 +10969,7 @@ export function pauseClusterExporting(core: CamundaCore, arg: any, options?: Ope
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'pauseClusterExporting', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'pauseClusterExporting', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -11039,7 +11039,7 @@ export function pauseExporting(core: CamundaCore, arg: any, options?: OperationO
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'pauseExporting', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'pauseExporting', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -11108,7 +11108,7 @@ export function pinClock(core: CamundaCore, arg: any, options?: OperationOptions
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'pinClock', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'pinClock', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -11180,7 +11180,7 @@ export function publishMessage(core: CamundaCore, arg: any, options?: OperationO
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'publishMessage', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'publishMessage', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -11237,7 +11237,7 @@ export function resetClock(core: CamundaCore, options?: OperationOptions): Cance
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'resetClock', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'resetClock', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -11308,7 +11308,7 @@ export function resolveIncident(core: CamundaCore, arg: any, options?: Operation
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'resolveIncident', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'resolveIncident', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -11375,7 +11375,7 @@ export function resolveIncidentsBatchOperation(core: CamundaCore, arg: any, opti
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'resolveIncidentsBatchOperation', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'resolveIncidentsBatchOperation', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -11438,7 +11438,7 @@ export function resolveProcessInstanceIncidents(core: CamundaCore, arg: any, opt
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'resolveProcessInstanceIncidents', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'resolveProcessInstanceIncidents', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -11514,7 +11514,7 @@ export function resolveSecrets(core: CamundaCore, arg: any, options?: OperationO
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'resolveSecrets', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'resolveSecrets', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -11583,7 +11583,7 @@ export function restore(core: CamundaCore, arg: any, options?: OperationOptions)
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'restore', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'restore', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -11658,7 +11658,7 @@ export function restoreAsClusterAdmin(core: CamundaCore, arg: any, options?: Ope
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'restoreAsClusterAdmin', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'restoreAsClusterAdmin', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -11729,7 +11729,7 @@ export function resumeBatchOperation(core: CamundaCore, arg: any, options?: Oper
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'resumeBatchOperation', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'resumeBatchOperation', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -11782,7 +11782,7 @@ export function resumeClusterExporting(core: CamundaCore, options?: OperationOpt
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'resumeClusterExporting', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'resumeClusterExporting', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -11834,7 +11834,7 @@ export function resumeExporting(core: CamundaCore, options?: OperationOptions): 
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'resumeExporting', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'resumeExporting', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -11907,7 +11907,7 @@ export function resumeProcessInstance(core: CamundaCore, arg: any, options?: Ope
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'resumeProcessInstance', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'resumeProcessInstance', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -11976,7 +11976,7 @@ export function resumeProcessInstancesBatchOperation(core: CamundaCore, arg: any
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'resumeProcessInstancesBatchOperation', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'resumeProcessInstancesBatchOperation', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -15511,7 +15511,7 @@ export function suspendBatchOperation(core: CamundaCore, arg: any, options?: Ope
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'suspendBatchOperation', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'suspendBatchOperation', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -15584,7 +15584,7 @@ export function suspendProcessInstance(core: CamundaCore, arg: any, options?: Op
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'suspendProcessInstance', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'suspendProcessInstance', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -15653,7 +15653,7 @@ export function suspendProcessInstancesBatchOperation(core: CamundaCore, arg: an
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'suspendProcessInstancesBatchOperation', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'suspendProcessInstancesBatchOperation', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -15707,7 +15707,7 @@ export function syncRuntimeBackupState(core: CamundaCore, options?: OperationOpt
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'syncRuntimeBackupState', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'syncRuntimeBackupState', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -15774,7 +15774,7 @@ export function syncRuntimeBackupStateAsClusterAdmin(core: CamundaCore, arg: any
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'syncRuntimeBackupStateAsClusterAdmin', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'syncRuntimeBackupStateAsClusterAdmin', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -15844,7 +15844,7 @@ export function takeHistoryBackup(core: CamundaCore, arg: any, options?: Operati
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'takeHistoryBackup', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'takeHistoryBackup', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -15917,7 +15917,7 @@ export function takeHistoryBackupAsClusterAdmin(core: CamundaCore, arg: any, opt
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'takeHistoryBackupAsClusterAdmin', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'takeHistoryBackupAsClusterAdmin', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -15985,7 +15985,7 @@ export function takeRuntimeBackup(core: CamundaCore, arg: any, options?: Operati
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'takeRuntimeBackup', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'takeRuntimeBackup', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -16060,7 +16060,7 @@ export function takeRuntimeBackupAsClusterAdmin(core: CamundaCore, arg: any, opt
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'takeRuntimeBackupAsClusterAdmin', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'takeRuntimeBackupAsClusterAdmin', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -16130,7 +16130,7 @@ export function throwJobError(core: CamundaCore, arg: any, options?: OperationOp
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'throwJobError', exempt: true, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'throwJobError', exempt: true, retryOverride: options?.retry, signal });
   });
 }
 
@@ -16203,7 +16203,7 @@ export function triggerClusterRebalance(core: CamundaCore, arg: any, options?: O
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'triggerClusterRebalance', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'triggerClusterRebalance', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -16268,7 +16268,7 @@ export function unassignClientFromGroup(core: CamundaCore, arg: any, options?: O
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'unassignClientFromGroup', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'unassignClientFromGroup', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -16333,7 +16333,7 @@ export function unassignClientFromTenant(core: CamundaCore, arg: any, options?: 
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'unassignClientFromTenant', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'unassignClientFromTenant', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -16398,7 +16398,7 @@ export function unassignGroupFromTenant(core: CamundaCore, arg: any, options?: O
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'unassignGroupFromTenant', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'unassignGroupFromTenant', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -16461,7 +16461,7 @@ export function unassignMappingRuleFromGroup(core: CamundaCore, arg: any, option
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'unassignMappingRuleFromGroup', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'unassignMappingRuleFromGroup', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -16524,7 +16524,7 @@ export function unassignMappingRuleFromTenant(core: CamundaCore, arg: any, optio
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'unassignMappingRuleFromTenant', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'unassignMappingRuleFromTenant', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -16587,7 +16587,7 @@ export function unassignRoleFromClient(core: CamundaCore, arg: any, options?: Op
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'unassignRoleFromClient', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'unassignRoleFromClient', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -16650,7 +16650,7 @@ export function unassignRoleFromGroup(core: CamundaCore, arg: any, options?: Ope
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'unassignRoleFromGroup', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'unassignRoleFromGroup', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -16713,7 +16713,7 @@ export function unassignRoleFromMappingRule(core: CamundaCore, arg: any, options
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'unassignRoleFromMappingRule', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'unassignRoleFromMappingRule', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -16779,7 +16779,7 @@ export function unassignRoleFromTenant(core: CamundaCore, arg: any, options?: Op
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'unassignRoleFromTenant', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'unassignRoleFromTenant', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -16842,7 +16842,7 @@ export function unassignRoleFromUser(core: CamundaCore, arg: any, options?: Oper
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'unassignRoleFromUser', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'unassignRoleFromUser', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -16907,7 +16907,7 @@ export function unassignUserFromGroup(core: CamundaCore, arg: any, options?: Ope
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'unassignUserFromGroup', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'unassignUserFromGroup', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -16972,7 +16972,7 @@ export function unassignUserFromTenant(core: CamundaCore, arg: any, options?: Op
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'unassignUserFromTenant', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'unassignUserFromTenant', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -17036,7 +17036,7 @@ export function unassignUserTask(core: CamundaCore, arg: any, options?: Operatio
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'unassignUserTask', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'unassignUserTask', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -17108,7 +17108,7 @@ export function updateAgentInstance(core: CamundaCore, arg: any, options?: Opera
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'updateAgentInstance', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'updateAgentInstance', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -17177,7 +17177,7 @@ export function updateAuthorization(core: CamundaCore, arg: any, options?: Opera
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'updateAuthorization', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'updateAuthorization', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -17248,7 +17248,7 @@ export function updateGlobalClusterVariable(core: CamundaCore, arg: any, options
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'updateGlobalClusterVariable', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'updateGlobalClusterVariable', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -17317,7 +17317,7 @@ export function updateGlobalTaskListener(core: CamundaCore, arg: any, options?: 
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'updateGlobalTaskListener', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'updateGlobalTaskListener', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -17386,7 +17386,7 @@ export function updateGroup(core: CamundaCore, arg: any, options?: OperationOpti
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'updateGroup', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'updateGroup', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -17455,7 +17455,7 @@ export function updateJob(core: CamundaCore, arg: any, options?: OperationOption
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'updateJob', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'updateJob', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -17519,7 +17519,7 @@ export function updateJobsBatchOperation(core: CamundaCore, arg: any, options?: 
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'updateJobsBatchOperation', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'updateJobsBatchOperation', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -17589,7 +17589,7 @@ export function updateMappingRule(core: CamundaCore, arg: any, options?: Operati
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'updateMappingRule', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'updateMappingRule', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -17658,7 +17658,7 @@ export function updateRole(core: CamundaCore, arg: any, options?: OperationOptio
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'updateRole', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'updateRole', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -17727,7 +17727,7 @@ export function updateTenant(core: CamundaCore, arg: any, options?: OperationOpt
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'updateTenant', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'updateTenant', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -17798,7 +17798,7 @@ export function updateTenantClusterVariable(core: CamundaCore, arg: any, options
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'updateTenantClusterVariable', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'updateTenantClusterVariable', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -17867,7 +17867,7 @@ export function updateUser(core: CamundaCore, arg: any, options?: OperationOptio
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'updateUser', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'updateUser', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 
@@ -17937,7 +17937,7 @@ export function updateUserTask(core: CamundaCore, arg: any, options?: OperationO
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'updateUserTask', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'updateUserTask', exempt: false, retryOverride: options?.retry, signal });
   });
 }
 

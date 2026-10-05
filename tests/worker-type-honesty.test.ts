@@ -40,8 +40,7 @@ describe('type honesty: optional fields must not throw when omitted', () => {
   });
 
   it('createCamundaCore succeeds with no arguments', () => {
-    // The `./fn` core factory accepts the same entirely-optional CamundaOptions;
-    // omitting it must not throw (guards createCamundaCore()/new CamundaCore()).
+    // CamundaOptions is entirely optional — zero required fields.
     const core = createCamundaCore();
     expect(core).toBeInstanceOf(CamundaCore);
   });

@@ -609,7 +609,7 @@ export class CamundaClientBase extends CamundaCore {
    */
   cancelClusterRebalance(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.cancelClusterRebalance>>;
   cancelClusterRebalance(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return Ops.cancelClusterRebalance(this, options);
+    return Ops.cancelClusterRebalance(this, options ?? arg);
   }
 
   /**
@@ -1819,7 +1819,7 @@ export class CamundaClientBase extends CamundaCore {
    */
   deleteRuntimeBackupState(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteRuntimeBackupState>>;
   deleteRuntimeBackupState(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return Ops.deleteRuntimeBackupState(this, options);
+    return Ops.deleteRuntimeBackupState(this, options ?? arg);
   }
 
   /**
@@ -2153,7 +2153,7 @@ export class CamundaClientBase extends CamundaCore {
    */
   getAuthentication(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getAuthentication>>;
   getAuthentication(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return Ops.getAuthentication(this, options);
+    return Ops.getAuthentication(this, options ?? arg);
   }
 
   /**
@@ -2233,7 +2233,7 @@ export class CamundaClientBase extends CamundaCore {
    */
   getClusterExportingStatus(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getClusterExportingStatus>>;
   getClusterExportingStatus(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return Ops.getClusterExportingStatus(this, options);
+    return Ops.getClusterExportingStatus(this, options ?? arg);
   }
 
   /**
@@ -2266,7 +2266,7 @@ export class CamundaClientBase extends CamundaCore {
    */
   getClusterRebalance(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getClusterRebalance>>;
   getClusterRebalance(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return Ops.getClusterRebalance(this, options);
+    return Ops.getClusterRebalance(this, options ?? arg);
   }
 
   /**
@@ -2291,7 +2291,7 @@ export class CamundaClientBase extends CamundaCore {
    */
   getClusterStatus(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getClusterStatus>>;
   getClusterStatus(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return Ops.getClusterStatus(this, options);
+    return Ops.getClusterStatus(this, options ?? arg);
   }
 
   /**
@@ -2328,7 +2328,7 @@ export class CamundaClientBase extends CamundaCore {
    */
   getClusterTopology(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getClusterTopology>>;
   getClusterTopology(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return Ops.getClusterTopology(this, options);
+    return Ops.getClusterTopology(this, options ?? arg);
   }
 
   /**
@@ -2351,7 +2351,7 @@ export class CamundaClientBase extends CamundaCore {
    */
   getClusterUpgradeStatus(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getClusterUpgradeStatus>>;
   getClusterUpgradeStatus(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return Ops.getClusterUpgradeStatus(this, options);
+    return Ops.getClusterUpgradeStatus(this, options ?? arg);
   }
 
   /**
@@ -2574,7 +2574,7 @@ export class CamundaClientBase extends CamundaCore {
    */
   getExportingStatus(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getExportingStatus>>;
   getExportingStatus(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return Ops.getExportingStatus(this, options);
+    return Ops.getExportingStatus(this, options ?? arg);
   }
 
   /**
@@ -2963,7 +2963,7 @@ export class CamundaClientBase extends CamundaCore {
    */
   getLicense(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getLicense>>;
   getLicense(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return Ops.getLicense(this, options);
+    return Ops.getLicense(this, options ?? arg);
   }
 
   /**
@@ -3527,7 +3527,7 @@ export class CamundaClientBase extends CamundaCore {
    */
   getRestoreStatus(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getRestoreStatus>>;
   getRestoreStatus(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return Ops.getRestoreStatus(this, options);
+    return Ops.getRestoreStatus(this, options ?? arg);
   }
 
   /**
@@ -3646,7 +3646,7 @@ export class CamundaClientBase extends CamundaCore {
    */
   getRuntimeBackupState(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getRuntimeBackupState>>;
   getRuntimeBackupState(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return Ops.getRuntimeBackupState(this, options);
+    return Ops.getRuntimeBackupState(this, options ?? arg);
   }
 
   /**
@@ -3732,7 +3732,7 @@ export class CamundaClientBase extends CamundaCore {
    */
   getStatus(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getStatus>>;
   getStatus(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return Ops.getStatus(this, options);
+    return Ops.getStatus(this, options ?? arg);
   }
 
   /**
@@ -3760,7 +3760,7 @@ export class CamundaClientBase extends CamundaCore {
    */
   getSystemConfiguration(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getSystemConfiguration>>;
   getSystemConfiguration(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return Ops.getSystemConfiguration(this, options);
+    return Ops.getSystemConfiguration(this, options ?? arg);
   }
 
   /**
@@ -3841,7 +3841,7 @@ export class CamundaClientBase extends CamundaCore {
    */
   getTopology(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getTopology>>;
   getTopology(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return Ops.getTopology(this, options);
+    return Ops.getTopology(this, options ?? arg);
   }
 
   /**
@@ -4468,7 +4468,7 @@ export class CamundaClientBase extends CamundaCore {
    */
   resetClock(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.resetClock>>;
   resetClock(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return Ops.resetClock(this, options);
+    return Ops.resetClock(this, options ?? arg);
   }
 
   /**
@@ -4722,7 +4722,7 @@ export class CamundaClientBase extends CamundaCore {
    */
   resumeClusterExporting(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.resumeClusterExporting>>;
   resumeClusterExporting(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return Ops.resumeClusterExporting(this, options);
+    return Ops.resumeClusterExporting(this, options ?? arg);
   }
 
   /**
@@ -4744,7 +4744,7 @@ export class CamundaClientBase extends CamundaCore {
    */
   resumeExporting(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.resumeExporting>>;
   resumeExporting(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return Ops.resumeExporting(this, options);
+    return Ops.resumeExporting(this, options ?? arg);
   }
 
   /**
@@ -6463,7 +6463,7 @@ export class CamundaClientBase extends CamundaCore {
    */
   syncRuntimeBackupState(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.syncRuntimeBackupState>>;
   syncRuntimeBackupState(arg?: any, options?: OperationOptions): CancelablePromise<any> {
-    return Ops.syncRuntimeBackupState(this, options);
+    return Ops.syncRuntimeBackupState(this, options ?? arg);
   }
 
   /**

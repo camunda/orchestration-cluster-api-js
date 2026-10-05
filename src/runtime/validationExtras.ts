@@ -1,7 +1,15 @@
-import { ZodObject, type ZodTypeAny } from 'zod';
+import type { ZodObject, ZodTypeAny } from 'zod';
 import { CamundaValidationError } from './errors';
 import type { Logger } from './logger';
 import { node } from '#platform';
+
+/**
+ * Structural check for a zod object schema (incl. loose/strict/extended). Not
+ * `instanceof ZodObject`, so this module does not load zod eagerly.
+ */
+function isZodObject(s: unknown): s is ZodObject<any> {
+  return (s as { _zod?: { def?: { type?: unknown } } } | undefined)?._zod?.def?.type === 'object';
+}
 
 export type ExtrasPolicy = 'ignore' | 'warn' | 'error';
 
@@ -27,12 +35,12 @@ function hash(str: string) {
 export function detectExtrasAndMaybeThrow(opts: DetectOptions) {
   const { value, schema, settings, fanatical, operationId, logger } = opts;
   if (!value || typeof value !== 'object') return; // only objects
-  if (!schema || !(schema instanceof ZodObject)) return; // root must be object for meaningful diff
+  if (!schema || !isZodObject(schema)) return; // root must be object for meaningful diff
   const extras: Record<string, string[]> = {};
 
   const visit = (val: any, sch: ZodTypeAny | undefined, path: string) => {
     if (!val || typeof val !== 'object') return;
-    if (sch instanceof ZodObject) {
+    if (isZodObject(sch)) {
       const shape = (sch as ZodObject<any>).shape;
       const expected = new Set(Object.keys(shape));
       const keys = Object.keys(val);

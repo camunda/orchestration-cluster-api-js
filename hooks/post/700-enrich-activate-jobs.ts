@@ -73,12 +73,18 @@ function patchFile(
 
   // Inject enrichment logic inside implementation before returning data
   if (opts.injectEnrichment && !alreadyInjected) {
+    // Anchor on the implementation signature — note the trailing ` {`. Without it the
+    // match can land on an overload/declaration line (which ends in `;`), and the
+    // splice below would then hit some other operation's body.
     const implStart = src.indexOf(
-      `${head}arg: any, options?: OperationOptions): CancelablePromise<any>`
+      `${head}arg: any, options?: OperationOptions): CancelablePromise<any> {`
     );
     if (implStart === -1) throw new Error(`activateJobs implementation not found in ${filePath}`);
     {
       const slice = src.slice(implStart);
+      // Anchor on the FIRST `return data;` after the implementation signature. Later
+      // hooks (e.g. 710's present-when guards) splice their own statements ABOVE this
+      // final return, so the enrichment lands after them and wraps every success path.
       const returnPos = slice.indexOf('return data;');
       if (returnPos !== -1) {
         const before = src.slice(0, implStart) + slice.slice(0, returnPos);
@@ -86,7 +92,25 @@ function patchFile(
         // A CamundaClient (the class delegates here with `this`) is passed through
         // unchanged, so job actions call its methods exactly as before. A bare
         // CamundaCore gets an adapter routing the actions to the standalone functions.
-        const inject = `if (data && data.jobs) { data.jobs = data.jobs.map((j: any) => enrichActivatedJob(j, _jobActionsClient(core), core.logger().scope(\`job:${'$'}{j.jobKey}\`))); }\n      return data;`;
+        // The adapter is computed once per response (not per job): for a bare core it
+        // allocates five closures, so building it inside `map` would multiply that by
+        // the batch size for no benefit — it captures only `core`, never the job.
+        // Skip the enrichment ONLY for an empty `jobs` array — the common polling result.
+        // `_jobActionsClient(core)` on a bare core allocates the adapter object and five
+        // closures (and on a client performs five method checks) even though `map` over an
+        // empty array never runs, so skip adapter creation when there is nothing to enrich.
+        // The guard gates ONLY the empty-array case (`Array.isArray(data.jobs) &&
+        // data.jobs.length === 0`) and is NEGATED, so EVERY other value falls through to
+        // `.map()`: a non-empty real array is enriched, and a truthy NON-ARRAY `jobs`
+        // (a malformed response) reaches `.map`, where `.map is not a function` throws a
+        // TypeError — preserving the previous unconditional `.map()` behavior that
+        // surfaced malformed data instead of returning a value that violates the declared
+        // response type. The inverse form (requiring `Array.isArray(...) && length > 0` to
+        // ENTER the map) is WRONG: a truthy non-array fails that test, skips the map, and
+        // is returned silently — the opposite of the invariant.
+        // NOTE: the `if (data && data.jobs) {` … `data.jobs = data.jobs.map(` shape is
+        // a splice anchor for hook 710's present-when guards — keep it verbatim.
+        const inject = `if (data && data.jobs) { if (!(Array.isArray(data.jobs) && data.jobs.length === 0)) { const _client = _jobActionsClient(core); data.jobs = data.jobs.map((j: any) => enrichActivatedJob(j, _client, core.logger().scope(\`job:${'$'}{j.jobKey}\`))); } }\n      return data;`;
         src = before + inject + after;
       }
     }

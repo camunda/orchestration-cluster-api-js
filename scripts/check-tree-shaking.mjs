@@ -61,15 +61,20 @@ const HEAVY = {
  *    core, against FN.opBudget. An operation that reached the whole schema module
  *    (or another operation's code) would add ~700 KB and trip this.
  *
- * Measured on introduction: core ~138 KB; operations add 4–60 KB (median ~31 KB,
- * activateJobs largest: it carries job-action enrichment); all 244 operations
- * together ~863 KB.
+ * zod is not part of the core: the validation runtime recognises zod values
+ * structurally, so zod arrives only with an operation's (lazily imported) schemas.
+ * Each operation increment therefore includes zod itself (~68 KB).
+ *
+ * Measured: core ~70 KB (was ~138 KB while the core imported zod eagerly);
+ * operations add ~72–128 KB including zod (activateJobs largest: it carries
+ * job-action enrichment). coreBudget is set so that zod re-entering the core
+ * (+~68 KB) fails the gate.
  */
 const FN = {
   subpath: './fn',
   coreExports: ['createCamundaCore', 'CamundaCore'],
-  coreBudget: 160 * 1024,
-  opBudget: 96 * 1024,
+  coreBudget: 80 * 1024,
+  opBudget: 144 * 1024,
 };
 
 const require = createRequire(import.meta.url);

@@ -377,8 +377,17 @@ function patchClient(
     // One guard per marker, each keyed on its own request field, literal and
     // marked property so a second marker on the same operation is NOT skipped by
     // the first marker's idempotence marker.
-    const enrichAnchor = `if (data && data.${arr}) { data.${arr} = data.${arr}.map(`;
-    if (src.includes(enrichAnchor)) {
+    //
+    // The anchor is the enrichment splice emitted by hook 700. Its current shape
+    // hoists the job-actions adapter into a `const _client = …` statement between
+    // the `if (data && data.<arr>) {` opener and the `.map(`, so match the opener
+    // and the `.map(` separately and splice the guard between them (after any
+    // hoisted statements, immediately before the `.map(`).
+    const enrichOpen = `if (data && data.${arr}) {`;
+    const enrichMap = `data.${arr} = data.${arr}.map(`;
+    const openIdx = src.indexOf(enrichOpen);
+    const mapIdx = openIdx === -1 ? -1 : src.indexOf(enrichMap, openIdx);
+    if (mapIdx !== -1) {
       for (const m of g.markers) {
         const f = m.requestField;
         const lit = scalarLiteral(m.equals);
@@ -391,7 +400,7 @@ function patchClient(
         const guard = `${guardMark} if (data && data.${arr} && _body && (_body as any).${f} === ${lit}) { for (const _el of data.${arr}) { if (_el.${m.prop} == null) { const _e: any = new Error(${JSON.stringify(
           message
         )}); _e.name = 'PresentWhenUnsupportedError'; _e.nonRetryable = true; throw _e; } } }\n        `;
-        src = src.replace(enrichAnchor, guard + enrichAnchor);
+        src = src.slice(0, mapIdx) + guard + src.slice(mapIdx);
       }
     }
     for (const m of g.markers) boundMarkers.add(m);

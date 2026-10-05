@@ -85,3 +85,60 @@ describe('generated _jobActionsClient pass-through guard', () => {
     );
   });
 });
+
+/**
+ * Regression (Copilot round 13): the enrichment splice hoisted
+ * `const _client = _jobActionsClient(core)` ahead of `data.jobs.map(...)` guarded only by
+ * `if (data && data.jobs)`. An empty `jobs` array is the common polling result and is
+ * truthy, so every empty bare-core poll allocated the adapter object and five closures (and
+ * every client poll performed five method checks) even though `map` over an empty array
+ * never runs. The adapter must be created only when there is at least one job to enrich.
+ */
+describe('activateJobs enrichment skips adapter creation for an empty jobs array', () => {
+  it('guards _jobActionsClient(core) behind a non-empty jobs check', () => {
+    const src = readGenerated();
+    const enrichIdx = src.indexOf('if (data && data.jobs) {');
+    expect(enrichIdx, 'activateJobs enrichment splice not found').toBeGreaterThan(-1);
+    // The adapter creation must be guarded so it does not run for an empty array. The
+    // guard skips ONLY the empty-array case (`!(Array.isArray(data.jobs) &&
+    // data.jobs.length === 0)`) and must appear between the `if (data && data.jobs) {`
+    // opener and the `_jobActionsClient(core)` call it protects.
+    const clientIdx = src.indexOf('_jobActionsClient(core)', enrichIdx);
+    expect(clientIdx, 'adapter creation not found after enrichment opener').toBeGreaterThan(
+      enrichIdx
+    );
+    const between = src.slice(enrichIdx, clientIdx);
+    expect(
+      /!\(Array\.isArray\(data\.jobs\) && data\.jobs\.length === 0\)/.test(between),
+      'adapter creation must be guarded by `!(Array.isArray(data.jobs) && data.jobs.length === 0)` so an empty poll does not allocate it'
+    ).toBe(true);
+  });
+
+  // Regression (Copilot rounds 18–19, previously-missed): the empty-poll optimization first
+  // guarded adapter creation with `data.jobs.length > 0` alone, then with
+  // `Array.isArray(data.jobs) && data.jobs.length > 0`. BOTH positive forms gate *entry*
+  // to the map, so a truthy NON-ARRAY `jobs` value (a malformed response) fails the test,
+  // skips the map, and is returned silently — whereas the previous unconditional `.map()`
+  // threw a TypeError on the malformed value instead of returning data that violates the
+  // declared response type. The guard must skip ONLY an empty real array (a NEGATED
+  // `=== 0` check) so every non-array still reaches the throwing `.map` path.
+  it('restricts the empty-response optimization to actual empty arrays only', () => {
+    const src = readGenerated();
+    const enrichIdx = src.indexOf('if (data && data.jobs) {');
+    expect(enrichIdx, 'activateJobs enrichment splice not found').toBeGreaterThan(-1);
+    const clientIdx = src.indexOf('_jobActionsClient(core)', enrichIdx);
+    expect(clientIdx).toBeGreaterThan(enrichIdx);
+    const between = src.slice(enrichIdx, clientIdx);
+    // The skip must be a NEGATED empty-array check so a non-array falls through to `.map()`.
+    expect(
+      /!\(Array\.isArray\(data\.jobs\) && data\.jobs\.length === 0\)/.test(between),
+      'enrichment skip must be `!(Array.isArray(data.jobs) && data.jobs.length === 0)` so a malformed truthy non-array `jobs` still reaches the throwing `.map` path'
+    ).toBe(true);
+    // … and neither positive-entry form (either truthiness-only or `isArray && length > 0`)
+    // must come back — both silently accept a truthy non-array `jobs`.
+    expect(
+      /data\.jobs\.length > 0/.test(between),
+      'a positive `data.jobs.length > 0` entry guard silently accepts a truthy non-array `jobs` (undefined > 0 is false)'
+    ).toBe(false);
+  });
+});
