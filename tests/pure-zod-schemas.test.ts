@@ -1104,4 +1104,108 @@ describe('wrapSchemaInitialisers', () => {
       expect(out).toContain(`export const zFoo = ${WRAP}z.object(`);
     });
   });
+
+  // Regression (Copilot round 22): the alias branch accepted ANY identifier initialiser,
+  // including a destructuring binding name (`const { value } = importedProxy`). A
+  // destructuring declaration synchronously runs a property read / the iterator protocol
+  // (a getter or Proxy trap) at module load, yet the alias branch silently `continue`d
+  // instead of failing closed. Only an identifier-to-identifier declaration is a reviewed
+  // alias/schema shape; every destructuring binding name — regardless of its initialiser
+  // kind — must fail closed so the hook is extended deliberately.
+  describe('destructuring binding guard (fail the whole class)', () => {
+    const cases: Array<[string, string[]]> = [
+      [
+        'object destructuring from an imported identifier (getter/Proxy get trap)',
+        ['const { value } = importedProxy;'],
+      ],
+      [
+        'array destructuring from an imported identifier (iterator protocol)',
+        ['const [first] = importedProxy;'],
+      ],
+      [
+        'renamed object destructuring from an imported identifier',
+        ['const { value: v } = importedProxy;'],
+      ],
+      [
+        'object destructuring from a proven schema (schema getter)',
+        ['export const zFoo = z.object({ a: z.string() });', 'const { shape } = zFoo;'],
+      ],
+      [
+        'object destructuring from a pure schema-construction call',
+        ['const { shape } = z.object({ a: z.string() });'],
+      ],
+    ];
+    for (const [name, decls] of cases) {
+      it(`fails closed on ${name}`, () => {
+        const src = [
+          "import * as z from 'zod';",
+          "import { importedProxy } from './side-effect';",
+          ...decls,
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/destructuring/);
+      });
+    }
+
+    it('still leaves an identifier-to-identifier alias untouched', () => {
+      const src = [
+        "import * as z from 'zod';",
+        'export const zFoo = z.object({});',
+        'export const zAlias = zFoo;',
+      ].join('\n');
+      const out = wrapSchemaInitialisers(src);
+      expect(out).toContain('export const zAlias = zFoo;');
+    });
+  });
+
+  // Regression (Copilot round 22): the eager-side-effect walk missed computed property-name
+  // coercion. `z.object({ [key]: z.string() })` evaluates `key[Symbol.toPrimitive]`/
+  // `toString` (or a Proxy trap) at module load, yet the visitor saw only a bare identifier
+  // and accepted the initialiser — letting the pure wrapper make that effect droppable. A
+  // non-inert computed property-name key must fail closed exactly like a template
+  // substitution or a coercive operator; a literal computed key runs no user code and a
+  // computed key inside a deferred callback is not eager.
+  describe('eager computed property names (fail the whole class)', () => {
+    const cases: Array<[string, string]> = [
+      ['identifier key (Symbol.toPrimitive/toString)', 'z.object({ [importedKey]: z.string() })'],
+      [
+        'template-literal key with a non-inert substitution',
+        'z.object({ [`k${importedKey}`]: z.string() })',
+      ],
+      ['call-expression key (eager invocation)', 'z.object({ [makeKey()]: z.string() })'],
+      [
+        'nested computed key inside an object schema',
+        'z.object({ outer: z.object({ [importedKey]: z.string() }) })',
+      ],
+    ];
+    for (const [name, initExpr] of cases) {
+      it(`fails closed on ${name}`, () => {
+        const src = [
+          "import * as z from 'zod';",
+          "import { importedKey, makeKey } from './side-effect';",
+          `export const zEvil = ${initExpr};`,
+        ].join('\n');
+        expect(() => wrapSchemaInitialisers(src)).toThrow(/zEvil/);
+      });
+    }
+
+    it('still wraps a statically inert (literal) computed property key', () => {
+      // A string/numeric literal key runs no user code, so it stays wrappable.
+      const src = [
+        "import * as z from 'zod';",
+        "export const zFoo = z.object({ ['a']: z.string(), [0]: z.number() });",
+      ].join('\n');
+      const out = wrapSchemaInitialisers(src);
+      expect(out).toContain(`export const zFoo = ${WRAP}z.object(`);
+    });
+
+    it('still wraps a computed property key inside a deferred callback body (not eager)', () => {
+      const src = [
+        "import * as z from 'zod';",
+        "import { importedKey } from './side-effect';",
+        'export const zFoo = z.lazy(() => z.object({ [importedKey]: z.string() }));',
+      ].join('\n');
+      const out = wrapSchemaInitialisers(src);
+      expect(out).toContain(`export const zFoo = ${WRAP}z.lazy(`);
+    });
+  });
 });

@@ -88,11 +88,25 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
       for (const decl of st.declarationList.declarations) {
         const init = decl.initializer;
         if (!init) continue;
+        // Fail closed on a DESTRUCTURING binding name. An object (`const { value } =
+        // importedProxy`) or array (`const [first] = importedArr`) binding synchronously
+        // runs a property read / the iterator protocol — a getter or Proxy trap — at module
+        // load, yet carries no call for the traversal below to flag. Only an
+        // identifier-to-X declaration is a reviewed schema/alias shape; a destructuring
+        // declaration is reported here (rather than slipping through the alias or call
+        // branch, both of which only check `decl.name` before recording a name) so the hook
+        // is extended deliberately. After this guard `decl.name` is always an identifier.
+        if (!ts.isIdentifier(decl.name)) {
+          problems.push(
+            `${decl.name.getText(sf)}: destructuring binding is not a reviewed schema declaration — ${init.getText(sf).slice(0, 120)}`
+          );
+          continue;
+        }
         if (ts.isIdentifier(init)) {
           // Alias: no side effect of its own. It is a proven schema only when its target
           // is — so an alias of a schema (`const a = zFoo`) stays a valid call root, while
           // an alias of anything else (`const h = sideEffect`) does not.
-          if (schemaNames.has(init.text) && ts.isIdentifier(decl.name)) {
+          if (schemaNames.has(init.text)) {
             schemaNames.add(decl.name.text);
           }
           continue;
@@ -151,7 +165,8 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
               );
               continue;
             }
-            if (ts.isIdentifier(decl.name)) schemaNames.add(decl.name.text);
+            // `decl.name` is an identifier (destructuring failed closed above).
+            schemaNames.add(decl.name.text);
             continue;
           }
           const svc = nonSchemaNamespaceRoot(init);
@@ -202,8 +217,9 @@ export function wrapSchemaInitialisers(src: string, fileName = 'zod.gen.ts'): st
             text: `${PURE_IIFE_PREFIX}${exprText})()`,
           });
           // Recognised as a schema construction: record it so a later schema rooted at
-          // this one (`zNext = zThis.and(...)`) is also recognised.
-          if (ts.isIdentifier(decl.name)) schemaNames.add(decl.name.text);
+          // this one (`zNext = zThis.and(...)`) is also recognised. `decl.name` is an
+          // identifier (destructuring failed closed above).
+          schemaNames.add(decl.name.text);
           continue;
         }
         problems.push(`${decl.name.getText(sf)}: initialiser kind ${ts.SyntaxKind[init.kind]}`);
@@ -502,6 +518,19 @@ function findUnreviewedEagerCall(init: ts.Expression, schemaNames: Set<string>):
     ) {
       bad =
         'template-literal substitution on a non-inert operand (runs Symbol.toPrimitive/toString eagerly)';
+      return;
+    }
+    // A COMPUTED PROPERTY NAME coerces its key expression to a property key at module
+    // evaluation: `z.object({ [importedObj]: z.string() })` runs the key's
+    // `Symbol.toPrimitive`/`toString` (or a Proxy trap) now, exactly like a template
+    // substitution or a coercive operator, yet carries no call for the invocation classifier
+    // to flag — so without this branch the initialiser is wrapped `/*#__PURE__*/` and a
+    // bundler can drop that coercion side effect with the schema. Fail closed unless the key
+    // expression is statically inert (a literal key such as `['a']`/`[0]` runs no user code;
+    // a call/template/identifier key does not). A computed key inside a deferred callback is
+    // not eager and is skipped above.
+    if (ts.isComputedPropertyName(node) && !isStaticallyInertOperand(node.expression)) {
+      bad = 'computed property name on a non-inert key (runs Symbol.toPrimitive/toString eagerly)';
       return;
     }
     if (ts.isPostfixUnaryExpression(node)) {
