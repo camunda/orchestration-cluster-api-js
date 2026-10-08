@@ -5989,7 +5989,7 @@ export function getAgentDefinition(core: CamundaCore, arg: any, /** Management o
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getAgentDefinition', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getAgentDefinition', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -6057,7 +6057,7 @@ export function getAgentInstance(core: CamundaCore, arg: any, /** Management of 
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getAgentInstance', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getAgentInstance', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -6125,7 +6125,7 @@ export function getAuditLog(core: CamundaCore, arg: any, /** Management of event
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getAuditLog', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getAuditLog', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -6244,7 +6244,7 @@ export function getAuthorization(core: CamundaCore, arg: any, /** Management of 
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getAuthorization', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getAuthorization', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -6312,7 +6312,7 @@ export function getBatchOperation(core: CamundaCore, arg: any, /** Management of
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getBatchOperation', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getBatchOperation', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -6643,7 +6643,7 @@ export function getDecisionDefinition(core: CamundaCore, arg: any, /** Managemen
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getDecisionDefinition', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getDecisionDefinition', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -6711,7 +6711,7 @@ export function getDecisionDefinitionXml(core: CamundaCore, arg: any, /** Manage
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getDecisionDefinitionXML', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getDecisionDefinitionXML', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -6779,7 +6779,7 @@ export function getDecisionInstance(core: CamundaCore, arg: any, /** Management 
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getDecisionInstance', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getDecisionInstance', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -6847,7 +6847,7 @@ export function getDecisionRequirements(core: CamundaCore, arg: any, /** Managem
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getDecisionRequirements', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getDecisionRequirements', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -6915,7 +6915,7 @@ export function getDecisionRequirementsXml(core: CamundaCore, arg: any, /** Mana
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getDecisionRequirementsXML', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getDecisionRequirementsXML', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -7055,7 +7055,7 @@ export function getElementInstance(core: CamundaCore, arg: any, /** Management o
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getElementInstance', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getElementInstance', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -7182,7 +7182,7 @@ export function getFormByKey(core: CamundaCore, arg: any, /** Management of even
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getFormByKey', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getFormByKey', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -7250,7 +7250,7 @@ export function getGlobalClusterVariable(core: CamundaCore, arg: any, /** Manage
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getGlobalClusterVariable', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getGlobalClusterVariable', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -7319,7 +7319,7 @@ export function getGlobalJobStatistics(core: CamundaCore, arg: any, /** Manageme
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getGlobalJobStatistics', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getGlobalJobStatistics', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -7387,7 +7387,7 @@ export function getGlobalTaskListener(core: CamundaCore, arg: any, /** Managemen
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getGlobalTaskListener', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getGlobalTaskListener', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -7455,7 +7455,7 @@ export function getGroup(core: CamundaCore, arg: any, /** Management of eventual
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getGroup', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getGroup', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -7663,7 +7663,7 @@ export function getIncident(core: CamundaCore, arg: any, /** Management of event
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getIncident', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getIncident', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -7732,7 +7732,7 @@ export function getJobErrorStatistics(core: CamundaCore, arg: any, /** Managemen
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getJobErrorStatistics', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getJobErrorStatistics', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -7803,7 +7803,7 @@ export function getJobTimeSeriesStatistics(core: CamundaCore, arg: any, /** Mana
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getJobTimeSeriesStatistics', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getJobTimeSeriesStatistics', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -7872,7 +7872,7 @@ export function getJobTypeStatistics(core: CamundaCore, arg: any, /** Management
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getJobTypeStatistics', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getJobTypeStatistics', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -7941,7 +7941,7 @@ export function getJobWorkerStatistics(core: CamundaCore, arg: any, /** Manageme
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getJobWorkerStatistics', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getJobWorkerStatistics', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -8061,7 +8061,7 @@ export function getMappingRule(core: CamundaCore, arg: any, /** Management of ev
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getMappingRule', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getMappingRule', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -8129,7 +8129,7 @@ export function getProcessDefinition(core: CamundaCore, arg: any, /** Management
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getProcessDefinition', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getProcessDefinition', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -8198,7 +8198,7 @@ export function getProcessDefinitionInstanceStatistics(core: CamundaCore, arg: a
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getProcessDefinitionInstanceStatistics', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getProcessDefinitionInstanceStatistics', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -8268,7 +8268,7 @@ export function getProcessDefinitionInstanceVersionStatistics(core: CamundaCore,
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getProcessDefinitionInstanceVersionStatistics', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getProcessDefinitionInstanceVersionStatistics', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -8337,7 +8337,7 @@ export function getProcessDefinitionMessageSubscriptionStatistics(core: CamundaC
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getProcessDefinitionMessageSubscriptionStatistics', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getProcessDefinitionMessageSubscriptionStatistics', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -8411,7 +8411,7 @@ export function getProcessDefinitionStatistics(core: CamundaCore, arg: any, /** 
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getProcessDefinitionStatistics', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getProcessDefinitionStatistics', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -8479,7 +8479,7 @@ export function getProcessDefinitionXml(core: CamundaCore, arg: any, /** Managem
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getProcessDefinitionXML', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getProcessDefinitionXML', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -8547,7 +8547,7 @@ export function getProcessInstance(core: CamundaCore, arg: any, /** Management o
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getProcessInstance', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getProcessInstance', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -8615,7 +8615,7 @@ export function getProcessInstanceCallHierarchy(core: CamundaCore, arg: any, /**
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getProcessInstanceCallHierarchy', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getProcessInstanceCallHierarchy', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -8683,7 +8683,7 @@ export function getProcessInstanceSequenceFlows(core: CamundaCore, arg: any, /**
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getProcessInstanceSequenceFlows', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getProcessInstanceSequenceFlows', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -8751,7 +8751,7 @@ export function getProcessInstanceStatistics(core: CamundaCore, arg: any, /** Ma
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getProcessInstanceStatistics', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getProcessInstanceStatistics', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -8822,7 +8822,7 @@ export function getProcessInstanceStatisticsByDefinition(core: CamundaCore, arg:
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getProcessInstanceStatisticsByDefinition', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getProcessInstanceStatisticsByDefinition', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -8892,7 +8892,7 @@ export function getProcessInstanceStatisticsByError(core: CamundaCore, arg: any,
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getProcessInstanceStatisticsByError', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getProcessInstanceStatisticsByError', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -8960,7 +8960,7 @@ export function getProcessInstanceWaitStateStatistics(core: CamundaCore, arg: an
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getProcessInstanceWaitStateStatistics', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getProcessInstanceWaitStateStatistics', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -9034,7 +9034,7 @@ export function getResource(core: CamundaCore, arg: any, /** Management of event
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getResource', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getResource', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -9112,7 +9112,7 @@ export function getResourceContent(core: CamundaCore, arg: any, /** Management o
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getResourceContent', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getResourceContent', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -9186,7 +9186,7 @@ export function getResourceContentBinary(core: CamundaCore, arg: any, /** Manage
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getResourceContentBinary', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getResourceContentBinary', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -9305,7 +9305,7 @@ export function getRole(core: CamundaCore, arg: any, /** Management of eventual 
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getRole', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getRole', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -9633,7 +9633,7 @@ export function getStartProcessForm(core: CamundaCore, arg: any, /** Management 
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getStartProcessForm', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getStartProcessForm', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -9808,7 +9808,7 @@ export function getTenant(core: CamundaCore, arg: any, /** Management of eventua
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getTenant', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getTenant', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -9876,7 +9876,7 @@ export function getTenantClusterVariable(core: CamundaCore, arg: any, /** Manage
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getTenantClusterVariable', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getTenantClusterVariable', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -9995,7 +9995,7 @@ export function getUsageMetrics(core: CamundaCore, arg: any, /** Management of e
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getUsageMetrics', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getUsageMetrics', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -10063,7 +10063,7 @@ export function getUser(core: CamundaCore, arg: any, /** Management of eventual 
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getUser', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getUser', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -10131,7 +10131,7 @@ export function getUserTask(core: CamundaCore, arg: any, /** Management of event
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getUserTask', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getUserTask', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -10201,7 +10201,7 @@ export function getUserTaskForm(core: CamundaCore, arg: any, /** Management of e
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getUserTaskForm', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getUserTaskForm', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -10273,7 +10273,7 @@ export function getVariable(core: CamundaCore, arg: any, /** Management of event
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('getVariable', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('getVariable', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -12043,7 +12043,7 @@ export function searchAgentDefinitions(core: CamundaCore, arg: any, /** Manageme
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchAgentDefinitions', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchAgentDefinitions', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -12119,7 +12119,7 @@ export function searchAgentInstanceHistory(core: CamundaCore, arg: any, /** Mana
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchAgentInstanceHistory', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchAgentInstanceHistory', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -12187,7 +12187,7 @@ export function searchAgentInstances(core: CamundaCore, arg: any, /** Management
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchAgentInstances', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchAgentInstances', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -12255,7 +12255,7 @@ export function searchAuditLogs(core: CamundaCore, arg: any, /** Management of e
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchAuditLogs', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchAuditLogs', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -12323,7 +12323,7 @@ export function searchAuthorizations(core: CamundaCore, arg: any, /** Management
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchAuthorizations', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchAuthorizations', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -12391,7 +12391,7 @@ export function searchBatchOperationItems(core: CamundaCore, arg: any, /** Manag
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchBatchOperationItems', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchBatchOperationItems', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -12459,7 +12459,7 @@ export function searchBatchOperations(core: CamundaCore, arg: any, /** Managemen
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchBatchOperations', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchBatchOperations', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -12533,7 +12533,7 @@ export function searchClientsForGroup(core: CamundaCore, arg: any, /** Managemen
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchClientsForGroup', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchClientsForGroup', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -12607,7 +12607,7 @@ export function searchClientsForRole(core: CamundaCore, arg: any, /** Management
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchClientsForRole', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchClientsForRole', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -12681,7 +12681,7 @@ export function searchClientsForTenant(core: CamundaCore, arg: any, /** Manageme
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchClientsForTenant', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchClientsForTenant', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -12753,7 +12753,7 @@ export function searchClusterVariables(core: CamundaCore, arg: any, /** Manageme
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchClusterVariables', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchClusterVariables', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -12821,7 +12821,7 @@ export function searchCorrelatedMessageSubscriptions(core: CamundaCore, arg: any
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchCorrelatedMessageSubscriptions', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchCorrelatedMessageSubscriptions', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -12889,7 +12889,7 @@ export function searchDecisionDefinitions(core: CamundaCore, arg: any, /** Manag
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchDecisionDefinitions', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchDecisionDefinitions', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -12957,7 +12957,7 @@ export function searchDecisionInstances(core: CamundaCore, arg: any, /** Managem
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchDecisionInstances', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchDecisionInstances', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -13025,7 +13025,7 @@ export function searchDecisionRequirements(core: CamundaCore, arg: any, /** Mana
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchDecisionRequirements', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchDecisionRequirements', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -13106,7 +13106,7 @@ export function searchElementInstanceIncidents(core: CamundaCore, arg: any, /** 
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchElementInstanceIncidents', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchElementInstanceIncidents', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -13174,7 +13174,7 @@ export function searchElementInstances(core: CamundaCore, arg: any, /** Manageme
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchElementInstances', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchElementInstances', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -13243,7 +13243,7 @@ export function searchElementInstanceWaitStates(core: CamundaCore, arg: any, /**
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchElementInstanceWaitStates', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchElementInstanceWaitStates', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -13311,7 +13311,7 @@ export function searchGlobalTaskListeners(core: CamundaCore, arg: any, /** Manag
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchGlobalTaskListeners', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchGlobalTaskListeners', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -13385,7 +13385,7 @@ export function searchGroupIdsForTenant(core: CamundaCore, arg: any, /** Managem
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchGroupIdsForTenant', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchGroupIdsForTenant', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -13453,7 +13453,7 @@ export function searchGroups(core: CamundaCore, arg: any, /** Management of even
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchGroups', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchGroups', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -13527,7 +13527,7 @@ export function searchGroupsForRole(core: CamundaCore, arg: any, /** Management 
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchGroupsForRole', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchGroupsForRole', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -13596,7 +13596,7 @@ export function searchIncidents(core: CamundaCore, arg: any, /** Management of e
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchIncidents', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchIncidents', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -13664,7 +13664,7 @@ export function searchJobs(core: CamundaCore, arg: any, /** Management of eventu
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchJobs', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchJobs', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -13733,7 +13733,7 @@ export function searchMappingRule(core: CamundaCore, arg: any, /** Management of
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchMappingRule', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchMappingRule', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -13807,7 +13807,7 @@ export function searchMappingRulesForGroup(core: CamundaCore, arg: any, /** Mana
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchMappingRulesForGroup', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchMappingRulesForGroup', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -13881,7 +13881,7 @@ export function searchMappingRulesForRole(core: CamundaCore, arg: any, /** Manag
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchMappingRulesForRole', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchMappingRulesForRole', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -13955,7 +13955,7 @@ export function searchMappingRulesForTenant(core: CamundaCore, arg: any, /** Man
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchMappingRulesForTenant', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchMappingRulesForTenant', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -14036,7 +14036,7 @@ export function searchMessageSubscriptions(core: CamundaCore, arg: any, /** Mana
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchMessageSubscriptions', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchMessageSubscriptions', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -14104,7 +14104,7 @@ export function searchOwnAuthorizations(core: CamundaCore, arg: any, /** Managem
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchOwnAuthorizations', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchOwnAuthorizations', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -14172,7 +14172,7 @@ export function searchProcessDefinitions(core: CamundaCore, arg: any, /** Manage
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchProcessDefinitions', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchProcessDefinitions', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -14246,7 +14246,7 @@ export function searchProcessDefinitionVariableNames(core: CamundaCore, arg: any
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchProcessDefinitionVariableNames', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchProcessDefinitionVariableNames', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -14326,7 +14326,7 @@ export function searchProcessInstanceIncidents(core: CamundaCore, arg: any, /** 
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchProcessInstanceIncidents', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchProcessInstanceIncidents', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -14394,7 +14394,7 @@ export function searchProcessInstances(core: CamundaCore, arg: any, /** Manageme
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchProcessInstances', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchProcessInstances', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -14468,7 +14468,7 @@ export function searchResources(core: CamundaCore, arg: any, /** Management of e
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchResources', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchResources', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -14536,7 +14536,7 @@ export function searchRoles(core: CamundaCore, arg: any, /** Management of event
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchRoles', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchRoles', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -14610,7 +14610,7 @@ export function searchRolesForGroup(core: CamundaCore, arg: any, /** Management 
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchRolesForGroup', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchRolesForGroup', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -14684,7 +14684,7 @@ export function searchRolesForTenant(core: CamundaCore, arg: any, /** Management
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchRolesForTenant', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchRolesForTenant', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -14752,7 +14752,7 @@ export function searchTenants(core: CamundaCore, arg: any, /** Management of eve
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchTenants', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchTenants', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -14820,7 +14820,7 @@ export function searchUsers(core: CamundaCore, arg: any, /** Management of event
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchUsers', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchUsers', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -14894,7 +14894,7 @@ export function searchUsersForGroup(core: CamundaCore, arg: any, /** Management 
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchUsersForGroup', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchUsersForGroup', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -14968,7 +14968,7 @@ export function searchUsersForRole(core: CamundaCore, arg: any, /** Management o
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchUsersForRole', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchUsersForRole', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -15042,7 +15042,7 @@ export function searchUsersForTenant(core: CamundaCore, arg: any, /** Management
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchUsersForTenant', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchUsersForTenant', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -15116,7 +15116,7 @@ export function searchUserTaskAuditLogs(core: CamundaCore, arg: any, /** Managem
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchUserTaskAuditLogs', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchUserTaskAuditLogs', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -15202,7 +15202,7 @@ export function searchUserTaskEffectiveVariables(core: CamundaCore, arg: any, /*
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchUserTaskEffectiveVariables', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchUserTaskEffectiveVariables', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -15270,7 +15270,7 @@ export function searchUserTasks(core: CamundaCore, arg: any, /** Management of e
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchUserTasks', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchUserTasks', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -15357,7 +15357,7 @@ export function searchUserTaskVariables(core: CamundaCore, arg: any, /** Managem
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchUserTaskVariables', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchUserTaskVariables', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
@@ -15439,7 +15439,7 @@ export function searchVariables(core: CamundaCore, arg: any, /** Management of e
       }
     };
     const invoke = () => toCancelable(()=>call());
-    if (useConsistency) return eventualPoll('searchVariables', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock });
+    if (useConsistency) return eventualPoll('searchVariables', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }
