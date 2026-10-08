@@ -7487,7 +7487,7 @@ export const zCamundaUserResult = /*#__PURE__*/ (() => z.object({
     displayName: z.string().nullable(),
     email: z.string().nullable(),
     authorizedComponents: z.array(z.string()).register(z.globalRegistry, {
-        description: 'The web components the user is authorized to use.'
+        description: 'The web components the user is authorized to use. When authorizations are disabled for the cluster, this always returns `["*"]`, regardless of the user\'s actual permissions, since access is not restricted in that case.'
     }),
     tenants: z.array(zTenantResult).register(z.globalRegistry, {
         description: 'The tenants the user is a member of.'

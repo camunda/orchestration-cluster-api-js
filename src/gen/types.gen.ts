@@ -1683,7 +1683,7 @@ export type CamundaUserResult = {
      */
     email: string | null;
     /**
-     * The web components the user is authorized to use.
+     * The web components the user is authorized to use. When authorizations are disabled for the cluster, this always returns `["*"]`, regardless of the user's actual permissions, since access is not restricted in that case.
      */
     authorizedComponents: Array<string>;
     /**
@@ -23927,7 +23927,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:cd3a6bc273e10d952cf4c4827ff9babd9b13d8cabea400f7ed8be56e7cba9969
+// specHash=sha256:ef3e3ea3faf064de0df57d4b6d28c8828ca86cbb95a0ea815f38e8ce559ebedd
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
