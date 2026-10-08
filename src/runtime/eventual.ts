@@ -7,6 +7,7 @@ import type { Result } from '../resultClient';
 import { type Clock, liveClock } from './clock';
 import { EventualConsistencyTimeoutError } from './errors';
 import type { Logger } from './logger';
+import { liveRandom, type RandomSource } from './random';
 import { hydrateConfig } from './unifiedConfiguration';
 
 export interface CancelablePromise<T> extends Promise<T> {
@@ -67,6 +68,7 @@ type PollInvokeResult<T> =
 type EventualInternals = {
   logger?: Logger;
   clock?: Clock;
+  random?: RandomSource;
 };
 
 // errorMode: 'throw' returns CancelablePromise<T> rejecting on errors; 'result' resolves with Result<T> never throwing.
@@ -93,6 +95,7 @@ export function eventualPoll<T>(
 ): CancelablePromise<any> {
   const { waitUpToMs, predicate, onAttempt, onComplete, abortSignal, trace } = options;
   const clock = options.clock ?? liveClock;
+  const random = options.random ?? liveRandom;
   const elog = options.logger?.scope('eventual');
   const pollDefaultMs = hydrateConfig().config.eventual?.pollDefaultMs || 500;
   const userInterval = options.pollIntervalMs;
@@ -250,7 +253,7 @@ export function eventualPoll<T>(
               if (!Number.isNaN(parsed)) delay = parsed < 1000 ? parsed * 1000 : parsed;
             }
             delay = Math.min(delay, pollInterval * 5, 2000, remaining);
-            const jitter = 0.9 + Math.random() * 0.2;
+            const jitter = 0.9 + random.next() * 0.2;
             delay = Math.floor(delay * jitter);
             onAttempt?.({
               attempt: attempts,

@@ -1,5 +1,6 @@
 import { type Clock, liveClock } from './clock';
 import type { Logger } from './logger';
+import { liveRandom, type RandomSource } from './random';
 import type {
   TelemetryAuthErrorEvent,
   TelemetryAuthStartEvent,
@@ -59,7 +60,8 @@ class OAuthManager {
     private logger: Logger,
     private tHooks?: TelemetryHooks,
     private correlationProvider?: () => string | undefined,
-    private clock: Clock = liveClock
+    private clock: Clock = liveClock,
+    private random: RandomSource = liveRandom
   ) {
     const hashBase = `${cfg.oauth.oauthUrl}|${cfg.oauth.clientId || ''}|${cfg.tokenAudience}|${cfg.oauth.scope || ''}`;
     this.storageKey = `camunda_oauth_token_cache_${this.simpleHash(hashBase)}`;
@@ -288,7 +290,7 @@ class OAuthManager {
         attempt++;
         if (attempt >= max) break;
         const delay = base * 2 ** (attempt - 1);
-        const jitter = delay * 0.2 * (Math.random() - 0.5); // +/-20%
+        const jitter = delay * 0.2 * (this.random.next() - 0.5); // +/-10%
         const sleep = delay + jitter;
         try {
           // Emit retry event (domain auth) with computed next delay
@@ -371,6 +373,7 @@ export function createAuthFacade(
     telemetryHooks?: TelemetryHooks;
     correlationProvider?: () => string | undefined;
     clock?: Clock;
+    random?: RandomSource;
   }
 ): AuthFacade {
   const cfg = config;
@@ -398,7 +401,8 @@ export function createAuthFacade(
       authLogger.scope('oauth'),
       tHooks,
       opts?.correlationProvider,
-      opts?.clock ?? liveClock
+      opts?.clock ?? liveClock,
+      opts?.random ?? liveRandom
     );
   else if (cfg.auth.strategy === 'BASIC') basic = new BasicAuthManager(cfg);
   const fetcher = (input: RequestInfo, init?: RequestInit) =>

@@ -523,7 +523,7 @@ export type ${o.opId}Consistency = {
       if (o.eventual) {
         methods.push('      const invoke = () => toCancelable(()=>call());');
         methods.push(
-          `      if (useConsistency) return eventualPoll('${o.originalOpId}', ${o.verb === 'get'}, invoke, { ...useConsistency, logger: this._log, clock: this._clock });`
+          `      if (useConsistency) return eventualPoll('${o.originalOpId}', ${o.verb === 'get'}, invoke, { ...useConsistency, logger: this._log, clock: this._clock, random: this._random });`
         );
         methods.push('      return invoke();');
       } else {
@@ -591,7 +591,7 @@ export type ${o.opId}Consistency = {
       if (o.eventual) {
         methods.push('      const invoke = () => toCancelable(()=>call());');
         methods.push(
-          `      if (useConsistency) return eventualPoll('${o.originalOpId}', true, invoke, { ...useConsistency, logger: (this as any)._log, clock: (this as any)._clock });`
+          `      if (useConsistency) return eventualPoll('${o.originalOpId}', true, invoke, { ...useConsistency, logger: (this as any)._log, clock: (this as any)._clock, random: (this as any)._random });`
         );
         methods.push('      return invoke();');
       } else {

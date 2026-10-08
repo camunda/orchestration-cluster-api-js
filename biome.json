@@ -104,7 +104,7 @@
     },
     {
       "includes": ["src/runtime/**", "src/template/**"],
-      "plugins": ["./plugins/no-ambient-time.grit"]
+      "plugins": ["./plugins/no-ambient-time.grit", "./plugins/no-ambient-random.grit"]
     }
   ]
 }

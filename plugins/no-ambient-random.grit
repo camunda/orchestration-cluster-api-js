@@ -1,0 +1,17 @@
+engine biome(1.0)
+language js(typescript)
+
+// SDK jitter must draw from the injected random source so a seeded test reproduces it
+// (camunda/sdk-infra#50). `src/runtime/random.ts` is the single module allowed to read the
+// platform generator. Identifier generation is out of scope; exempt such a site with
+// `// biome-ignore lint/plugin: <why this is not jitter>`.
+or {
+  `Math.random()` as $ambient where {
+    register_diagnostic(span=$ambient, message="Draw jitter from the injected random source: `random.next()`, or `liveRandom.next()` where no client is in scope. A non-jitter use (an identifier) is exempted per line with `// biome-ignore lint/plugin: <reason>`.", severity="error")
+  },
+  // A bare reference captures the platform generator, so an injected source never sees it.
+  `Math.random` as $ambient where {
+    $ambient <: not within `Math.random()` ,
+    register_diagnostic(span=$ambient, message="Passing `Math.random` by reference bypasses the injected random source. Pass `() => random.next()` instead.", severity="error")
+  }
+}

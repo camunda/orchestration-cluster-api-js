@@ -22,8 +22,8 @@ describe('job worker activation backoff', () => {
   });
 
   it('backs off exponentially on failure then resets to pollIntervalMs on success', async () => {
-    // rng() === 0 makes each backoff deterministic (== cap/2).
-    vi.spyOn(Math, 'random').mockReturnValue(0);
+    // A source that always draws 0 makes each backoff deterministic (== cap/2).
+    const random = { next: () => 0 };
 
     let calls = 0;
 
@@ -46,6 +46,7 @@ describe('job worker activation backoff', () => {
       // the deterministic timer schedule under test.
       env: {},
       fetch: fetchMock as any,
+      random,
     });
     const setTimeoutSpy = vi.spyOn(global, 'setTimeout');
 

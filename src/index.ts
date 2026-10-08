@@ -51,6 +51,14 @@ export {
   type SearchPageResponse,
   type SearchResponse,
 } from './runtime/pagination';
+export {
+  createSeededRandom,
+  liveRandom,
+  type RandomSource,
+  SEED_ENV_VAR,
+  type SeededRandom,
+  seededRandomFromEnv,
+} from './runtime/random';
 export type { HttpRetryPolicy, OperationOptions } from './runtime/retry';
 export type {
   SearchPaginateOptions,
