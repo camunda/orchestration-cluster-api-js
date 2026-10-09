@@ -20,6 +20,7 @@ import type { EnvOverrides } from './configSchema';
 import { normalizeError } from './errors';
 import { installAuthInterceptor } from './installAuthInterceptor';
 import { createLogger, type Logger, type LogLevel, type LogTransport } from './logger';
+import { liveRandom, type RandomSource } from './random';
 import { evaluateSdkResponse } from './responseEvaluation';
 import { defaultHttpClassifier, executeWithHttpRetry, type HttpRetryPolicy } from './retry';
 import { createSupportLogger, type SupportLogger, writeSupportLogPreamble } from './supportLogger';
@@ -66,6 +67,10 @@ export interface CamundaOptions {
   // to drive those loops in tests without waiting for real time. Defaults to the live clock.
   // Liveness bounds — shutdown drains and request timeouts — deliberately do not use it.
   clock?: Clock;
+  // Randomness behind SDK-internal jitter (retry and activation backoff, startup staggering).
+  // Inject `createSeededRandom(seed)` alongside a test clock to make that cadence
+  // reproducible as well as virtual. Defaults to the live, unseeded source.
+  random?: RandomSource;
   /**
    * Explicit component discriminator for support diagnostics. Set only by SDK-internal
    * subclasses: `CamundaClientBase` passes `'CamundaClient'` so the construction log names
@@ -86,6 +91,7 @@ export interface OperationRuntime {
   readonly _validation: ValidationManager;
   readonly _client: Client;
   readonly _clock: Clock;
+  readonly _random: RandomSource;
   _evaluateResponse(
     raw: any,
     opId: string,
@@ -128,6 +134,7 @@ export class CamundaCore {
   protected _log: Logger = createLogger();
   protected _bp: BackpressureManager;
   protected _clock: Clock;
+  protected _random: RandomSource;
   /** Support logger (Node-only; no-op in browser). */
   protected _supportLogger: SupportLogger = new (class implements SupportLogger {
     log() {}
@@ -151,6 +158,7 @@ export class CamundaCore {
   constructor(opts: CamundaOptions = {}) {
     if (opts.config) this._overrides = { ...opts.config };
     this._clock = opts.clock ?? createLiveClock();
+    this._random = opts.random ?? liveRandom;
     const { config } = hydrateConfig({ overrides: this._overrides, env: opts.env });
     this._config = deepFreeze(config) as Readonly<CamundaConfig>;
     // Initialize per-client logger
@@ -219,6 +227,7 @@ export class CamundaCore {
       fetch: this._fetch,
       logger: this._log,
       clock: this._clock,
+      random: this._random,
       telemetryHooks: opts.telemetry?.hooks,
       correlationProvider:
         opts.telemetry?.correlation || (!opts.telemetry && this._config.telemetry?.correlation)
@@ -352,6 +361,7 @@ export class CamundaCore {
       fetch: this._fetch,
       logger: this._log,
       clock: this._clock,
+      random: this._random,
       telemetryHooks: next.telemetry?.hooks,
       correlationProvider:
         next.telemetry?.correlation || (!next.telemetry && this._config.telemetry?.correlation)
@@ -470,7 +480,8 @@ export class CamundaCore {
           return decision;
         },
         undefined,
-        this._clock
+        this._clock,
+        this._random
       );
       this._bp.recordHealthyHint();
       return result;
@@ -493,6 +504,10 @@ export class CamundaCore {
   /** Clock backing SDK-internal cadence. The injected one when supplied, else the live clock. */
   get clock(): Clock {
     return this._clock;
+  }
+  /** Randomness behind SDK-internal jitter. The injected source when supplied, else the live one. */
+  get random(): RandomSource {
+    return this._random;
   }
   /** Public accessor for current backpressure adaptive limiter state (stable) */
   getBackpressureState() {

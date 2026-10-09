@@ -11,6 +11,8 @@
  * thundering herd). The backoff resets to zero the moment a poll succeeds.
  */
 
+import { liveRandom } from './random';
+
 /** Default floor of the backoff window (first retry ≈ 0.5–1s). */
 export const DEFAULT_POLL_BACKOFF_MIN_MS = 1000;
 /** Default ceiling of the backoff window. */
@@ -31,7 +33,7 @@ export interface PollBackoffOptions {
   /** Maximum delay in ms; the backoff never exceeds this. */
   maxMs: number;
   /**
-   * Injectable RNG for deterministic tests; defaults to `Math.random` (which
+   * Injectable RNG for deterministic tests; defaults to the live random source (which
    * yields `[0, 1)`). Any returned value is clamped to `[0, 1]`, so an injected
    * `1` is accepted and maps to the inclusive upper bound of the jitter window.
    */
@@ -51,7 +53,7 @@ export interface PollBackoffOptions {
  * @returns a non-negative integer delay in milliseconds.
  */
 export function computePollBackoffMs(attempt: number, opts: PollBackoffOptions): number {
-  const rng = opts.rng ?? Math.random;
+  const rng = opts.rng ?? (() => liveRandom.next());
   // Defensively normalise every input. This helper is fed user-provided config
   // (`pollBackoffMinMs`/`pollBackoffMaxMs`) and an injectable rng, any of which
   // could be NaN, negative, fractional, or absurdly large. Normalise min/max to

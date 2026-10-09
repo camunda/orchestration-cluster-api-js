@@ -201,21 +201,27 @@ export class JobWorker {
    */
   start() {
     if (this._stopped) return;
+    let jitterMs = 0;
     const accepted = this._startGate.request(
-      () => this._beginPolling(),
+      () => this._beginPolling(jitterMs),
       (err) => this._log.error('worker.start.transportError', err)
     );
     if (!accepted) {
       this._log.debug('worker.start.alreadyRequested');
       return;
     }
+    // Drawn at start(), not once the transport is ready, so workers started in sequence draw in order.
+    jitterMs = this._drawStartupJitterMs();
     this._log.info('worker.start');
   }
 
-  private _beginPolling() {
+  private _drawStartupJitterMs(): number {
     const jitterMax = this._cfg.startupJitterMaxSeconds ?? 0;
-    if (jitterMax > 0) {
-      const jitterMs = Math.floor(Math.random() * jitterMax * 1000);
+    return jitterMax > 0 ? Math.floor(this._client.random.next() * jitterMax * 1000) : 0;
+  }
+
+  private _beginPolling(jitterMs: number) {
+    if (jitterMs > 0) {
       this._log.info(() => ['worker.start.jitter', { delayMs: jitterMs }]);
       this._scheduleNext(jitterMs);
     } else {
@@ -337,7 +343,9 @@ export class JobWorker {
       // is disabled (pollBackoffMinMs <= 0) it falls back to the normal poll
       // interval rather than 0, which would spin an even tighter retry loop than
       // the old behaviour — the opposite of what "disable" should mean.
-      const delayMs = nextActivationRetryDelayMs(this._consecutiveActivationErrors, this._cfg);
+      const delayMs = nextActivationRetryDelayMs(this._consecutiveActivationErrors, this._cfg, () =>
+        this._client.random.next()
+      );
       this._log.error('activation.error', e);
       this._log.debug(() => [
         'activation.retry',
