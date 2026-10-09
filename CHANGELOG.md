@@ -1,3 +1,10 @@
+# [10.0.0-alpha.53](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.52...v10.0.0-alpha.53) (2026-10-09)
+
+
+### Features
+
+* draw runtime jitter from an injected, seedable RandomSource ([#548](https://github.com/camunda/orchestration-cluster-api-js/issues/548)) ([59c5f37](https://github.com/camunda/orchestration-cluster-api-js/commit/59c5f3720b5c054e90a618d3880693a78ae84082)), closes [camunda/sdk-infra#50](https://github.com/camunda/sdk-infra/issues/50) [camunda/sdk-infra#50](https://github.com/camunda/sdk-infra/issues/50)
+
 # [10.0.0-alpha.52](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.51...v10.0.0-alpha.52) (2026-10-02)
 
 
