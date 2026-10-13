@@ -1,3 +1,122 @@
+# [10.0.0](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.0.0...v10.0.0) (2026-10-13)
+
+
+* feat!: bootstrap SDK 10.x for Camunda server 8.10 ([92c590f](https://github.com/camunda/orchestration-cluster-api-js/commit/92c590f77ba80b5b199b187f64515acead91a16e))
+
+
+### Bug Fixes
+
+* add built-in defaults for maxParallelJobs and jobTimeoutMs in worker constructors ([58250b3](https://github.com/camunda/orchestration-cluster-api-js/commit/58250b3d798ad00b10335d4617cd8119e2c220a2)), closes [#145](https://github.com/camunda/orchestration-cluster-api-js/issues/145)
+* add range constraint for main branch alpha prereleases ([7e35488](https://github.com/camunda/orchestration-cluster-api-js/commit/7e35488db4921ae10e883324c226665ecedd3af3))
+* add range to stable branch config for semantic-release ordering ([3087736](https://github.com/camunda/orchestration-cluster-api-js/commit/3087736b786b48fef62810da9c884305ce2d2788))
+* adopt upstream wait-state details union in example ([8f8603c](https://github.com/camunda/orchestration-cluster-api-js/commit/8f8603cd1ed445ab8062c15d525598a5c36084d4))
+* adopt upstream wait-state details union in example ([07ed89c](https://github.com/camunda/orchestration-cluster-api-js/commit/07ed89c0eb2db17f7979ebd57c88983f8561a137))
+* apply eventual consistency only to first searchVariablesAsDto search ([29387b0](https://github.com/camunda/orchestration-cluster-api-js/commit/29387b0b478e0c9a4d1dd0eaaf82c0481be5ddd8))
+* branch-aware release config — constrain stable branches with range ([5d3e751](https://github.com/camunda/orchestration-cluster-api-js/commit/5d3e751687d7347bb37827ce6c575325c83b1d13))
+* change default CAMUNDA_SDK_LOG_LEVEL from 'error' to 'info' ([839b7ab](https://github.com/camunda/orchestration-cluster-api-js/commit/839b7abb95fee0e7802980802aa1117b2473486c)), closes [#274](https://github.com/camunda/orchestration-cluster-api-js/issues/274)
+* **ci:** align the agent verify gate with the CI gates ([957083c](https://github.com/camunda/orchestration-cluster-api-js/commit/957083c96e14ad9012a5514f59ef0e147a1a4eba))
+* **ci:** fail closed when the verify gate is empty ([35c6f05](https://github.com/camunda/orchestration-cluster-api-js/commit/35c6f059b021a4f688795e21994c9d9bac18da7c))
+* **ci:** stop interpolating the issue body into an unquoted heredoc ([631ee22](https://github.com/camunda/orchestration-cluster-api-js/commit/631ee22057402027b543fe91904c561f2826b303))
+* **ci:** tell the agent which commands actually gate its work ([de6e466](https://github.com/camunda/orchestration-cluster-api-js/commit/de6e4661794c6e3e2d80a7cf72efba76098c13f2))
+* **client:** make generated fetch client work on Deno and Bun ([9260000](https://github.com/camunda/orchestration-cluster-api-js/commit/92600004f344a41d7ea5a5158484a98a440c2be3))
+* **client:** reject transport errors regardless of throwOnError ([c1df143](https://github.com/camunda/orchestration-cluster-api-js/commit/c1df143fb001e7b2fb3e928c9c218e52b400a5e1)), closes [#405](https://github.com/camunda/orchestration-cluster-api-js/issues/405)
+* **client:** sanitize SSE onRequest init and harden the compat hook ([12eff25](https://github.com/camunda/orchestration-cluster-api-js/commit/12eff25fadac6ce45ca28f2c469ccdeb878bf98d))
+* **deps:** bump camunda-schema-bundler to 2.4.3 for IterationId generation ([16a7c5d](https://github.com/camunda/orchestration-cluster-api-js/commit/16a7c5ddccc52b60b0dab3efc6048daaba687013))
+* **deps:** bump camunda-schema-bundler to 2.4.3 for IterationId generation ([8a8cdae](https://github.com/camunda/orchestration-cluster-api-js/commit/8a8cdae5fe9327a991e9670e4aeb50c6d8591356))
+* **docker:** resolve ambiguous numberOfReplicas config ([ab81098](https://github.com/camunda/orchestration-cluster-api-js/commit/ab810980e7dc3b820f6630ba36b1e191e1dd04ae))
+* **docs:** restore the client method reference in the API docs ([#533](https://github.com/camunda/orchestration-cluster-api-js/issues/533)) ([72508ad](https://github.com/camunda/orchestration-cluster-api-js/commit/72508adf689fb2e5fd87f4e514bceb85102c98dd)), closes [#446](https://github.com/camunda/orchestration-cluster-api-js/issues/446)
+* document SDK major version creation workflow in MAINTAINER.md ([2b89502](https://github.com/camunda/orchestration-cluster-api-js/commit/2b8950221568b26564c05287173be2cc44c1962d))
+* **effect:** keep .paginate on the Effect client, as Streams ([#468](https://github.com/camunda/orchestration-cluster-api-js/issues/468)) ([b61cfbe](https://github.com/camunda/orchestration-cluster-api-js/commit/b61cfbe1b324b0a97bb1a77858c53c4de7156e37))
+* **examples:** group plannedChanges by physical tenant ([d494ce7](https://github.com/camunda/orchestration-cluster-api-js/commit/d494ce716fa83a6ef4d406dd77d9e0ffc0797f35))
+* **examples:** group plannedChanges by physical tenant ([525c176](https://github.com/camunda/orchestration-cluster-api-js/commit/525c1760c6f9fe6f7ef0efb06fd6eefa95f2cc8d))
+* **examples:** update agent instance examples to the batched-history API ([#466](https://github.com/camunda/orchestration-cluster-api-js/issues/466)) ([cf1bcb4](https://github.com/camunda/orchestration-cluster-api-js/commit/cf1bcb4f32f9612ec69f96a6fa99ae207db38540))
+* **gen:** apply CAMUNDA_DEFAULT_TENANT_ID to activateJobs tenantIds ([fb7c661](https://github.com/camunda/orchestration-cluster-api-js/commit/fb7c661ba1f24dcfcfd738c6e344df09a2e2c52d))
+* **gen:** derive semantic-key namespace helper types from alias primitive ([8889015](https://github.com/camunda/orchestration-cluster-api-js/commit/8889015ffc6ef4ec826c1379223ae5eb1465a8fd))
+* **gen:** derive semantic-key namespace helper types from alias primitive ([db969a5](https://github.com/camunda/orchestration-cluster-api-js/commit/db969a51a1a334e0ed0cc2e63868aae161c08054))
+* **gen:** forward-compatible generation for @hey-api/openapi-ts 0.97 ([ef36a46](https://github.com/camunda/orchestration-cluster-api-js/commit/ef36a4654eedb7bae905bd56a0b4854d6bbe7ebc))
+* **gen:** forward-compatible generation for @hey-api/openapi-ts 0.97 ([47c7713](https://github.com/camunda/orchestration-cluster-api-js/commit/47c77131da1b51dffebd4745913252697169e5ff))
+* **gen:** forward-compatible generation hooks for @hey-api/openapi-ts 0.96 ([2025d83](https://github.com/camunda/orchestration-cluster-api-js/commit/2025d8382d1a922c3bacd0ee946a57c551473270))
+* **gen:** forward-compatible generation hooks for @hey-api/openapi-ts 0.96 ([cb1bddd](https://github.com/camunda/orchestration-cluster-api-js/commit/cb1bdddf72eb44abf35dcbc243fac19adbc52013))
+* getResource is now eventually consistent ([60d6c93](https://github.com/camunda/orchestration-cluster-api-js/commit/60d6c9398934cf5786d444d88472ec8198705ee5))
+* mark agent-definition test scaffolds as todo with void unused local ([5ec2940](https://github.com/camunda/orchestration-cluster-api-js/commit/5ec2940b008314794b3f2a2263fa5f57d07a1ca8))
+* pass author-association to community notification workflow ([82e7f6e](https://github.com/camunda/orchestration-cluster-api-js/commit/82e7f6e5b34c60d122b93a302c84dda1fc28f6f9))
+* patch createWorker and createThreadedWorker to handle missing defaults ([5f9409c](https://github.com/camunda/orchestration-cluster-api-js/commit/5f9409ce9b3ee7051c08f8a72402ee278637ce2e))
+* remaining regressions from the @hey-api/openapi-ts 0.86.12 to 0.99.0 upgrade ([37d00cd](https://github.com/camunda/orchestration-cluster-api-js/commit/37d00cd8211af5938fb1ed5ae3320fe25b837a68))
+* remove range from current stable branch to fix ERELEASEBRANCHES ([3b99176](https://github.com/camunda/orchestration-cluster-api-js/commit/3b99176e3fca61dac333fae8d6509dca40202da6))
+* remove range from main prerelease branch config ([9e91aba](https://github.com/camunda/orchestration-cluster-api-js/commit/9e91aba7e425e6e2d7e48a25d4b5b8ec61cc479a))
+* **runtime:** back off job-worker activation retries on transport errors ([#411](https://github.com/camunda/orchestration-cluster-api-js/issues/411)) ([bccaabe](https://github.com/camunda/orchestration-cluster-api-js/commit/bccaabeffc995b30fcb83488538928e57c8de953))
+* **runtime:** keep node:worker_threads out of the public type surface ([685ee15](https://github.com/camunda/orchestration-cluster-api-js/commit/685ee15d86982251eb2c02ec3c01d809fc2eb9a9))
+* **runtime:** reject transport errors instead of silently swallowing them ([#406](https://github.com/camunda/orchestration-cluster-api-js/issues/406)) ([3f84418](https://github.com/camunda/orchestration-cluster-api-js/commit/3f844183442649cfe2a8b8673e3c819b81337553)), closes [#405](https://github.com/camunda/orchestration-cluster-api-js/issues/405)
+* send the job lease token under its renamed jobLeaseToken field ([#518](https://github.com/camunda/orchestration-cluster-api-js/issues/518)) ([5ed526b](https://github.com/camunda/orchestration-cluster-api-js/commit/5ed526bd31a74b246aaa31d655e2dde318b2afb3))
+* stop the response fixture re-stamping a timestamp on every build ([#530](https://github.com/camunda/orchestration-cluster-api-js/issues/530)) ([7857c34](https://github.com/camunda/orchestration-cluster-api-js/commit/7857c34d647e70b96375f510951aa34386244c3b)), closes [#519](https://github.com/camunda/orchestration-cluster-api-js/issues/519) [#519](https://github.com/camunda/orchestration-cluster-api-js/issues/519)
+* **types:** restore discriminators on JobResult and runtime instructions ([dcdf450](https://github.com/camunda/orchestration-cluster-api-js/commit/dcdf450a9ad6182ee6afdd5d5d12ab68b4a19253)), closes [#405](https://github.com/camunda/orchestration-cluster-api-js/issues/405)
+* update docker-compose env vars for 8.10 config schema ([d343d56](https://github.com/camunda/orchestration-cluster-api-js/commit/d343d56a54d6b83246e3a2b26b6ce2469c2de77c))
+* update RELEASE.md with correct promotion procedure and troubleshooting ([10660be](https://github.com/camunda/orchestration-cluster-api-js/commit/10660be8743465c9cd5370af7eed3999972a0716))
+* use it.skip instead of it.todo with a callback in test scaffolds ([f96e189](https://github.com/camunda/orchestration-cluster-api-js/commit/f96e189710b86fe4ecc414803d1bed507a89626f))
+* **validation:** validate path and query params, not just the request body ([5bc2c56](https://github.com/camunda/orchestration-cluster-api-js/commit/5bc2c56d92508cebef7bb43e04494d2f3972679e)), closes [#405](https://github.com/camunda/orchestration-cluster-api-js/issues/405)
+* wait for all declared variables at the collection level for searchVariablesAsDto ([ba2f911](https://github.com/camunda/orchestration-cluster-api-js/commit/ba2f911e1d6254d25ac68c3ebfaa690ef0d9067a))
+* **worker:** buffer start() until the transport is ready ([ad4d37f](https://github.com/camunda/orchestration-cluster-api-js/commit/ad4d37f6eeadffb89532af351bd80d404ffc2fde))
+* **worker:** buffer start() until the transport is ready ([708b544](https://github.com/camunda/orchestration-cluster-api-js/commit/708b544f79ffec9ef9060de0dea21ac8ecb2b207)), closes [#401](https://github.com/camunda/orchestration-cluster-api-js/issues/401)
+* **worker:** hand threaded handler modules to import() as file:// URLs ([#465](https://github.com/camunda/orchestration-cluster-api-js/issues/465)) ([8ef060e](https://github.com/camunda/orchestration-cluster-api-js/commit/8ef060e9ed39b33e5ef707520b8ced5d3713494e))
+
+
+### Features
+
+* add agent instance example coverage ([8a0072d](https://github.com/camunda/orchestration-cluster-api-js/commit/8a0072d03cf426ea895863d7cbdd87178c2e7e2f))
+* add createTestClock and a Clock contract conformance suite ([#479](https://github.com/camunda/orchestration-cluster-api-js/issues/479)) ([5beea42](https://github.com/camunda/orchestration-cluster-api-js/commit/5beea4241d27b01194960bda3555874ec0258bef)), closes [#477](https://github.com/camunda/orchestration-cluster-api-js/issues/477) [#476](https://github.com/camunda/orchestration-cluster-api-js/issues/476) [#451](https://github.com/camunda/orchestration-cluster-api-js/issues/451) [#476](https://github.com/camunda/orchestration-cluster-api-js/issues/476) [#474](https://github.com/camunda/orchestration-cluster-api-js/issues/474)
+* add example coverage for 4 new operations ([3a2c875](https://github.com/camunda/orchestration-cluster-api-js/commit/3a2c87577bcca87996cc77546216c68fb5124ec5))
+* add example coverage for 4 new operations ([6d757a4](https://github.com/camunda/orchestration-cluster-api-js/commit/6d757a4be85ba733f07bcd08c1b6ae33aacd6c15))
+* add example coverage for getAgentDefinition, searchAgentDefinitions ([e596713](https://github.com/camunda/orchestration-cluster-api-js/commit/e5967130f963939762d6ccf7508fac94e0c2fe76))
+* add example coverage for getClusterStatus, getRestoreStatus ([ef02297](https://github.com/camunda/orchestration-cluster-api-js/commit/ef02297ee69b1da3346457ff12bbc82c12785332))
+* add example coverage for getClusterUpgradeStatus ([#527](https://github.com/camunda/orchestration-cluster-api-js/issues/527)) ([aa27b85](https://github.com/camunda/orchestration-cluster-api-js/commit/aa27b859481d91436957467ed2054cc52b05bb15))
+* add example coverage for getProcessInstanceWaitStateStatistics ([9fa53ca](https://github.com/camunda/orchestration-cluster-api-js/commit/9fa53ca512a266ed29b23ceec6ccc9199240e4c8)), closes [camunda/orchestration-cluster-api-js#300](https://github.com/camunda/orchestration-cluster-api-js/issues/300)
+* add example coverage for restoreAsClusterAdmin, getClusterTopology ([#433](https://github.com/camunda/orchestration-cluster-api-js/issues/433)) ([fab79dc](https://github.com/camunda/orchestration-cluster-api-js/commit/fab79dc97b29c9dcc0c95f30833c832c690a0d6a)), closes [#432](https://github.com/camunda/orchestration-cluster-api-js/issues/432)
+* add example coverage for triggerClusterRebalance, getClusterRebalance, cancelClusterRebalance ([#455](https://github.com/camunda/orchestration-cluster-api-js/issues/455)) ([fe956ab](https://github.com/camunda/orchestration-cluster-api-js/commit/fe956ab6b42f8a2b7c44654b3434dcc22de3642d)), closes [#454](https://github.com/camunda/orchestration-cluster-api-js/issues/454)
+* add example-app for SDK smoke testing ([b70cfda](https://github.com/camunda/orchestration-cluster-api-js/commit/b70cfda993101fb1578869f5622b0f8d8bf87a03))
+* add searchVariablesAsDto for DTO-driven typed variable maps ([52a544f](https://github.com/camunda/orchestration-cluster-api-js/commit/52a544fcc37f7ecc86fcfa153859baf6cf653b9b))
+* add searchVariablesAsDto for DTO-driven typed variable maps ([67418f2](https://github.com/camunda/orchestration-cluster-api-js/commit/67418f2f9ccbdc8b535b82cb8a66ec77b66143e0))
+* add Slack notifications for release failures and community events ([051e782](https://github.com/camunda/orchestration-cluster-api-js/commit/051e78230ce2a2eeda53bdc604a99a783e4b5caa))
+* add Slack notifications for release failures and community events ([2981264](https://github.com/camunda/orchestration-cluster-api-js/commit/29812649034d2e961d65a7a80bd8bb2590e77dc1))
+* bind SDK cadence to the engine clock with createEngineClock ([#482](https://github.com/camunda/orchestration-cluster-api-js/issues/482)) ([8770212](https://github.com/camunda/orchestration-cluster-api-js/commit/8770212210097606b3400b8b98b6d2b452b1ff83)), closes [#450](https://github.com/camunda/orchestration-cluster-api-js/issues/450) [#450](https://github.com/camunda/orchestration-cluster-api-js/issues/450) [#467](https://github.com/camunda/orchestration-cluster-api-js/issues/467) [#474](https://github.com/camunda/orchestration-cluster-api-js/issues/474) [#476](https://github.com/camunda/orchestration-cluster-api-js/issues/476) [#477](https://github.com/camunda/orchestration-cluster-api-js/issues/477) [#479](https://github.com/camunda/orchestration-cluster-api-js/issues/479)
+* **clock:** add the injected clock and wire the client injection point ([#467](https://github.com/camunda/orchestration-cluster-api-js/issues/467)) ([a9b9ae1](https://github.com/camunda/orchestration-cluster-api-js/commit/a9b9ae1db45dedb83c7e7850ac631e003adcabbb)), closes [#450](https://github.com/camunda/orchestration-cluster-api-js/issues/450) [#451](https://github.com/camunda/orchestration-cluster-api-js/issues/451)
+* **clock:** expose the injected clock to job handlers as job.clock ([#476](https://github.com/camunda/orchestration-cluster-api-js/issues/476)) ([b59a829](https://github.com/camunda/orchestration-cluster-api-js/commit/b59a82927a6bf630f350ea5bc97680f55c349fe9))
+* **clock:** resolve runtime cadence through the injected clock ([#474](https://github.com/camunda/orchestration-cluster-api-js/issues/474)) ([303d10d](https://github.com/camunda/orchestration-cluster-api-js/commit/303d10de1e092c6bb7aa5b95ef036eaba9a47f06))
+* **config:** add CAMUNDA_REST_ADDRESS_EXACT to opt out of /v2 suffix ([#534](https://github.com/camunda/orchestration-cluster-api-js/issues/534)) ([2797790](https://github.com/camunda/orchestration-cluster-api-js/commit/27977905b38cebb1789d6724a6c7702d50bb8679)), closes [#499](https://github.com/camunda/orchestration-cluster-api-js/issues/499)
+* draw runtime jitter from an injected, seedable RandomSource ([#548](https://github.com/camunda/orchestration-cluster-api-js/issues/548)) ([59c5f37](https://github.com/camunda/orchestration-cluster-api-js/commit/59c5f3720b5c054e90a618d3880693a78ae84082)), closes [camunda/sdk-infra#50](https://github.com/camunda/sdk-infra/issues/50) [camunda/sdk-infra#50](https://github.com/camunda/sdk-infra/issues/50)
+* **effect:** Effect-native job-worker surface ([#444](https://github.com/camunda/orchestration-cluster-api-js/issues/444)) ([754c096](https://github.com/camunda/orchestration-cluster-api-js/commit/754c09625a930ff6507e7a5f0e6f0a050f80175e)), closes [#437](https://github.com/camunda/orchestration-cluster-api-js/issues/437) [#438](https://github.com/camunda/orchestration-cluster-api-js/issues/438)
+* **effect:** first-class Effect v4 surface, clean cut from experimental /fp ([#440](https://github.com/camunda/orchestration-cluster-api-js/issues/440)) ([04d2bd1](https://github.com/camunda/orchestration-cluster-api-js/commit/04d2bd1452e9196fb337deb2ecf50b3c5d179bf4)), closes [#437](https://github.com/camunda/orchestration-cluster-api-js/issues/437) [#437](https://github.com/camunda/orchestration-cluster-api-js/issues/437)
+* **examples:** add agent definition examples for getAgentDefinition and searchAgentDefinitions ([d613ac1](https://github.com/camunda/orchestration-cluster-api-js/commit/d613ac1069dbb253c6a91f900cb39ee94cef1eb7))
+* **examples:** add cluster admin and history backup example coverage ([185071c](https://github.com/camunda/orchestration-cluster-api-js/commit/185071c9a62eb7d8cf24f903ca36d66342c4e2bf))
+* **examples:** add coverage for 7 cluster-admin backup/exporting ops ([#442](https://github.com/camunda/orchestration-cluster-api-js/issues/442)) ([fdc805d](https://github.com/camunda/orchestration-cluster-api-js/commit/fdc805d2877e02b3cb7c89038e05ac9325d76c6a)), closes [#429](https://github.com/camunda/orchestration-cluster-api-js/issues/429) [#441](https://github.com/camunda/orchestration-cluster-api-js/issues/441)
+* **examples:** add coverage for 7 runtime backup cluster-admin ops ([#448](https://github.com/camunda/orchestration-cluster-api-js/issues/448)) ([504821d](https://github.com/camunda/orchestration-cluster-api-js/commit/504821d3bc2b7edd69efe5ded47df0e0a926a275))
+* **examples:** add getClusterStatus and getRestoreStatus examples ([b633b00](https://github.com/camunda/orchestration-cluster-api-js/commit/b633b00f71c4960b5620c56bc109cb41c527213e))
+* **examples:** add searchOwnAuthorizations example coverage ([a3749c3](https://github.com/camunda/orchestration-cluster-api-js/commit/a3749c392e725957ad22d7627b2161a6a4866165))
+* make the sdk bundleable for browsers via a #platform seam ([#538](https://github.com/camunda/orchestration-cluster-api-js/issues/538)) ([2270fd3](https://github.com/camunda/orchestration-cluster-api-js/commit/2270fd39b9fe1ad86816b95d7837faf30f162b13)), closes [#platform](https://github.com/camunda/orchestration-cluster-api-js/issues/platform) [#537](https://github.com/camunda/orchestration-cluster-api-js/issues/537) [#platform](https://github.com/camunda/orchestration-cluster-api-js/issues/platform) [#platform](https://github.com/camunda/orchestration-cluster-api-js/issues/platform) [#platform](https://github.com/camunda/orchestration-cluster-api-js/issues/platform) [#platform](https://github.com/camunda/orchestration-cluster-api-js/issues/platform) [#platform](https://github.com/camunda/orchestration-cluster-api-js/issues/platform) [#platform](https://github.com/camunda/orchestration-cluster-api-js/issues/platform)
+* make the sdk tree-shakeable for bundler consumers ([#539](https://github.com/camunda/orchestration-cluster-api-js/issues/539)) ([2c25a1e](https://github.com/camunda/orchestration-cluster-api-js/commit/2c25a1ee65325984d6f30a50742563e06fca3ee4)), closes [#537](https://github.com/camunda/orchestration-cluster-api-js/issues/537) [#537](https://github.com/camunda/orchestration-cluster-api-js/issues/537) [#541](https://github.com/camunda/orchestration-cluster-api-js/issues/541) [#537](https://github.com/camunda/orchestration-cluster-api-js/issues/537)
+* regenerate and update agentInstance examples ([#501](https://github.com/camunda/orchestration-cluster-api-js/issues/501)) ([093ffca](https://github.com/camunda/orchestration-cluster-api-js/commit/093ffca9593205585e197daa07fdd8909009fde7))
+* regenerate src/gen for wait-state details union and job priority-updated state ([e0e8c8c](https://github.com/camunda/orchestration-cluster-api-js/commit/e0e8c8c7e30b88799ec17f1c061a21241648ee7d))
+* regenerate src/gen for wait-state details union and job priority-updated state ([76c5f82](https://github.com/camunda/orchestration-cluster-api-js/commit/76c5f829efcf826ff180e3116c4bbf303254c2b6))
+* release SDK 10 for Camunda server 8.10 ([b5404ab](https://github.com/camunda/orchestration-cluster-api-js/commit/b5404ab449f08379b99119782eb7ebdde6df4813))
+* **runtime:** add .paginate() to every search operation ([#3](https://github.com/camunda/orchestration-cluster-api-js/issues/3)) ([#446](https://github.com/camunda/orchestration-cluster-api-js/issues/446)) ([fddb27c](https://github.com/camunda/orchestration-cluster-api-js/commit/fddb27c16410787912416309aa9de4e36057bf2c)), closes [Magikcraft/nano-bpm#954](https://github.com/Magikcraft/nano-bpm/issues/954)
+* v10 migration — bundler 2.4.1, branded type examples, README ([dd4a714](https://github.com/camunda/orchestration-cluster-api-js/commit/dd4a7149682b89d1f8f9c0f627dfef5645b10ea7)), closes [#203](https://github.com/camunda/orchestration-cluster-api-js/issues/203) [#204](https://github.com/camunda/orchestration-cluster-api-js/issues/204)
+* **worker:** consume x-present-when marker — leaseToken dependent typing + withLease worker surface ([#514](https://github.com/camunda/orchestration-cluster-api-js/issues/514)) ([838de15](https://github.com/camunda/orchestration-cluster-api-js/commit/838de154893106deef17cb6dc698bbf7e026f11e)), closes [camunda/camunda#62777](https://github.com/camunda/camunda/issues/62777) [#513](https://github.com/camunda/orchestration-cluster-api-js/issues/513) [#513](https://github.com/camunda/orchestration-cluster-api-js/issues/513)
+
+
+### Performance Improvements
+
+* **test:** parallelize unit test files (~4x faster) ([#447](https://github.com/camunda/orchestration-cluster-api-js/issues/447)) ([0138e07](https://github.com/camunda/orchestration-cluster-api-js/commit/0138e0708ff29836cb96593fed7fed622d78eeab))
+
+
+### BREAKING CHANGES
+
+* SDK major version bumped from 9 to 10 to track Camunda server 8.10
+* **effect:** the experimental `/fp` subpath and its `fp-ts` optional peer are
+removed. Migrate to `./effect` and install the optional `effect` (v4) peer; the
+main `.` entry and its Promise-based API are unchanged.
+* SDK major version 10 tracks Camunda server minor 8.10.
+This is a version-only breaking change to advance the alpha prerelease
+series from 9.x to 10.x on main.
+
 # [10.0.0-alpha.53](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.52...v10.0.0-alpha.53) (2026-10-09)
 
 
