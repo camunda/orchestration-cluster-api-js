@@ -1,3 +1,15 @@
+# [11.0.0-alpha.1](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0...v11.0.0-alpha.1) (2026-10-13)
+
+
+### Features
+
+* begin SDK 11 development for Camunda server 8.11 ([8572329](https://github.com/camunda/orchestration-cluster-api-js/commit/8572329b9889ad3aea5d158cc70763030e0f3682))
+
+
+### BREAKING CHANGES
+
+* SDK major version bumped from 10 to 11
+
 # [10.0.0-alpha.53](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.52...v10.0.0-alpha.53) (2026-10-09)
 
 
