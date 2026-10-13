@@ -17,6 +17,7 @@ The SDK major version tracks the Camunda server minor version:
 | 8.8            | 8         | `stable/8`    |
 | 8.9            | 9         | `stable/9`    |
 | 8.10           | 10        | `stable/10`   |
+| 8.11           | 11        | `main` (alpha) |
 
 Within a stable line, standard semver applies: `fix:` → patch, `feat:` → minor, breaking → major.
 
