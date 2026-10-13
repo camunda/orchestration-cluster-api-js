@@ -91,49 +91,59 @@ Publishing uses npm OIDC/provenance in CI. No long-lived `NPM_TOKEN` is required
 
 ### Promotion procedure (new server minor release)
 
-To promote a new stable line when a new Camunda server minor is released (e.g. server 8.9 → 8.10, SDK 9 → 10):
+To promote a new stable line when a new Camunda server minor is released (e.g. server 8.11, SDK 11), follow these steps **in order**. Each one depends on the release state the previous one creates.
 
-1. **Bootstrap the new major on `main`.** Push a breaking-change commit:
-
-```sh
-git checkout main
-git pull
-git commit --allow-empty -m 'feat!: bootstrap SDK 10.x for Camunda server 8.10
-
-BREAKING CHANGE: SDK major version 10 tracks Camunda server minor 8.10.'
-git push origin main
-```
-
-Wait for CI to publish `10.0.0-alpha.1`. The `v10.0.0-alpha.1` tag **must** be in main's history before branching — semantic-release determines the next version from reachable tags.
-
-2. **Branch from the tagged commit.** Create `stable/10` from the commit that has the version tag:
+1. **Tag the cut point and create the stable branch.** Put a temporary lightweight `v11.0.0` tag on the current `main` tip and create `stable/11` at the same commit:
 
 ```sh
-git checkout main
-git pull   # pull the chore(release) commit with the tag
-git checkout -b stable/10
-git push -u origin stable/10
+git fetch origin
+X=$(git rev-parse origin/main)
+git tag v11.0.0 "$X" && git push origin v11.0.0
+git push origin "$X:refs/heads/stable/11"
 ```
 
-3. **Update the GitHub repo variable** `CAMUNDA_SDK_CURRENT_STABLE_MAJOR` to `10`.
+2. **Update the GitHub repo variable** `CAMUNDA_SDK_CURRENT_STABLE_MAJOR` to `11`. Do this only after `stable/11` exists: with the variable set and the branch missing, every `main` release run fails with `ERELEASEBRANCHES`.
 
-4. **Update npm dist-tags.** Move the previous stable line to its maintenance dist-tag:
+3. **Move `main` to the next major.** Merge a PR into `main` (rebase merge, label `breaking-change-approved`) whose commit carries a footer:
+
+```
+BREAKING CHANGE: SDK major version bumped from 11 to 12
+```
+
+CI publishes `12.0.0-alpha.1`. A prerelease branch computes its major from the last release reachable from it; the temporary `v11.0.0` tag is what makes this `12` rather than another `11.0.0-alpha.*`.
+
+4. **Delete the temporary tag** once `12.0.0-alpha.1` is published:
 
 ```sh
-npm dist-tag add @camunda8/orchestration-cluster-api@<last-9.x-version> 9-stable
+git push origin :refs/tags/v11.0.0 && git tag -d v11.0.0
 ```
 
-5. **Update `SPEC_REF`** in the `build` script in `package.json` on the new stable branch to point to the new server branch (e.g. `SPEC_REF=stable/8.10`).
+5. **Release the stable line.** Push a breaking-change commit to `stable/11`:
 
-6. **Add the new stable branch to Renovate** in [.github/renovate.json](.github/renovate.json): append it to `baseBranchPatterns` and mirror the stable-branch `packageRules` entries (patch-only updates; GitHub Actions disabled) for it.
+```sh
+git checkout -b stable/11 origin/stable/11
+git commit --allow-empty -m "feat: release SDK 11 for Camunda server 8.11" \
+  -m "BREAKING CHANGE: SDK major version bumped from 10 to 11 to track Camunda server 8.11"
+git push origin stable/11
+```
+
+CI publishes `11.0.0` to dist-tag `latest`. This only works after step 3: the current stable branch can only release below `main`'s first release that is not on it, so until `main` has `12.0.0-alpha.1` there is no room for `11.0.0` (semantic-release reports `EINVALIDNEXTVERSION`).
+
+6. **Update npm dist-tags.** Move the previous stable line to its maintenance dist-tag:
+
+```sh
+npm dist-tag add @camunda8/orchestration-cluster-api@<last-10.x-version> 10-stable
+```
+
+7. **Update `SPEC_REF`** in the `bundle:spec` script in `package.json` on the new stable branch to point to the new server branch (e.g. `SPEC_REF=stable/8.11`).
+
+8. **Add the new stable branch to Renovate** in [.github/renovate.json](.github/renovate.json): append it to `baseBranchPatterns` and mirror the stable-branch `packageRules` entries (patch-only updates; GitHub Actions disabled) for it.
 
 After promotion:
 
-- Releases from `stable/10` will be the "current stable" and publish to npm dist-tag `latest`.
-- Releases from older stable branches (e.g. `stable/9`) will publish to `9-stable`.
-- Subsequent commits on `main` will produce `10.x.y-alpha.*` prereleases. To advance to SDK 11, repeat this procedure with another `feat!:` commit.
-
-**Why order matters:** semantic-release determines the next version from git tags reachable in the current branch's history. If you branch before the version tag exists on main, main will continue incrementing from the previous major's alpha series. The `feat!:` commit is required because pre-release branches produce versions on top of the release branch's latest — only a breaking change advances to the next major.
+- Releases from `stable/11` are the "current stable" and publish to npm dist-tag `latest`.
+- Releases from older stable branches (e.g. `stable/10`) publish to `10-stable`.
+- Subsequent commits on `main` produce `12.0.0-alpha.*` prereleases.
 
 ### Versioning rules (standard semver)
 
