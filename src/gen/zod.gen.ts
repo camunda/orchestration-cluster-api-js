@@ -1262,7 +1262,7 @@ export const zClusterVariableScopeEnum = /*#__PURE__*/ (() => z.enum(['GLOBAL', 
 }))();
 
 export const zUpdateClusterVariableRequest = /*#__PURE__*/ (() => z.object({
-    value: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
+    value: z.unknown().register(z.globalRegistry, {
         description: 'The new value of the cluster variable. Can be any JSON object or primitive value. Will be serialized as a JSON string in responses.'
     }),
     metadata: z.record(z.string(), z.union([
@@ -1872,26 +1872,17 @@ export const zMessageWaitStateDetails = /*#__PURE__*/ (() => zBaseWaitStateDetai
     messageName: z.string().register(z.globalRegistry, {
         description: 'The name of the message being awaited.'
     }),
-    correlationKey: z.string().nullable(),
-    waitStateType: z.string().register(z.globalRegistry, {
-        description: 'The wait state type discriminator.'
-    })
+    correlationKey: z.string().nullable()
 })))();
 
 export const zTimerWaitStateDetails = /*#__PURE__*/ (() => zBaseWaitStateDetails.and(z.object({
     dueDate: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullable(),
-    repetitions: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).nullable(),
-    waitStateType: z.string().register(z.globalRegistry, {
-        description: 'The wait state type discriminator.'
-    })
+    repetitions: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).nullable()
 })))();
 
 export const zSignalWaitStateDetails = /*#__PURE__*/ (() => zBaseWaitStateDetails.and(z.object({
     signalName: z.string().register(z.globalRegistry, {
         description: 'The name of the signal being awaited.'
-    }),
-    waitStateType: z.string().register(z.globalRegistry, {
-        description: 'The wait state type discriminator.'
     })
 })))();
 
@@ -1901,9 +1892,6 @@ export const zConditionWaitStateDetails = /*#__PURE__*/ (() => zBaseWaitStateDet
     }),
     events: z.array(z.enum(['create', 'update'])).register(z.globalRegistry, {
         description: 'The variable events that trigger condition re-evaluation. Empty means all events.'
-    }),
-    waitStateType: z.string().register(z.globalRegistry, {
-        description: 'The wait state type discriminator.'
     })
 })))();
 
@@ -2805,7 +2793,7 @@ export const zClusterVariableName = /*#__PURE__*/ (() => z.string().min(1).max(2
 
 export const zCreateClusterVariableRequest = /*#__PURE__*/ (() => z.object({
     name: zClusterVariableName,
-    value: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
+    value: z.unknown().register(z.globalRegistry, {
         description: 'The value of the cluster variable. Can be any JSON object or primitive value. Will be serialized as a JSON string in responses.'
     }),
     metadata: z.record(z.string(), z.union([
@@ -3764,10 +3752,7 @@ export const zUserTaskKey = zLongKey;
 
 export const zUserTaskWaitStateDetails = /*#__PURE__*/ (() => zBaseWaitStateDetails.and(z.object({
     taskKey: zUserTaskKey,
-    dueDate: z.iso.datetime().nullable(),
-    waitStateType: z.string().register(z.globalRegistry, {
-        description: 'The wait state type discriminator.'
-    })
+    dueDate: z.iso.datetime().nullable()
 })))();
 
 /**
@@ -3954,10 +3939,7 @@ export const zJobWaitStateDetails = /*#__PURE__*/ (() => zBaseWaitStateDetails.a
     }),
     jobKind: zJobKindEnum,
     listenerEventType: zJobListenerEventTypeEnum.nullable(),
-    retries: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).nullable(),
-    waitStateType: z.string().register(z.globalRegistry, {
-        description: 'The wait state type discriminator.'
-    })
+    retries: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).nullable()
 })))();
 
 /**
@@ -4083,7 +4065,7 @@ export const zJobSearchResult = /*#__PURE__*/ (() => z.object({
     }),
     deadline: z.iso.datetime().nullable(),
     deniedReason: z.string().nullable(),
-    elementId: zElementId.nullable(),
+    elementId: zElementId,
     elementInstanceKey: zElementInstanceKey,
     endTime: z.iso.datetime().nullable(),
     errorCode: z.string().nullable(),
@@ -6111,6 +6093,15 @@ export const zRoleUserResult = /*#__PURE__*/ (() => z.object({
     username: zUsername
 }))();
 
+/**
+ * Role user filter request
+ */
+export const zRoleUserFilterRequest = /*#__PURE__*/ (() => z.object({
+    username: zStringFilterProperty.optional()
+}).register(z.globalRegistry, {
+    description: 'Role user filter request'
+}))();
+
 export const zRoleClientResult = /*#__PURE__*/ (() => z.object({
     clientId: zClientId
 }))();
@@ -6801,6 +6792,7 @@ export const zRoleUserSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
 }))();
 
 export const zRoleUserSearchQueryRequest = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
+    filter: zRoleUserFilterRequest.optional(),
     sort: z.array(zRoleUserSearchQuerySortRequest).register(z.globalRegistry, {
         description: 'Sort field criteria.'
     }).optional()
@@ -7042,8 +7034,7 @@ export const zIncidentProcessInstanceStatisticsByDefinitionQueryResult = /*#__PU
 export const zJobTypeStatisticsQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zJobTypeStatisticsItem).register(z.globalRegistry, {
         description: 'The list of job type statistics items.'
-    }),
-    page: zSearchQueryPageResponse
+    })
 })).register(z.globalRegistry, {
     description: 'Job type statistics query result.'
 }))();
@@ -7054,8 +7045,7 @@ export const zJobTypeStatisticsQueryResult = /*#__PURE__*/ (() => zSearchQueryRe
 export const zJobWorkerStatisticsQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zJobWorkerStatisticsItem).register(z.globalRegistry, {
         description: 'The list of per-worker statistics items.'
-    }),
-    page: zSearchQueryPageResponse
+    })
 })).register(z.globalRegistry, {
     description: 'Job worker statistics query result.'
 }))();
@@ -7066,8 +7056,7 @@ export const zJobWorkerStatisticsQueryResult = /*#__PURE__*/ (() => zSearchQuery
 export const zJobTimeSeriesStatisticsQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zJobTimeSeriesStatisticsItem).register(z.globalRegistry, {
         description: 'The list of time-bucketed statistics items, ordered ascending by time.'
-    }),
-    page: zSearchQueryPageResponse
+    })
 })).register(z.globalRegistry, {
     description: 'Job time-series statistics query result.'
 }))();
@@ -7078,8 +7067,7 @@ export const zJobTimeSeriesStatisticsQueryResult = /*#__PURE__*/ (() => zSearchQ
 export const zJobErrorStatisticsQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zJobErrorStatisticsItem).register(z.globalRegistry, {
         description: 'The list of per-error statistics items.'
-    }),
-    page: zSearchQueryPageResponse
+    })
 })).register(z.globalRegistry, {
     description: 'Job error statistics query result.'
 }))();
@@ -7356,6 +7344,9 @@ export const zDeploymentConfigurationResponse = /*#__PURE__*/ (() => z.object({
     isMultiTenancyEnabled: z.boolean().register(z.globalRegistry, {
         description: 'Whether multi-tenancy is enabled.'
     }),
+    isTenantsApiEnabled: z.boolean().register(z.globalRegistry, {
+        description: 'Whether the tenants management API and UI are enabled.'
+    }),
     maxRequestSize: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
         description: 'The maximum HTTP request size in bytes.'
     })
@@ -7372,6 +7363,9 @@ export const zAuthenticationConfigurationResponse = /*#__PURE__*/ (() => z.objec
     }),
     isLoginDelegated: z.boolean().register(z.globalRegistry, {
         description: 'Whether login is delegated to an external identity provider.'
+    }),
+    isCamundaGroupsEnabled: z.boolean().register(z.globalRegistry, {
+        description: 'Whether Camunda manages group membership locally, as opposed to delegating it to the identity provider via a groups claim.'
     })
 }).register(z.globalRegistry, {
     description: 'Configuration for authentication and session management.'
@@ -7513,7 +7507,7 @@ export const zTenantSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
         'name',
         'tenantId'
     ]).register(z.globalRegistry, {
-        description: 'The field to sort by.'
+        description: 'The field to sort by. `key` is deprecated and should not be used anymore.'
     }),
     order: zSortOrderEnum.optional()
 }))();
@@ -7657,7 +7651,7 @@ export const zUserTaskCompletionRequest = /*#__PURE__*/ (() => z.object({
 export const zUserTaskAssignmentRequest = /*#__PURE__*/ (() => z.object({
     assignee: z.string().register(z.globalRegistry, {
         description: 'The assignee for the user task. The assignee must not be empty or `null`.'
-    }).optional(),
+    }),
     allowOverride: z.boolean().nullish(),
     action: z.string().nullish()
 }))();
@@ -7756,6 +7750,9 @@ export const zUserTaskResult = /*#__PURE__*/ (() => z.object({
     priority: z.int().gte(0).lte(100).register(z.globalRegistry, {
         description: 'The priority of a user task. The higher the value the higher the priority.'
     }).default(50),
+    isSuspended: z.boolean().register(z.globalRegistry, {
+        description: 'Whether the user task is suspended because its owning process instance is suspended.\n'
+    }),
     userTaskKey: zUserTaskKey,
     elementInstanceKey: zElementInstanceKey,
     processName: z.string().nullable(),
@@ -9549,6 +9546,7 @@ export const zUserTaskStateFilterProperty = /*#__PURE__*/ (() => z.union([
  */
 export const zUserTaskFilterFields = /*#__PURE__*/ (() => z.object({
     state: zUserTaskStateFilterProperty.optional(),
+    isSuspended: z.boolean().nullish(),
     assignee: zStringFilterProperty.optional(),
     businessId: zStringFilterProperty.optional(),
     priority: zIntegerFilterProperty.optional(),
