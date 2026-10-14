@@ -344,7 +344,7 @@ type _createGroup_Body = CreateGroupData extends { body?: infer B } ? B : never;
  *
  * Create a new group.
  *
- * The supplied `groupId` is validated against `^[a-zA-Z0-9_~@.+-]+$`
+ * The supplied `groupId` is validated against `` ^[a-zA-Z0-9_~@.+-]+$ ``
  * (max 256 characters) by `IdentifierValidator.validateId` in the
  * runtime. This strict validation applies wherever the Groups API
  * is available: in OIDC deployments that set
@@ -7411,4 +7411,4 @@ export function updateUserTask(options?: Parameters<typeof _updateUserTask>[0]):
   return toCancelable(signal => _updateUserTask({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
-// SENTINEL_FACADE_PREWRITE hash=54bfa9f067217824 totalWrappers=244 elements=1508 physicalLines=3905
+// SENTINEL_FACADE_PREWRITE hash=9e463f10eaaa5fd6 totalWrappers=244 elements=1508 physicalLines=3905

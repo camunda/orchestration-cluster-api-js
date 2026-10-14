@@ -3295,9 +3295,7 @@ export type CreateClusterVariableRequest = {
     /**
      * The value of the cluster variable. Can be any JSON object or primitive value. Will be serialized as a JSON string in responses.
      */
-    value: {
-        [key: string]: unknown;
-    };
+    value: unknown;
     /**
      * A generic key-value metadata bag attached to the cluster variable. Values must be strings or numbers. Limited to 100 entries and a configurable maximum serialized size (default: 100 entries at max key length of a cluster variable name (256 chars) plus the maximum value length, 8192 characters).
      */
@@ -3314,9 +3312,7 @@ export type UpdateClusterVariableRequest = {
     /**
      * The new value of the cluster variable. Can be any JSON object or primitive value. Will be serialized as a JSON string in responses.
      */
-    value: {
-        [key: string]: unknown;
-    };
+    value: unknown;
     /**
      * A generic key-value metadata bag attached to the cluster variable. Values must be strings or numbers. Limited to 100 entries and a configurable maximum serialized size (default: 100 entries at max key length of a cluster variable name (256 chars) plus the maximum value length, 8192 characters).
      */
@@ -5619,10 +5615,6 @@ export type JobWaitStateDetails = BaseWaitStateDetails & {
      * The number of retries remaining for the job.
      */
     retries: number | null;
-    /**
-     * The wait state type discriminator.
-     */
-    waitStateType: string;
 };
 
 export type MessageWaitStateDetails = BaseWaitStateDetails & {
@@ -5634,10 +5626,6 @@ export type MessageWaitStateDetails = BaseWaitStateDetails & {
      * The correlation key for the message subscription (null for start events).
      */
     correlationKey: string | null;
-    /**
-     * The wait state type discriminator.
-     */
-    waitStateType: string;
 };
 
 export type UserTaskWaitStateDetails = BaseWaitStateDetails & {
@@ -5649,10 +5637,6 @@ export type UserTaskWaitStateDetails = BaseWaitStateDetails & {
      * The due date of the user task, if set.
      */
     dueDate: string | null;
-    /**
-     * The wait state type discriminator.
-     */
-    waitStateType: string;
 };
 
 export type TimerWaitStateDetails = BaseWaitStateDetails & {
@@ -5664,10 +5648,6 @@ export type TimerWaitStateDetails = BaseWaitStateDetails & {
      * The number of remaining timer repetitions (-1 for infinite, 0 for non-repeating).
      */
     repetitions: number | null;
-    /**
-     * The wait state type discriminator.
-     */
-    waitStateType: string;
 };
 
 export type SignalWaitStateDetails = BaseWaitStateDetails & {
@@ -5675,10 +5655,6 @@ export type SignalWaitStateDetails = BaseWaitStateDetails & {
      * The name of the signal being awaited.
      */
     signalName: string;
-    /**
-     * The wait state type discriminator.
-     */
-    waitStateType: string;
 };
 
 export type ConditionWaitStateDetails = BaseWaitStateDetails & {
@@ -5690,10 +5666,6 @@ export type ConditionWaitStateDetails = BaseWaitStateDetails & {
      * The variable events that trigger condition re-evaluation. Empty means all events.
      */
     events: Array<'create' | 'update'>;
-    /**
-     * The wait state type discriminator.
-     */
-    waitStateType: string;
 };
 
 export type AdHocSubProcessActivateActivityReference = {
@@ -6982,7 +6954,6 @@ export type JobTypeStatisticsQueryResult = SearchQueryResponse & {
      * The list of job type statistics items.
      */
     items: Array<JobTypeStatisticsItem>;
-    page: SearchQueryPageResponse;
 };
 
 /**
@@ -7041,7 +7012,6 @@ export type JobWorkerStatisticsQueryResult = SearchQueryResponse & {
      * The list of per-worker statistics items.
      */
     items: Array<JobWorkerStatisticsItem>;
-    page: SearchQueryPageResponse;
 };
 
 /**
@@ -7102,7 +7072,6 @@ export type JobTimeSeriesStatisticsQueryResult = SearchQueryResponse & {
      * The list of time-bucketed statistics items, ordered ascending by time.
      */
     items: Array<JobTimeSeriesStatisticsItem>;
-    page: SearchQueryPageResponse;
 };
 
 /**
@@ -7165,7 +7134,6 @@ export type JobErrorStatisticsQueryResult = SearchQueryResponse & {
      * The list of per-error statistics items.
      */
     items: Array<JobErrorStatisticsItem>;
-    page: SearchQueryPageResponse;
 };
 
 /**
@@ -7534,9 +7502,9 @@ export type JobSearchResult = {
      */
     deniedReason: string | null;
     /**
-     * The element ID associated with the job. May be missing on job failure.
+     * The element ID associated with the job.
      */
-    elementId: ElementId | null;
+    elementId: ElementId;
     /**
      * The element instance key associated with the job.
      */
@@ -10849,9 +10817,23 @@ export type RoleUserSearchResult = SearchQueryResponse & {
 
 export type RoleUserSearchQueryRequest = SearchQueryRequest & {
     /**
+     * The user filter criteria.
+     */
+    filter?: RoleUserFilterRequest;
+    /**
      * Sort field criteria.
      */
     sort?: Array<RoleUserSearchQuerySortRequest>;
+};
+
+/**
+ * Role user filter request
+ */
+export type RoleUserFilterRequest = {
+    /**
+     * The username search filters.
+     */
+    username?: StringFilterProperty;
 };
 
 export type RoleUserSearchQuerySortRequest = {
@@ -11235,6 +11217,10 @@ export type DeploymentConfigurationResponse = {
      */
     isMultiTenancyEnabled: boolean;
     /**
+     * Whether the tenants management API and UI are enabled.
+     */
+    isTenantsApiEnabled: boolean;
+    /**
      * The maximum HTTP request size in bytes.
      */
     maxRequestSize: number;
@@ -11252,6 +11238,10 @@ export type AuthenticationConfigurationResponse = {
      * Whether login is delegated to an external identity provider.
      */
     isLoginDelegated: boolean;
+    /**
+     * Whether Camunda manages group membership locally, as opposed to delegating it to the identity provider via a groups claim.
+     */
+    isCamundaGroupsEnabled: boolean;
 };
 
 /**
@@ -11277,7 +11267,7 @@ export type CloudStage = 'dev' | 'int' | 'prod';
 export type TenantCreateRequest = {
     /**
      * The unique ID for the tenant. Must be 31 characters or less and match
-     * `^[\w.-]{1,31}$` (word characters, `.`, `-`). The literal
+     * `` ^[\w.-]{1,31}$ `` (word characters, `.`, `-`). The literal
      * `<default>` is also accepted as the default-tenant alias.
      *
      */
@@ -11353,7 +11343,7 @@ export type TenantResult = {
 
 export type TenantSearchQuerySortRequest = {
     /**
-     * The field to sort by.
+     * The field to sort by. `key` is deprecated and should not be used anymore.
      */
     field: 'key' | 'name' | 'tenantId';
     order?: SortOrderEnum;
@@ -11564,6 +11554,11 @@ export type UserTaskFilterFields = {
      */
     state?: UserTaskStateFilterProperty;
     /**
+     * Whether the user task is suspended because its owning process instance is suspended.
+     *
+     */
+    isSuspended?: boolean | null;
+    /**
      * The assignee of the user task.
      */
     assignee?: StringFilterProperty;
@@ -11716,6 +11711,11 @@ export type UserTaskResult = {
      */
     priority: number;
     /**
+     * Whether the user task is suspended because its owning process instance is suspended.
+     *
+     */
+    isSuspended: boolean;
+    /**
      * The key of the user task.
      */
     userTaskKey: UserTaskKey;
@@ -11776,7 +11776,7 @@ export type UserTaskAssignmentRequest = {
     /**
      * The assignee for the user task. The assignee must not be empty or `null`.
      */
-    assignee?: string;
+    assignee: string;
     /**
      * By default, the task is reassigned if it was already assigned. Set this to `false` to return an error in such cases. The task must then first be unassigned to be assigned again. Use this when you have users picking from group task queues to prevent race conditions.
      *
@@ -15961,7 +15961,7 @@ export type GetDocumentResponses = {
 export type GetDocumentResponse = GetDocumentResponses[keyof GetDocumentResponses];
 
 export type CreateDocumentLinkData = {
-    body?: DocumentLinkRequest;
+    body: DocumentLinkRequest;
     path: {
         /**
          * The ID of the document to link.
@@ -18988,7 +18988,7 @@ export type DeleteProcessInstancesBatchOperationResponses = {
 export type DeleteProcessInstancesBatchOperationResponse = DeleteProcessInstancesBatchOperationResponses[keyof DeleteProcessInstancesBatchOperationResponses];
 
 export type ResolveIncidentsBatchOperationData = {
-    body?: ProcessInstanceIncidentResolutionBatchOperationRequest;
+    body: ProcessInstanceIncidentResolutionBatchOperationRequest;
     path?: never;
     query?: never;
     url: '/process-instances/incident-resolution';
@@ -23927,7 +23927,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:ef3e3ea3faf064de0df57d4b6d28c8828ca86cbb95a0ea815f38e8ce559ebedd
+// specHash=sha256:06287d5f9ab82bc96d9533d975aeae78dfc5c5ecda0871ba6939bc7553da2b7c
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

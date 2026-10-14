@@ -4707,7 +4707,7 @@
           }
         ],
         "requestBody": {
-          "required": false,
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -5857,7 +5857,7 @@
           }
         ],
         "summary": "Create group",
-        "description": "Create a new group.\n\nThe supplied `groupId` is validated against `^[a-zA-Z0-9_~@.+-]+$`\n(max 256 characters) by `IdentifierValidator.validateId` in the\nruntime. This strict validation applies wherever the Groups API\nis available: in OIDC deployments that set\n`camunda.security.authentication.oidc.groupsClaim` the Groups\nAPI (including this endpoint) is disabled entirely, so group\nCRUD never sees externally-minted IdP IDs. The BYOG relaxation\nonly loosens validation when a group is referenced *as a member*\nof a role or tenant (`assignRoleToGroup`,\n`assignGroupToTenant`); group CRUD itself always uses the strict\ndefault-id regex. The constraint is not advertised on the\n`GroupId` schema so that the same schema can be reused at\nmember-reference sites without falsely rejecting\nexternally-minted IdP group IDs there.\n",
+        "description": "Create a new group.\n\nThe supplied `groupId` is validated against `` ^[a-zA-Z0-9_~@.+-]+$ ``\n(max 256 characters) by `IdentifierValidator.validateId` in the\nruntime. This strict validation applies wherever the Groups API\nis available: in OIDC deployments that set\n`camunda.security.authentication.oidc.groupsClaim` the Groups\nAPI (including this endpoint) is disabled entirely, so group\nCRUD never sees externally-minted IdP IDs. The BYOG relaxation\nonly loosens validation when a group is referenced *as a member*\nof a role or tenant (`assignRoleToGroup`,\n`assignGroupToTenant`); group CRUD itself always uses the strict\ndefault-id regex. The constraint is not advertised on the\n`GroupId` schema so that the same schema can be reused at\nmember-reference sites without falsely rejecting\nexternally-minted IdP group IDs there.\n",
         "x-semantic-establishes": {
           "kind": "Group",
           "identifiedBy": [
@@ -9856,7 +9856,7 @@
         "summary": "Resolve related incidents (batch)",
         "description": "Resolves multiple instances of process instances.\nSince only process instances with ACTIVE state can have unresolved incidents, any given\nfilters for state are ignored and overridden during this batch operation.\nThis is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).\n",
         "requestBody": {
-          "required": false,
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -13608,11 +13608,13 @@
                       },
                       "deployment": {
                         "isMultiTenancyEnabled": false,
+                        "isTenantsApiEnabled": false,
                         "maxRequestSize": 4194304
                       },
                       "authentication": {
                         "canLogout": true,
-                        "isLoginDelegated": false
+                        "isLoginDelegated": false,
+                        "isCamundaGroupsEnabled": true
                       },
                       "cloud": {
                         "stage": "prod"
@@ -24487,7 +24489,6 @@
             ]
           },
           "value": {
-            "type": "object",
             "description": "The value of the cluster variable. Can be any JSON object or primitive value. Will be serialized as a JSON string in responses."
           },
           "metadata": {
@@ -24532,7 +24533,6 @@
         ],
         "properties": {
           "value": {
-            "type": "object",
             "description": "The new value of the cluster variable. Can be any JSON object or primitive value. Will be serialized as a JSON string in responses."
           },
           "metadata": {
@@ -29201,8 +29201,7 @@
           "jobKind",
           "jobType",
           "listenerEventType",
-          "retries",
-          "waitStateType"
+          "retries"
         ],
         "allOf": [
           {
@@ -29251,8 +29250,7 @@
         "type": "object",
         "required": [
           "correlationKey",
-          "messageName",
-          "waitStateType"
+          "messageName"
         ],
         "allOf": [
           {
@@ -29275,8 +29273,7 @@
         "type": "object",
         "required": [
           "dueDate",
-          "taskKey",
-          "waitStateType"
+          "taskKey"
         ],
         "allOf": [
           {
@@ -29304,8 +29301,7 @@
         "type": "object",
         "required": [
           "dueDate",
-          "repetitions",
-          "waitStateType"
+          "repetitions"
         ],
         "allOf": [
           {
@@ -29330,8 +29326,7 @@
       "SignalWaitStateDetails": {
         "type": "object",
         "required": [
-          "signalName",
-          "waitStateType"
+          "signalName"
         ],
         "allOf": [
           {
@@ -29350,8 +29345,7 @@
         "type": "object",
         "required": [
           "events",
-          "expression",
-          "waitStateType"
+          "expression"
         ],
         "allOf": [
           {
@@ -31914,8 +31908,7 @@
         "description": "Job type statistics query result.",
         "type": "object",
         "required": [
-          "items",
-          "page"
+          "items"
         ],
         "allOf": [
           {
@@ -32017,8 +32010,7 @@
         "description": "Job worker statistics query result.",
         "type": "object",
         "required": [
-          "items",
-          "page"
+          "items"
         ],
         "allOf": [
           {
@@ -32118,8 +32110,7 @@
         "description": "Job time-series statistics query result.",
         "type": "object",
         "required": [
-          "items",
-          "page"
+          "items"
         ],
         "allOf": [
           {
@@ -32231,8 +32222,7 @@
         "description": "Job error statistics query result.",
         "type": "object",
         "required": [
-          "items",
-          "page"
+          "items"
         ],
         "allOf": [
           {
@@ -33104,8 +33094,7 @@
             "nullable": true
           },
           "elementId": {
-            "description": "The element ID associated with the job. May be missing on job failure.",
-            "nullable": true,
+            "description": "The element ID associated with the job.",
             "allOf": [
               {
                 "$ref": "#/components/schemas/ElementId"
@@ -39081,12 +39070,40 @@
         ],
         "type": "object",
         "properties": {
+          "filter": {
+            "description": "The user filter criteria.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RoleUserFilterRequest"
+              }
+            ]
+          },
           "sort": {
             "description": "Sort field criteria.",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/RoleUserSearchQuerySortRequest"
             }
+          }
+        },
+        "x-properties-added-in-version": [
+          {
+            "propertyName": "filter",
+            "addedInVersion": "8.11"
+          }
+        ]
+      },
+      "RoleUserFilterRequest": {
+        "description": "Role user filter request",
+        "type": "object",
+        "properties": {
+          "username": {
+            "description": "The username search filters.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StringFilterProperty"
+              }
+            ]
           }
         }
       },
@@ -39848,11 +39865,17 @@
         "type": "object",
         "required": [
           "isMultiTenancyEnabled",
+          "isTenantsApiEnabled",
           "maxRequestSize"
         ],
         "properties": {
           "isMultiTenancyEnabled": {
             "description": "Whether multi-tenancy is enabled.",
+            "type": "boolean",
+            "example": false
+          },
+          "isTenantsApiEnabled": {
+            "description": "Whether the tenants management API and UI are enabled.",
             "type": "boolean",
             "example": false
           },
@@ -39862,13 +39885,20 @@
             "format": "int64",
             "example": 4194304
           }
-        }
+        },
+        "x-properties-added-in-version": [
+          {
+            "propertyName": "isTenantsApiEnabled",
+            "addedInVersion": "8.11"
+          }
+        ]
       },
       "AuthenticationConfigurationResponse": {
         "description": "Configuration for authentication and session management.",
         "type": "object",
         "required": [
           "canLogout",
+          "isCamundaGroupsEnabled",
           "isLoginDelegated"
         ],
         "properties": {
@@ -39881,8 +39911,19 @@
             "description": "Whether login is delegated to an external identity provider.",
             "type": "boolean",
             "example": false
+          },
+          "isCamundaGroupsEnabled": {
+            "description": "Whether Camunda manages group membership locally, as opposed to delegating it to the identity provider via a groups claim.",
+            "type": "boolean",
+            "example": true
           }
-        }
+        },
+        "x-properties-added-in-version": [
+          {
+            "propertyName": "isCamundaGroupsEnabled",
+            "addedInVersion": "8.11"
+          }
+        ]
       },
       "CloudConfigurationResponse": {
         "description": "Configuration for SaaS/cloud-specific settings.",
@@ -39932,7 +39973,7 @@
                 "$ref": "#/components/schemas/TenantId"
               }
             ],
-            "description": "The unique ID for the tenant. Must be 31 characters or less and match\n`^[\\w.-]{1,31}$` (word characters, `.`, `-`). The literal\n`<default>` is also accepted as the default-tenant alias.\n"
+            "description": "The unique ID for the tenant. Must be 31 characters or less and match\n`` ^[\\w.-]{1,31}$ `` (word characters, `.`, `-`). The literal\n`<default>` is also accepted as the default-tenant alias.\n"
           },
           "name": {
             "type": "string",
@@ -40058,12 +40099,18 @@
         "type": "object",
         "properties": {
           "field": {
-            "description": "The field to sort by.",
+            "description": "The field to sort by. `key` is deprecated and should not be used anymore.",
             "type": "string",
             "enum": [
               "key",
               "name",
               "tenantId"
+            ],
+            "x-deprecated-enum-members": [
+              {
+                "name": "key",
+                "deprecatedInVersion": "8.10.0"
+              }
             ]
           },
           "order": {
@@ -40481,6 +40528,11 @@
             ],
             "description": "The user task state."
           },
+          "isSuspended": {
+            "description": "Whether the user task is suspended because its owning process instance is suspended.\n",
+            "type": "boolean",
+            "nullable": true
+          },
           "assignee": {
             "allOf": [
               {
@@ -40687,6 +40739,10 @@
           {
             "propertyName": "businessId",
             "addedInVersion": "8.10"
+          },
+          {
+            "propertyName": "isSuspended",
+            "addedInVersion": "8.11"
           }
         ]
       },
@@ -40727,6 +40783,7 @@
           "externalFormReference",
           "followUpDate",
           "formKey",
+          "isSuspended",
           "name",
           "priority",
           "processDefinitionId",
@@ -40833,6 +40890,10 @@
             "minimum": 0,
             "maximum": 100,
             "default": 50
+          },
+          "isSuspended": {
+            "type": "boolean",
+            "description": "Whether the user task is suspended because its owning process instance is suspended.\n"
           },
           "userTaskKey": {
             "allOf": [
@@ -41000,6 +41061,10 @@
             "addedInVersion": "8.6"
           },
           {
+            "propertyName": "isSuspended",
+            "addedInVersion": "8.11"
+          },
+          {
             "propertyName": "tags",
             "addedInVersion": "8.9"
           }
@@ -41025,6 +41090,9 @@
       "UserTaskAssignmentRequest": {
         "type": "object",
         "additionalProperties": false,
+        "required": [
+          "assignee"
+        ],
         "properties": {
           "assignee": {
             "description": "The assignee for the user task. The assignee must not be empty or `null`.",

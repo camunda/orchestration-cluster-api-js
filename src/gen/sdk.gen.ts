@@ -1366,7 +1366,7 @@ export const searchGlobalTaskListeners = <ThrowOnError extends boolean = true>(o
  *
  * Create a new group.
  *
- * The supplied `groupId` is validated against `^[a-zA-Z0-9_~@.+-]+$`
+ * The supplied `groupId` is validated against `` ^[a-zA-Z0-9_~@.+-]+$ ``
  * (max 256 characters) by `IdentifierValidator.validateId` in the
  * runtime. This strict validation applies wherever the Groups API
  * is available: in OIDC deployments that set
@@ -2303,7 +2303,7 @@ export const deleteProcessInstancesBatchOperation = <ThrowOnError extends boolea
  * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
  *
  */
-export const resolveIncidentsBatchOperation = <ThrowOnError extends boolean = true>(options?: Options<ResolveIncidentsBatchOperationData, ThrowOnError>): RequestResult<ResolveIncidentsBatchOperationResponses, ResolveIncidentsBatchOperationErrors, ThrowOnError> => (options?.client ?? client).post<ResolveIncidentsBatchOperationResponses, ResolveIncidentsBatchOperationErrors, ThrowOnError>({
+export const resolveIncidentsBatchOperation = <ThrowOnError extends boolean = true>(options: Options<ResolveIncidentsBatchOperationData, ThrowOnError>): RequestResult<ResolveIncidentsBatchOperationResponses, ResolveIncidentsBatchOperationErrors, ThrowOnError> => (options.client ?? client).post<ResolveIncidentsBatchOperationResponses, ResolveIncidentsBatchOperationErrors, ThrowOnError>({
     requestValidator: undefined,
     responseValidator: undefined,
     security: [{ scheme: 'bearer', type: 'http' }, { scheme: 'basic', type: 'http' }],
@@ -2311,7 +2311,7 @@ export const resolveIncidentsBatchOperation = <ThrowOnError extends boolean = tr
     ...options,
     headers: {
         'Content-Type': 'application/json',
-        ...options?.headers
+        ...options.headers
     }
 });
 
