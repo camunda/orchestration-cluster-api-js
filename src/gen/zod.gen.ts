@@ -3847,7 +3847,7 @@ export const zExpressionEvaluationRequest = /*#__PURE__*/ (() => z.object({
 export const zIncidentKey = zLongKey;
 
 export const zElementInstanceResult = /*#__PURE__*/ (() => z.object({
-    processDefinitionId: zProcessDefinitionId,
+    processDefinitionId: zProcessDefinitionId.nullable(),
     startDate: z.iso.datetime().register(z.globalRegistry, {
         description: 'Date when element instance started.'
     }),
@@ -3895,7 +3895,7 @@ export const zElementInstanceResult = /*#__PURE__*/ (() => z.object({
     elementInstanceKey: zElementInstanceKey,
     processInstanceKey: zProcessInstanceKey,
     rootProcessInstanceKey: zProcessInstanceKey.nullable(),
-    processDefinitionKey: zProcessDefinitionKey,
+    processDefinitionKey: zProcessDefinitionKey.nullable(),
     incidentKey: zIncidentKey.nullable()
 }))();
 
@@ -4065,7 +4065,7 @@ export const zJobSearchResult = /*#__PURE__*/ (() => z.object({
     }),
     deadline: z.iso.datetime().nullable(),
     deniedReason: z.string().nullable(),
-    elementId: zElementId,
+    elementId: zElementId.nullable(),
     elementInstanceKey: zElementInstanceKey,
     endTime: z.iso.datetime().nullable(),
     errorCode: z.string().nullable(),
@@ -4077,8 +4077,8 @@ export const zJobSearchResult = /*#__PURE__*/ (() => z.object({
     jobKey: zJobKey,
     kind: zJobKindEnum,
     listenerEventType: zJobListenerEventTypeEnum,
-    processDefinitionId: zProcessDefinitionId,
-    processDefinitionKey: zProcessDefinitionKey,
+    processDefinitionId: zProcessDefinitionId.nullable(),
+    processDefinitionKey: zProcessDefinitionKey.nullable(),
     processInstanceKey: zProcessInstanceKey,
     rootProcessInstanceKey: zProcessInstanceKey.nullable(),
     businessId: zBusinessId.nullable(),
@@ -5343,7 +5343,7 @@ export const zCorrelatedMessageSubscriptionResult = /*#__PURE__*/ (() => z.objec
         description: 'The partition ID that correlated the message.'
     }),
     processDefinitionId: zProcessDefinitionId,
-    processDefinitionKey: zProcessDefinitionKey,
+    processDefinitionKey: zProcessDefinitionKey.nullable(),
     processInstanceKey: zProcessInstanceKey,
     rootProcessInstanceKey: zProcessInstanceKey.nullable(),
     subscriptionKey: zMessageSubscriptionKey,
@@ -5690,8 +5690,8 @@ export const zProcessInstanceSequenceFlowResult = /*#__PURE__*/ (() => z.object(
     }),
     processInstanceKey: zProcessInstanceKey,
     rootProcessInstanceKey: zProcessInstanceKey.nullable(),
-    processDefinitionKey: zProcessDefinitionKey,
-    processDefinitionId: zProcessDefinitionId,
+    processDefinitionKey: zProcessDefinitionKey.nullable(),
+    processDefinitionId: zProcessDefinitionId.nullable(),
     elementId: zElementId,
     tenantId: zTenantId
 }).register(z.globalRegistry, {
