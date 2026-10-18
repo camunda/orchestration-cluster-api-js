@@ -5293,9 +5293,11 @@ export type ElementInstanceSearchQueryResult = SearchQueryResponse & {
 
 export type ElementInstanceResult = {
     /**
-     * The process definition ID associated to this element instance.
+     * The process definition ID associated to this element instance. This field is not
+     * present for element instances imported by Operate 8.1 or earlier.
+     *
      */
-    processDefinitionId: ProcessDefinitionId;
+    processDefinitionId: ProcessDefinitionId | null;
     /**
      * Date when element instance started.
      */
@@ -5344,9 +5346,11 @@ export type ElementInstanceResult = {
      */
     rootProcessInstanceKey: ProcessInstanceKey | null;
     /**
-     * The process definition key associated to this element instance.
+     * The process definition key associated to this element instance. This field is not
+     * present for element instances imported by Operate 8.1.7 or earlier.
+     *
      */
-    processDefinitionKey: ProcessDefinitionKey;
+    processDefinitionKey: ProcessDefinitionKey | null;
     /**
      * Incident key associated with this element instance.
      */
@@ -7502,9 +7506,9 @@ export type JobSearchResult = {
      */
     deniedReason: string | null;
     /**
-     * The element ID associated with the job.
+     * The element ID associated with the job. May be missing on job failure.
      */
-    elementId: ElementId;
+    elementId: ElementId | null;
     /**
      * The element instance key associated with the job.
      */
@@ -7538,13 +7542,17 @@ export type JobSearchResult = {
     kind: JobKindEnum;
     listenerEventType: JobListenerEventTypeEnum;
     /**
-     * The process definition ID associated with the job.
+     * The process definition ID associated with the job. This field is not present for
+     * jobs imported by Operate 8.7 and earlier.
+     *
      */
-    processDefinitionId: ProcessDefinitionId;
+    processDefinitionId: ProcessDefinitionId | null;
     /**
-     * The process definition key associated with the job.
+     * The process definition key associated with the job. This field is not present for
+     * jobs imported by Operate 8.7 and earlier.
+     *
      */
-    processDefinitionKey: ProcessDefinitionKey;
+    processDefinitionKey: ProcessDefinitionKey | null;
     /**
      * The process instance key associated with the job.
      */
@@ -9098,8 +9106,11 @@ export type CorrelatedMessageSubscriptionResult = {
     processDefinitionId: ProcessDefinitionId;
     /**
      * The process definition key associated with this correlated message subscription.
+     * This field is not present for correlations to message subscriptions of a running
+     * process instance (catch, boundary and receive task events) written by version 8.8.
+     *
      */
-    processDefinitionKey: ProcessDefinitionKey;
+    processDefinitionKey: ProcessDefinitionKey | null;
     /**
      * The process instance key associated with this correlated message subscription.
      */
@@ -10316,13 +10327,17 @@ export type ProcessInstanceSequenceFlowResult = {
      */
     rootProcessInstanceKey: ProcessInstanceKey | null;
     /**
-     * The process definition key.
+     * The process definition key. This field is not present for sequence flows imported
+     * by Operate 8.1 or earlier.
+     *
      */
-    processDefinitionKey: ProcessDefinitionKey;
+    processDefinitionKey: ProcessDefinitionKey | null;
     /**
-     * The process definition id.
+     * The process definition id. This field is not present for sequence flows imported by
+     * Operate 8.1 or earlier.
+     *
      */
-    processDefinitionId: ProcessDefinitionId;
+    processDefinitionId: ProcessDefinitionId | null;
     /**
      * The element id for this sequence flow, as provided in the BPMN process.
      */
@@ -18920,7 +18935,7 @@ export type CancelProcessInstancesBatchOperationData = {
 
 export type CancelProcessInstancesBatchOperationErrors = {
     /**
-     * The process instance batch operation failed. More details are provided in the response body.
+     * The process instance batch operation failed, for example because the filter requests a top-level `state` other than ACTIVE or SUSPENDED through `$eq` or `$in`. States inside `$or` branches are not validated. More details are provided in the response body.
      *
      */
     400: ProblemDetail;
@@ -18996,7 +19011,7 @@ export type ResolveIncidentsBatchOperationData = {
 
 export type ResolveIncidentsBatchOperationErrors = {
     /**
-     * The process instance batch operation failed. More details are provided in the response body.
+     * The process instance batch operation failed, for example because the filter requests a top-level `state` other than ACTIVE through `$eq` or `$in`. States inside `$or` branches are not validated. More details are provided in the response body.
      *
      */
     400: ProblemDetail;
@@ -19034,7 +19049,7 @@ export type MigrateProcessInstancesBatchOperationData = {
 
 export type MigrateProcessInstancesBatchOperationErrors = {
     /**
-     * The process instance batch operation failed. More details are provided in the response body.
+     * The process instance batch operation failed, for example because the filter requests a top-level `state` other than ACTIVE through `$eq` or `$in`. States inside `$or` branches are not validated. More details are provided in the response body.
      *
      */
     400: ProblemDetail;
@@ -19072,7 +19087,7 @@ export type ModifyProcessInstancesBatchOperationData = {
 
 export type ModifyProcessInstancesBatchOperationErrors = {
     /**
-     * The process instance batch operation failed. More details are provided in the response body.
+     * The process instance batch operation failed, for example because the filter requests a top-level `state` other than ACTIVE through `$eq` or `$in`. States inside `$or` branches are not validated. More details are provided in the response body.
      *
      */
     400: ProblemDetail;
@@ -19110,7 +19125,7 @@ export type ResumeProcessInstancesBatchOperationData = {
 
 export type ResumeProcessInstancesBatchOperationErrors = {
     /**
-     * The process instance batch operation failed. More details are provided in the response body.
+     * The process instance batch operation failed, for example because the filter requests a top-level `state` other than SUSPENDED through `$eq` or `$in`. States inside `$or` branches are not validated. More details are provided in the response body.
      *
      */
     400: ProblemDetail;
@@ -19185,7 +19200,7 @@ export type SuspendProcessInstancesBatchOperationData = {
 
 export type SuspendProcessInstancesBatchOperationErrors = {
     /**
-     * The process instance batch operation failed. More details are provided in the response body.
+     * The process instance batch operation failed, for example because the filter requests a top-level `state` other than ACTIVE through `$eq` or `$in`. States inside `$or` branches are not validated. More details are provided in the response body.
      *
      */
     400: ProblemDetail;
@@ -23927,7 +23942,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:06287d5f9ab82bc96d9533d975aeae78dfc5c5ecda0871ba6939bc7553da2b7c
+// specHash=sha256:e140ca0dbd4353da6a63dc0cffb08773e4805379b5a7364a4264431b7c0493ef
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

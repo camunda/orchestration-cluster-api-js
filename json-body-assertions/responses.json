@@ -3,7 +3,7 @@
     "sourceRepo": "https://github.com/camunda/camunda",
     "commit": "local",
     "specPath": "zeebe/gateway-protocol/src/main/proto/v2/rest-api.yaml",
-    "specSha256": "c3178b58b24e05ed95cd50b9fa103230d7b87ab87faa7f0b16c200fcd0512a03"
+    "specSha256": "7c5ac353ded63be8080aec76c5074036945bd2e5695951f414cba606e32b13e2"
   },
   "responses": [
     {
@@ -2993,7 +2993,8 @@
                 },
                 {
                   "name": "processDefinitionKey",
-                  "type": "string"
+                  "type": "string",
+                  "nullable": true
                 },
                 {
                   "name": "processInstanceKey",
@@ -4431,11 +4432,13 @@
                 },
                 {
                   "name": "processDefinitionId",
-                  "type": "string"
+                  "type": "string",
+                  "nullable": true
                 },
                 {
                   "name": "processDefinitionKey",
-                  "type": "string"
+                  "type": "string",
+                  "nullable": true
                 },
                 {
                   "name": "processInstanceKey",
@@ -4565,11 +4568,13 @@
           },
           {
             "name": "processDefinitionId",
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           {
             "name": "processDefinitionKey",
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           {
             "name": "processInstanceKey",
@@ -6008,7 +6013,8 @@
                 },
                 {
                   "name": "elementId",
-                  "type": "string"
+                  "type": "string",
+                  "nullable": true
                 },
                 {
                   "name": "elementInstanceKey",
@@ -6079,11 +6085,13 @@
                 },
                 {
                   "name": "processDefinitionId",
-                  "type": "string"
+                  "type": "string",
+                  "nullable": true
                 },
                 {
                   "name": "processDefinitionKey",
-                  "type": "string"
+                  "type": "string",
+                  "nullable": true
                 },
                 {
                   "name": "processInstanceKey",
@@ -8168,11 +8176,13 @@
                 },
                 {
                   "name": "processDefinitionId",
-                  "type": "string"
+                  "type": "string",
+                  "nullable": true
                 },
                 {
                   "name": "processDefinitionKey",
-                  "type": "string"
+                  "type": "string",
+                  "nullable": true
                 },
                 {
                   "name": "processInstanceKey",
