@@ -1,3 +1,10 @@
+# [11.0.0-alpha.2](https://github.com/camunda/orchestration-cluster-api-js/compare/v11.0.0-alpha.1...v11.0.0-alpha.2) (2026-10-18)
+
+
+### Bug Fixes
+
+* **gen:** regenerate for nullable legacy result fields and batch filter docs ([5ed5550](https://github.com/camunda/orchestration-cluster-api-js/commit/5ed5550f2f4809e87cbc93e5c23278e0f3dab1e9))
+
 # [11.0.0-alpha.1](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0...v11.0.0-alpha.1) (2026-10-13)
 
 
