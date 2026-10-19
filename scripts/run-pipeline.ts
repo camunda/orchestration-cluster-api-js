@@ -13,13 +13,20 @@
  *   tsx scripts/run-pipeline.ts           # full pipeline (pre + generate + post + test)
  *   tsx scripts/run-pipeline.ts --no-test # skip tests at the end
  */
-import { execSync } from 'node:child_process';
+import { execFileSync, execSync } from 'node:child_process';
 import fs from 'node:fs';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 
 const ROOT = process.cwd();
 const HOOKS_DIR = path.join(ROOT, 'hooks');
 const skipTest = process.argv.includes('--no-test');
+
+// Resolve the tsx CLI JS entrypoint so hooks run via `node <cli> <hook>`.
+// This avoids a shell (no path interpolation/quoting) while remaining
+// cross-platform: spawning `node` sidesteps the Windows `.cmd` shim that
+// `execFileSync('tsx', …)` cannot resolve without a shell.
+const TSX_CLI = createRequire(import.meta.url).resolve('tsx/cli');
 
 function discoverHooks(phase: string): string[] {
   const dir = path.join(HOOKS_DIR, phase);
@@ -34,7 +41,9 @@ function discoverHooks(phase: string): string[] {
 function runHook(hookPath: string): void {
   const rel = path.relative(ROOT, hookPath);
   console.log(`\n▸ ${rel}`);
-  execSync(`tsx ${hookPath}`, { cwd: ROOT, stdio: 'inherit' });
+  // Run via `node <tsx-cli> <hook>`: no shell (paths never undergo shell
+  // parsing) and cross-platform (avoids the Windows `tsx.cmd` spawn failure).
+  execFileSync(process.execPath, [TSX_CLI, hookPath], { cwd: ROOT, stdio: 'inherit' });
 }
 
 function runCommand(label: string, cmd: string): void {
