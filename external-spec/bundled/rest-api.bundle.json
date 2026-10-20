@@ -41924,8 +41924,22 @@
                 "$ref": "#/components/schemas/ProcessInstanceKeyFilterProperty"
               }
             ]
+          },
+          "protectionMode": {
+            "description": "The protection applied to the variable. A variable matches when it has at least one of\nthe given protection modes.\n",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProtectionModeFilterProperty"
+              }
+            ]
           }
-        }
+        },
+        "x-properties-added-in-version": [
+          {
+            "propertyName": "protectionMode",
+            "addedInVersion": "8.11"
+          }
+        ]
       },
       "VariableSearchQueryResult": {
         "description": "Variable search query response.",
@@ -41993,6 +42007,7 @@
         "description": "Variable response item.",
         "type": "object",
         "required": [
+          "metadata",
           "name",
           "processInstanceKey",
           "rootProcessInstanceKey",
@@ -42045,14 +42060,75 @@
                 "$ref": "#/components/schemas/ProcessInstanceKey"
               }
             ]
+          },
+          "metadata": {
+            "description": "Metadata of this variable. `null` when the variable has no metadata.",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/VariableMetadata"
+              }
+            ]
           }
         },
         "x-properties-added-in-version": [
           {
             "propertyName": "rootProcessInstanceKey",
             "addedInVersion": "8.9"
+          },
+          {
+            "propertyName": "metadata",
+            "addedInVersion": "8.11"
           }
         ]
+      },
+      "VariableMetadata": {
+        "description": "Metadata describing how a variable is treated.",
+        "type": "object",
+        "required": [
+          "protectionModes"
+        ],
+        "properties": {
+          "protectionModes": {
+            "description": "The protections applied to the variable. The value of a variable protected with\n`REDACT` is irrecoverably replaced before it is stored in secondary storage, so it is\nnever readable.\n",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProtectionModeEnum"
+            }
+          }
+        }
+      },
+      "ProtectionModeEnum": {
+        "type": "string",
+        "enum": [
+          "REDACT"
+        ],
+        "description": "The kind of protection applied to a variable value. `REDACT` irrecoverably replaces the\nvalue before it reaches secondary storage.\n"
+      },
+      "ProtectionModeFilterProperty": {
+        "description": "ProtectionModeEnum property with the advanced search capability to match any of several values.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/ProtectionModeExactMatch"
+          },
+          {
+            "$ref": "#/components/schemas/AdvancedProtectionModeFilter"
+          }
+        ]
+      },
+      "AdvancedProtectionModeFilter": {
+        "title": "Advanced filter",
+        "description": "Advanced ProtectionModeEnum filter.",
+        "type": "object",
+        "properties": {
+          "$in": {
+            "description": "Checks if the variable has at least one of the provided protection modes.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProtectionModeEnum"
+            }
+          }
+        }
       },
       "VariableValueFilterProperty": {
         "type": "object",
@@ -42609,6 +42685,16 @@
         "allOf": [
           {
             "$ref": "#/components/schemas/UserTaskStateEnum"
+          }
+        ]
+      },
+      "ProtectionModeExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches variables that have this protection mode.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ProtectionModeEnum"
           }
         ]
       }

@@ -3,7 +3,7 @@
     "sourceRepo": "https://github.com/camunda/camunda",
     "commit": "local",
     "specPath": "zeebe/gateway-protocol/src/main/proto/v2/rest-api.yaml",
-    "specSha256": "f62f49145905f3aa6763eba1e48ff6f0db2073524e6e4f78c21ab0d5b162cf5f"
+    "specSha256": "4233a4f9cdd4df961bb56f628f714bb11e8be9ebc4ebe4099088ff3fb99724c0"
   },
   "responses": [
     {
@@ -12111,6 +12111,20 @@
                   "type": "boolean"
                 },
                 {
+                  "name": "metadata",
+                  "type": "object",
+                  "nullable": true,
+                  "children": {
+                    "required": [
+                      {
+                        "name": "protectionModes",
+                        "type": "array<string>"
+                      }
+                    ],
+                    "optional": []
+                  }
+                },
+                {
                   "name": "name",
                   "type": "string"
                 },
@@ -12220,6 +12234,20 @@
                   "type": "boolean"
                 },
                 {
+                  "name": "metadata",
+                  "type": "object",
+                  "nullable": true,
+                  "children": {
+                    "required": [
+                      {
+                        "name": "protectionModes",
+                        "type": "array<string>"
+                      }
+                    ],
+                    "optional": []
+                  }
+                },
+                {
                   "name": "name",
                   "type": "string"
                 },
@@ -12299,6 +12327,20 @@
                   "type": "boolean"
                 },
                 {
+                  "name": "metadata",
+                  "type": "object",
+                  "nullable": true,
+                  "children": {
+                    "required": [
+                      {
+                        "name": "protectionModes",
+                        "type": "array<string>"
+                      }
+                    ],
+                    "optional": []
+                  }
+                },
+                {
                   "name": "name",
                   "type": "string"
                 },
@@ -12368,6 +12410,20 @@
       "status": "200",
       "schema": {
         "required": [
+          {
+            "name": "metadata",
+            "type": "object",
+            "nullable": true,
+            "children": {
+              "required": [
+                {
+                  "name": "protectionModes",
+                  "type": "array<string>"
+                }
+              ],
+              "optional": []
+            }
+          },
           {
             "name": "name",
             "type": "string"

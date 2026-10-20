@@ -12211,6 +12211,12 @@ export type VariableFilter = {
      * The key of the process instance of this variable.
      */
     processInstanceKey?: ProcessInstanceKeyFilterProperty;
+    /**
+     * The protection applied to the variable. A variable matches when it has at least one of
+     * the given protection modes.
+     *
+     */
+    protectionMode?: ProtectionModeFilterProperty;
 };
 
 /**
@@ -12282,6 +12288,49 @@ export type VariableResultBase = {
      *
      */
     rootProcessInstanceKey: ProcessInstanceKey | null;
+    /**
+     * Metadata of this variable. `null` when the variable has no metadata.
+     */
+    metadata: VariableMetadata | null;
+};
+
+/**
+ * Metadata describing how a variable is treated.
+ */
+export type VariableMetadata = {
+    /**
+     * The protections applied to the variable. The value of a variable protected with
+     * `REDACT` is irrecoverably replaced before it is stored in secondary storage, so it is
+     * never readable.
+     *
+     */
+    protectionModes: Array<ProtectionModeEnum>;
+};
+
+/**
+ * The kind of protection applied to a variable value. `REDACT` irrecoverably replaces the
+ * value before it reaches secondary storage.
+ *
+ */
+export const ProtectionModeEnum = {
+  REDACT: 'REDACT',
+} as const;
+export type ProtectionModeEnum = (typeof ProtectionModeEnum)[keyof typeof ProtectionModeEnum];
+/**
+ * ProtectionModeEnum property with the advanced search capability to match any of several values.
+ */
+export type ProtectionModeFilterProperty = ProtectionModeExactMatch | AdvancedProtectionModeFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced ProtectionModeEnum filter.
+ */
+export type AdvancedProtectionModeFilter = {
+    /**
+     * Checks if the variable has at least one of the provided protection modes.
+     */
+    $in?: Array<ProtectionModeEnum>;
 };
 
 export type VariableValueFilterProperty = {
@@ -12675,6 +12724,13 @@ export type ProcessInstanceStateExactMatch = ProcessInstanceStateEnum;
  * Matches the value exactly.
  */
 export type UserTaskStateExactMatch = UserTaskStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches variables that have this protection mode.
+ */
+export type ProtectionModeExactMatch = ProtectionModeEnum;
 
 /**
  * System-generated key for an authorization.
@@ -13288,6 +13344,13 @@ export type ProcessInstanceStateExactMatchWritable = ProcessInstanceStateEnum;
  * Matches the value exactly.
  */
 export type UserTaskStateExactMatchWritable = UserTaskStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches variables that have this protection mode.
+ */
+export type ProtectionModeExactMatchWritable = ProtectionModeEnum;
 
 export type GetAgentDefinitionData = {
     body?: never;
@@ -23987,7 +24050,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:ccc4d90f08e64dd80972612453df5715d808b00aeadce516a2bae088f63ccdb9
+// specHash=sha256:578cdae742ade30fc1ec7cda8a37318f6c9fc78bcac996726b0467919adc0635
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
