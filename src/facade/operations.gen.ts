@@ -3810,6 +3810,17 @@ export function getBatchOperation(options: Parameters<typeof _getBatchOperation>
  * still return the previous time.
  *
   *
+ * @example Get the engine clock time
+ * ```ts
+ * async function getClockExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   const clock = await camunda.getClock();
+ *   const engineTime = new Date(clock.timestamp);
+ * 
+ *   console.log(`Engine clock time: ${engineTime.toISOString()}`);
+ * }
+ * ```
  * @operationId getClock
  * @tags Clock
  */
