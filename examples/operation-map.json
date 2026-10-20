@@ -1276,6 +1276,13 @@
       "label": "Check cluster status"
     }
   ],
+  "getClock": [
+    {
+      "file": "admin-operations.ts",
+      "region": "GetClock",
+      "label": "Get the engine clock time"
+    }
+  ],
   "pinClock": [
     {
       "file": "admin-operations.ts",

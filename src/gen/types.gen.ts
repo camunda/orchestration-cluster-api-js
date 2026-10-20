@@ -2815,6 +2815,13 @@ export type ClockPinRequest = {
     timestamp: number;
 };
 
+export type ClockResult = {
+    /**
+     * The current time of the clock, as an ISO 8601 date-time.
+     */
+    timestamp: string;
+};
+
 /**
  * The aggregated status of the whole cluster.
  */
@@ -12204,6 +12211,12 @@ export type VariableFilter = {
      * The key of the process instance of this variable.
      */
     processInstanceKey?: ProcessInstanceKeyFilterProperty;
+    /**
+     * The protection applied to the variable. A variable matches when it has at least one of
+     * the given protection modes.
+     *
+     */
+    protectionMode?: ProtectionModeFilterProperty;
 };
 
 /**
@@ -12275,6 +12288,49 @@ export type VariableResultBase = {
      *
      */
     rootProcessInstanceKey: ProcessInstanceKey | null;
+    /**
+     * Metadata of this variable. `null` when the variable has no metadata.
+     */
+    metadata: VariableMetadata | null;
+};
+
+/**
+ * Metadata describing how a variable is treated.
+ */
+export type VariableMetadata = {
+    /**
+     * The protections applied to the variable. The value of a variable protected with
+     * `REDACT` is irrecoverably replaced before it is stored in secondary storage, so it is
+     * never readable.
+     *
+     */
+    protectionModes: Array<ProtectionModeEnum>;
+};
+
+/**
+ * The kind of protection applied to a variable value. `REDACT` irrecoverably replaces the
+ * value before it reaches secondary storage.
+ *
+ */
+export const ProtectionModeEnum = {
+  REDACT: 'REDACT',
+} as const;
+export type ProtectionModeEnum = (typeof ProtectionModeEnum)[keyof typeof ProtectionModeEnum];
+/**
+ * ProtectionModeEnum property with the advanced search capability to match any of several values.
+ */
+export type ProtectionModeFilterProperty = ProtectionModeExactMatch | AdvancedProtectionModeFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced ProtectionModeEnum filter.
+ */
+export type AdvancedProtectionModeFilter = {
+    /**
+     * Checks if the variable has at least one of the provided protection modes.
+     */
+    $in?: Array<ProtectionModeEnum>;
 };
 
 export type VariableValueFilterProperty = {
@@ -12668,6 +12724,13 @@ export type ProcessInstanceStateExactMatch = ProcessInstanceStateEnum;
  * Matches the value exactly.
  */
 export type UserTaskStateExactMatch = UserTaskStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches variables that have this protection mode.
+ */
+export type ProtectionModeExactMatch = ProtectionModeEnum;
 
 /**
  * System-generated key for an authorization.
@@ -13281,6 +13344,13 @@ export type ProcessInstanceStateExactMatchWritable = ProcessInstanceStateEnum;
  * Matches the value exactly.
  */
 export type UserTaskStateExactMatchWritable = UserTaskStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches variables that have this protection mode.
+ */
+export type ProtectionModeExactMatchWritable = ProtectionModeEnum;
 
 export type GetAgentDefinitionData = {
     body?: never;
@@ -14724,6 +14794,44 @@ export type SuspendBatchOperationResponses = {
 };
 
 export type SuspendBatchOperationResponse = SuspendBatchOperationResponses[keyof SuspendBatchOperationResponses];
+
+export type GetClockData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/clock';
+};
+
+export type GetClockErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type GetClockError = GetClockErrors[keyof GetClockErrors];
+
+export type GetClockResponses = {
+    /**
+     * The current time of the clock.
+     */
+    200: ClockResult;
+};
+
+export type GetClockResponse = GetClockResponses[keyof GetClockResponses];
 
 export type PinClockData = {
     body: ClockPinRequest;
@@ -23942,7 +24050,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:e140ca0dbd4353da6a63dc0cffb08773e4805379b5a7364a4264431b7c0493ef
+// specHash=sha256:578cdae742ade30fc1ec7cda8a37318f6c9fc78bcac996726b0467919adc0635
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

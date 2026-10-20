@@ -1,6 +1,6 @@
 {
-  "operations": 244,
-  "tests": 247,
+  "operations": 245,
+  "tests": 248,
   "missing": [],
   "ignored": [],
   "files": [
@@ -79,6 +79,7 @@
     "getAuthentication.test.ts",
     "getAuthorization.test.ts",
     "getBatchOperation.test.ts",
+    "getClock.test.ts",
     "getClusterExportingStatus.test.ts",
     "getClusterRebalance.test.ts",
     "getClusterStatus.test.ts",

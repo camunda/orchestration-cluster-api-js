@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2.0.0",
-  "specHash": "sha256:e140ca0dbd4353da6a63dc0cffb08773e4805379b5a7364a4264431b7c0493ef",
+  "specHash": "sha256:578cdae742ade30fc1ec7cda8a37318f6c9fc78bcac996726b0467919adc0635",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -3103,6 +3103,29 @@
       }
     },
     {
+      "name": "ProtectionModeFilterProperty",
+      "kind": "union-wrapper",
+      "description": "ProtectionModeEnum property with the advanced search capability to match any of several values.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "ProtectionModeExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedProtectionModeFilter"
+        }
+      ],
+      "stableId": "protection-mode-filter-property",
+      "tsType": "ProtectionModeExactMatch | AdvancedProtectionModeFilter",
+      "zod": {
+        "schemaName": "zProtectionModeFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ProtectionModeFilterProperty"
+      }
+    },
+    {
       "name": "ResourceKey",
       "kind": "union-wrapper",
       "description": "The system-assigned key for this resource.",
@@ -3431,7 +3454,7 @@
   ],
   "integrity": {
     "totalPrimaryKeys": 44,
-    "totalUnionWrappers": 68,
+    "totalUnionWrappers": 69,
     "implicitCamundaKeys": []
   }
 }

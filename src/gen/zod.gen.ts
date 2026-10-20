@@ -864,6 +864,12 @@ export const zClockPinRequest = /*#__PURE__*/ (() => z.object({
     })
 }))();
 
+export const zClockResult = /*#__PURE__*/ (() => z.object({
+    timestamp: z.iso.datetime().register(z.globalRegistry, {
+        description: 'The current time of the clock, as an ISO 8601 date-time.'
+    })
+}))();
+
 /**
  * The aggregated status of the whole cluster.
  */
@@ -7929,6 +7935,26 @@ export const zVariableSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
 }))();
 
 /**
+ * The kind of protection applied to a variable value. `REDACT` irrecoverably replaces the
+ * value before it reaches secondary storage.
+ *
+ */
+export const zProtectionModeEnum = /*#__PURE__*/ (() => z.enum(['REDACT']).register(z.globalRegistry, {
+    description: 'The kind of protection applied to a variable value. `REDACT` irrecoverably replaces the\nvalue before it reaches secondary storage.\n'
+}))();
+
+/**
+ * Metadata describing how a variable is treated.
+ */
+export const zVariableMetadata = /*#__PURE__*/ (() => z.object({
+    protectionModes: z.array(zProtectionModeEnum).register(z.globalRegistry, {
+        description: 'The protections applied to the variable. The value of a variable protected with\n`REDACT` is irrecoverably replaced before it is stored in secondary storage, so it is\nnever readable.\n'
+    })
+}).register(z.globalRegistry, {
+    description: 'Metadata describing how a variable is treated.'
+}))();
+
+/**
  * Variable response item.
  */
 export const zVariableResultBase = /*#__PURE__*/ (() => z.object({
@@ -7939,7 +7965,8 @@ export const zVariableResultBase = /*#__PURE__*/ (() => z.object({
     variableKey: zVariableKey,
     scopeKey: zScopeKey,
     processInstanceKey: zProcessInstanceKey,
-    rootProcessInstanceKey: zProcessInstanceKey.nullable()
+    rootProcessInstanceKey: zProcessInstanceKey.nullable(),
+    metadata: zVariableMetadata.nullable()
 }).register(z.globalRegistry, {
     description: 'Variable response item.'
 }))();
@@ -7978,6 +8005,19 @@ export const zVariableResult = /*#__PURE__*/ (() => zVariableResultBase.and(z.ob
     })
 })).register(z.globalRegistry, {
     description: 'Variable search response item.'
+}))();
+
+/**
+ * Advanced filter
+ *
+ * Advanced ProtectionModeEnum filter.
+ */
+export const zAdvancedProtectionModeFilter = /*#__PURE__*/ (() => z.object({
+    $in: z.array(zProtectionModeEnum).register(z.globalRegistry, {
+        description: 'Checks if the variable has at least one of the provided protection modes.'
+    }).optional()
+}).register(z.globalRegistry, {
+    description: 'Advanced ProtectionModeEnum filter.'
 }))();
 
 export const zVariableValueFilterProperty = /*#__PURE__*/ (() => z.object({
@@ -8902,35 +8942,6 @@ export const zVariableKeyFilterProperty = /*#__PURE__*/ (() => z.union([
 ]))();
 
 /**
- * Variable filter request.
- */
-export const zVariableFilter = /*#__PURE__*/ (() => z.object({
-    name: zStringFilterProperty.optional(),
-    value: zStringFilterProperty.optional(),
-    tenantId: zTenantId.optional(),
-    isTruncated: z.boolean().register(z.globalRegistry, {
-        description: 'Whether the value is truncated or not.'
-    }).optional(),
-    variableKey: zVariableKeyFilterProperty.optional(),
-    scopeKey: zScopeKeyFilterProperty.optional(),
-    processInstanceKey: zProcessInstanceKeyFilterProperty.optional()
-}).register(z.globalRegistry, {
-    description: 'Variable filter request.'
-}))();
-
-/**
- * Variable search query request.
- */
-export const zVariableSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
-    sort: z.array(zVariableSearchQuerySortRequest).register(z.globalRegistry, {
-        description: 'Sort field criteria.'
-    }).optional(),
-    filter: zVariableFilter.optional()
-})).register(z.globalRegistry, {
-    description: 'Variable search query request.'
-}))();
-
-/**
  * Exact match
  *
  * Matches the value exactly.
@@ -9597,6 +9608,51 @@ export const zUserTaskSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and
 }))();
 
 /**
+ * Exact match
+ *
+ * Matches variables that have this protection mode.
+ */
+export const zProtectionModeExactMatch = zProtectionModeEnum;
+
+/**
+ * ProtectionModeEnum property with the advanced search capability to match any of several values.
+ */
+export const zProtectionModeFilterProperty = /*#__PURE__*/ (() => z.union([
+    zProtectionModeExactMatch,
+    zAdvancedProtectionModeFilter
+]))();
+
+/**
+ * Variable filter request.
+ */
+export const zVariableFilter = /*#__PURE__*/ (() => z.object({
+    name: zStringFilterProperty.optional(),
+    value: zStringFilterProperty.optional(),
+    tenantId: zTenantId.optional(),
+    isTruncated: z.boolean().register(z.globalRegistry, {
+        description: 'Whether the value is truncated or not.'
+    }).optional(),
+    variableKey: zVariableKeyFilterProperty.optional(),
+    scopeKey: zScopeKeyFilterProperty.optional(),
+    processInstanceKey: zProcessInstanceKeyFilterProperty.optional(),
+    protectionMode: zProtectionModeFilterProperty.optional()
+}).register(z.globalRegistry, {
+    description: 'Variable filter request.'
+}))();
+
+/**
+ * Variable search query request.
+ */
+export const zVariableSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
+    sort: z.array(zVariableSearchQuerySortRequest).register(z.globalRegistry, {
+        description: 'Sort field criteria.'
+    }).optional(),
+    filter: zVariableFilter.optional()
+})).register(z.globalRegistry, {
+    description: 'Variable search query request.'
+}))();
+
+/**
  * System-generated key for an authorization.
  */
 export const zAuthorizationKeyWritable = zLongKey;
@@ -10196,6 +10252,13 @@ export const zProcessInstanceStateExactMatchWritable = zProcessInstanceStateEnum
  */
 export const zUserTaskStateExactMatchWritable = zUserTaskStateEnum;
 
+/**
+ * Exact match
+ *
+ * Matches variables that have this protection mode.
+ */
+export const zProtectionModeExactMatchWritable = zProtectionModeEnum;
+
 export const zGetAgentDefinitionPath = /*#__PURE__*/ (() => z.object({
     agentDefinitionKey: zAgentDefinitionKeyWritable
 }))();
@@ -10489,6 +10552,11 @@ export const zSuspendBatchOperationPath = /*#__PURE__*/ (() => z.object({
 export const zSuspendBatchOperationResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The batch operation pause request was created.'
 }))();
+
+/**
+ * The current time of the clock.
+ */
+export const zGetClockResponse = zClockResult;
 
 export const zPinClockBody = zClockPinRequest;
 

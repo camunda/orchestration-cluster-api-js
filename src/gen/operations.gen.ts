@@ -9,7 +9,7 @@ import { enrichActivatedJob, EnrichedActivatedJob, EnrichedActivatedJobOf } from
 import * as Sdk from './sdk.gen';
 
 // Generated
-// Operations: 244
+// Operations: 245
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -294,6 +294,8 @@ export type getBatchOperationConsistency = {
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getBatchOperation>> 
 };
+type getClockOptions = Parameters<typeof Sdk.getClock>[0];
+export type getClockInput = void;
 type getClusterExportingStatusOptions = Parameters<typeof Sdk.getClusterExportingStatus>[0];
 export type getClusterExportingStatusInput = void;
 type getClusterRebalanceOptions = Parameters<typeof Sdk.getClusterRebalance>[0];
@@ -6317,6 +6319,65 @@ export function getBatchOperation(core: CamundaCore, arg: any, /** Management of
 }
 
 /**
+ * Get internal clock
+ *
+ * Returns the current time of the Zeebe engine's internal clock.
+ * If the clock is pinned, this is the pinned time. Otherwise, the clock ticks in real time
+ * and this is the engine's current time.
+ *
+ * Use this endpoint to check the time that the engine uses, for example after pinning the
+ * clock with `PUT /v2/clock` or resetting it with `POST /v2/clock/reset`. A pin or reset
+ * reaches all partitions shortly after it is accepted, so a request sent right after it may
+ * still return the previous time.
+ *
+  *
+ * @operationId getClock
+ * @tags Clock
+ */
+export function getClock(core: CamundaCore, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getClock>>;
+export function getClock(core: CamundaCore, options?: OperationOptions): CancelablePromise<any> {
+  const rt = core as unknown as OperationRuntime;
+  return toCancelable(async signal => {
+    const opts: any = { client: rt._client, signal, throwOnError: false };
+    const call = async () => {
+      try {
+      const _raw = await Sdk.getClock(opts as any);
+      let data = rt._evaluateResponse(_raw, 'getClock', (resp: any) => {
+        const st = resp.status ?? resp.response?.status;
+        if (!st) return undefined;
+        const candidate = st === 429 || st === 503 || st === 500;
+        if (!candidate) return undefined;
+        let prob: any = undefined;
+        if (resp.error && typeof resp.error === 'object') prob = resp.error;
+        const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+        err.status = st; err.name = 'HttpSdkError';
+        if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+        const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
+        if (!isBp) err.nonRetryable = true;
+        return err;
+      });
+      const _respSchemaName = 'zGetClockResponse';
+      if (_isVoidResponse(_respSchemaName)) {
+        data = undefined;
+      }
+      if (rt._validation.settings.res !== 'none') {
+        const _schemas = await import('./zod/getClock.gen');
+        const _schema = _schemas.zGetClockResponse;
+        if (_schema) {
+          const maybeR = await rt._validation.gateResponse('getClock', _schema, data);
+          if (rt._validation.settings.res === 'strict') data = maybeR;
+        }
+      }
+      return data;
+      } catch(e) {
+        throw e;
+      }
+    };
+    return rt._invokeWithRetry(() => call(), { opId: 'getClock', exempt: false, retryOverride: options?.retry });
+  });
+}
+
+/**
  * Get exporting status of the whole cluster
  *
  * Returns the exporting status of the whole cluster, folded over the exporting status of every physical tenant. Only `PAUSED` and `SOFT_PAUSED` confirm that exporting is paused cluster-wide; every other value means at least one physical tenant is not paused, so callers should keep polling. A physical tenant that itself reports `MIXED` makes the whole cluster `MIXED`.
@@ -11046,6 +11107,7 @@ export function pauseExporting(core: CamundaCore, arg: any, options?: OperationO
  * Set a precise, static time for the Zeebe engine's internal clock.
  * When the clock is pinned, it remains at the specified time and does not advance.
  * To change the time, the clock must be pinned again with a new timestamp.
+ * Use `GET /v2/clock` to read the current time of the clock.
  *
  * This endpoint is an alpha feature and may be subject to change
  * in future releases.
@@ -11187,6 +11249,7 @@ export function publishMessage(core: CamundaCore, arg: any, options?: OperationO
  * Resets the Zeebe engine's internal clock to the current system time, enabling it to tick in real-time.
  * This operation is useful for returning the clock to
  * normal behavior after it has been pinned to a specific time.
+ * Use `GET /v2/clock` to read the current time of the clock.
  *
  * This endpoint is an alpha feature and may be subject to change
  * in future releases.
