@@ -214,10 +214,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The agent definition with the given key was not found. More details are provided in the response body.\n",
@@ -230,7 +230,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.10",
@@ -286,13 +286,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.10",
@@ -347,10 +347,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The elementInstanceKey does not correspond to an active element instance.\nMore details are provided in the response body.\n",
@@ -373,10 +373,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -432,10 +432,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The agent instance with the given key was not found.\nMore details are provided in the response body.\n",
@@ -448,10 +448,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -515,10 +515,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The agent instance with the given key was not found.\nMore details are provided in the response body.\n",
@@ -531,7 +531,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.10",
@@ -587,13 +587,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.10",
@@ -659,10 +659,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The agent instance with the given key was not found.\nMore details are provided in the response body.\n",
@@ -675,7 +675,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.10",
@@ -731,10 +731,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
             "description": "An internal error occurred while processing the request."
@@ -790,10 +790,10 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The audit log with the given key was not found.",
@@ -806,7 +806,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -840,13 +840,13 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -892,10 +892,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.10",
@@ -950,10 +950,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The owner was not found.",
@@ -966,10 +966,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -1024,13 +1024,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -1086,7 +1086,7 @@
             "description": "The authorization was updated successfully."
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "404": {
             "description": "The authorization with the authorizationKey was not found.",
@@ -1099,10 +1099,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -1153,10 +1153,10 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The authorization with the given key was not found.",
@@ -1169,7 +1169,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -1213,7 +1213,7 @@
             "description": "The authorization was deleted successfully."
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "404": {
             "description": "The authorization with the authorizationKey was not found.",
@@ -1226,10 +1226,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -1284,10 +1284,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "409": {
             "description": "A backup with the same or a higher id already exists.",
@@ -1300,10 +1300,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           },
           "504": {
             "description": "The request from gateway to broker timed out.",
@@ -1370,16 +1370,16 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -1421,16 +1421,16 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -1463,16 +1463,16 @@
             "description": "The runtime backup state has been successfully reset."
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -1514,16 +1514,16 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           },
           "504": {
             "description": "The request from gateway to broker timed out.",
@@ -1586,10 +1586,10 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "A backup with the given id does not exist.",
@@ -1602,10 +1602,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -1649,16 +1649,16 @@
             "description": "The backup has been successfully deleted."
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -1713,7 +1713,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1backups~1history/get/responses/403"
@@ -1729,10 +1729,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -1799,7 +1799,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
             "description": "The request is forbidden for one of three reasons: the authenticated caller lacks the\nrequired `BACKUP` permission; the cluster's secondary storage is neither Elasticsearch nor\nOpenSearch and therefore cannot serve history backups; or the physical tenant's snapshot\nrepository is absent from the store — configured under a name the store does not have, or\nnot configured at all. The problem detail says which applies. The latter two are deployment\nfaults the caller cannot correct by changing its request.\n",
@@ -1812,10 +1812,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -1868,7 +1868,7 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1backups~1history/get/responses/403"
@@ -1884,10 +1884,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -1931,7 +1931,7 @@
             "description": "The backup has been successfully deleted."
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1backups~1history/get/responses/403"
@@ -1947,10 +1947,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -2013,7 +2013,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -2076,7 +2076,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -2149,7 +2149,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -2205,7 +2205,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Not found. The batch operation was not found.",
@@ -2218,7 +2218,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -2274,7 +2274,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Not found. The batch operation was not found.",
@@ -2287,10 +2287,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -2346,7 +2346,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Not found. The batch operation was not found.",
@@ -2359,10 +2359,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -2370,16 +2370,16 @@
       }
     },
     "/clock": {
-      "put": {
+      "get": {
         "x-eventually-consistent": false,
         "tags": [
           "Clock"
         ],
-        "operationId": "pinClock",
+        "operationId": "getClock",
         "x-required-permissions": [
           {
             "resourceType": "SYSTEM",
-            "permissionType": "UPDATE"
+            "permissionType": "READ"
           }
         ],
         "security": [
@@ -2390,24 +2390,38 @@
             "basicAuth": []
           }
         ],
-        "summary": "Pin internal clock (alpha)",
-        "description": "Set a precise, static time for the Zeebe engine's internal clock.\nWhen the clock is pinned, it remains at the specified time and does not advance.\nTo change the time, the clock must be pinned again with a new timestamp.\n\nThis endpoint is an alpha feature and may be subject to change\nin future releases.\n",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ClockPinRequest"
+        "summary": "Get internal clock",
+        "description": "Returns the current time of the Zeebe engine's internal clock.\nIf the clock is pinned, this is the pinned time. Otherwise, the clock ticks in real time\nand this is the engine's current time.\n\nUse this endpoint to check the time that the engine uses, for example after pinning the\nclock with `PUT /v2/clock` or resetting it with `POST /v2/clock/reset`. A pin or reset\nreaches all partitions shortly after it is accepted, so a request sent right after it may\nstill return the previous time.\n",
+        "responses": {
+          "200": {
+            "description": "The current time of the clock.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClockResult"
+                }
               }
             }
-          }
-        },
-        "responses": {
-          "204": {
-            "description": "The clock was successfully pinned."
           },
-          "400": {
-            "description": "The provided data is not valid.",
+          "401": {
+            "description": "The request lacks valid authentication credentials.",
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. The request is not allowed.",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -2437,6 +2451,62 @@
             }
           }
         },
+        "x-added-in-version": "8.11",
+        "x-scope": "physical-tenant"
+      },
+      "put": {
+        "x-eventually-consistent": false,
+        "tags": [
+          "Clock"
+        ],
+        "operationId": "pinClock",
+        "x-required-permissions": [
+          {
+            "resourceType": "SYSTEM",
+            "permissionType": "UPDATE"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "basicAuth": []
+          }
+        ],
+        "summary": "Pin internal clock (alpha)",
+        "description": "Set a precise, static time for the Zeebe engine's internal clock.\nWhen the clock is pinned, it remains at the specified time and does not advance.\nTo change the time, the clock must be pinned again with a new timestamp.\nUse `GET /v2/clock` to read the current time of the clock.\n\nThis endpoint is an alpha feature and may be subject to change\nin future releases.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClockPinRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "The clock was successfully pinned."
+          },
+          "400": {
+            "description": "The provided data is not valid.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/get/responses/500"
+          },
+          "503": {
+            "$ref": "#/paths/~1clock/get/responses/503"
+          }
+        },
         "x-added-in-version": "8.6",
         "x-scope": "physical-tenant"
       }
@@ -2463,16 +2533,16 @@
           }
         ],
         "summary": "Reset internal clock (alpha)",
-        "description": "Resets the Zeebe engine's internal clock to the current system time, enabling it to tick in real-time.\nThis operation is useful for returning the clock to\nnormal behavior after it has been pinned to a specific time.\n\nThis endpoint is an alpha feature and may be subject to change\nin future releases.\n",
+        "description": "Resets the Zeebe engine's internal clock to the current system time, enabling it to tick in real-time.\nThis operation is useful for returning the clock to\nnormal behavior after it has been pinned to a specific time.\nUse `GET /v2/clock` to read the current time of the clock.\n\nThis endpoint is an alpha feature and may be subject to change\nin future releases.\n",
         "responses": {
           "204": {
             "description": "The clock was successfully reset to the system time."
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.6",
@@ -2537,10 +2607,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "409": {
             "description": "A cluster variable with this name already exists.",
@@ -2553,7 +2623,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -2618,10 +2688,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Cluster variable not found",
@@ -2634,7 +2704,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -2707,10 +2777,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Cluster variable not found",
@@ -2723,7 +2793,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -2779,10 +2849,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Cluster variable not found",
@@ -2795,7 +2865,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -2861,13 +2931,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -2957,10 +3027,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The tenant with the given ID was not found.",
@@ -2983,7 +3053,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -3061,10 +3131,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Cluster variable not found",
@@ -3077,7 +3147,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -3163,10 +3233,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Cluster variable not found",
@@ -3179,7 +3249,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -3248,10 +3318,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Cluster variable not found",
@@ -3264,7 +3334,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -3368,10 +3438,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.9",
@@ -3427,13 +3497,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -3514,10 +3584,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.6",
@@ -3573,13 +3643,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.6",
@@ -3635,10 +3705,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The decision definition with the given key was not found. More details are provided in the response body.\n",
@@ -3651,7 +3721,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -3707,10 +3777,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The decision definition with the given key was not found. More details are provided in the response body.\n",
@@ -3723,7 +3793,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.6",
@@ -3779,13 +3849,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.6",
@@ -3841,10 +3911,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The decision instance with the given key was not found. More details are provided in the response body.\n",
@@ -3857,7 +3927,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -3913,10 +3983,10 @@
             "description": "The decision instance is marked for deletion."
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The decision instance is not found.",
@@ -3929,10 +3999,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.9",
@@ -4002,13 +4072,13 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -4064,13 +4134,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.6",
@@ -4126,10 +4196,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The decision requirements with the given key was not found. More details are provided in the response body.\n",
@@ -4142,7 +4212,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -4198,10 +4268,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The decision requirements with the given key was not found. More details are provided in the response body.\n",
@@ -4214,7 +4284,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -4286,7 +4356,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.6",
@@ -4584,7 +4654,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.6",
@@ -4647,7 +4717,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.6",
@@ -4787,10 +4857,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The ad-hoc sub-process instance is not found or the provided key does not identify an ad-hoc sub-process.",
@@ -4803,10 +4873,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -4862,13 +4932,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.10",
@@ -4924,13 +4994,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -4986,10 +5056,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The element instance with the given key was not found.\nMore details are provided in the response body.\n",
@@ -5002,7 +5072,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -5068,10 +5138,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The element instance with the given key was not found.",
@@ -5084,7 +5154,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -5143,10 +5213,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           },
           "504": {
             "$ref": "#/paths/~1user-tasks~1{userTaskKey}/patch/responses/504"
@@ -5192,16 +5262,16 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -5248,16 +5318,16 @@
             "description": "Exporting was successfully paused."
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -5292,16 +5362,16 @@
             "description": "Exporting was successfully resumed."
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -5360,13 +5430,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -5422,10 +5492,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The form with the given key was not found.",
@@ -5438,7 +5508,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.10",
@@ -5503,10 +5573,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "409": {
             "description": "A global listener with this id already exists.",
@@ -5519,10 +5589,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.9",
@@ -5584,10 +5654,10 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The global user task listener with the given id was not found.",
@@ -5600,7 +5670,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -5673,10 +5743,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The global user task listener was not found.",
@@ -5689,10 +5759,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.9",
@@ -5748,10 +5818,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The global user task listener was not found.",
@@ -5764,10 +5834,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.9",
@@ -5822,13 +5892,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -5892,10 +5962,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "409": {
             "description": "Group with this id already exists.",
@@ -5908,10 +5978,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -5967,13 +6037,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -6035,10 +6105,10 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The group with the given ID was not found.",
@@ -6051,7 +6121,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -6124,7 +6194,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "404": {
             "description": "The group with the given ID was not found.",
@@ -6137,10 +6207,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -6193,7 +6263,7 @@
             "description": "The group was deleted successfully."
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "404": {
             "description": "The group with the given ID was not found.",
@@ -6206,10 +6276,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -6285,10 +6355,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The group with the given ID was not found.",
@@ -6301,7 +6371,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -6375,7 +6445,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The group with the given ID was not found.",
@@ -6398,10 +6468,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -6470,7 +6540,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The group with the given ID was not found, or the client is not assigned to this group.",
@@ -6483,10 +6553,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -6562,10 +6632,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The group with the given ID was not found.",
@@ -6578,7 +6648,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -6652,7 +6722,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The group or mapping rule with the given ID was not found.",
@@ -6675,10 +6745,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -6747,7 +6817,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The group or mapping rule with the given ID was not found, or the mapping rule is not assigned to this group.",
@@ -6760,10 +6830,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -6839,10 +6909,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The group with the given ID was not found.",
@@ -6855,7 +6925,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -6931,10 +7001,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The group with the given ID was not found.",
@@ -6947,7 +7017,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -7021,7 +7091,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The group or user with the given ID or username was not found.",
@@ -7044,10 +7114,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -7116,7 +7186,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The group or user with the given ID was not found, or the user is not assigned to this group.",
@@ -7129,10 +7199,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -7188,13 +7258,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.6",
@@ -7250,10 +7320,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The incident with the given key was not found.",
@@ -7266,7 +7336,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.6",
@@ -7345,10 +7415,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.6",
@@ -7403,13 +7473,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -7464,13 +7534,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -7526,13 +7596,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.6",
@@ -7588,13 +7658,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -7673,10 +7743,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.6",
@@ -7755,10 +7825,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.6",
@@ -7837,10 +7907,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.6",
@@ -7919,10 +7989,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.6",
@@ -7992,13 +8062,13 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.10",
@@ -8078,13 +8148,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -8140,13 +8210,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -8202,13 +8272,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -8264,13 +8334,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -8326,13 +8396,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -8362,7 +8432,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.6",
@@ -8456,7 +8526,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -8511,13 +8581,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -8611,10 +8681,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -8667,7 +8737,7 @@
             "description": "The mapping rule was deleted successfully."
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "404": {
             "description": "The mapping rule with the mappingRuleId was not found.",
@@ -8680,10 +8750,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -8743,7 +8813,7 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "404": {
             "description": "The mapping rule with the mappingRuleId was not found.",
@@ -8756,7 +8826,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -8812,13 +8882,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -8873,7 +8943,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Not found",
@@ -8886,10 +8956,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.6",
@@ -8944,10 +9014,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.6",
@@ -9003,13 +9073,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -9065,13 +9135,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -9127,13 +9197,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -9189,10 +9259,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The process definition with the given key was not found. More details are provided in the response body.\n",
@@ -9205,7 +9275,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -9264,10 +9334,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Not found",
@@ -9280,7 +9350,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -9347,13 +9417,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -9420,13 +9490,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.10",
@@ -9492,10 +9562,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The process definition with the given key was not found.\nMore details are provided in the response body.\n",
@@ -9508,7 +9578,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -9564,13 +9634,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -9652,10 +9722,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           },
           "504": {
             "description": "The process instance creation request timed out in the gateway.\nThis can happen if the `awaitCompletion` request parameter is set to `true`\nand the created process instance did not complete within the defined request timeout.\nThis often happens when the created instance is not fully automated or contains wait states.\n",
@@ -9735,13 +9805,13 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -9811,13 +9881,13 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -9887,13 +9957,13 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -9963,13 +10033,13 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -10039,13 +10109,13 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -10115,13 +10185,13 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.10",
@@ -10177,13 +10247,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.6",
@@ -10253,13 +10323,13 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.10",
@@ -10315,10 +10385,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The process instance with the given key was not found.",
@@ -10331,7 +10401,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -10410,10 +10480,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -10472,10 +10542,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The process instance is not found.",
@@ -10488,7 +10558,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -10567,10 +10637,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           },
           "504": {
             "$ref": "#/paths/~1user-tasks~1{userTaskKey}/patch/responses/504"
@@ -10629,10 +10699,10 @@
             "description": "The process instance is marked for deletion."
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The process instance is not found.",
@@ -10655,10 +10725,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.9",
@@ -10714,7 +10784,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "404": {
             "description": "The process instance is not found.",
@@ -10727,10 +10797,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.9",
@@ -10796,10 +10866,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The process instance with the given key was not found.",
@@ -10812,7 +10882,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -10891,10 +10961,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.6",
@@ -10963,10 +11033,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.6",
@@ -11045,10 +11115,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -11104,13 +11174,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -11167,13 +11237,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -11230,13 +11300,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.10",
@@ -11315,10 +11385,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -11374,13 +11444,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.10",
@@ -11443,7 +11513,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.7",
@@ -11518,7 +11588,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.7",
@@ -11582,7 +11652,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.10",
@@ -11658,10 +11728,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.6",
@@ -11725,10 +11795,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "409": {
             "description": "Role with this id already exists.",
@@ -11741,10 +11811,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -11800,13 +11870,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -11868,10 +11938,10 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The role with the given ID was not found.",
@@ -11884,7 +11954,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -11957,7 +12027,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "404": {
             "description": "The role with the ID is not found.",
@@ -11970,10 +12040,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -12026,7 +12096,7 @@
             "description": "The role was deleted successfully."
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "404": {
             "description": "The role with the ID was not found.",
@@ -12039,10 +12109,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -12118,10 +12188,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The role with the given ID was not found.",
@@ -12134,7 +12204,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -12208,7 +12278,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The role with the given ID was not found.",
@@ -12231,10 +12301,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -12303,7 +12373,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The role or client with the given ID or username was not found.",
@@ -12316,10 +12386,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -12395,10 +12465,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The role with the given ID was not found.",
@@ -12411,7 +12481,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -12486,7 +12556,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The role or group with the given ID was not found.",
@@ -12509,10 +12579,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -12581,7 +12651,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The role or group with the given ID was not found.",
@@ -12594,10 +12664,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -12673,10 +12743,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The role with the given ID was not found.",
@@ -12689,7 +12759,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -12763,7 +12833,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The role or mapping rule with the given ID was not found.",
@@ -12786,10 +12856,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -12858,7 +12928,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The role or mapping rule with the given ID was not found.",
@@ -12871,10 +12941,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -12950,10 +13020,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The role with the given ID was not found.",
@@ -12966,7 +13036,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -13040,7 +13110,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The role or user with the given ID or username was not found.",
@@ -13063,10 +13133,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -13135,7 +13205,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The role or user with the given ID or username was not found.",
@@ -13148,10 +13218,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -13207,13 +13277,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -13269,13 +13339,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -13323,7 +13393,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "409": {
             "description": "A user with this username already exists.",
@@ -13336,10 +13406,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -13404,10 +13474,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.6",
@@ -13550,13 +13620,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -13626,10 +13696,10 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -13694,7 +13764,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Not found. The resource was not found.",
@@ -13717,10 +13787,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -13776,10 +13846,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Not found",
@@ -13792,7 +13862,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -13857,10 +13927,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Tenant not found.",
@@ -13873,7 +13943,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -13946,7 +14016,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Not found. The tenant was not found.",
@@ -13959,10 +14029,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -14018,7 +14088,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Not found. The tenant was not found.",
@@ -14031,10 +14101,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -14178,7 +14248,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The tenant was not found.",
@@ -14191,10 +14261,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -14263,7 +14333,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The tenant does not exist or the client was not assigned to it.",
@@ -14276,10 +14346,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -14424,7 +14494,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Not found. The tenant or group was not found.",
@@ -14437,10 +14507,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -14509,7 +14579,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Not found. The tenant or group was not found.",
@@ -14522,10 +14592,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -14669,7 +14739,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Not found. The tenant or mapping rule was not found.",
@@ -14682,10 +14752,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -14754,7 +14824,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Not found. The tenant or mapping rule was not found.",
@@ -14767,10 +14837,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -14914,7 +14984,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Not found. The tenant or role was not found.",
@@ -14927,10 +14997,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -14999,7 +15069,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Not found. The tenant or role was not found.",
@@ -15012,10 +15082,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -15159,7 +15229,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Not found. The tenant or user was not found.",
@@ -15172,10 +15242,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -15244,7 +15314,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Not found. The tenant or user was not found.",
@@ -15257,10 +15327,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -15297,10 +15367,10 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.5",
@@ -15374,34 +15444,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "description": "The request lacks valid authentication credentials.",
-            "headers": {
-              "WWW-Authenticate": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "description": "Forbidden. The request is not allowed.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.10",
@@ -15468,16 +15517,16 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "409": {
             "description": "The cluster is not in recovery mode, so the restore cannot be accepted."
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.10",
@@ -15517,16 +15566,16 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "No restore is currently in progress."
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.10",
@@ -15582,16 +15631,16 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -15652,16 +15701,16 @@
             "description": "Exporting was successfully paused on every physical tenant."
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -15710,16 +15759,16 @@
             "description": "Exporting was successfully resumed on every physical tenant."
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -15812,7 +15861,7 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "404": {
             "description": "The requested `physicalTenantId` does not exist in this cluster, so no tenant was triggered.",
@@ -15939,7 +15988,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "404": {
             "description": "The requested `physicalTenantId` does not exist in this cluster.",
@@ -15952,10 +16001,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -16023,7 +16072,7 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "404": {
             "description": "The requested `physicalTenantId` does not exist in this cluster.",
@@ -16036,10 +16085,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -16079,7 +16128,7 @@
             "description": "The runtime backup state was reset on every targeted physical tenant."
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "404": {
             "description": "The requested `physicalTenantId` does not exist in this cluster.",
@@ -16102,7 +16151,7 @@
             }
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -16170,7 +16219,7 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "404": {
             "description": "The requested `physicalTenantId` does not exist in this cluster.",
@@ -16183,10 +16232,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           },
           "504": {
             "description": "The request from gateway to broker timed out on at least one targeted physical tenant.",
@@ -16276,7 +16325,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "404": {
             "description": "The requested `physicalTenantId` does not exist in this cluster, or every targeted physical tenant was read and none of them holds a backup with the given id.",
@@ -16289,10 +16338,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -16344,7 +16393,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "404": {
             "description": "The requested `physicalTenantId` does not exist in this cluster.",
@@ -16367,7 +16416,7 @@
             }
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -16448,7 +16497,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1cluster~1v2~1backups~1history/get/responses/403"
@@ -16484,7 +16533,7 @@
             }
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -16556,7 +16605,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
             "description": "The cluster's secondary storage is neither Elasticsearch nor OpenSearch and therefore cannot serve history backups, or a targeted physical tenant's snapshot repository is absent from the store — configured under a name the store does not have, or not configured at all. Both are deployment faults the caller cannot correct by changing its request; narrow the request with `physicalTenantId` to work with the tenants whose repository is usable. Unlike the per-physical-tenant backup endpoints, the cluster-admin surface performs no fine-grained authorization, so a missing `BACKUP` permission is never the reason.",
@@ -16579,10 +16628,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -16662,7 +16711,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1cluster~1v2~1backups~1history/get/responses/403"
@@ -16678,10 +16727,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -16733,7 +16782,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
             "description": "The cluster's secondary storage cannot serve history backups, or a targeted physical tenant's snapshot repository is absent from the store. Unlike the per-physical-tenant backup endpoints, the cluster-admin surface performs no fine-grained authorization, so a missing `BACKUP` permission is never the reason. Deletion fans out with no preceding check, so an absent repository is found only once that tenant is reached, by which time the backup may already be deleted from the others; those deletions are not undone. Narrow the request with `physicalTenantId` to work with the tenants whose repository is usable.",
@@ -16766,7 +16815,7 @@
             }
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.10",
@@ -16856,7 +16905,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "404": {
             "description": "The requested `physicalTenantId` does not exist in this cluster.",
@@ -16872,7 +16921,7 @@
             "description": "The mode change conflicts with the cluster state, for example because another configuration change is in progress."
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.10",
@@ -16953,7 +17002,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "409": {
             "description": "A rebalance or cluster configuration change is already in progress, so there is no settled configuration to plan a rebalance against.",
@@ -16966,7 +17015,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "502": {
             "description": "The coordinator was reached, but its response was absent or unusable.",
@@ -17031,10 +17080,10 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "502": {
             "description": "The coordinator was reached, but its response was absent or unusable.",
@@ -17099,10 +17148,10 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "502": {
             "description": "The coordinator was reached, but its response was absent or unusable.",
@@ -17223,7 +17272,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "404": {
             "description": "The requested `physicalTenantId`, or a physical tenant named in `overrides`, does not exist in this cluster.",
@@ -17239,7 +17288,7 @@
             "description": "A targeted physical tenant is not in recovery mode, so the restore cannot be accepted."
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.10",
@@ -17397,13 +17446,13 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.10",
@@ -17468,10 +17517,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "409": {
             "description": "A user with this username already exists.",
@@ -17484,10 +17533,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -17542,13 +17591,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -17611,10 +17660,10 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The user with the given username was not found.",
@@ -17627,7 +17676,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -17700,7 +17749,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The user was not found.",
@@ -17713,10 +17762,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -17782,10 +17831,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           }
         },
         "x-added-in-version": "8.8",
@@ -17849,13 +17898,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.6",
@@ -17919,10 +17968,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "The user task with the given key was not found.",
@@ -17935,7 +17984,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -18020,10 +18069,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           },
           "504": {
             "description": "The request timed out between the gateway and the broker. For these endpoints, this often happens when user task listeners are configured and the corresponding listener job is not completed within the request timeout. Common causes include no available job workers for the listener type, busy or crashed job workers, or delayed job completion. As with any gateway timeout, general timeout causes (for example transient network issues) can also result in a 504 response.\nTroubleshooting: - verify that job workers for the listener type are running and healthy - check worker logs for crashes, retries, and completion failures - check network connectivity between workers, gateway, and broker - retry with backoff after transient failures - fail without retries if a problem persists\n",
@@ -18121,10 +18170,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           },
           "504": {
             "$ref": "#/paths/~1user-tasks~1{userTaskKey}/patch/responses/504"
@@ -18214,10 +18263,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           },
           "504": {
             "$ref": "#/paths/~1user-tasks~1{userTaskKey}/patch/responses/504"
@@ -18294,7 +18343,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.9",
@@ -18389,10 +18438,10 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           },
           "503": {
-            "$ref": "#/paths/~1clock/put/responses/503"
+            "$ref": "#/paths/~1clock/get/responses/503"
           },
           "504": {
             "$ref": "#/paths/~1user-tasks~1{userTaskKey}/patch/responses/504"
@@ -18470,7 +18519,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -18538,10 +18587,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Not found",
@@ -18554,7 +18603,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -18629,7 +18678,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -18696,13 +18745,13 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -18758,10 +18807,10 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1mode/patch/responses/401"
+            "$ref": "#/paths/~1clock/get/responses/401"
           },
           "403": {
-            "$ref": "#/paths/~1mode/patch/responses/403"
+            "$ref": "#/paths/~1clock/get/responses/403"
           },
           "404": {
             "description": "Not found",
@@ -18774,7 +18823,7 @@
             }
           },
           "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
+            "$ref": "#/paths/~1clock/get/responses/500"
           }
         },
         "x-added-in-version": "8.8",
@@ -23642,6 +23691,20 @@
             "description": "The exact time in epoch milliseconds to which the clock should be pinned.",
             "type": "integer",
             "format": "int64"
+          }
+        },
+        "required": [
+          "timestamp"
+        ]
+      },
+      "ClockResult": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "description": "The current time of the clock, as an ISO 8601 date-time.",
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-01-01T12:00:00.000Z"
           }
         },
         "required": [

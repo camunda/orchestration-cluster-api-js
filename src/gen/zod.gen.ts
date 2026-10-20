@@ -864,6 +864,12 @@ export const zClockPinRequest = /*#__PURE__*/ (() => z.object({
     })
 }))();
 
+export const zClockResult = /*#__PURE__*/ (() => z.object({
+    timestamp: z.iso.datetime().register(z.globalRegistry, {
+        description: 'The current time of the clock, as an ISO 8601 date-time.'
+    })
+}))();
+
 /**
  * The aggregated status of the whole cluster.
  */
@@ -10489,6 +10495,11 @@ export const zSuspendBatchOperationPath = /*#__PURE__*/ (() => z.object({
 export const zSuspendBatchOperationResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
     description: 'The batch operation pause request was created.'
 }))();
+
+/**
+ * The current time of the clock.
+ */
+export const zGetClockResponse = zClockResult;
 
 export const zPinClockBody = zClockPinRequest;
 

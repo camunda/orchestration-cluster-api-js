@@ -233,6 +233,17 @@ async function getStatusExample() {
 }
 //#endregion GetStatus
 
+//#region GetClock
+async function getClockExample() {
+  const camunda = createCamundaClient();
+
+  const clock = await camunda.getClock();
+  const engineTime = new Date(clock.timestamp);
+
+  console.log(`Engine clock time: ${engineTime.toISOString()}`);
+}
+//#endregion GetClock
+
 //#region GetClusterStatus
 async function getClusterStatusExample() {
   const camunda = createCamundaClient();
@@ -643,6 +654,7 @@ void getLicenseExample;
 void getSystemConfigurationExample;
 void getAuthenticationExample;
 void getStatusExample;
+void getClockExample;
 void getClusterStatusExample;
 void getClusterUpgradeStatusExample;
 void triggerClusterRebalanceExample;

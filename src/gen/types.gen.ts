@@ -2815,6 +2815,13 @@ export type ClockPinRequest = {
     timestamp: number;
 };
 
+export type ClockResult = {
+    /**
+     * The current time of the clock, as an ISO 8601 date-time.
+     */
+    timestamp: string;
+};
+
 /**
  * The aggregated status of the whole cluster.
  */
@@ -14725,6 +14732,44 @@ export type SuspendBatchOperationResponses = {
 
 export type SuspendBatchOperationResponse = SuspendBatchOperationResponses[keyof SuspendBatchOperationResponses];
 
+export type GetClockData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/clock';
+};
+
+export type GetClockErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type GetClockError = GetClockErrors[keyof GetClockErrors];
+
+export type GetClockResponses = {
+    /**
+     * The current time of the clock.
+     */
+    200: ClockResult;
+};
+
+export type GetClockResponse = GetClockResponses[keyof GetClockResponses];
+
 export type PinClockData = {
     body: ClockPinRequest;
     path?: never;
@@ -23942,7 +23987,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:e140ca0dbd4353da6a63dc0cffb08773e4805379b5a7364a4264431b7c0493ef
+// specHash=sha256:ccc4d90f08e64dd80972612453df5715d808b00aeadce516a2bae088f63ccdb9
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
