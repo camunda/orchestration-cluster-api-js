@@ -1296,7 +1296,7 @@ CAMUNDA_MTLS_CERT_PATH=/path/to/client.crt
 CAMUNDA_MTLS_KEY_PATH=/path/to/client.key
 ```
 
-Inline PEM values (`CAMUNDA_MTLS_CERT`, `CAMUNDA_MTLS_KEY`, `CAMUNDA_MTLS_CA`) take precedence over their `_PATH` counterparts. An `https.Agent` is attached to all outbound calls (including token fetches).
+Inline PEM values (`CAMUNDA_MTLS_CERT`, `CAMUNDA_MTLS_KEY`, `CAMUNDA_MTLS_CA`) take precedence over their `_PATH` counterparts. In Node, the material is applied to all outbound calls (including token fetches) through an [undici](https://undici.nodejs.org) dispatcher. If you supply your own `fetch`, the SDK passes the `dispatcher` in the request init; your `fetch` must honour it for mTLS to take effect. mTLS is not available in the browser.
 
 ## Branded Keys
 

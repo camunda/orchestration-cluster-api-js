@@ -20,6 +20,7 @@ import type { EnvOverrides } from './configSchema';
 import { normalizeError } from './errors';
 import { installAuthInterceptor } from './installAuthInterceptor';
 import { createLogger, type Logger, type LogLevel, type LogTransport } from './logger';
+import { withMtls } from './mtls';
 import { liveRandom, type RandomSource } from './random';
 import { evaluateSdkResponse } from './responseEvaluation';
 import { defaultHttpClassifier, executeWithHttpRetry, type HttpRetryPolicy } from './retry';
@@ -168,7 +169,8 @@ export class CamundaCore {
     });
     const baseFetch = opts.fetch;
     this._baseFetch = baseFetch;
-    this._fetch = baseFetch;
+    // mTLS (Node): innermost layer, so telemetry and auth both go through it (#540).
+    this._fetch = withMtls(this._config, baseFetch);
     // Telemetry wrap (after logger & config known). If user provided explicit telemetry, honor it.
     // Else if environment enabled auto telemetry logging, wrap with mirrorToLog + optional correlation.
     if (opts.telemetry) {
@@ -225,6 +227,7 @@ export class CamundaCore {
     );
     this._auth = createAuthFacade(this._config, {
       fetch: this._fetch,
+      mtlsApplied: true,
       logger: this._log,
       clock: this._clock,
       random: this._random,
@@ -310,6 +313,7 @@ export class CamundaCore {
     this._fetch = this._baseFetch;
     const { config } = hydrateConfig({ overrides: this._overrides, env: next.env });
     this._config = deepFreeze(config) as Readonly<CamundaConfig>;
+    this._fetch = withMtls(this._config, this._baseFetch);
     // Re-wrap fetch if telemetry present OR env auto telemetry toggled
     if (next.telemetry) {
       this._fetch = wrapFetch(this._fetch || (fetch as any), {
@@ -359,6 +363,7 @@ export class CamundaCore {
     if (next.log?.transport !== undefined) this._log.setTransport(next.log.transport);
     this._auth = createAuthFacade(this._config, {
       fetch: this._fetch,
+      mtlsApplied: true,
       logger: this._log,
       clock: this._clock,
       random: this._random,

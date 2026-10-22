@@ -16,5 +16,6 @@ export const node: NodeBuiltins | undefined = {
   https,
   url,
   crypto,
+  loadUndici: () => import('undici'),
   loadWorkerThreads: () => import('node:worker_threads'),
 };

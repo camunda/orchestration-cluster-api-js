@@ -119,6 +119,7 @@
   },
   "dependencies": {
     "typed-env": "^2.0.0",
+    "undici": "^7.30.1",
     "zod": "^4"
   },
   "peerDependencies": {
