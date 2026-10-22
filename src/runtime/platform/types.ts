@@ -19,6 +19,8 @@ export interface NodeBuiltins {
   https: typeof import('node:https');
   url: typeof import('node:url');
   crypto: typeof import('node:crypto');
+  /** Loaded lazily: only mTLS needs it (undici dispatcher, issue #540). */
+  loadUndici(): Promise<typeof import('undici')>;
   /** Loaded lazily: only the threaded job worker pool needs it. */
   loadWorkerThreads(): Promise<typeof import('node:worker_threads')>;
 }
