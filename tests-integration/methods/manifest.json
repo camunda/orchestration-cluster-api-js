@@ -1,11 +1,12 @@
 {
-  "operations": 244,
-  "tests": 247,
+  "operations": 246,
+  "tests": 249,
   "missing": [],
   "ignored": [],
   "files": [
     "activateAdHocSubProcessActivities.test.ts",
     "activateJobs.test.ts",
+    "addClock.test.ts",
     "assignClientToGroup.test.ts",
     "assignClientToTenant.test.ts",
     "assignGroupToTenant.test.ts",
@@ -79,6 +80,7 @@
     "getAuthentication.test.ts",
     "getAuthorization.test.ts",
     "getBatchOperation.test.ts",
+    "getClock.test.ts",
     "getClusterExportingStatus.test.ts",
     "getClusterRebalance.test.ts",
     "getClusterStatus.test.ts",

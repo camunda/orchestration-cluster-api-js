@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2.0.0",
-  "specHash": "sha256:e140ca0dbd4353da6a63dc0cffb08773e4805379b5a7364a4264431b7c0493ef",
+  "specHash": "sha256:cf24fbbd9f4162529bcf49101695b57668fcac8763500a34454e35d2aeaf02d5",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -2995,7 +2995,7 @@
     {
       "name": "ProcessInstanceCreationInstruction",
       "kind": "union-wrapper",
-      "description": "Instructions for creating a process instance. The process definition can be specified\neither by id or by key.\n",
+      "description": "Instructions for creating a process instance. The process definition can be specified\neither by id, by id and version tag, or by key.\n",
       "branches": [
         {
           "branchType": "branded-ref",
@@ -3004,10 +3004,14 @@
         {
           "branchType": "branded-ref",
           "ref": "ProcessInstanceCreationInstructionById"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "ProcessInstanceCreationInstructionByVersionTag"
         }
       ],
       "stableId": "process-instance-creation-instruction",
-      "tsType": "ProcessInstanceCreationInstructionByKey | ProcessInstanceCreationInstructionById",
+      "tsType": "ProcessInstanceCreationInstructionByKey | ProcessInstanceCreationInstructionById | ProcessInstanceCreationInstructionByVersionTag",
       "zod": {
         "schemaName": "zProcessInstanceCreationInstruction"
       },
@@ -3100,6 +3104,29 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/ProcessInstanceStateFilterProperty"
+      }
+    },
+    {
+      "name": "ProtectionModeFilterProperty",
+      "kind": "union-wrapper",
+      "description": "ProtectionModeEnum property with the advanced search capability to match any of several values.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "ProtectionModeExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedProtectionModeFilter"
+        }
+      ],
+      "stableId": "protection-mode-filter-property",
+      "tsType": "ProtectionModeExactMatch | AdvancedProtectionModeFilter",
+      "zod": {
+        "schemaName": "zProtectionModeFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ProtectionModeFilterProperty"
       }
     },
     {
@@ -3431,7 +3458,7 @@
   ],
   "integrity": {
     "totalPrimaryKeys": 44,
-    "totalUnionWrappers": 68,
+    "totalUnionWrappers": 69,
     "implicitCamundaKeys": []
   }
 }

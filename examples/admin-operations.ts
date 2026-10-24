@@ -309,6 +309,28 @@ async function pinClockExample() {
 }
 //#endregion PinClock
 
+//#region GetClock
+async function getClockExample() {
+  const camunda = createCamundaClient();
+
+  const clock = await camunda.getClock();
+
+  console.log(`Current cluster time: ${clock.timestamp}`);
+}
+//#endregion GetClock
+
+//#region AddClock
+async function addClockExample() {
+  const camunda = createCamundaClient();
+
+  const clock = await camunda.addClock({
+    offset: 'PT1H',
+  });
+
+  console.log(`Clock advanced to: ${clock.timestamp}`);
+}
+//#endregion AddClock
+
 //#region ResetClock
 async function resetClockExample() {
   const camunda = createCamundaClient();
@@ -649,6 +671,8 @@ void triggerClusterRebalanceExample;
 void getClusterRebalanceExample;
 void cancelClusterRebalanceExample;
 void pinClockExample;
+void getClockExample;
+void addClockExample;
 void resetClockExample;
 void evaluateConditionalsExample;
 void evaluateExpressionExample;
