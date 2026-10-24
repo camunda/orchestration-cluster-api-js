@@ -65,6 +65,9 @@ export class CamundaConfigurationError extends Error {
 // Resulting strongly typed config
 export interface CamundaConfig {
   restAddress: string;
+  // True when CAMUNDA_REST_ADDRESS_EXACT opted the restAddress out of /v2 normalization:
+  // the address is used verbatim, so any trailing /v2 is user-supplied, not SDK-appended.
+  restAddressExact: boolean;
   tokenAudience: string;
   defaultTenantId: string; // branded at usage sites as TenantId
   httpRetry: { maxAttempts: number; baseDelayMs: number; maxDelayMs: number }; // generic HTTP operation retry policy
@@ -663,6 +666,7 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
   ensure('CAMUNDA_SDK_BACKPRESSURE_UNLIMITED_AFTER_HEALTHY_MS', preset.unlimitedAfterHealthyMs);
   const config: CamundaConfig = {
     restAddress: _restAddress,
+    restAddressExact: _restAddressExact,
     tokenAudience: reqStr('CAMUNDA_TOKEN_AUDIENCE'),
     defaultTenantId: reqStr('CAMUNDA_DEFAULT_TENANT_ID'),
     httpRetry: {

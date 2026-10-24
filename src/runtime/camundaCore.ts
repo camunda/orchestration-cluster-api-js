@@ -12,7 +12,7 @@
 //
 // Only the operations you import end up in your bundle.
 import { createClient } from '../gen/client/client.gen';
-import type { Client } from '../gen/client/types.gen';
+import type { Client, Config } from '../gen/client/types.gen';
 import { createAuthFacade } from './auth';
 import { BackpressureManager } from './backpressure';
 import { type Clock, createLiveClock } from './clock';
@@ -210,7 +210,11 @@ export class CamundaCore {
       baseUrl: this._config.restAddress,
       fetch: this._fetch,
       throwOnError: opts.throwOnError !== false,
-    });
+      // Carry exact-address mode through to the path-level-servers resolver injected into
+      // sdk.gen.ts (issue #573), so it never strips a user-supplied /v2 suffix. Not part of
+      // the hey-api Config shape, so it rides along as an extra field getConfig() preserves.
+      restAddressExact: this._config.restAddressExact,
+    } as Config & { restAddressExact?: boolean });
     // Unsafe diagnostic level warning
     if (this._log.level() === 'silly') {
       this._log.warn(
@@ -347,7 +351,9 @@ export class CamundaCore {
       baseUrl: this._config.restAddress,
       fetch: this._fetch,
       throwOnError: next.throwOnError !== false,
-    });
+      // See createClient() above: carry exact-address mode to the sdk.gen.ts resolver.
+      restAddressExact: this._config.restAddressExact,
+    } as Config & { restAddressExact?: boolean });
     installAuthInterceptor(
       this._client,
       () => this._config.auth.strategy,

@@ -24,10 +24,11 @@ import path from 'node:path';
 //   ...options
 //
 // `__rootServerUrl` resolves the configured client baseUrl (e.g. `http://host:8080/v2`) to the
-// path-level server by stripping the `/v2` suffix the SDK itself appended. It is a pure string
-// operation: when the user opted out of the `/v2` suffix via CAMUNDA_REST_ADDRESS_EXACT, the
-// baseUrl does not end in `/v2` and is returned unchanged, so a gateway-mounted base path
-// (e.g. `https://gateway.example/api`) is preserved.
+// path-level server by stripping the `/v2` suffix the SDK itself appended. In
+// CAMUNDA_REST_ADDRESS_EXACT mode the address is used verbatim, so any trailing `/v2` is
+// user-supplied (e.g. a gateway mounted at `https://gateway.example/api/v2`) rather than
+// SDK-appended; the runtime carries that flag on the client config and the resolver bypasses
+// the suffix removal, preserving the user's base path.
 //
 // The override is placed BEFORE `...options`, so an explicit per-call `baseUrl` still wins.
 // The affected operation set is derived from the spec at pipeline time, so a future spec change
@@ -107,12 +108,22 @@ const HELPER = `
 // Injected by hooks/post/175-honor-path-level-servers.ts. The cluster-admin
 // operations under /cluster/v2/* declare a path-level server WITHOUT the /v2
 // base path; resolve the configured client baseUrl (…/v2) back to that root
-// server by stripping the /v2 suffix the SDK appended. Pure string operation:
-// a baseUrl that does not end in /v2 (e.g. CAMUNDA_REST_ADDRESS_EXACT mode) is
-// returned unchanged, preserving gateway-mounted base paths.
-const __rootServerUrl = (c: { getConfig: () => { baseUrl?: string } }): string | undefined => {
-  const baseUrl = c.getConfig().baseUrl;
-  return typeof baseUrl === 'string' ? baseUrl.replace(/\\/v2\\/?$/i, '') : baseUrl;
+// server by stripping the /v2 suffix the SDK appended. Pure string operation.
+//
+// In CAMUNDA_REST_ADDRESS_EXACT mode the configured address is used verbatim, so
+// a trailing /v2 is USER-supplied, not SDK-appended — stripping it would corrupt
+// the user's gateway path (e.g. https://gateway.example/api/v2). The runtime
+// carries that flag through on the client config (camundaCore.ts), so honour it
+// and return the baseUrl unchanged. A baseUrl that does not end in /v2 is already
+// returned unchanged either way.
+const __rootServerUrl = (
+  c: { getConfig: () => { baseUrl?: string; restAddressExact?: boolean } }
+): string | undefined => {
+  const cfg = c.getConfig();
+  const baseUrl = cfg.baseUrl;
+  if (typeof baseUrl !== 'string') return baseUrl;
+  if (cfg.restAddressExact) return baseUrl;
+  return baseUrl.replace(/\\/v2\\/?$/i, '');
 };
 `;
 

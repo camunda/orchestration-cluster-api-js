@@ -147,4 +147,37 @@ describe('path-level servers (issue #573)', () => {
     // strip only the /v2 suffix the SDK itself would have added — never user-supplied path parts.
     expect(new URL(req.url).pathname).toBe('/api/cluster/v2/topology');
   });
+
+  it('preserves an exact REST address that ends in /v2 for cluster-admin operations', async () => {
+    // Regression for the exact-mode variant: a gateway mounted at `.../api/v2` opts into
+    // CAMUNDA_REST_ADDRESS_EXACT, so the trailing /v2 is USER-supplied and used verbatim for
+    // ordinary operations. The cluster-admin baseUrl resolver must NOT strip that /v2 — doing so
+    // would silently route the request to `/api/cluster/v2/...` instead of
+    // `/api/v2/cluster/v2/...`, dropping a user-intended path segment.
+    const fetchSpy = vi.fn(
+      async (_req: Request) =>
+        new Response(JSON.stringify({}), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
+    );
+    const client = createCamundaClient({
+      config: {
+        CAMUNDA_REST_ADDRESS: 'https://gateway.example/api/v2',
+        CAMUNDA_REST_ADDRESS_EXACT: true,
+      },
+      fetch: fetchSpy as any,
+    });
+
+    // Ordinary /v2 operations keep hitting the exact address verbatim.
+    await (client as any).getLicense();
+    expect(new URL((fetchSpy.mock.calls[0][0] as Request).url).pathname).toBe('/api/v2/license');
+
+    // Cluster-admin operations must also be routed under the verbatim address — no /v2 stripping.
+    fetchSpy.mockClear();
+    await (client as any).getClusterTopology();
+    expect(new URL((fetchSpy.mock.calls[0][0] as Request).url).pathname).toBe(
+      '/api/v2/cluster/v2/topology'
+    );
+  });
 });
