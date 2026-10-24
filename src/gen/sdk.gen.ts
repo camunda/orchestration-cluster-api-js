@@ -3,6 +3,19 @@
 import { type Client, type ClientMeta, formDataBodySerializer, type Options as Options2, type RequestResult, type TDataShape } from './client';
 import { client } from './client.gen';
 import type { ActivateAdHocSubProcessActivitiesData, ActivateAdHocSubProcessActivitiesErrors, ActivateAdHocSubProcessActivitiesResponses, ActivateJobsData, ActivateJobsErrors, ActivateJobsResponses, AssignClientToGroupData, AssignClientToGroupErrors, AssignClientToGroupResponses, AssignClientToTenantData, AssignClientToTenantErrors, AssignClientToTenantResponses, AssignGroupToTenantData, AssignGroupToTenantErrors, AssignGroupToTenantResponses, AssignMappingRuleToGroupData, AssignMappingRuleToGroupErrors, AssignMappingRuleToGroupResponses, AssignMappingRuleToTenantData, AssignMappingRuleToTenantErrors, AssignMappingRuleToTenantResponses, AssignProcessInstanceBusinessIdData, AssignProcessInstanceBusinessIdErrors, AssignProcessInstanceBusinessIdResponses, AssignRoleToClientData, AssignRoleToClientErrors, AssignRoleToClientResponses, AssignRoleToGroupData, AssignRoleToGroupErrors, AssignRoleToGroupResponses, AssignRoleToMappingRuleData, AssignRoleToMappingRuleErrors, AssignRoleToMappingRuleResponses, AssignRoleToTenantData, AssignRoleToTenantErrors, AssignRoleToTenantResponses, AssignRoleToUserData, AssignRoleToUserErrors, AssignRoleToUserResponses, AssignUserTaskData, AssignUserTaskErrors, AssignUserTaskResponses, AssignUserToGroupData, AssignUserToGroupErrors, AssignUserToGroupResponses, AssignUserToTenantData, AssignUserToTenantErrors, AssignUserToTenantResponses, BroadcastSignalData, BroadcastSignalErrors, BroadcastSignalResponses, CancelBatchOperationData, CancelBatchOperationErrors, CancelBatchOperationResponses, CancelClusterRebalanceData, CancelClusterRebalanceErrors, CancelClusterRebalanceResponses, CancelProcessInstanceData, CancelProcessInstanceErrors, CancelProcessInstanceResponses, CancelProcessInstancesBatchOperationData, CancelProcessInstancesBatchOperationErrors, CancelProcessInstancesBatchOperationResponses, ChangeClusterModeAsClusterAdminData, ChangeClusterModeAsClusterAdminErrors, ChangeClusterModeAsClusterAdminResponses, ChangeClusterModeData, ChangeClusterModeErrors, ChangeClusterModeResponses, CompleteJobData, CompleteJobErrors, CompleteJobResponses, CompleteUserTaskData, CompleteUserTaskErrors, CompleteUserTaskResponses, CorrelateMessageData, CorrelateMessageErrors, CorrelateMessageResponses, CreateAdminUserData, CreateAdminUserErrors, CreateAdminUserResponses, CreateAgentInstanceData, CreateAgentInstanceErrors, CreateAgentInstanceResponses, CreateAuthorizationData, CreateAuthorizationErrors, CreateAuthorizationResponses, CreateDeploymentData, CreateDeploymentErrors, CreateDeploymentResponses, CreateDocumentData, CreateDocumentErrors, CreateDocumentLinkData, CreateDocumentLinkErrors, CreateDocumentLinkResponses, CreateDocumentResponses, CreateDocumentsData, CreateDocumentsErrors, CreateDocumentsResponses, CreateElementInstanceVariablesData, CreateElementInstanceVariablesErrors, CreateElementInstanceVariablesResponses, CreateGlobalClusterVariableData, CreateGlobalClusterVariableErrors, CreateGlobalClusterVariableResponses, CreateGlobalTaskListenerData, CreateGlobalTaskListenerErrors, CreateGlobalTaskListenerResponses, CreateGroupData, CreateGroupErrors, CreateGroupResponses, CreateMappingRuleData, CreateMappingRuleErrors, CreateMappingRuleResponses, CreateProcessInstanceData, CreateProcessInstanceErrors, CreateProcessInstanceResponses, CreateRoleData, CreateRoleErrors, CreateRoleResponses, CreateTenantClusterVariableData, CreateTenantClusterVariableErrors, CreateTenantClusterVariableResponses, CreateTenantData, CreateTenantErrors, CreateTenantResponses, CreateUserData, CreateUserErrors, CreateUserResponses, DeleteAuthorizationData, DeleteAuthorizationErrors, DeleteAuthorizationResponses, DeleteDecisionInstanceData, DeleteDecisionInstanceErrors, DeleteDecisionInstanceResponses, DeleteDecisionInstancesBatchOperationData, DeleteDecisionInstancesBatchOperationErrors, DeleteDecisionInstancesBatchOperationResponses, DeleteDocumentData, DeleteDocumentErrors, DeleteDocumentResponses, DeleteGlobalClusterVariableData, DeleteGlobalClusterVariableErrors, DeleteGlobalClusterVariableResponses, DeleteGlobalTaskListenerData, DeleteGlobalTaskListenerErrors, DeleteGlobalTaskListenerResponses, DeleteGroupData, DeleteGroupErrors, DeleteGroupResponses, DeleteHistoryBackupAsClusterAdminData, DeleteHistoryBackupAsClusterAdminErrors, DeleteHistoryBackupAsClusterAdminResponses, DeleteHistoryBackupData, DeleteHistoryBackupErrors, DeleteHistoryBackupResponses, DeleteMappingRuleData, DeleteMappingRuleErrors, DeleteMappingRuleResponses, DeleteProcessInstanceData, DeleteProcessInstanceErrors, DeleteProcessInstanceResponses, DeleteProcessInstancesBatchOperationData, DeleteProcessInstancesBatchOperationErrors, DeleteProcessInstancesBatchOperationResponses, DeleteResourceData, DeleteResourceErrors, DeleteResourceResponses, DeleteRoleData, DeleteRoleErrors, DeleteRoleResponses, DeleteRuntimeBackupAsClusterAdminData, DeleteRuntimeBackupAsClusterAdminErrors, DeleteRuntimeBackupAsClusterAdminResponses, DeleteRuntimeBackupData, DeleteRuntimeBackupErrors, DeleteRuntimeBackupResponses, DeleteRuntimeBackupStateAsClusterAdminData, DeleteRuntimeBackupStateAsClusterAdminErrors, DeleteRuntimeBackupStateAsClusterAdminResponses, DeleteRuntimeBackupStateData, DeleteRuntimeBackupStateErrors, DeleteRuntimeBackupStateResponses, DeleteTenantClusterVariableData, DeleteTenantClusterVariableErrors, DeleteTenantClusterVariableResponses, DeleteTenantData, DeleteTenantErrors, DeleteTenantResponses, DeleteUserData, DeleteUserErrors, DeleteUserResponses, EvaluateConditionalsData, EvaluateConditionalsErrors, EvaluateConditionalsResponses, EvaluateDecisionData, EvaluateDecisionErrors, EvaluateDecisionResponses, EvaluateExpressionData, EvaluateExpressionErrors, EvaluateExpressionResponses, FailJobData, FailJobErrors, FailJobResponses, GetAgentDefinitionData, GetAgentDefinitionErrors, GetAgentDefinitionResponses, GetAgentInstanceData, GetAgentInstanceErrors, GetAgentInstanceResponses, GetAuditLogData, GetAuditLogErrors, GetAuditLogResponses, GetAuthenticationData, GetAuthenticationErrors, GetAuthenticationResponses, GetAuthorizationData, GetAuthorizationErrors, GetAuthorizationResponses, GetBatchOperationData, GetBatchOperationErrors, GetBatchOperationResponses, GetClusterExportingStatusData, GetClusterExportingStatusErrors, GetClusterExportingStatusResponses, GetClusterRebalanceData, GetClusterRebalanceErrors, GetClusterRebalanceResponses, GetClusterStatusData, GetClusterStatusErrors, GetClusterStatusResponses, GetClusterTopologyData, GetClusterTopologyErrors, GetClusterTopologyResponses, GetClusterUpgradeStatusData, GetClusterUpgradeStatusResponses, GetDecisionDefinitionData, GetDecisionDefinitionErrors, GetDecisionDefinitionResponses, GetDecisionDefinitionXmlData, GetDecisionDefinitionXmlErrors, GetDecisionDefinitionXmlResponses, GetDecisionInstanceData, GetDecisionInstanceErrors, GetDecisionInstanceResponses, GetDecisionRequirementsData, GetDecisionRequirementsErrors, GetDecisionRequirementsResponses, GetDecisionRequirementsXmlData, GetDecisionRequirementsXmlErrors, GetDecisionRequirementsXmlResponses, GetDocumentData, GetDocumentErrors, GetDocumentResponses, GetElementInstanceData, GetElementInstanceErrors, GetElementInstanceResponses, GetExportingStatusData, GetExportingStatusErrors, GetExportingStatusResponses, GetFormByKeyData, GetFormByKeyErrors, GetFormByKeyResponses, GetGlobalClusterVariableData, GetGlobalClusterVariableErrors, GetGlobalClusterVariableResponses, GetGlobalJobStatisticsData, GetGlobalJobStatisticsErrors, GetGlobalJobStatisticsResponses, GetGlobalTaskListenerData, GetGlobalTaskListenerErrors, GetGlobalTaskListenerResponses, GetGroupData, GetGroupErrors, GetGroupResponses, GetHistoryBackupAsClusterAdminData, GetHistoryBackupAsClusterAdminErrors, GetHistoryBackupAsClusterAdminResponses, GetHistoryBackupData, GetHistoryBackupErrors, GetHistoryBackupResponses, GetIncidentData, GetIncidentErrors, GetIncidentResponses, GetJobErrorStatisticsData, GetJobErrorStatisticsErrors, GetJobErrorStatisticsResponses, GetJobTimeSeriesStatisticsData, GetJobTimeSeriesStatisticsErrors, GetJobTimeSeriesStatisticsResponses, GetJobTypeStatisticsData, GetJobTypeStatisticsErrors, GetJobTypeStatisticsResponses, GetJobWorkerStatisticsData, GetJobWorkerStatisticsErrors, GetJobWorkerStatisticsResponses, GetLicenseData, GetLicenseErrors, GetLicenseResponses, GetMappingRuleData, GetMappingRuleErrors, GetMappingRuleResponses, GetProcessDefinitionData, GetProcessDefinitionErrors, GetProcessDefinitionInstanceStatisticsData, GetProcessDefinitionInstanceStatisticsErrors, GetProcessDefinitionInstanceStatisticsResponses, GetProcessDefinitionInstanceVersionStatisticsData, GetProcessDefinitionInstanceVersionStatisticsErrors, GetProcessDefinitionInstanceVersionStatisticsResponses, GetProcessDefinitionMessageSubscriptionStatisticsData, GetProcessDefinitionMessageSubscriptionStatisticsErrors, GetProcessDefinitionMessageSubscriptionStatisticsResponses, GetProcessDefinitionResponses, GetProcessDefinitionStatisticsData, GetProcessDefinitionStatisticsErrors, GetProcessDefinitionStatisticsResponses, GetProcessDefinitionXmlData, GetProcessDefinitionXmlErrors, GetProcessDefinitionXmlResponses, GetProcessInstanceCallHierarchyData, GetProcessInstanceCallHierarchyErrors, GetProcessInstanceCallHierarchyResponses, GetProcessInstanceData, GetProcessInstanceErrors, GetProcessInstanceResponses, GetProcessInstanceSequenceFlowsData, GetProcessInstanceSequenceFlowsErrors, GetProcessInstanceSequenceFlowsResponses, GetProcessInstanceStatisticsByDefinitionData, GetProcessInstanceStatisticsByDefinitionErrors, GetProcessInstanceStatisticsByDefinitionResponses, GetProcessInstanceStatisticsByErrorData, GetProcessInstanceStatisticsByErrorErrors, GetProcessInstanceStatisticsByErrorResponses, GetProcessInstanceStatisticsData, GetProcessInstanceStatisticsErrors, GetProcessInstanceStatisticsResponses, GetProcessInstanceWaitStateStatisticsData, GetProcessInstanceWaitStateStatisticsErrors, GetProcessInstanceWaitStateStatisticsResponses, GetResourceContentBinaryData, GetResourceContentBinaryErrors, GetResourceContentBinaryResponses, GetResourceContentData, GetResourceContentErrors, GetResourceContentResponses, GetResourceData, GetResourceErrors, GetResourceResponses, GetRestoreStatusData, GetRestoreStatusErrors, GetRestoreStatusResponses, GetRoleData, GetRoleErrors, GetRoleResponses, GetRuntimeBackupAsClusterAdminData, GetRuntimeBackupAsClusterAdminErrors, GetRuntimeBackupAsClusterAdminResponses, GetRuntimeBackupData, GetRuntimeBackupErrors, GetRuntimeBackupResponses, GetRuntimeBackupStateAsClusterAdminData, GetRuntimeBackupStateAsClusterAdminErrors, GetRuntimeBackupStateAsClusterAdminResponses, GetRuntimeBackupStateData, GetRuntimeBackupStateErrors, GetRuntimeBackupStateResponses, GetStartProcessFormData, GetStartProcessFormErrors, GetStartProcessFormResponses, GetStatusData, GetStatusErrors, GetStatusResponses, GetSystemConfigurationData, GetSystemConfigurationErrors, GetSystemConfigurationResponses, GetTenantClusterVariableData, GetTenantClusterVariableErrors, GetTenantClusterVariableResponses, GetTenantData, GetTenantErrors, GetTenantResponses, GetTopologyData, GetTopologyErrors, GetTopologyResponses, GetUsageMetricsData, GetUsageMetricsErrors, GetUsageMetricsResponses, GetUserData, GetUserErrors, GetUserResponses, GetUserTaskData, GetUserTaskErrors, GetUserTaskFormData, GetUserTaskFormErrors, GetUserTaskFormResponses, GetUserTaskResponses, GetVariableData, GetVariableErrors, GetVariableResponses, ListHistoryBackupsAsClusterAdminData, ListHistoryBackupsAsClusterAdminErrors, ListHistoryBackupsAsClusterAdminResponses, ListHistoryBackupsData, ListHistoryBackupsErrors, ListHistoryBackupsResponses, ListRuntimeBackupsAsClusterAdminData, ListRuntimeBackupsAsClusterAdminErrors, ListRuntimeBackupsAsClusterAdminResponses, ListRuntimeBackupsData, ListRuntimeBackupsErrors, ListRuntimeBackupsResponses, ListSecretsData, ListSecretsErrors, ListSecretsResponses, MigrateProcessInstanceData, MigrateProcessInstanceErrors, MigrateProcessInstanceResponses, MigrateProcessInstancesBatchOperationData, MigrateProcessInstancesBatchOperationErrors, MigrateProcessInstancesBatchOperationResponses, ModifyProcessInstanceData, ModifyProcessInstanceErrors, ModifyProcessInstanceResponses, ModifyProcessInstancesBatchOperationData, ModifyProcessInstancesBatchOperationErrors, ModifyProcessInstancesBatchOperationResponses, PauseClusterExportingData, PauseClusterExportingErrors, PauseClusterExportingResponses, PauseExportingData, PauseExportingErrors, PauseExportingResponses, PinClockData, PinClockErrors, PinClockResponses, PublishMessageData, PublishMessageErrors, PublishMessageResponses, ResetClockData, ResetClockErrors, ResetClockResponses, ResolveIncidentData, ResolveIncidentErrors, ResolveIncidentResponses, ResolveIncidentsBatchOperationData, ResolveIncidentsBatchOperationErrors, ResolveIncidentsBatchOperationResponses, ResolveProcessInstanceIncidentsData, ResolveProcessInstanceIncidentsErrors, ResolveProcessInstanceIncidentsResponses, ResolveSecretsData, ResolveSecretsErrors, ResolveSecretsResponses, RestoreAsClusterAdminData, RestoreAsClusterAdminErrors, RestoreAsClusterAdminResponses, RestoreData, RestoreErrors, RestoreResponses, ResumeBatchOperationData, ResumeBatchOperationErrors, ResumeBatchOperationResponses, ResumeClusterExportingData, ResumeClusterExportingErrors, ResumeClusterExportingResponses, ResumeExportingData, ResumeExportingErrors, ResumeExportingResponses, ResumeProcessInstanceData, ResumeProcessInstanceErrors, ResumeProcessInstanceResponses, ResumeProcessInstancesBatchOperationData, ResumeProcessInstancesBatchOperationErrors, ResumeProcessInstancesBatchOperationResponses, SearchAgentDefinitionsData, SearchAgentDefinitionsErrors, SearchAgentDefinitionsResponses, SearchAgentInstanceHistoryData, SearchAgentInstanceHistoryErrors, SearchAgentInstanceHistoryResponses, SearchAgentInstancesData, SearchAgentInstancesErrors, SearchAgentInstancesResponses, SearchAuditLogsData, SearchAuditLogsErrors, SearchAuditLogsResponses, SearchAuthorizationsData, SearchAuthorizationsErrors, SearchAuthorizationsResponses, SearchBatchOperationItemsData, SearchBatchOperationItemsErrors, SearchBatchOperationItemsResponses, SearchBatchOperationsData, SearchBatchOperationsErrors, SearchBatchOperationsResponses, SearchClientsForGroupData, SearchClientsForGroupErrors, SearchClientsForGroupResponses, SearchClientsForRoleData, SearchClientsForRoleErrors, SearchClientsForRoleResponses, SearchClientsForTenantData, SearchClientsForTenantResponses, SearchClusterVariablesData, SearchClusterVariablesErrors, SearchClusterVariablesResponses, SearchCorrelatedMessageSubscriptionsData, SearchCorrelatedMessageSubscriptionsErrors, SearchCorrelatedMessageSubscriptionsResponses, SearchDecisionDefinitionsData, SearchDecisionDefinitionsErrors, SearchDecisionDefinitionsResponses, SearchDecisionInstancesData, SearchDecisionInstancesErrors, SearchDecisionInstancesResponses, SearchDecisionRequirementsData, SearchDecisionRequirementsErrors, SearchDecisionRequirementsResponses, SearchElementInstanceIncidentsData, SearchElementInstanceIncidentsErrors, SearchElementInstanceIncidentsResponses, SearchElementInstancesData, SearchElementInstancesErrors, SearchElementInstancesResponses, SearchElementInstanceWaitStatesData, SearchElementInstanceWaitStatesErrors, SearchElementInstanceWaitStatesResponses, SearchGlobalTaskListenersData, SearchGlobalTaskListenersErrors, SearchGlobalTaskListenersResponses, SearchGroupIdsForTenantData, SearchGroupIdsForTenantResponses, SearchGroupsData, SearchGroupsErrors, SearchGroupsForRoleData, SearchGroupsForRoleErrors, SearchGroupsForRoleResponses, SearchGroupsResponses, SearchIncidentsData, SearchIncidentsErrors, SearchIncidentsResponses, SearchJobsData, SearchJobsErrors, SearchJobsResponses, SearchMappingRuleData, SearchMappingRuleErrors, SearchMappingRuleResponses, SearchMappingRulesForGroupData, SearchMappingRulesForGroupErrors, SearchMappingRulesForGroupResponses, SearchMappingRulesForRoleData, SearchMappingRulesForRoleErrors, SearchMappingRulesForRoleResponses, SearchMappingRulesForTenantData, SearchMappingRulesForTenantResponses, SearchMessageSubscriptionsData, SearchMessageSubscriptionsErrors, SearchMessageSubscriptionsResponses, SearchOwnAuthorizationsData, SearchOwnAuthorizationsErrors, SearchOwnAuthorizationsResponses, SearchProcessDefinitionsData, SearchProcessDefinitionsErrors, SearchProcessDefinitionsResponses, SearchProcessDefinitionVariableNamesData, SearchProcessDefinitionVariableNamesErrors, SearchProcessDefinitionVariableNamesResponses, SearchProcessInstanceIncidentsData, SearchProcessInstanceIncidentsErrors, SearchProcessInstanceIncidentsResponses, SearchProcessInstancesData, SearchProcessInstancesErrors, SearchProcessInstancesResponses, SearchResourcesData, SearchResourcesErrors, SearchResourcesResponses, SearchRolesData, SearchRolesErrors, SearchRolesForGroupData, SearchRolesForGroupErrors, SearchRolesForGroupResponses, SearchRolesForTenantData, SearchRolesForTenantResponses, SearchRolesResponses, SearchTenantsData, SearchTenantsErrors, SearchTenantsResponses, SearchUsersData, SearchUsersErrors, SearchUsersForGroupData, SearchUsersForGroupErrors, SearchUsersForGroupResponses, SearchUsersForRoleData, SearchUsersForRoleErrors, SearchUsersForRoleResponses, SearchUsersForTenantData, SearchUsersForTenantResponses, SearchUsersResponses, SearchUserTaskAuditLogsData, SearchUserTaskAuditLogsErrors, SearchUserTaskAuditLogsResponses, SearchUserTaskEffectiveVariablesData, SearchUserTaskEffectiveVariablesErrors, SearchUserTaskEffectiveVariablesResponses, SearchUserTasksData, SearchUserTasksErrors, SearchUserTasksResponses, SearchUserTaskVariablesData, SearchUserTaskVariablesErrors, SearchUserTaskVariablesResponses, SearchVariablesData, SearchVariablesErrors, SearchVariablesResponses, SuspendBatchOperationData, SuspendBatchOperationErrors, SuspendBatchOperationResponses, SuspendProcessInstanceData, SuspendProcessInstanceErrors, SuspendProcessInstanceResponses, SuspendProcessInstancesBatchOperationData, SuspendProcessInstancesBatchOperationErrors, SuspendProcessInstancesBatchOperationResponses, SyncRuntimeBackupStateAsClusterAdminData, SyncRuntimeBackupStateAsClusterAdminErrors, SyncRuntimeBackupStateAsClusterAdminResponses, SyncRuntimeBackupStateData, SyncRuntimeBackupStateErrors, SyncRuntimeBackupStateResponses, TakeHistoryBackupAsClusterAdminData, TakeHistoryBackupAsClusterAdminErrors, TakeHistoryBackupAsClusterAdminResponses, TakeHistoryBackupData, TakeHistoryBackupErrors, TakeHistoryBackupResponses, TakeRuntimeBackupAsClusterAdminData, TakeRuntimeBackupAsClusterAdminErrors, TakeRuntimeBackupAsClusterAdminResponses, TakeRuntimeBackupData, TakeRuntimeBackupErrors, TakeRuntimeBackupResponses, ThrowJobErrorData, ThrowJobErrorErrors, ThrowJobErrorResponses, TriggerClusterRebalanceData, TriggerClusterRebalanceErrors, TriggerClusterRebalanceResponses, UnassignClientFromGroupData, UnassignClientFromGroupErrors, UnassignClientFromGroupResponses, UnassignClientFromTenantData, UnassignClientFromTenantErrors, UnassignClientFromTenantResponses, UnassignGroupFromTenantData, UnassignGroupFromTenantErrors, UnassignGroupFromTenantResponses, UnassignMappingRuleFromGroupData, UnassignMappingRuleFromGroupErrors, UnassignMappingRuleFromGroupResponses, UnassignMappingRuleFromTenantData, UnassignMappingRuleFromTenantErrors, UnassignMappingRuleFromTenantResponses, UnassignRoleFromClientData, UnassignRoleFromClientErrors, UnassignRoleFromClientResponses, UnassignRoleFromGroupData, UnassignRoleFromGroupErrors, UnassignRoleFromGroupResponses, UnassignRoleFromMappingRuleData, UnassignRoleFromMappingRuleErrors, UnassignRoleFromMappingRuleResponses, UnassignRoleFromTenantData, UnassignRoleFromTenantErrors, UnassignRoleFromTenantResponses, UnassignRoleFromUserData, UnassignRoleFromUserErrors, UnassignRoleFromUserResponses, UnassignUserFromGroupData, UnassignUserFromGroupErrors, UnassignUserFromGroupResponses, UnassignUserFromTenantData, UnassignUserFromTenantErrors, UnassignUserFromTenantResponses, UnassignUserTaskData, UnassignUserTaskErrors, UnassignUserTaskResponses, UpdateAgentInstanceData, UpdateAgentInstanceErrors, UpdateAgentInstanceResponses, UpdateAuthorizationData, UpdateAuthorizationErrors, UpdateAuthorizationResponses, UpdateGlobalClusterVariableData, UpdateGlobalClusterVariableErrors, UpdateGlobalClusterVariableResponses, UpdateGlobalTaskListenerData, UpdateGlobalTaskListenerErrors, UpdateGlobalTaskListenerResponses, UpdateGroupData, UpdateGroupErrors, UpdateGroupResponses, UpdateJobData, UpdateJobErrors, UpdateJobResponses, UpdateJobsBatchOperationData, UpdateJobsBatchOperationErrors, UpdateJobsBatchOperationResponses, UpdateMappingRuleData, UpdateMappingRuleErrors, UpdateMappingRuleResponses, UpdateRoleData, UpdateRoleErrors, UpdateRoleResponses, UpdateTenantClusterVariableData, UpdateTenantClusterVariableErrors, UpdateTenantClusterVariableResponses, UpdateTenantData, UpdateTenantErrors, UpdateTenantResponses, UpdateUserData, UpdateUserErrors, UpdateUserResponses, UpdateUserTaskData, UpdateUserTaskErrors, UpdateUserTaskResponses } from './types.gen';
+// --- Path-level servers (issue #573) ----------------------------------------
+// Injected by hooks/post/175-honor-path-level-servers.ts. The cluster-admin
+// operations under /cluster/v2/* declare a path-level server WITHOUT the /v2
+// base path; resolve the configured client baseUrl (…/v2) back to that root
+// server by stripping the /v2 suffix the SDK appended. Pure string operation:
+// a baseUrl that does not end in /v2 (e.g. CAMUNDA_REST_ADDRESS_EXACT mode) is
+// returned unchanged, preserving gateway-mounted base paths.
+const __rootServerUrl = (c: { getConfig: () => { baseUrl?: string } }): string | undefined => {
+  const baseUrl = c.getConfig().baseUrl;
+  return typeof baseUrl === 'string' ? baseUrl.replace(/\/v2\/?$/i, '') : baseUrl;
+};
+
+
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
      * You can provide a client instance returned by `createClient()` instead of
@@ -3550,6 +3563,7 @@ export const getClusterExportingStatus = <ThrowOnError extends boolean = true>(o
     responseValidator: undefined,
     security: [{ scheme: 'bearer', type: 'http' }, { scheme: 'basic', type: 'http' }],
     url: '/cluster/v2/exporting',
+    baseUrl: __rootServerUrl(options?.client ?? client),
     ...options
 });
 
@@ -3565,6 +3579,7 @@ export const pauseClusterExporting = <ThrowOnError extends boolean = true>(optio
     responseValidator: undefined,
     security: [{ scheme: 'bearer', type: 'http' }, { scheme: 'basic', type: 'http' }],
     url: '/cluster/v2/exporting/pause',
+    baseUrl: __rootServerUrl(options?.client ?? client),
     ...options
 });
 
@@ -3580,6 +3595,7 @@ export const resumeClusterExporting = <ThrowOnError extends boolean = true>(opti
     responseValidator: undefined,
     security: [{ scheme: 'bearer', type: 'http' }, { scheme: 'basic', type: 'http' }],
     url: '/cluster/v2/exporting/resume',
+    baseUrl: __rootServerUrl(options?.client ?? client),
     ...options
 });
 
@@ -3597,6 +3613,7 @@ export const listRuntimeBackupsAsClusterAdmin = <ThrowOnError extends boolean = 
     responseValidator: undefined,
     security: [{ scheme: 'bearer', type: 'http' }, { scheme: 'basic', type: 'http' }],
     url: '/cluster/v2/backups/runtime',
+    baseUrl: __rootServerUrl(options?.client ?? client),
     ...options
 });
 
@@ -3616,6 +3633,7 @@ export const takeRuntimeBackupAsClusterAdmin = <ThrowOnError extends boolean = t
     responseValidator: undefined,
     security: [{ scheme: 'bearer', type: 'http' }, { scheme: 'basic', type: 'http' }],
     url: '/cluster/v2/backups/runtime',
+    baseUrl: __rootServerUrl(options?.client ?? client),
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -3637,6 +3655,7 @@ export const deleteRuntimeBackupStateAsClusterAdmin = <ThrowOnError extends bool
     responseValidator: undefined,
     security: [{ scheme: 'bearer', type: 'http' }, { scheme: 'basic', type: 'http' }],
     url: '/cluster/v2/backups/runtime/state',
+    baseUrl: __rootServerUrl(options?.client ?? client),
     ...options
 });
 
@@ -3654,6 +3673,7 @@ export const getRuntimeBackupStateAsClusterAdmin = <ThrowOnError extends boolean
     responseValidator: undefined,
     security: [{ scheme: 'bearer', type: 'http' }, { scheme: 'basic', type: 'http' }],
     url: '/cluster/v2/backups/runtime/state',
+    baseUrl: __rootServerUrl(options?.client ?? client),
     ...options
 });
 
@@ -3671,6 +3691,7 @@ export const syncRuntimeBackupStateAsClusterAdmin = <ThrowOnError extends boolea
     responseValidator: undefined,
     security: [{ scheme: 'bearer', type: 'http' }, { scheme: 'basic', type: 'http' }],
     url: '/cluster/v2/backups/runtime/state/sync',
+    baseUrl: __rootServerUrl(options?.client ?? client),
     ...options
 });
 
@@ -3688,6 +3709,7 @@ export const deleteRuntimeBackupAsClusterAdmin = <ThrowOnError extends boolean =
     responseValidator: undefined,
     security: [{ scheme: 'bearer', type: 'http' }, { scheme: 'basic', type: 'http' }],
     url: '/cluster/v2/backups/runtime/{backupId}',
+    baseUrl: __rootServerUrl(options?.client ?? client),
     ...options
 });
 
@@ -3705,6 +3727,7 @@ export const getRuntimeBackupAsClusterAdmin = <ThrowOnError extends boolean = tr
     responseValidator: undefined,
     security: [{ scheme: 'bearer', type: 'http' }, { scheme: 'basic', type: 'http' }],
     url: '/cluster/v2/backups/runtime/{backupId}',
+    baseUrl: __rootServerUrl(options?.client ?? client),
     ...options
 });
 
@@ -3722,6 +3745,7 @@ export const listHistoryBackupsAsClusterAdmin = <ThrowOnError extends boolean = 
     responseValidator: undefined,
     security: [{ scheme: 'bearer', type: 'http' }, { scheme: 'basic', type: 'http' }],
     url: '/cluster/v2/backups/history',
+    baseUrl: __rootServerUrl(options?.client ?? client),
     ...options
 });
 
@@ -3739,6 +3763,7 @@ export const takeHistoryBackupAsClusterAdmin = <ThrowOnError extends boolean = t
     responseValidator: undefined,
     security: [{ scheme: 'bearer', type: 'http' }, { scheme: 'basic', type: 'http' }],
     url: '/cluster/v2/backups/history',
+    baseUrl: __rootServerUrl(options?.client ?? client),
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -3760,6 +3785,7 @@ export const deleteHistoryBackupAsClusterAdmin = <ThrowOnError extends boolean =
     responseValidator: undefined,
     security: [{ scheme: 'bearer', type: 'http' }, { scheme: 'basic', type: 'http' }],
     url: '/cluster/v2/backups/history/{backupId}',
+    baseUrl: __rootServerUrl(options?.client ?? client),
     ...options
 });
 
@@ -3777,6 +3803,7 @@ export const getHistoryBackupAsClusterAdmin = <ThrowOnError extends boolean = tr
     responseValidator: undefined,
     security: [{ scheme: 'bearer', type: 'http' }, { scheme: 'basic', type: 'http' }],
     url: '/cluster/v2/backups/history/{backupId}',
+    baseUrl: __rootServerUrl(options?.client ?? client),
     ...options
 });
 
@@ -3794,6 +3821,7 @@ export const changeClusterModeAsClusterAdmin = <ThrowOnError extends boolean = t
     responseValidator: undefined,
     security: [{ scheme: 'bearer', type: 'http' }, { scheme: 'basic', type: 'http' }],
     url: '/cluster/v2/mode',
+    baseUrl: __rootServerUrl(options?.client ?? client),
     ...options
 });
 
@@ -3811,6 +3839,7 @@ export const cancelClusterRebalance = <ThrowOnError extends boolean = true>(opti
     responseValidator: undefined,
     security: [{ scheme: 'bearer', type: 'http' }, { scheme: 'basic', type: 'http' }],
     url: '/cluster/v2/rebalance',
+    baseUrl: __rootServerUrl(options?.client ?? client),
     ...options
 });
 
@@ -3826,6 +3855,7 @@ export const getClusterRebalance = <ThrowOnError extends boolean = true>(options
     responseValidator: undefined,
     security: [{ scheme: 'bearer', type: 'http' }, { scheme: 'basic', type: 'http' }],
     url: '/cluster/v2/rebalance',
+    baseUrl: __rootServerUrl(options?.client ?? client),
     ...options
 });
 
@@ -3843,6 +3873,7 @@ export const triggerClusterRebalance = <ThrowOnError extends boolean = true>(opt
     responseValidator: undefined,
     security: [{ scheme: 'bearer', type: 'http' }, { scheme: 'basic', type: 'http' }],
     url: '/cluster/v2/rebalance',
+    baseUrl: __rootServerUrl(options?.client ?? client),
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -3866,6 +3897,7 @@ export const restoreAsClusterAdmin = <ThrowOnError extends boolean = true>(optio
     responseValidator: undefined,
     security: [{ scheme: 'bearer', type: 'http' }, { scheme: 'basic', type: 'http' }],
     url: '/cluster/v2/restore',
+    baseUrl: __rootServerUrl(options?.client ?? client),
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -3884,6 +3916,7 @@ export const getClusterStatus = <ThrowOnError extends boolean = true>(options?: 
     requestValidator: undefined,
     responseValidator: undefined,
     url: '/cluster/v2/status',
+    baseUrl: __rootServerUrl(options?.client ?? client),
     ...options
 });
 
@@ -3896,6 +3929,7 @@ export const getClusterUpgradeStatus = <ThrowOnError extends boolean = true>(opt
     requestValidator: undefined,
     responseValidator: undefined,
     url: '/cluster/v2/status/upgrade',
+    baseUrl: __rootServerUrl(options?.client ?? client),
     ...options
 });
 
@@ -3911,6 +3945,7 @@ export const getClusterTopology = <ThrowOnError extends boolean = true>(options?
     responseValidator: undefined,
     security: [{ scheme: 'bearer', type: 'http' }, { scheme: 'basic', type: 'http' }],
     url: '/cluster/v2/topology',
+    baseUrl: __rootServerUrl(options?.client ?? client),
     ...options
 });
 
