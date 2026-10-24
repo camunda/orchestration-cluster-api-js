@@ -9,7 +9,7 @@ import { enrichActivatedJob, EnrichedActivatedJob, EnrichedActivatedJobOf } from
 import * as Sdk from './sdk.gen';
 
 // Generated
-// Operations: 244
+// Operations: 246
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -19,6 +19,9 @@ export type activateAdHocSubProcessActivitiesInput = activateAdHocSubProcessActi
 type activateJobsOptions = Parameters<typeof Sdk.activateJobs>[0];
 type activateJobsBody = (NonNullable<activateJobsOptions> extends { body?: infer B } ? B : never);
 export type activateJobsInput = activateJobsBody;
+type addClockOptions = Parameters<typeof Sdk.addClock>[0];
+type addClockBody = (NonNullable<addClockOptions> extends { body?: infer B } ? B : never);
+export type addClockInput = addClockBody;
 type assignClientToGroupOptions = Parameters<typeof Sdk.assignClientToGroup>[0];
 type assignClientToGroupPathParam_groupId = (NonNullable<assignClientToGroupOptions> extends { path: { groupId: infer P } } ? P : any);
 type assignClientToGroupPathParam_clientId = (NonNullable<assignClientToGroupOptions> extends { path: { clientId: infer P } } ? P : any);
@@ -294,6 +297,8 @@ export type getBatchOperationConsistency = {
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getBatchOperation>> 
 };
+type getClockOptions = Parameters<typeof Sdk.getClock>[0];
+export type getClockInput = void;
 type getClusterExportingStatusOptions = Parameters<typeof Sdk.getClusterExportingStatus>[0];
 export type getClusterExportingStatusInput = void;
 type getClusterRebalanceOptions = Parameters<typeof Sdk.getClusterRebalance>[0];
@@ -1470,6 +1475,80 @@ export function activateJobs(core: CamundaCore, arg: any, options?: OperationOpt
       }
     };
     return rt._invokeWithRetry(() => call(), { opId: 'activateJobs', exempt: false, retryOverride: options?.retry });
+  });
+}
+
+/**
+ * Add time to internal clock
+ *
+ * Moves the Zeebe engine's internal clock forward or backward by the given offset.
+ * Unlike pinning, the clock keeps ticking in real time after the offset is added. If the
+ * clock is pinned, it stays pinned and moves to the pinned time plus the offset.
+ *
+ * Each request adds to the time of the clock, so adding `PT1H` twice moves the clock two
+ * hours ahead. Use `POST /v2/clock/reset` to remove all added time and return the clock to
+ * the system time.
+ *
+ * The response contains the new time of the clock. The change reaches all partitions
+ * shortly after it is accepted, so a request sent right after it may still use the previous
+ * time.
+ *
+  *
+ * @operationId addClock
+ * @tags Clock
+ */
+export function addClock(core: CamundaCore, input: addClockInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.addClock>>;
+export function addClock(core: CamundaCore, arg: any, options?: OperationOptions): CancelablePromise<any> {
+  const rt = core as unknown as OperationRuntime;
+  return toCancelable(async signal => {
+    const _body = arg;
+    let envelope: any = {};
+    envelope.body = _body;
+    if (rt._validation.settings.req !== 'none') {
+      const _schemas = await import('./zod/addClock.gen');
+      if (envelope.body !== undefined) {
+        const maybeBody = await rt._validation.gateRequest('addClock', _schemas.zAddClockBody, envelope.body);
+        if (rt._validation.settings.req === 'strict') envelope.body = maybeBody;
+      }
+    }
+    const opts: any = { client: rt._client, signal, throwOnError: false };
+    if (envelope.body !== undefined) opts.body = envelope.body;
+    const call = async () => {
+      try {
+      const _raw = await Sdk.addClock(opts);
+      let data = rt._evaluateResponse(_raw, 'addClock', (resp: any) => {
+        const st = resp.status ?? resp.response?.status;
+        if (!st) return undefined;
+        const candidate = st === 429 || st === 503 || st === 500;
+        if (!candidate) return undefined;
+        let prob: any = undefined;
+        if (resp.error && typeof resp.error === 'object') prob = resp.error;
+        const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+        err.status = st; err.name = 'HttpSdkError';
+        if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+        const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+        if (!isBp) err.nonRetryable = true;
+        return err;
+      });
+      const _respSchemaName = 'zAddClockResponse';
+      if (_isVoidResponse(_respSchemaName)) {
+        data = undefined;
+      }
+      if (rt._validation.settings.res !== 'none') {
+        const _schemas = await import('./zod/addClock.gen');
+        const _schema = _schemas.zAddClockResponse;
+        if (_schema) {
+          const maybeR = await rt._validation.gateResponse('addClock', _schema, data);
+          if (rt._validation.settings.res === 'strict') data = maybeR;
+        }
+      }
+      return data;
+      } catch(e) {
+        // Defer normalization to outer executeWithHttpRetry boundary
+        throw e;
+      }
+    };
+    return rt._invokeWithRetry(() => call(), { opId: 'addClock', exempt: false, retryOverride: options?.retry });
   });
 }
 
@@ -3920,7 +3999,7 @@ export function createMappingRule(core: CamundaCore, arg: any, options?: Operati
  *
  * Creates and starts an instance of the specified process.
  * The process definition to use to create the instance can be specified either using its unique key
- * (as returned by Deploy resources), or using the BPMN process id and a version.
+ * (as returned by Deploy resources), or using the BPMN process id and either a version or a version tag.
  * If only the process definition id is given, the latest ACTIVE version is used.
  * If no ACTIVE version exists, the request is rejected as not found.
  *
@@ -3938,10 +4017,6 @@ export function createProcessInstance(core: CamundaCore, arg: any, options?: Ope
     const _body = arg;
     let envelope: any = {};
     envelope.body = _body;
-    if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-      envelope.body.tenantId = rt._config.defaultTenantId;
-      rt._log.trace(() => ['tenant.default.inject', { op: 'createProcessInstance', tenant: rt._config.defaultTenantId }]);
-    }
     if (rt._validation.settings.req !== 'none') {
       const _schemas = await import('./zod/createProcessInstance.gen');
       if (envelope.body !== undefined) {
@@ -5060,6 +5135,11 @@ export function deleteProcessInstancesBatchOperation(core: CamundaCore, arg: any
  * to `true`. History deletion is supported for process definitions and decision requirements
  * definitions; for other resource types (forms, generic resources) the flag is ignored and no
  * history is deleted.
+ *
+ * Deleting a process definition that is already draining is accepted again and changes
+ * nothing: the definition stays `DRAINING` until its running instances finish. The one repeated
+ * deletion that is rejected is one with `deleteHistory` set to `true`, because the history
+ * cannot be deleted before the drain finishes.
  *
  * The two supported types differ in how the history is removed. For a decision requirements
  * definition the history is deleted asynchronously via a batch operation whose details are
@@ -6313,6 +6393,65 @@ export function getBatchOperation(core: CamundaCore, arg: any, /** Management of
     const invoke = () => toCancelable(()=>call());
     if (useConsistency) return eventualPoll('getBatchOperation', true, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
+  });
+}
+
+/**
+ * Get internal clock
+ *
+ * Returns the current time of the Zeebe engine's internal clock.
+ * If the clock is pinned, this is the pinned time. Otherwise, the clock ticks in real time
+ * and this is the engine's current time.
+ *
+ * Use this endpoint to check the time that the engine uses, for example after pinning the
+ * clock with `PUT /v2/clock`, adding time with `POST /v2/clock/add`, or resetting it with
+ * `POST /v2/clock/reset`. A pin, add, or reset reaches all partitions shortly after it is
+ * accepted, so a request sent right after it may still return the previous time.
+ *
+  *
+ * @operationId getClock
+ * @tags Clock
+ */
+export function getClock(core: CamundaCore, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getClock>>;
+export function getClock(core: CamundaCore, options?: OperationOptions): CancelablePromise<any> {
+  const rt = core as unknown as OperationRuntime;
+  return toCancelable(async signal => {
+    const opts: any = { client: rt._client, signal, throwOnError: false };
+    const call = async () => {
+      try {
+      const _raw = await Sdk.getClock(opts as any);
+      let data = rt._evaluateResponse(_raw, 'getClock', (resp: any) => {
+        const st = resp.status ?? resp.response?.status;
+        if (!st) return undefined;
+        const candidate = st === 429 || st === 503 || st === 500;
+        if (!candidate) return undefined;
+        let prob: any = undefined;
+        if (resp.error && typeof resp.error === 'object') prob = resp.error;
+        const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+        err.status = st; err.name = 'HttpSdkError';
+        if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+        const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
+        if (!isBp) err.nonRetryable = true;
+        return err;
+      });
+      const _respSchemaName = 'zGetClockResponse';
+      if (_isVoidResponse(_respSchemaName)) {
+        data = undefined;
+      }
+      if (rt._validation.settings.res !== 'none') {
+        const _schemas = await import('./zod/getClock.gen');
+        const _schema = _schemas.zGetClockResponse;
+        if (_schema) {
+          const maybeR = await rt._validation.gateResponse('getClock', _schema, data);
+          if (rt._validation.settings.res === 'strict') data = maybeR;
+        }
+      }
+      return data;
+      } catch(e) {
+        throw e;
+      }
+    };
+    return rt._invokeWithRetry(() => call(), { opId: 'getClock', exempt: false, retryOverride: options?.retry });
   });
 }
 
@@ -11046,6 +11185,8 @@ export function pauseExporting(core: CamundaCore, arg: any, options?: OperationO
  * Set a precise, static time for the Zeebe engine's internal clock.
  * When the clock is pinned, it remains at the specified time and does not advance.
  * To change the time, the clock must be pinned again with a new timestamp.
+ * To move the clock without stopping it, use `POST /v2/clock/add` instead.
+ * Use `GET /v2/clock` to read the current time of the clock.
  *
  * This endpoint is an alpha feature and may be subject to change
  * in future releases.
@@ -11186,7 +11327,9 @@ export function publishMessage(core: CamundaCore, arg: any, options?: OperationO
  *
  * Resets the Zeebe engine's internal clock to the current system time, enabling it to tick in real-time.
  * This operation is useful for returning the clock to
- * normal behavior after it has been pinned to a specific time.
+ * normal behavior after it has been pinned to a specific time or moved with
+ * `POST /v2/clock/add`.
+ * Use `GET /v2/clock` to read the current time of the clock.
  *
  * This endpoint is an alpha feature and may be subject to change
  * in future releases.

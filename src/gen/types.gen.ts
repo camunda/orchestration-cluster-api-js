@@ -2808,11 +2808,29 @@ export type AdvancedBatchOperationItemStateFilter = {
     $like?: LikeFilter;
 };
 
+export type ClockAddRequest = {
+    /**
+     * The time to add to the clock, as an ISO 8601 duration in days, hours, minutes, and
+     * seconds (for example `PT1H` for one hour or `P1D` for one day). Use a negative
+     * duration such as `-PT1H` to move the clock backward. The request is rejected if the
+     * new time would be before 1970-01-01T00:00:00Z.
+     *
+     */
+    offset: string;
+};
+
 export type ClockPinRequest = {
     /**
      * The exact time in epoch milliseconds to which the clock should be pinned.
      */
     timestamp: number;
+};
+
+export type ClockResult = {
+    /**
+     * The current time of the clock, as an ISO 8601 date-time.
+     */
+    timestamp: string;
 };
 
 /**
@@ -6777,6 +6795,12 @@ export type IncidentResult = {
      * The job key, if exists, associated with this incident.
      */
     jobKey: JobKey | null;
+    /**
+     * The storage ordinal this incident's data belongs to. This is `null` for
+     * data exported before storage ordinals were introduced in version 8.11.
+     *
+     */
+    storageOrdinal: number | null;
 };
 
 export type IncidentResolutionRequest = {
@@ -9753,25 +9777,15 @@ export type ProcessDefinitionInstanceVersionStatisticsQuerySortRequest = {
 
 /**
  * Instructions for creating a process instance. The process definition can be specified
- * either by id or by key.
+ * either by id, by id and version tag, or by key.
  *
  */
-export type ProcessInstanceCreationInstruction = ProcessInstanceCreationInstructionByKey | ProcessInstanceCreationInstructionById;
+export type ProcessInstanceCreationInstruction = ProcessInstanceCreationInstructionByKey | ProcessInstanceCreationInstructionById | ProcessInstanceCreationInstructionByVersionTag;
 
 /**
- * Process creation by id
+ * Fields shared by all process instance creation instructions.
  */
-export type ProcessInstanceCreationInstructionById = {
-    /**
-     * The BPMN process id of the process definition to start an instance of.
-     *
-     */
-    processDefinitionId: ProcessDefinitionId;
-    /**
-     * The version of the process. If omitted, the latest active version is used.
-     *
-     */
-    processDefinitionVersion?: number;
+export type ProcessInstanceCreationInstructionBase = {
     /**
      * JSON object that will instantiate the variables for the root variable scope
      * of the process instance.
@@ -9829,9 +9843,42 @@ export type ProcessInstanceCreationInstructionById = {
 };
 
 /**
+ * Process creation by id
+ */
+export type ProcessInstanceCreationInstructionById = ProcessInstanceCreationInstructionBase & {
+    /**
+     * The BPMN process id of the process definition to start an instance of.
+     *
+     */
+    processDefinitionId: ProcessDefinitionId;
+    /**
+     * The version of the process. If omitted, the latest active version is used.
+     *
+     */
+    processDefinitionVersion?: number;
+};
+
+/**
+ * Process creation by version tag
+ */
+export type ProcessInstanceCreationInstructionByVersionTag = ProcessInstanceCreationInstructionBase & {
+    /**
+     * The BPMN process id of the process definition to start an instance of.
+     *
+     */
+    processDefinitionId: ProcessDefinitionId;
+    /**
+     * The version tag of the process definition to start an instance of.
+     * If several deployed versions carry the same tag, the most recently deployed one is used.
+     *
+     */
+    processDefinitionVersionTag: string;
+};
+
+/**
  * Process creation by key
  */
-export type ProcessInstanceCreationInstructionByKey = {
+export type ProcessInstanceCreationInstructionByKey = ProcessInstanceCreationInstructionBase & {
     /**
      * The unique key identifying the process definition, for example, returned for a process in the
      * deploy resources endpoint.
@@ -9844,60 +9891,6 @@ export type ProcessInstanceCreationInstructionByKey = {
      *
      */
     processDefinitionVersion?: number;
-    /**
-     * Set of variables as JSON object to instantiate in the root variable scope of the process
-     * instance. Can include nested complex objects.
-     *
-     */
-    variables?: {
-        [key: string]: unknown;
-    };
-    /**
-     * List of start instructions. By default, the process instance will start at
-     * the start event. If provided, the process instance will apply start instructions
-     * after it has been created.
-     *
-     */
-    startInstructions?: Array<ProcessInstanceCreationStartInstruction>;
-    /**
-     * Runtime instructions (alpha). List of instructions that affect the runtime behavior of
-     * the process instance. Refer to specific instruction types for more details.
-     *
-     * This parameter is an alpha feature and may be subject to change
-     * in future releases.
-     *
-     */
-    runtimeInstructions?: Array<ProcessInstanceCreationRuntimeInstruction>;
-    /**
-     * The tenant id of the process definition.
-     * If multi-tenancy is enabled, provide the tenant id of the process definition to start a
-     * process instance of. If multi-tenancy is disabled, don't provide this parameter.
-     *
-     */
-    tenantId?: TenantId;
-    operationReference?: OperationReference;
-    /**
-     * Wait for the process instance to complete. If the process instance does not complete
-     * within the request timeout limit, a 504 response status will be returned. The process
-     * instance will continue to run in the background regardless of the timeout. Disabled by
-     * default.
-     *
-     */
-    awaitCompletion?: boolean;
-    /**
-     * Timeout (in ms) the request waits for the process to complete. By default or
-     * when set to 0, the generic request timeout configured in the cluster is applied.
-     *
-     */
-    requestTimeout?: number;
-    /**
-     * List of variables by name to be included in the response when awaitCompletion is set to true.
-     * If empty, all visible variables in the root scope will be returned.
-     *
-     */
-    fetchVariables?: Array<string>;
-    tags?: TagSet;
-    businessId?: BusinessId;
 };
 
 export type ProcessInstanceCreationStartInstruction = {
@@ -12204,6 +12197,12 @@ export type VariableFilter = {
      * The key of the process instance of this variable.
      */
     processInstanceKey?: ProcessInstanceKeyFilterProperty;
+    /**
+     * The protection applied to the variable. A variable matches when it has at least one of
+     * the given protection modes.
+     *
+     */
+    protectionMode?: ProtectionModeFilterProperty;
 };
 
 /**
@@ -12275,6 +12274,49 @@ export type VariableResultBase = {
      *
      */
     rootProcessInstanceKey: ProcessInstanceKey | null;
+    /**
+     * Metadata of this variable. `null` when the variable has no metadata.
+     */
+    metadata: VariableMetadata | null;
+};
+
+/**
+ * Metadata describing how a variable is treated.
+ */
+export type VariableMetadata = {
+    /**
+     * The protections applied to the variable. The value of a variable protected with
+     * `REDACT` is irrecoverably replaced before it is stored in secondary storage, so it is
+     * never readable.
+     *
+     */
+    protectionModes: Array<ProtectionModeEnum>;
+};
+
+/**
+ * The kind of protection applied to a variable value. `REDACT` irrecoverably replaces the
+ * value before it reaches secondary storage.
+ *
+ */
+export const ProtectionModeEnum = {
+  REDACT: 'REDACT',
+} as const;
+export type ProtectionModeEnum = (typeof ProtectionModeEnum)[keyof typeof ProtectionModeEnum];
+/**
+ * ProtectionModeEnum property with the advanced search capability to match any of several values.
+ */
+export type ProtectionModeFilterProperty = ProtectionModeExactMatch | AdvancedProtectionModeFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced ProtectionModeEnum filter.
+ */
+export type AdvancedProtectionModeFilter = {
+    /**
+     * Checks if the variable has at least one of the provided protection modes.
+     */
+    $in?: Array<ProtectionModeEnum>;
 };
 
 export type VariableValueFilterProperty = {
@@ -12668,6 +12710,13 @@ export type ProcessInstanceStateExactMatch = ProcessInstanceStateEnum;
  * Matches the value exactly.
  */
 export type UserTaskStateExactMatch = UserTaskStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches variables that have this protection mode.
+ */
+export type ProtectionModeExactMatch = ProtectionModeEnum;
 
 /**
  * System-generated key for an authorization.
@@ -13281,6 +13330,13 @@ export type ProcessInstanceStateExactMatchWritable = ProcessInstanceStateEnum;
  * Matches the value exactly.
  */
 export type UserTaskStateExactMatchWritable = UserTaskStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches variables that have this protection mode.
+ */
+export type ProtectionModeExactMatchWritable = ProtectionModeEnum;
 
 export type GetAgentDefinitionData = {
     body?: never;
@@ -14725,6 +14781,44 @@ export type SuspendBatchOperationResponses = {
 
 export type SuspendBatchOperationResponse = SuspendBatchOperationResponses[keyof SuspendBatchOperationResponses];
 
+export type GetClockData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/clock';
+};
+
+export type GetClockErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type GetClockError = GetClockErrors[keyof GetClockErrors];
+
+export type GetClockResponses = {
+    /**
+     * The current time of the clock.
+     */
+    200: ClockResult;
+};
+
+export type GetClockResponse = GetClockResponses[keyof GetClockResponses];
+
 export type PinClockData = {
     body: ClockPinRequest;
     path?: never;
@@ -14758,6 +14852,48 @@ export type PinClockResponses = {
 };
 
 export type PinClockResponse = PinClockResponses[keyof PinClockResponses];
+
+export type AddClockData = {
+    body: ClockAddRequest;
+    path?: never;
+    query?: never;
+    url: '/clock/add';
+};
+
+export type AddClockErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type AddClockError = AddClockErrors[keyof AddClockErrors];
+
+export type AddClockResponses = {
+    /**
+     * The time was added to the clock.
+     */
+    200: ClockResult;
+};
+
+export type AddClockResponse = AddClockResponses[keyof AddClockResponses];
 
 export type ResetClockData = {
     body?: never;
@@ -20054,6 +20190,10 @@ export type DeleteResourceErrors = {
      */
     404: ProblemDetail;
     /**
+     * The process definition is still draining, so its history cannot be deleted yet. Retry with `deleteHistory` set to `true` once the definition is fully deleted; the batch operation is then created immediately.
+     */
+    409: ProblemDetail;
+    /**
      * An internal error occurred while processing the request.
      */
     500: ProblemDetail;
@@ -20068,7 +20208,7 @@ export type DeleteResourceError = DeleteResourceErrors[keyof DeleteResourceError
 
 export type DeleteResourceResponses = {
     /**
-     * The resource is deleted.
+     * The resource is deleted. For a process definition that is already draining, the repeated deletion is accepted without effect and the definition stays `DRAINING`.
      */
     200: DeleteResourceResponse;
 };
@@ -22142,6 +22282,11 @@ export type RestoreErrors = {
      */
     403: ProblemDetail;
     /**
+     * A requested backup has no completed backup on at least one partition, or the physical tenant does not exist. More details are provided in the response body.
+     *
+     */
+    404: ProblemDetail;
+    /**
      * The cluster is not in recovery mode, so the restore cannot be accepted.
      */
     409: unknown;
@@ -23942,7 +24087,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:e140ca0dbd4353da6a63dc0cffb08773e4805379b5a7364a4264431b7c0493ef
+// specHash=sha256:cf24fbbd9f4162529bcf49101695b57668fcac8763500a34454e35d2aeaf02d5
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
