@@ -1,3 +1,10 @@
+# [11.0.0-alpha.3](https://github.com/camunda/orchestration-cluster-api-js/compare/v11.0.0-alpha.2...v11.0.0-alpha.3) (2026-10-24)
+
+
+### Bug Fixes
+
+* honor path-level servers for cluster-admin operations (Closes [#573](https://github.com/camunda/orchestration-cluster-api-js/issues/573)) ([#574](https://github.com/camunda/orchestration-cluster-api-js/issues/574)) ([18c39f6](https://github.com/camunda/orchestration-cluster-api-js/commit/18c39f65c11551d280f778965c2dd0593afedfd7))
+
 # [11.0.0-alpha.2](https://github.com/camunda/orchestration-cluster-api-js/compare/v11.0.0-alpha.1...v11.0.0-alpha.2) (2026-10-18)
 
 
