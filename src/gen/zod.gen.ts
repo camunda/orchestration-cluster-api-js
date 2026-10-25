@@ -3862,7 +3862,7 @@ export const zExpressionEvaluationRequest = /*#__PURE__*/ (() => z.object({
 export const zIncidentKey = zLongKey;
 
 export const zElementInstanceResult = /*#__PURE__*/ (() => z.object({
-    processDefinitionId: zProcessDefinitionId,
+    processDefinitionId: zProcessDefinitionId.nullable(),
     startDate: z.iso.datetime().register(z.globalRegistry, {
         description: 'Date when element instance started.'
     }),
@@ -3910,7 +3910,7 @@ export const zElementInstanceResult = /*#__PURE__*/ (() => z.object({
     elementInstanceKey: zElementInstanceKey,
     processInstanceKey: zProcessInstanceKey,
     rootProcessInstanceKey: zProcessInstanceKey.nullable(),
-    processDefinitionKey: zProcessDefinitionKey,
+    processDefinitionKey: zProcessDefinitionKey.nullable(),
     incidentKey: zIncidentKey.nullable()
 }))();
 
@@ -4095,8 +4095,8 @@ export const zJobSearchResult = /*#__PURE__*/ (() => z.object({
     jobKey: zJobKey,
     kind: zJobKindEnum,
     listenerEventType: zJobListenerEventTypeEnum,
-    processDefinitionId: zProcessDefinitionId,
-    processDefinitionKey: zProcessDefinitionKey,
+    processDefinitionId: zProcessDefinitionId.nullable(),
+    processDefinitionKey: zProcessDefinitionKey.nullable(),
     processInstanceKey: zProcessInstanceKey,
     rootProcessInstanceKey: zProcessInstanceKey.nullable(),
     businessId: zBusinessId.nullable(),
@@ -5361,7 +5361,7 @@ export const zCorrelatedMessageSubscriptionResult = /*#__PURE__*/ (() => z.objec
         description: 'The partition ID that correlated the message.'
     }),
     processDefinitionId: zProcessDefinitionId,
-    processDefinitionKey: zProcessDefinitionKey,
+    processDefinitionKey: zProcessDefinitionKey.nullable(),
     processInstanceKey: zProcessInstanceKey,
     rootProcessInstanceKey: zProcessInstanceKey.nullable(),
     subscriptionKey: zMessageSubscriptionKey,
@@ -5587,13 +5587,9 @@ export const zProcessInstanceCreationRuntimeInstruction = /*#__PURE__*/ (() => z
     }).and(zProcessInstanceCreationTerminateInstruction))();
 
 /**
- * Process creation by id
+ * Fields shared by all process instance creation instructions.
  */
-export const zProcessInstanceCreationInstructionById = /*#__PURE__*/ (() => z.object({
-    processDefinitionId: zProcessDefinitionId,
-    processDefinitionVersion: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
-        description: 'The version of the process. If omitted, the latest active version is used.\n'
-    }).optional().default(-1),
+export const zProcessInstanceCreationInstructionBase = /*#__PURE__*/ (() => z.object({
     variables: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
         description: 'JSON object that will instantiate the variables for the root variable scope\nof the process instance.\n'
     }).optional(),
@@ -5616,48 +5612,49 @@ export const zProcessInstanceCreationInstructionById = /*#__PURE__*/ (() => z.ob
     }).optional().default(0),
     tags: zTagSet.optional(),
     businessId: zBusinessId.optional()
+}).register(z.globalRegistry, {
+    description: 'Fields shared by all process instance creation instructions.'
 }))();
+
+/**
+ * Process creation by id
+ */
+export const zProcessInstanceCreationInstructionById = /*#__PURE__*/ (() => zProcessInstanceCreationInstructionBase.and(z.object({
+    processDefinitionId: zProcessDefinitionId,
+    processDefinitionVersion: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+        description: 'The version of the process. If omitted, the latest active version is used.\n'
+    }).optional().default(-1)
+})))();
+
+/**
+ * Process creation by version tag
+ */
+export const zProcessInstanceCreationInstructionByVersionTag = /*#__PURE__*/ (() => zProcessInstanceCreationInstructionBase.and(z.object({
+    processDefinitionId: zProcessDefinitionId,
+    processDefinitionVersionTag: z.string().min(1).register(z.globalRegistry, {
+        description: 'The version tag of the process definition to start an instance of.\nIf several deployed versions carry the same tag, the most recently deployed one is used.\n'
+    })
+})))();
 
 /**
  * Process creation by key
  */
-export const zProcessInstanceCreationInstructionByKey = /*#__PURE__*/ (() => z.object({
+export const zProcessInstanceCreationInstructionByKey = /*#__PURE__*/ (() => zProcessInstanceCreationInstructionBase.and(z.object({
     processDefinitionKey: zProcessDefinitionKey,
     processDefinitionVersion: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'As the version is already identified by the `processDefinitionKey`, the value of this field is ignored.\nIt\'s here for backwards-compatibility only as previous releases accepted it in request bodies.\n'
-    }).optional().default(-1),
-    variables: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
-        description: 'Set of variables as JSON object to instantiate in the root variable scope of the process\ninstance. Can include nested complex objects.\n'
-    }).optional(),
-    startInstructions: z.array(zProcessInstanceCreationStartInstruction).register(z.globalRegistry, {
-        description: 'List of start instructions. By default, the process instance will start at\nthe start event. If provided, the process instance will apply start instructions\nafter it has been created.\n'
-    }).optional(),
-    runtimeInstructions: z.array(zProcessInstanceCreationRuntimeInstruction).register(z.globalRegistry, {
-        description: 'Runtime instructions (alpha). List of instructions that affect the runtime behavior of\nthe process instance. Refer to specific instruction types for more details.\n\nThis parameter is an alpha feature and may be subject to change\nin future releases.\n'
-    }).optional(),
-    tenantId: zTenantId.optional(),
-    operationReference: zOperationReference.optional(),
-    awaitCompletion: z.boolean().register(z.globalRegistry, {
-        description: 'Wait for the process instance to complete. If the process instance does not complete\nwithin the request timeout limit, a 504 response status will be returned. The process\ninstance will continue to run in the background regardless of the timeout. Disabled by\ndefault.\n'
-    }).optional().default(false),
-    requestTimeout: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
-        description: 'Timeout (in ms) the request waits for the process to complete. By default or\nwhen set to 0, the generic request timeout configured in the cluster is applied.\n'
-    }).optional().default(0),
-    fetchVariables: z.array(z.string()).register(z.globalRegistry, {
-        description: 'List of variables by name to be included in the response when awaitCompletion is set to true.\nIf empty, all visible variables in the root scope will be returned.\n'
-    }).optional(),
-    tags: zTagSet.optional(),
-    businessId: zBusinessId.optional()
-}))();
+    }).optional().default(-1)
+})))();
 
 /**
  * Instructions for creating a process instance. The process definition can be specified
- * either by id or by key.
+ * either by id, by id and version tag, or by key.
  *
  */
 export const zProcessInstanceCreationInstruction = /*#__PURE__*/ (() => z.union([
     zProcessInstanceCreationInstructionByKey,
-    zProcessInstanceCreationInstructionById
+    zProcessInstanceCreationInstructionById,
+    zProcessInstanceCreationInstructionByVersionTag
 ]))();
 
 export const zCreateProcessInstanceResult = /*#__PURE__*/ (() => z.object({
@@ -5708,8 +5705,8 @@ export const zProcessInstanceSequenceFlowResult = /*#__PURE__*/ (() => z.object(
     }),
     processInstanceKey: zProcessInstanceKey,
     rootProcessInstanceKey: zProcessInstanceKey.nullable(),
-    processDefinitionKey: zProcessDefinitionKey,
-    processDefinitionId: zProcessDefinitionId,
+    processDefinitionKey: zProcessDefinitionKey.nullable(),
+    processDefinitionId: zProcessDefinitionId.nullable(),
     elementId: zElementId,
     tenantId: zTenantId
 }).register(z.globalRegistry, {
@@ -11714,7 +11711,7 @@ export const zDeleteResourcePath = /*#__PURE__*/ (() => z.object({
 }))();
 
 /**
- * The resource is deleted.
+ * The resource is deleted. For a process definition that is already draining, the repeated deletion is accepted without effect and the definition stays `DRAINING`.
  */
 export const zDeleteResourceResponse2 = zDeleteResourceResponse;
 

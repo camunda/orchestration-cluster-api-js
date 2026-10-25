@@ -1389,7 +1389,7 @@ export const searchGlobalTaskListeners = <ThrowOnError extends boolean = true>(o
  *
  * Create a new group.
  *
- * The supplied `groupId` is validated against `^[a-zA-Z0-9_~@.+-]+$`
+ * The supplied `groupId` is validated against `` ^[a-zA-Z0-9_~@.+-]+$ ``
  * (max 256 characters) by `IdentifierValidator.validateId` in the
  * runtime. This strict validation applies wherever the Groups API
  * is available: in OIDC deployments that set
@@ -2252,7 +2252,7 @@ export const getProcessDefinitionInstanceVersionStatistics = <ThrowOnError exten
  *
  * Creates and starts an instance of the specified process.
  * The process definition to use to create the instance can be specified either using its unique key
- * (as returned by Deploy resources), or using the BPMN process id and a version.
+ * (as returned by Deploy resources), or using the BPMN process id and either a version or a version tag.
  * If only the process definition id is given, the latest ACTIVE version is used.
  * If no ACTIVE version exists, the request is rejected as not found.
  *
@@ -2794,6 +2794,11 @@ export const getResourceContentBinary = <ThrowOnError extends boolean = true>(op
  * to `true`. History deletion is supported for process definitions and decision requirements
  * definitions; for other resource types (forms, generic resources) the flag is ignored and no
  * history is deleted.
+ *
+ * Deleting a process definition that is already draining is accepted again and changes
+ * nothing: the definition stays `DRAINING` until its running instances finish. The one repeated
+ * deletion that is rejected is one with `deleteHistory` set to `true`, because the history
+ * cannot be deleted before the drain finishes.
  *
  * The two supported types differ in how the history is removed. For a decision requirements
  * definition the history is deleted asynchronously via a batch operation whose details are

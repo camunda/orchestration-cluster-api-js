@@ -3778,7 +3778,7 @@ export function createGlobalTaskListener(core: CamundaCore, arg: any, options?: 
  *
  * Create a new group.
  *
- * The supplied `groupId` is validated against `^[a-zA-Z0-9_~@.+-]+$`
+ * The supplied `groupId` is validated against `` ^[a-zA-Z0-9_~@.+-]+$ ``
  * (max 256 characters) by `IdentifierValidator.validateId` in the
  * runtime. This strict validation applies wherever the Groups API
  * is available: in OIDC deployments that set
@@ -3921,7 +3921,7 @@ export function createMappingRule(core: CamundaCore, arg: any, options?: Operati
  *
  * Creates and starts an instance of the specified process.
  * The process definition to use to create the instance can be specified either using its unique key
- * (as returned by Deploy resources), or using the BPMN process id and a version.
+ * (as returned by Deploy resources), or using the BPMN process id and either a version or a version tag.
  * If only the process definition id is given, the latest ACTIVE version is used.
  * If no ACTIVE version exists, the request is rejected as not found.
  *
@@ -3939,10 +3939,6 @@ export function createProcessInstance(core: CamundaCore, arg: any, options?: Ope
     const _body = arg;
     let envelope: any = {};
     envelope.body = _body;
-    if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-      envelope.body.tenantId = rt._config.defaultTenantId;
-      rt._log.trace(() => ['tenant.default.inject', { op: 'createProcessInstance', tenant: rt._config.defaultTenantId }]);
-    }
     if (rt._validation.settings.req !== 'none') {
       const _schemas = await import('./zod/createProcessInstance.gen');
       if (envelope.body !== undefined) {
@@ -5061,6 +5057,11 @@ export function deleteProcessInstancesBatchOperation(core: CamundaCore, arg: any
  * to `true`. History deletion is supported for process definitions and decision requirements
  * definitions; for other resource types (forms, generic resources) the flag is ignored and no
  * history is deleted.
+ *
+ * Deleting a process definition that is already draining is accepted again and changes
+ * nothing: the definition stays `DRAINING` until its running instances finish. The one repeated
+ * deletion that is rejected is one with `deleteHistory` set to `true`, because the history
+ * cannot be deleted before the drain finishes.
  *
  * The two supported types differ in how the history is removed. For a decision requirements
  * definition the history is deleted asynchronously via a batch operation whose details are

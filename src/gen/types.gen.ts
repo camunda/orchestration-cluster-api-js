@@ -5297,9 +5297,11 @@ export type ElementInstanceSearchQueryResult = SearchQueryResponse & {
 
 export type ElementInstanceResult = {
     /**
-     * The process definition ID associated to this element instance.
+     * The process definition ID associated to this element instance. This field is not
+     * present for element instances imported by Operate 8.1 or earlier.
+     *
      */
-    processDefinitionId: ProcessDefinitionId;
+    processDefinitionId: ProcessDefinitionId | null;
     /**
      * Date when element instance started.
      */
@@ -5348,9 +5350,11 @@ export type ElementInstanceResult = {
      */
     rootProcessInstanceKey: ProcessInstanceKey | null;
     /**
-     * The process definition key associated to this element instance.
+     * The process definition key associated to this element instance. This field is not
+     * present for element instances imported by Operate 8.1.7 or earlier.
+     *
      */
-    processDefinitionKey: ProcessDefinitionKey;
+    processDefinitionKey: ProcessDefinitionKey | null;
     /**
      * Incident key associated with this element instance.
      */
@@ -7570,13 +7574,17 @@ export type JobSearchResult = {
     kind: JobKindEnum;
     listenerEventType: JobListenerEventTypeEnum;
     /**
-     * The process definition ID associated with the job.
+     * The process definition ID associated with the job. This field is not present for
+     * jobs imported by Operate 8.7 and earlier.
+     *
      */
-    processDefinitionId: ProcessDefinitionId;
+    processDefinitionId: ProcessDefinitionId | null;
     /**
-     * The process definition key associated with the job.
+     * The process definition key associated with the job. This field is not present for
+     * jobs imported by Operate 8.7 and earlier.
+     *
      */
-    processDefinitionKey: ProcessDefinitionKey;
+    processDefinitionKey: ProcessDefinitionKey | null;
     /**
      * The process instance key associated with the job.
      */
@@ -9130,8 +9138,11 @@ export type CorrelatedMessageSubscriptionResult = {
     processDefinitionId: ProcessDefinitionId;
     /**
      * The process definition key associated with this correlated message subscription.
+     * This field is not present for correlations to message subscriptions of a running
+     * process instance (catch, boundary and receive task events) written by version 8.8.
+     *
      */
-    processDefinitionKey: ProcessDefinitionKey;
+    processDefinitionKey: ProcessDefinitionKey | null;
     /**
      * The process instance key associated with this correlated message subscription.
      */
@@ -9774,25 +9785,15 @@ export type ProcessDefinitionInstanceVersionStatisticsQuerySortRequest = {
 
 /**
  * Instructions for creating a process instance. The process definition can be specified
- * either by id or by key.
+ * either by id, by id and version tag, or by key.
  *
  */
-export type ProcessInstanceCreationInstruction = ProcessInstanceCreationInstructionByKey | ProcessInstanceCreationInstructionById;
+export type ProcessInstanceCreationInstruction = ProcessInstanceCreationInstructionByKey | ProcessInstanceCreationInstructionById | ProcessInstanceCreationInstructionByVersionTag;
 
 /**
- * Process creation by id
+ * Fields shared by all process instance creation instructions.
  */
-export type ProcessInstanceCreationInstructionById = {
-    /**
-     * The BPMN process id of the process definition to start an instance of.
-     *
-     */
-    processDefinitionId: ProcessDefinitionId;
-    /**
-     * The version of the process. If omitted, the latest active version is used.
-     *
-     */
-    processDefinitionVersion?: number;
+export type ProcessInstanceCreationInstructionBase = {
     /**
      * JSON object that will instantiate the variables for the root variable scope
      * of the process instance.
@@ -9850,9 +9851,42 @@ export type ProcessInstanceCreationInstructionById = {
 };
 
 /**
+ * Process creation by id
+ */
+export type ProcessInstanceCreationInstructionById = ProcessInstanceCreationInstructionBase & {
+    /**
+     * The BPMN process id of the process definition to start an instance of.
+     *
+     */
+    processDefinitionId: ProcessDefinitionId;
+    /**
+     * The version of the process. If omitted, the latest active version is used.
+     *
+     */
+    processDefinitionVersion?: number;
+};
+
+/**
+ * Process creation by version tag
+ */
+export type ProcessInstanceCreationInstructionByVersionTag = ProcessInstanceCreationInstructionBase & {
+    /**
+     * The BPMN process id of the process definition to start an instance of.
+     *
+     */
+    processDefinitionId: ProcessDefinitionId;
+    /**
+     * The version tag of the process definition to start an instance of.
+     * If several deployed versions carry the same tag, the most recently deployed one is used.
+     *
+     */
+    processDefinitionVersionTag: string;
+};
+
+/**
  * Process creation by key
  */
-export type ProcessInstanceCreationInstructionByKey = {
+export type ProcessInstanceCreationInstructionByKey = ProcessInstanceCreationInstructionBase & {
     /**
      * The unique key identifying the process definition, for example, returned for a process in the
      * deploy resources endpoint.
@@ -9865,60 +9899,6 @@ export type ProcessInstanceCreationInstructionByKey = {
      *
      */
     processDefinitionVersion?: number;
-    /**
-     * Set of variables as JSON object to instantiate in the root variable scope of the process
-     * instance. Can include nested complex objects.
-     *
-     */
-    variables?: {
-        [key: string]: unknown;
-    };
-    /**
-     * List of start instructions. By default, the process instance will start at
-     * the start event. If provided, the process instance will apply start instructions
-     * after it has been created.
-     *
-     */
-    startInstructions?: Array<ProcessInstanceCreationStartInstruction>;
-    /**
-     * Runtime instructions (alpha). List of instructions that affect the runtime behavior of
-     * the process instance. Refer to specific instruction types for more details.
-     *
-     * This parameter is an alpha feature and may be subject to change
-     * in future releases.
-     *
-     */
-    runtimeInstructions?: Array<ProcessInstanceCreationRuntimeInstruction>;
-    /**
-     * The tenant id of the process definition.
-     * If multi-tenancy is enabled, provide the tenant id of the process definition to start a
-     * process instance of. If multi-tenancy is disabled, don't provide this parameter.
-     *
-     */
-    tenantId?: TenantId;
-    operationReference?: OperationReference;
-    /**
-     * Wait for the process instance to complete. If the process instance does not complete
-     * within the request timeout limit, a 504 response status will be returned. The process
-     * instance will continue to run in the background regardless of the timeout. Disabled by
-     * default.
-     *
-     */
-    awaitCompletion?: boolean;
-    /**
-     * Timeout (in ms) the request waits for the process to complete. By default or
-     * when set to 0, the generic request timeout configured in the cluster is applied.
-     *
-     */
-    requestTimeout?: number;
-    /**
-     * List of variables by name to be included in the response when awaitCompletion is set to true.
-     * If empty, all visible variables in the root scope will be returned.
-     *
-     */
-    fetchVariables?: Array<string>;
-    tags?: TagSet;
-    businessId?: BusinessId;
 };
 
 export type ProcessInstanceCreationStartInstruction = {
@@ -10348,13 +10328,17 @@ export type ProcessInstanceSequenceFlowResult = {
      */
     rootProcessInstanceKey: ProcessInstanceKey | null;
     /**
-     * The process definition key.
+     * The process definition key. This field is not present for sequence flows imported
+     * by Operate 8.1 or earlier.
+     *
      */
-    processDefinitionKey: ProcessDefinitionKey;
+    processDefinitionKey: ProcessDefinitionKey | null;
     /**
-     * The process definition id.
+     * The process definition id. This field is not present for sequence flows imported by
+     * Operate 8.1 or earlier.
+     *
      */
-    processDefinitionId: ProcessDefinitionId;
+    processDefinitionId: ProcessDefinitionId | null;
     /**
      * The element id for this sequence flow, as provided in the BPMN process.
      */
@@ -11277,7 +11261,7 @@ export type CloudStage = 'dev' | 'int' | 'prod';
 export type TenantCreateRequest = {
     /**
      * The unique ID for the tenant. Must be 31 characters or less and match
-     * `^[\w.-]{1,31}$` (word characters, `.`, `-`). The literal
+     * `` ^[\w.-]{1,31}$ `` (word characters, `.`, `-`). The literal
      * `<default>` is also accepted as the default-tenant alias.
      *
      */
@@ -20039,6 +20023,10 @@ export type DeleteResourceErrors = {
      */
     404: ProblemDetail;
     /**
+     * The process definition is still draining, so its history cannot be deleted yet. Retry with `deleteHistory` set to `true` once the definition is fully deleted; the batch operation is then created immediately.
+     */
+    409: ProblemDetail;
+    /**
      * An internal error occurred while processing the request.
      */
     500: ProblemDetail;
@@ -20053,7 +20041,7 @@ export type DeleteResourceError = DeleteResourceErrors[keyof DeleteResourceError
 
 export type DeleteResourceResponses = {
     /**
-     * The resource is deleted.
+     * The resource is deleted. For a process definition that is already draining, the repeated deletion is accepted without effect and the definition stays `DRAINING`.
      */
     200: DeleteResourceResponse;
 };
@@ -22127,6 +22115,11 @@ export type RestoreErrors = {
      */
     403: ProblemDetail;
     /**
+     * A requested backup has no completed backup on at least one partition, or the physical tenant does not exist. More details are provided in the response body.
+     *
+     */
+    404: ProblemDetail;
+    /**
      * The cluster is not in recovery mode, so the restore cannot be accepted.
      */
     409: unknown;
@@ -23927,7 +23920,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:ef3e3ea3faf064de0df57d4b6d28c8828ca86cbb95a0ea815f38e8ce559ebedd
+// specHash=sha256:eba57690d118049a54c27cd2d56cceeb9cd18e26301aa9dae329247a49362651
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
