@@ -1,3 +1,10 @@
+## [10.0.1](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0...v10.0.1) (2026-10-25)
+
+
+### Bug Fixes
+
+* honor path-level servers for cluster-admin operations (backport to stable/10) ([#576](https://github.com/camunda/orchestration-cluster-api-js/issues/576)) ([7720c46](https://github.com/camunda/orchestration-cluster-api-js/commit/7720c46768b00e3badc75690bbcd44fbf6b2123f)), closes [#574](https://github.com/camunda/orchestration-cluster-api-js/issues/574) [#575](https://github.com/camunda/orchestration-cluster-api-js/issues/575)
+
 # [10.0.0](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.0.0...v10.0.0) (2026-10-13)
 
 
