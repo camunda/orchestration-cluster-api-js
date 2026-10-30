@@ -7,8 +7,12 @@ name: Dependency review
 # It gates on the *diff*: vulnerabilities already present on the base branch are
 # tracked as Dependabot alerts and do not fail unrelated PRs.
 
+# `pull_request_target` runs this workflow from the *base* branch, so a PR cannot
+# neuter the gate by editing this file. Safe because no PR code is checked out or
+# executed: the action only compares the dependency graph via the GitHub API.
+# Do NOT add actions/checkout of the PR head here.
 on:
-  pull_request:
+  pull_request_target:
     # `edited` fires when a PR is retargeted onto a protected base branch.
     types: [opened, synchronize, reopened, edited]
     branches:
@@ -23,7 +27,6 @@ jobs:
     name: dependency-review
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
       - uses: actions/dependency-review-action@v5
         with:
           fail-on-severity: high
