@@ -9,6 +9,8 @@ name: Dependency review
 
 on:
   pull_request:
+    # `edited` fires when a PR is retargeted onto a protected base branch.
+    types: [opened, synchronize, reopened, edited]
     branches:
       - main
       - 'stable/**'
@@ -25,4 +27,5 @@ jobs:
       - uses: actions/dependency-review-action@v5
         with:
           fail-on-severity: high
-          fail-on-scopes: runtime, development
+          fail-on-scopes: runtime, development, unknown
+          show-openssf-scorecard: false
