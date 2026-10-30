@@ -2,7 +2,10 @@ name: Dependency review
 
 # Blocks pull requests that introduce a dependency with a known high or critical
 # vulnerability (runtime or development scope). Uses the GitHub dependency graph,
-# so it covers every ecosystem in the repo without language-specific tooling.
+# so it covers every ecosystem the dependency graph tracks without
+# language-specific tooling. It does NOT cover container images (e.g.
+# docker/docker-compose-full.yaml): those are not parsed into the dependency
+# graph and would need separate vulnerability scanning.
 #
 # It gates on the *diff*: vulnerabilities already present on the base branch are
 # tracked as Dependabot alerts and do not fail unrelated PRs.
