@@ -298,6 +298,19 @@ async function searchUserTaskEffectiveVariablesExample(userTaskKey: UserTaskKey)
 }
 //#endregion SearchUserTaskEffectiveVariables
 
+//#region LookupUserTask
+async function lookupUserTaskExample(userTaskKey: UserTaskKey) {
+  const camunda = createCamundaClient();
+
+  const task = await camunda.lookupUserTask({
+    userTaskKey,
+    fetchVariables: ['recommendation', 'applicant'],
+  });
+
+  console.log(`Task ${task.userTaskKey} is ${task.state}, assignee: ${task.assignee}`);
+}
+//#endregion LookupUserTask
+
 // Suppress "declared but never read"
 void getDecisionDefinitionXmlExample;
 void getDecisionInstanceExample;
@@ -320,3 +333,4 @@ void createDocumentExample;
 void createDocumentsExample;
 void getDocumentExample;
 void searchUserTaskEffectiveVariablesExample;
+void lookupUserTaskExample;
