@@ -15,9 +15,9 @@
 <div class="tsd-comment tsd-typography"><p>Advanced filter</p>
 <p>Advanced ProtectionModeEnum filter.</p>
 </div></section>
-<div class="tsd-signature"><span class="tsd-signature-keyword">type</span> <span class="tsd-kind-type-alias">AdvancedProtectionModeFilter</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#in">$in</a><span class="tsd-signature-symbol">?:</span> <a href="index.ProtectionModeEnum.html" class="tsd-signature-type tsd-kind-type-alias">ProtectionModeEnum</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
+<div class="tsd-signature"><span class="tsd-signature-keyword">type</span> <span class="tsd-kind-type-alias">AdvancedProtectionModeFilter</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#eq">$eq</a><span class="tsd-signature-symbol">?:</span> <a href="index.ProtectionModeEnum.html" class="tsd-signature-type tsd-kind-type-alias">ProtectionModeEnum</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#exists">$exists</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#in">$in</a><span class="tsd-signature-symbol">?:</span> <a href="index.ProtectionModeEnum.html" class="tsd-signature-type tsd-kind-type-alias">ProtectionModeEnum</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#neq">$neq</a><span class="tsd-signature-symbol">?:</span> <a href="index.ProtectionModeEnum.html" class="tsd-signature-type tsd-kind-type-alias">ProtectionModeEnum</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#notin">$notIn</a><span class="tsd-signature-symbol">?:</span> <a href="index.ProtectionModeEnum.html" class="tsd-signature-type tsd-kind-type-alias">ProtectionModeEnum</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/7373aa65e75f2a5a4accae521068ec9309de8166/src/gen/types.gen.ts#L12315">src/gen/types.gen.ts:12315</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/9fd7956700e5b5be94398d948418b421f1009b98/src/gen/types.gen.ts#L12455">src/gen/types.gen.ts:12455</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -25,18 +25,51 @@
 <div class="tsd-accordion-details">
 <section class="tsd-index-section">
 <h3 class="tsd-index-heading tsd-anchor-link" id="properties">Properties<a href="#properties" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
-<div class="tsd-index-list"><a href="#in" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>$in?</span></a>
+<div class="tsd-index-list"><a href="#eq" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>$eq?</span></a>
+<a href="#exists" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>$exists?</span></a>
+<a href="#in" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>$in?</span></a>
+<a href="#neq" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>$neq?</span></a>
+<a href="#notin" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>$not<wbr/>In?</span></a>
 </div></section></div></details></section></section>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="properties-1">Properties<a href="#properties-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="eq"><code class="tsd-tag">Optional</code><span>$eq</span><a href="#eq" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">$eq</span><span class="tsd-signature-symbol">?:</span> <a href="index.ProtectionModeEnum.html" class="tsd-signature-type tsd-kind-type-alias">ProtectionModeEnum</a></div>
+<div class="tsd-comment tsd-typography"><p>Checks if the variable has the provided protection mode.</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/9fd7956700e5b5be94398d948418b421f1009b98/src/gen/types.gen.ts#L12459">src/gen/types.gen.ts:12459</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="exists"><code class="tsd-tag">Optional</code><span>$exists</span><a href="#exists" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">$exists</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>Checks if the variable has any protection mode. Use <code>false</code> to match the variables
+that are not protected.</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/9fd7956700e5b5be94398d948418b421f1009b98/src/gen/types.gen.ts#L12469">src/gen/types.gen.ts:12469</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="in"><code class="tsd-tag">Optional</code><span>$in</span><a href="#in" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">$in</span><span class="tsd-signature-symbol">?:</span> <a href="index.ProtectionModeEnum.html" class="tsd-signature-type tsd-kind-type-alias">ProtectionModeEnum</a><span class="tsd-signature-symbol">[]</span></div>
 <div class="tsd-comment tsd-typography"><p>Checks if the variable has at least one of the provided protection modes.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/7373aa65e75f2a5a4accae521068ec9309de8166/src/gen/types.gen.ts#L12319">src/gen/types.gen.ts:12319</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/9fd7956700e5b5be94398d948418b421f1009b98/src/gen/types.gen.ts#L12473">src/gen/types.gen.ts:12473</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="neq"><code class="tsd-tag">Optional</code><span>$neq</span><a href="#neq" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">$neq</span><span class="tsd-signature-symbol">?:</span> <a href="index.ProtectionModeEnum.html" class="tsd-signature-type tsd-kind-type-alias">ProtectionModeEnum</a></div>
+<div class="tsd-comment tsd-typography"><p>Checks if the variable does not have the provided protection mode.</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/9fd7956700e5b5be94398d948418b421f1009b98/src/gen/types.gen.ts#L12463">src/gen/types.gen.ts:12463</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="notin"><code class="tsd-tag">Optional</code><span>$not<wbr/>In</span><a href="#notin" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">$notIn</span><span class="tsd-signature-symbol">?:</span> <a href="index.ProtectionModeEnum.html" class="tsd-signature-type tsd-kind-type-alias">ProtectionModeEnum</a><span class="tsd-signature-symbol">[]</span></div>
+<div class="tsd-comment tsd-typography"><p>Checks if the variable has none of the provided protection modes.</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/9fd7956700e5b5be94398d948418b421f1009b98/src/gen/types.gen.ts#L12477">src/gen/types.gen.ts:12477</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -52,7 +85,7 @@
 <h3>On This Page</h3></summary>
 <div class="tsd-accordion-details">
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Properties</summary>
-<div><a href="#in"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>$in</span></a></div></details></div></details></div>
+<div><a href="#eq"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>$eq</span></a><a href="#exists"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>$exists</span></a><a href="#in"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>$in</span></a><a href="#neq"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>$neq</span></a><a href="#notin"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>$not<wbr/>In</span></a></div></details></div></details></div>
 <div class="site-menu">
 <nav class="tsd-navigation"><a href="../modules.html">@camunda8/orchestration-cluster-api</a>
 <ul class="tsd-small-nested-navigation" id="tsd-nav-container">
