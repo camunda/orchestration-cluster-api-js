@@ -9,7 +9,7 @@ import { enrichActivatedJob, EnrichedActivatedJob, EnrichedActivatedJobOf } from
 import * as Sdk from './sdk.gen';
 
 // Generated
-// Operations: 246
+// Operations: 247
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -707,6 +707,10 @@ export type listRuntimeBackupsAsClusterAdminInput = { physicalTenantId?: listRun
 type listSecretsOptions = Parameters<typeof Sdk.listSecrets>[0];
 type listSecretsBody = (NonNullable<listSecretsOptions> extends { body?: infer B } ? B : never);
 export type listSecretsInput = listSecretsBody;
+type lookupUserTaskOptions = Parameters<typeof Sdk.lookupUserTask>[0];
+type lookupUserTaskBody = (NonNullable<lookupUserTaskOptions> extends { body?: infer B } ? B : never);
+type lookupUserTaskPathParam_userTaskKey = (NonNullable<lookupUserTaskOptions> extends { path: { userTaskKey: infer P } } ? P : any);
+export type lookupUserTaskInput = lookupUserTaskBody & { userTaskKey: lookupUserTaskPathParam_userTaskKey };
 type migrateProcessInstanceOptions = Parameters<typeof Sdk.migrateProcessInstance>[0];
 type migrateProcessInstanceBody = (NonNullable<migrateProcessInstanceOptions> extends { body?: infer B } ? B : never);
 type migrateProcessInstancePathParam_processInstanceKey = (NonNullable<migrateProcessInstanceOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
@@ -2733,10 +2737,9 @@ export function cancelProcessInstance(core: CamundaCore, arg: any, options?: Ope
  *
  * Cancels multiple active or suspended process instances.
  * Only ACTIVE and SUSPENDED root instances are cancelled; child instances are cancelled
- * together with their root instance. The given filter only narrows the batch, except for
- * parentProcessInstanceKey: a top-level filter is ignored, and an `$or` branch on it matches
- * nothing. Other `state` operators (`$neq`, `$notIn`, `$exists`, `$like`) are applied as given
- * and are not validated.
+ * together with their root instance. The given filter only narrows the batch, so a filter on
+ * parentProcessInstanceKey matches no instances. Other `state` operators (`$neq`, `$notIn`,
+ * `$exists`, `$like`) are applied as given and are not validated.
  * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
  *
   *
@@ -10756,6 +10759,96 @@ export function listSecrets(core: CamundaCore, arg: any, options?: OperationOpti
       }
     };
     return rt._invokeWithRetry(() => call(), { opId: 'listSecrets', exempt: false, retryOverride: options?.retry });
+  });
+}
+
+/**
+ * Look up an active user task (alpha)
+ *
+ * Returns an active user task together with the variables visible to it, read from the
+ * engine's state instead of secondary storage. The task and its variables are read at the
+ * same point in processing, so they are consistent with each other and with any command the
+ * engine has already processed, for example the completion of a previous task.
+ *
+ * The response includes the task's lifecycle `state`. Use it to interpret the returned
+ * values: while a change to the task is in progress, the task fields and variables are the
+ * ones from before the change, and `state` names the pending change. For example, with
+ * `ASSIGNING` the returned `assignee` is still the previous one, because task listeners can
+ * deny the new assignment; with `COMPLETING` the variables don't include the ones sent with
+ * the completion yet.
+ *
+ * Only active tasks can be looked up. The lookup returns 404 when the task doesn't exist,
+ * when it was already completed or canceled (use the user task search for those), or when it
+ * belongs to a tenant the caller isn't assigned to. It returns 409 when the task's process
+ * instance is banned: an instance that hit an unrecoverable error and can only be canceled.
+ *
+ * Each lookup is processed by the engine. Use it when a task is opened, not for polling.
+ *
+ * This endpoint is an alpha feature and may be subject to change
+ * in future releases.
+ *
+  *
+ * @operationId lookupUserTask
+ * @tags User task
+ */
+export function lookupUserTask(core: CamundaCore, input: lookupUserTaskInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.lookupUserTask>>;
+export function lookupUserTask(core: CamundaCore, arg: any, options?: OperationOptions): CancelablePromise<any> {
+  const rt = core as unknown as OperationRuntime;
+  return toCancelable(async signal => {
+    const { userTaskKey, ..._body } = arg || {};
+    let envelope: any = {};
+    envelope.path = { userTaskKey };
+    envelope.body = _body;
+    if (rt._validation.settings.req !== 'none') {
+      const _schemas = await import('./zod/lookupUserTask.gen');
+      if (envelope.body !== undefined) {
+        const maybeBody = await rt._validation.gateRequest('lookupUserTask', _schemas.zLookupUserTaskBody, envelope.body);
+        if (rt._validation.settings.req === 'strict') envelope.body = maybeBody;
+      }
+      if (envelope.path !== undefined) {
+        const maybePath = await rt._validation.gateRequest('lookupUserTask', _schemas.zLookupUserTaskPath, envelope.path);
+        if (rt._validation.settings.req === 'strict') envelope.path = maybePath;
+      }
+    }
+    const opts: any = { client: rt._client, signal, throwOnError: false };
+    if (envelope.path) opts.path = envelope.path;
+    if (envelope.body !== undefined) opts.body = envelope.body;
+    const call = async () => {
+      try {
+      const _raw = await Sdk.lookupUserTask(opts);
+      let data = rt._evaluateResponse(_raw, 'lookupUserTask', (resp: any) => {
+        const st = resp.status ?? resp.response?.status;
+        if (!st) return undefined;
+        const candidate = st === 429 || st === 503 || st === 500;
+        if (!candidate) return undefined;
+        let prob: any = undefined;
+        if (resp.error && typeof resp.error === 'object') prob = resp.error;
+        const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+        err.status = st; err.name = 'HttpSdkError';
+        if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+        const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+        if (!isBp) err.nonRetryable = true;
+        return err;
+      });
+      const _respSchemaName = 'zLookupUserTaskResponse';
+      if (_isVoidResponse(_respSchemaName)) {
+        data = undefined;
+      }
+      if (rt._validation.settings.res !== 'none') {
+        const _schemas = await import('./zod/lookupUserTask.gen');
+        const _schema = _schemas.zLookupUserTaskResponse;
+        if (_schema) {
+          const maybeR = await rt._validation.gateResponse('lookupUserTask', _schema, data);
+          if (rt._validation.settings.res === 'strict') data = maybeR;
+        }
+      }
+      return data;
+      } catch(e) {
+        // Defer normalization to outer executeWithHttpRetry boundary
+        throw e;
+      }
+    };
+    return rt._invokeWithRetry(() => call(), { opId: 'lookupUserTask', exempt: false, retryOverride: options?.retry });
   });
 }
 

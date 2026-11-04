@@ -1,6 +1,6 @@
 {
-  "operations": 246,
-  "tests": 249,
+  "operations": 247,
+  "tests": 250,
   "missing": [],
   "ignored": [],
   "files": [
@@ -147,6 +147,7 @@
     "listRuntimeBackups.test.ts",
     "listRuntimeBackupsAsClusterAdmin.test.ts",
     "listSecrets.test.ts",
+    "lookupUserTask.test.ts",
     "migrateProcessInstance.test.ts",
     "migrateProcessInstancesBatchOperation.test.ts",
     "modifyProcessInstance.test.ts",

@@ -3846,9 +3846,7 @@ export const zExpressionEvaluationRequest = /*#__PURE__*/ (() => z.object({
     expression: z.string().register(z.globalRegistry, {
         description: 'The expression to evaluate (e.g., "=x + y")'
     }),
-    tenantId: z.string().register(z.globalRegistry, {
-        description: 'Required when the expression references tenant-scoped cluster variables'
-    }).optional(),
+    tenantId: zTenantId.optional(),
     scopeKey: zScopeKey.optional(),
     variables: z.record(z.string(), z.unknown()).nullish()
 }))();
@@ -4205,6 +4203,7 @@ export const zDecisionInstanceResult = /*#__PURE__*/ (() => z.object({
     rootDecisionDefinitionKey: zDecisionDefinitionKey,
     rootProcessInstanceKey: zProcessInstanceKey.nullable(),
     state: zDecisionInstanceStateEnum,
+    storageOrdinal: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).nullable(),
     tenantId: zTenantId
 }))();
 
@@ -5581,77 +5580,6 @@ export const zProcessInstanceCreationRuntimeInstruction = /*#__PURE__*/ (() => z
         type: z.literal('TERMINATE_PROCESS_INSTANCE')
     }).and(zProcessInstanceCreationTerminateInstruction))();
 
-/**
- * Fields shared by all process instance creation instructions.
- */
-export const zProcessInstanceCreationInstructionBase = /*#__PURE__*/ (() => z.object({
-    variables: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
-        description: 'JSON object that will instantiate the variables for the root variable scope\nof the process instance.\n'
-    }).optional(),
-    tenantId: zTenantId.optional(),
-    operationReference: zOperationReference.optional(),
-    startInstructions: z.array(zProcessInstanceCreationStartInstruction).register(z.globalRegistry, {
-        description: 'List of start instructions. By default, the process instance will start at\nthe start event. If provided, the process instance will apply start instructions\nafter it has been created.\n'
-    }).optional(),
-    runtimeInstructions: z.array(zProcessInstanceCreationRuntimeInstruction).register(z.globalRegistry, {
-        description: 'Runtime instructions (alpha). List of instructions that affect the runtime behavior of\nthe process instance. Refer to specific instruction types for more details.\n\nThis parameter is an alpha feature and may be subject to change\nin future releases.\n'
-    }).optional(),
-    awaitCompletion: z.boolean().register(z.globalRegistry, {
-        description: 'Wait for the process instance to complete. If the process instance does not complete\nwithin the request timeout limit, a 504 response status will be returned. The process\ninstance will continue to run in the background regardless of the timeout. Disabled by\ndefault.\n'
-    }).optional().default(false),
-    fetchVariables: z.array(z.string()).register(z.globalRegistry, {
-        description: 'List of variables by name to be included in the response when awaitCompletion is set to true.\nIf empty, all visible variables in the root scope will be returned.\n'
-    }).optional(),
-    requestTimeout: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
-        description: 'Timeout (in ms) the request waits for the process to complete. By default or\nwhen set to 0, the generic request timeout configured in the cluster is applied.\n'
-    }).optional().default(0),
-    tags: zTagSet.optional(),
-    businessId: zBusinessId.optional()
-}).register(z.globalRegistry, {
-    description: 'Fields shared by all process instance creation instructions.'
-}))();
-
-/**
- * Process creation by id
- */
-export const zProcessInstanceCreationInstructionById = /*#__PURE__*/ (() => zProcessInstanceCreationInstructionBase.and(z.object({
-    processDefinitionId: zProcessDefinitionId,
-    processDefinitionVersion: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
-        description: 'The version of the process. If omitted, the latest active version is used.\n'
-    }).optional().default(-1)
-})))();
-
-/**
- * Process creation by version tag
- */
-export const zProcessInstanceCreationInstructionByVersionTag = /*#__PURE__*/ (() => zProcessInstanceCreationInstructionBase.and(z.object({
-    processDefinitionId: zProcessDefinitionId,
-    processDefinitionVersionTag: z.string().min(1).register(z.globalRegistry, {
-        description: 'The version tag of the process definition to start an instance of.\nIf several deployed versions carry the same tag, the most recently deployed one is used.\n'
-    })
-})))();
-
-/**
- * Process creation by key
- */
-export const zProcessInstanceCreationInstructionByKey = /*#__PURE__*/ (() => zProcessInstanceCreationInstructionBase.and(z.object({
-    processDefinitionKey: zProcessDefinitionKey,
-    processDefinitionVersion: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
-        description: 'As the version is already identified by the `processDefinitionKey`, the value of this field is ignored.\nIt\'s here for backwards-compatibility only as previous releases accepted it in request bodies.\n'
-    }).optional().default(-1)
-})))();
-
-/**
- * Instructions for creating a process instance. The process definition can be specified
- * either by id, by id and version tag, or by key.
- *
- */
-export const zProcessInstanceCreationInstruction = /*#__PURE__*/ (() => z.union([
-    zProcessInstanceCreationInstructionByKey,
-    zProcessInstanceCreationInstructionById,
-    zProcessInstanceCreationInstructionByVersionTag
-]))();
-
 export const zCreateProcessInstanceResult = /*#__PURE__*/ (() => z.object({
     processDefinitionId: zProcessDefinitionId,
     processDefinitionVersion: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
@@ -6010,7 +5938,8 @@ export const zProcessInstanceResult = /*#__PURE__*/ (() => z.object({
     parentElementInstanceKey: zElementInstanceKey.nullable(),
     rootProcessInstanceKey: zProcessInstanceKey.nullable(),
     tags: zTagSet,
-    businessId: zBusinessId.nullable()
+    businessId: zBusinessId.nullable(),
+    storageOrdinal: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).nullable()
 }).register(z.globalRegistry, {
     description: 'Process instance search response item.'
 }))();
@@ -7785,6 +7714,70 @@ export const zUserTaskSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryRespo
     description: 'User task search query response.'
 }))();
 
+export const zUserTaskLookupRequest = /*#__PURE__*/ (() => z.object({
+    fetchVariables: z.array(z.string()).register(z.globalRegistry, {
+        description: 'The names of the variables to return. If absent or empty, all variables visible to the user task are returned. A name without a matching variable is left out of the response.\n'
+    }).optional()
+}))();
+
+/**
+ * The lifecycle state of an active user task. A state ending in `-ING` means a change to the
+ * task is in progress, for example waiting for task listeners; the task fields still hold
+ * the values from before the change.
+ *
+ */
+export const zUserTaskLookupStateEnum = /*#__PURE__*/ (() => z.enum([
+    'CREATING',
+    'CREATED',
+    'ASSIGNING',
+    'CLAIMING',
+    'UPDATING',
+    'COMPLETING',
+    'CANCELING'
+]).register(z.globalRegistry, {
+    description: 'The lifecycle state of an active user task. A state ending in `-ING` means a change to the\ntask is in progress, for example waiting for task listeners; the task fields still hold\nthe values from before the change.\n'
+}))();
+
+export const zUserTaskLookupResult = /*#__PURE__*/ (() => z.object({
+    userTaskKey: zUserTaskKey,
+    state: zUserTaskLookupStateEnum,
+    elementId: zElementId,
+    elementInstanceKey: zElementInstanceKey,
+    processInstanceKey: zProcessInstanceKey,
+    rootProcessInstanceKey: zProcessInstanceKey.nullable(),
+    processDefinitionId: zProcessDefinitionId,
+    processDefinitionKey: zProcessDefinitionKey,
+    processDefinitionVersion: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+        description: 'The version of the process definition.'
+    }),
+    tenantId: zTenantId,
+    assignee: z.string().nullable(),
+    candidateGroups: z.array(z.string()).register(z.globalRegistry, {
+        description: 'The candidate groups for this user task.'
+    }),
+    candidateUsers: z.array(z.string()).register(z.globalRegistry, {
+        description: 'The candidate users for this user task.'
+    }),
+    dueDate: z.iso.datetime().nullable(),
+    followUpDate: z.iso.datetime().nullable(),
+    formKey: zFormKey.nullable(),
+    externalFormReference: z.string().nullable(),
+    customHeaders: z.record(z.string(), z.string()).register(z.globalRegistry, {
+        description: 'Custom headers for the user task.'
+    }),
+    priority: z.int().gte(0).lte(100).register(z.globalRegistry, {
+        description: 'The priority of the user task. The higher the value the higher the priority.'
+    }),
+    tags: zTagSet,
+    businessId: zBusinessId.nullable(),
+    creationDate: z.iso.datetime().register(z.globalRegistry, {
+        description: 'The creation date of the user task.'
+    }),
+    variables: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
+        description: 'The variables visible to the user task, as a JSON object of name and value. If a name exists in several scopes, the value of the innermost scope is returned. Values are never truncated.\n'
+    })
+}))();
+
 /**
  * The user task variable search filters.
  */
@@ -7959,6 +7952,80 @@ export const zVariableMetadata = /*#__PURE__*/ (() => z.object({
 }))();
 
 /**
+ * Fields shared by all process instance creation instructions.
+ */
+export const zProcessInstanceCreationInstructionBase = /*#__PURE__*/ (() => z.object({
+    variables: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
+        description: 'JSON object that will instantiate the variables for the root variable scope\nof the process instance.\n'
+    }).optional(),
+    variablesMetadata: z.record(z.string(), zVariableMetadata).register(z.globalRegistry, {
+        description: 'Metadata of the variables, keyed by variable name. Use it to set how a variable is\ntreated, for example to protect its value. A variable without an entry has no\nmetadata.\n'
+    }).optional(),
+    tenantId: zTenantId.optional(),
+    operationReference: zOperationReference.optional(),
+    startInstructions: z.array(zProcessInstanceCreationStartInstruction).register(z.globalRegistry, {
+        description: 'List of start instructions. By default, the process instance will start at\nthe start event. If provided, the process instance will apply start instructions\nafter it has been created.\n'
+    }).optional(),
+    runtimeInstructions: z.array(zProcessInstanceCreationRuntimeInstruction).register(z.globalRegistry, {
+        description: 'Runtime instructions (alpha). List of instructions that affect the runtime behavior of\nthe process instance. Refer to specific instruction types for more details.\n\nThis parameter is an alpha feature and may be subject to change\nin future releases.\n'
+    }).optional(),
+    awaitCompletion: z.boolean().register(z.globalRegistry, {
+        description: 'Wait for the process instance to complete. If the process instance does not complete\nwithin the request timeout limit, a 504 response status will be returned. The process\ninstance will continue to run in the background regardless of the timeout. Disabled by\ndefault.\n'
+    }).optional().default(false),
+    fetchVariables: z.array(z.string()).register(z.globalRegistry, {
+        description: 'List of variables by name to be included in the response when awaitCompletion is set to true.\nIf empty, all visible variables in the root scope will be returned.\n'
+    }).optional(),
+    requestTimeout: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
+        description: 'Timeout (in ms) the request waits for the process to complete. By default or\nwhen set to 0, the generic request timeout configured in the cluster is applied.\n'
+    }).optional().default(0),
+    tags: zTagSet.optional(),
+    businessId: zBusinessId.optional()
+}).register(z.globalRegistry, {
+    description: 'Fields shared by all process instance creation instructions.'
+}))();
+
+/**
+ * Process creation by id
+ */
+export const zProcessInstanceCreationInstructionById = /*#__PURE__*/ (() => zProcessInstanceCreationInstructionBase.and(z.object({
+    processDefinitionId: zProcessDefinitionId,
+    processDefinitionVersion: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+        description: 'The version of the process. If omitted, the latest active version is used.\n'
+    }).optional().default(-1)
+})))();
+
+/**
+ * Process creation by version tag
+ */
+export const zProcessInstanceCreationInstructionByVersionTag = /*#__PURE__*/ (() => zProcessInstanceCreationInstructionBase.and(z.object({
+    processDefinitionId: zProcessDefinitionId,
+    processDefinitionVersionTag: z.string().min(1).register(z.globalRegistry, {
+        description: 'The version tag of the process definition to start an instance of.\nIf several deployed versions carry the same tag, the most recently deployed one is used.\n'
+    })
+})))();
+
+/**
+ * Process creation by key
+ */
+export const zProcessInstanceCreationInstructionByKey = /*#__PURE__*/ (() => zProcessInstanceCreationInstructionBase.and(z.object({
+    processDefinitionKey: zProcessDefinitionKey,
+    processDefinitionVersion: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+        description: 'As the version is already identified by the `processDefinitionKey`, the value of this field is ignored.\nIt\'s here for backwards-compatibility only as previous releases accepted it in request bodies.\n'
+    }).optional().default(-1)
+})))();
+
+/**
+ * Instructions for creating a process instance. The process definition can be specified
+ * either by id, by id and version tag, or by key.
+ *
+ */
+export const zProcessInstanceCreationInstruction = /*#__PURE__*/ (() => z.union([
+    zProcessInstanceCreationInstructionByKey,
+    zProcessInstanceCreationInstructionById,
+    zProcessInstanceCreationInstructionByVersionTag
+]))();
+
+/**
  * Variable response item.
  */
 export const zVariableResultBase = /*#__PURE__*/ (() => z.object({
@@ -7970,7 +8037,7 @@ export const zVariableResultBase = /*#__PURE__*/ (() => z.object({
     scopeKey: zScopeKey,
     processInstanceKey: zProcessInstanceKey,
     rootProcessInstanceKey: zProcessInstanceKey.nullable(),
-    metadata: zVariableMetadata.nullable()
+    metadata: zVariableMetadata
 }).register(z.globalRegistry, {
     description: 'Variable response item.'
 }))();
@@ -8017,8 +8084,16 @@ export const zVariableResult = /*#__PURE__*/ (() => zVariableResultBase.and(z.ob
  * Advanced ProtectionModeEnum filter.
  */
 export const zAdvancedProtectionModeFilter = /*#__PURE__*/ (() => z.object({
+    $eq: zProtectionModeEnum.optional(),
+    $neq: zProtectionModeEnum.optional(),
+    $exists: z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the variable has any protection mode. Use `false` to match the variables\nthat are not protected.\n'
+    }).optional(),
     $in: z.array(zProtectionModeEnum).register(z.globalRegistry, {
         description: 'Checks if the variable has at least one of the provided protection modes.'
+    }).optional(),
+    $notIn: z.array(zProtectionModeEnum).register(z.globalRegistry, {
+        description: 'Checks if the variable has none of the provided protection modes.'
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced ProtectionModeEnum filter.'
@@ -8035,6 +8110,9 @@ export const zSetVariableRequest = /*#__PURE__*/ (() => z.object({
     variables: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
         description: 'JSON object representing the variables to set in the element’s scope.'
     }),
+    variablesMetadata: z.record(z.string(), zVariableMetadata).register(z.globalRegistry, {
+        description: 'Metadata of the variables, keyed by variable name. Use it to set how a variable is\ntreated, for example to protect its value. A variable without an entry keeps the\nmetadata it has, or has none.\n'
+    }).optional(),
     local: z.boolean().register(z.globalRegistry, {
         description: 'If set to `true`, the variables are merged strictly into the local scope (as specified\nby the `elementInstanceKey`). Otherwise, the variables are propagated to upper scopes\nand set at the outermost one.\n\nLet\'s consider the following example:\nThere are two scopes \'1\' and \'2\'. Scope \'1\' is the parent scope of \'2\'. The effective\nvariables of the scopes are:\n1 => { "foo" : 2 }\n2 => { "bar" : 1 }\n\nAn update request with elementInstanceKey as \'2\', variables { "foo": 5 }, and local set\nto `true` leaves scope \'1\' unchanged and adjusts scope \'2\' to { "bar": 1, "foo": 5 }. By\ndefault, with local set to `false`, scope \'1\' will be { "foo": 5 } and scope \'2\' will be\n{ "bar": 1 }.'
     }).optional().default(false),
@@ -9619,7 +9697,7 @@ export const zUserTaskSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and
 export const zProtectionModeExactMatch = zProtectionModeEnum;
 
 /**
- * ProtectionModeEnum property with the advanced search capability to match any of several values.
+ * ProtectionModeEnum property with full advanced search capabilities.
  */
 export const zProtectionModeFilterProperty = /*#__PURE__*/ (() => z.union([
     zProtectionModeExactMatch,
@@ -12694,6 +12772,17 @@ export const zGetUserTaskFormResponse = /*#__PURE__*/ (() => z.union([
         description: 'The user task was found, but no form is associated with it.'
     })
 ]))();
+
+export const zLookupUserTaskBody = zUserTaskLookupRequest;
+
+export const zLookupUserTaskPath = /*#__PURE__*/ (() => z.object({
+    userTaskKey: zUserTaskKeyWritable
+}))();
+
+/**
+ * The user task and its variables are returned.
+ */
+export const zLookupUserTaskResponse = zUserTaskLookupResult;
 
 export const zSearchUserTaskVariablesBody = zUserTaskVariableSearchQueryRequest;
 

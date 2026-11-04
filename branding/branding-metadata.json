@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2.0.0",
-  "specHash": "sha256:cf24fbbd9f4162529bcf49101695b57668fcac8763500a34454e35d2aeaf02d5",
+  "specHash": "sha256:5301b35ddb5ad4d3e36e0747702387186ea0b659d33c9968aad3ab0646ff0b97",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -3109,7 +3109,7 @@
     {
       "name": "ProtectionModeFilterProperty",
       "kind": "union-wrapper",
-      "description": "ProtectionModeEnum property with the advanced search capability to match any of several values.",
+      "description": "ProtectionModeEnum property with full advanced search capabilities.",
       "branches": [
         {
           "branchType": "branded-ref",

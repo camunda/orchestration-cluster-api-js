@@ -3,7 +3,7 @@
     "sourceRepo": "https://github.com/camunda/camunda",
     "commit": "local",
     "specPath": "zeebe/gateway-protocol/src/main/proto/v2/rest-api.yaml",
-    "specSha256": "cce92a4b7e0bb25d99e0ade651c43c4241d63f10c939ef5c3b0d1214dea7e89d"
+    "specSha256": "aac0dfa23cdb955d21de78b40b65ad0b3afa005775f6c182bf6a98a84b3b6058"
   },
   "responses": [
     {
@@ -3475,6 +3475,11 @@
                   ]
                 },
                 {
+                  "name": "storageOrdinal",
+                  "type": "number",
+                  "nullable": true
+                },
+                {
                   "name": "tenantId",
                   "type": "string"
                 }
@@ -3676,6 +3681,11 @@
               "UNSPECIFIED",
               "UNKNOWN"
             ]
+          },
+          {
+            "name": "storageOrdinal",
+            "type": "number",
+            "nullable": true
           },
           {
             "name": "tenantId",
@@ -7854,6 +7864,11 @@
                   ]
                 },
                 {
+                  "name": "storageOrdinal",
+                  "type": "number",
+                  "nullable": true
+                },
+                {
                   "name": "suspendedDate",
                   "type": "string",
                   "nullable": true
@@ -8012,6 +8027,11 @@
               "SUSPENDED",
               "TERMINATED"
             ]
+          },
+          {
+            "name": "storageOrdinal",
+            "type": "number",
+            "nullable": true
           },
           {
             "name": "suspendedDate",
@@ -12146,8 +12166,7 @@
                 },
                 {
                   "name": "metadata",
-                  "type": "object",
-                  "nullable": true,
+                  "type": "additionalProperties",
                   "children": {
                     "required": [
                       {
@@ -12253,6 +12272,128 @@
       }
     },
     {
+      "path": "/user-tasks/{userTaskKey}/lookup",
+      "method": "POST",
+      "status": "200",
+      "schema": {
+        "required": [
+          {
+            "name": "assignee",
+            "type": "string",
+            "nullable": true
+          },
+          {
+            "name": "businessId",
+            "type": "string",
+            "nullable": true
+          },
+          {
+            "name": "candidateGroups",
+            "type": "array<string>"
+          },
+          {
+            "name": "candidateUsers",
+            "type": "array<string>"
+          },
+          {
+            "name": "creationDate",
+            "type": "string"
+          },
+          {
+            "name": "customHeaders",
+            "type": "object"
+          },
+          {
+            "name": "dueDate",
+            "type": "string",
+            "nullable": true
+          },
+          {
+            "name": "elementId",
+            "type": "string"
+          },
+          {
+            "name": "elementInstanceKey",
+            "type": "string"
+          },
+          {
+            "name": "externalFormReference",
+            "type": "string",
+            "nullable": true
+          },
+          {
+            "name": "followUpDate",
+            "type": "string",
+            "nullable": true
+          },
+          {
+            "name": "formKey",
+            "type": "string",
+            "nullable": true
+          },
+          {
+            "name": "priority",
+            "type": "number"
+          },
+          {
+            "name": "processDefinitionId",
+            "type": "string"
+          },
+          {
+            "name": "processDefinitionKey",
+            "type": "string"
+          },
+          {
+            "name": "processDefinitionVersion",
+            "type": "number"
+          },
+          {
+            "name": "processInstanceKey",
+            "type": "string"
+          },
+          {
+            "name": "rootProcessInstanceKey",
+            "type": "string",
+            "nullable": true
+          },
+          {
+            "name": "state",
+            "type": "string",
+            "enumValues": [
+              "CREATING",
+              "CREATED",
+              "ASSIGNING",
+              "CLAIMING",
+              "UPDATING",
+              "COMPLETING",
+              "CANCELING"
+            ]
+          },
+          {
+            "name": "tags",
+            "type": "array<string>",
+            "rawRefName": "tags"
+          },
+          {
+            "name": "tenantId",
+            "type": "string",
+            "underlyingPrimitive": "string",
+            "rawRefName": "schema",
+            "wrapper": true
+          },
+          {
+            "name": "userTaskKey",
+            "type": "string"
+          },
+          {
+            "name": "variables",
+            "type": "object"
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
       "path": "/user-tasks/{userTaskKey}/variables/search",
       "method": "POST",
       "status": "200",
@@ -12269,8 +12410,7 @@
                 },
                 {
                   "name": "metadata",
-                  "type": "object",
-                  "nullable": true,
+                  "type": "additionalProperties",
                   "children": {
                     "required": [
                       {
@@ -12362,8 +12502,7 @@
                 },
                 {
                   "name": "metadata",
-                  "type": "object",
-                  "nullable": true,
+                  "type": "additionalProperties",
                   "children": {
                     "required": [
                       {
@@ -12446,8 +12585,7 @@
         "required": [
           {
             "name": "metadata",
-            "type": "object",
-            "nullable": true,
+            "type": "additionalProperties",
             "children": {
               "required": [
                 {

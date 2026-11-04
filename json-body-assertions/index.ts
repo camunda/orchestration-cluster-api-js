@@ -819,6 +819,11 @@ export const RESPONSE_INDEX = {
       '200': 1
     }
   },
+  '/user-tasks/{userTaskKey}/lookup': {
+    'POST': {
+      '200': 1
+    }
+  },
   '/user-tasks/{userTaskKey}/variables/search': {
     'POST': {
       '200': 1
