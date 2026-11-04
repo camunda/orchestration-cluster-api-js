@@ -4401,6 +4401,12 @@ export type DecisionInstanceResult = {
     rootProcessInstanceKey: ProcessInstanceKey | null;
     state: DecisionInstanceStateEnum;
     /**
+     * The storage ordinal this decision instance's data belongs to. This is `null` for
+     * data exported before storage ordinals were introduced in version 8.11.
+     *
+     */
+    storageOrdinal: number | null;
+    /**
      * The tenant ID of the decision instance.
      */
     tenantId: TenantId;
@@ -5736,7 +5742,7 @@ export type ExpressionEvaluationRequest = {
     /**
      * Required when the expression references tenant-scoped cluster variables
      */
-    tenantId?: string;
+    tenantId?: TenantId;
     /**
      * Key of the process instance or element instance whose variables should be made visible
      * to the expression. Use a process instance key to evaluate against the process instance
@@ -9795,6 +9801,15 @@ export type ProcessInstanceCreationInstructionBase = {
         [key: string]: unknown;
     };
     /**
+     * Metadata of the variables, keyed by variable name. Use it to set how a variable is
+     * treated, for example to protect its value. A variable without an entry has no
+     * metadata.
+     *
+     */
+    variablesMetadata?: {
+        [key: string]: VariableMetadata;
+    };
+    /**
      * The tenant id of the process definition.
      * If multi-tenancy is enabled, provide the tenant id of the process definition to start a
      * process instance of. If multi-tenancy is disabled, don't provide this parameter.
@@ -10257,6 +10272,12 @@ export type ProcessInstanceResult = {
      * The business id associated with this process instance.
      */
     businessId: BusinessId | null;
+    /**
+     * The storage ordinal this process instance's data belongs to. This is `null` for
+     * data exported before storage ordinals were introduced in version 8.11.
+     *
+     */
+    storageOrdinal: number | null;
 };
 
 export type CancelProcessInstanceRequest = {
@@ -11918,6 +11939,127 @@ export const UserTaskStateEnum = {
   FAILED: 'FAILED',
 } as const;
 export type UserTaskStateEnum = (typeof UserTaskStateEnum)[keyof typeof UserTaskStateEnum];
+export type UserTaskLookupRequest = {
+    /**
+     * The names of the variables to return. If absent or empty, all variables visible to the user task are returned. A name without a matching variable is left out of the response.
+     *
+     */
+    fetchVariables?: Array<string>;
+};
+
+export type UserTaskLookupResult = {
+    /**
+     * The key of the user task.
+     */
+    userTaskKey: UserTaskKey;
+    state: UserTaskLookupStateEnum;
+    /**
+     * The element ID of the user task.
+     */
+    elementId: ElementId;
+    /**
+     * The key of the element instance.
+     */
+    elementInstanceKey: ElementInstanceKey;
+    /**
+     * The key of the process instance.
+     */
+    processInstanceKey: ProcessInstanceKey;
+    /**
+     * The key of the root process instance. The root process instance is the top-level
+     * ancestor in the process instance hierarchy. This field is only present for data
+     * belonging to process instance hierarchies created in version 8.9 or later.
+     *
+     */
+    rootProcessInstanceKey: ProcessInstanceKey | null;
+    /**
+     * The ID of the process definition.
+     */
+    processDefinitionId: ProcessDefinitionId;
+    /**
+     * The key of the process definition.
+     */
+    processDefinitionKey: ProcessDefinitionKey;
+    /**
+     * The version of the process definition.
+     */
+    processDefinitionVersion: number;
+    tenantId: TenantId;
+    /**
+     * The assignee of the user task. While the task is in the `CREATING` state, the assignee from the process model is not set yet.
+     *
+     */
+    assignee: string | null;
+    /**
+     * The candidate groups for this user task.
+     */
+    candidateGroups: Array<string>;
+    /**
+     * The candidate users for this user task.
+     */
+    candidateUsers: Array<string>;
+    /**
+     * The due date of the user task.
+     */
+    dueDate: string | null;
+    /**
+     * The follow-up date of the user task.
+     */
+    followUpDate: string | null;
+    /**
+     * The key of the form.
+     */
+    formKey: FormKey | null;
+    /**
+     * The external form reference.
+     */
+    externalFormReference: string | null;
+    /**
+     * Custom headers for the user task.
+     */
+    customHeaders: {
+        [key: string]: string;
+    };
+    /**
+     * The priority of the user task. The higher the value the higher the priority.
+     */
+    priority: number;
+    tags: TagSet;
+    /**
+     * The business ID of the owning process instance, inherited when the user task was
+     * created. This is `null` for user tasks whose owning process instance has no business ID.
+     *
+     */
+    businessId: BusinessId | null;
+    /**
+     * The creation date of the user task.
+     */
+    creationDate: string;
+    /**
+     * The variables visible to the user task, as a JSON object of name and value. If a name exists in several scopes, the value of the innermost scope is returned. Values are never truncated.
+     *
+     */
+    variables: {
+        [key: string]: unknown;
+    };
+};
+
+/**
+ * The lifecycle state of an active user task. A state ending in `-ING` means a change to the
+ * task is in progress, for example waiting for task listeners; the task fields still hold
+ * the values from before the change.
+ *
+ */
+export const UserTaskLookupStateEnum = {
+  CREATING: 'CREATING',
+  CREATED: 'CREATED',
+  ASSIGNING: 'ASSIGNING',
+  CLAIMING: 'CLAIMING',
+  UPDATING: 'UPDATING',
+  COMPLETING: 'COMPLETING',
+  CANCELING: 'CANCELING',
+} as const;
+export type UserTaskLookupStateEnum = (typeof UserTaskLookupStateEnum)[keyof typeof UserTaskLookupStateEnum];
 /**
  * The user task variable search filters.
  */
@@ -12198,9 +12340,7 @@ export type VariableFilter = {
      */
     processInstanceKey?: ProcessInstanceKeyFilterProperty;
     /**
-     * The protection applied to the variable. A variable matches when it has at least one of
-     * the given protection modes.
-     *
+     * The protection modes applied to the variable.
      */
     protectionMode?: ProtectionModeFilterProperty;
 };
@@ -12275,9 +12415,9 @@ export type VariableResultBase = {
      */
     rootProcessInstanceKey: ProcessInstanceKey | null;
     /**
-     * Metadata of this variable. `null` when the variable has no metadata.
+     * Metadata of this variable.
      */
-    metadata: VariableMetadata | null;
+    metadata: VariableMetadata;
 };
 
 /**
@@ -12303,7 +12443,7 @@ export const ProtectionModeEnum = {
 } as const;
 export type ProtectionModeEnum = (typeof ProtectionModeEnum)[keyof typeof ProtectionModeEnum];
 /**
- * ProtectionModeEnum property with the advanced search capability to match any of several values.
+ * ProtectionModeEnum property with full advanced search capabilities.
  */
 export type ProtectionModeFilterProperty = ProtectionModeExactMatch | AdvancedProtectionModeFilter;
 
@@ -12314,9 +12454,27 @@ export type ProtectionModeFilterProperty = ProtectionModeExactMatch | AdvancedPr
  */
 export type AdvancedProtectionModeFilter = {
     /**
+     * Checks if the variable has the provided protection mode.
+     */
+    $eq?: ProtectionModeEnum;
+    /**
+     * Checks if the variable does not have the provided protection mode.
+     */
+    $neq?: ProtectionModeEnum;
+    /**
+     * Checks if the variable has any protection mode. Use `false` to match the variables
+     * that are not protected.
+     *
+     */
+    $exists?: boolean;
+    /**
      * Checks if the variable has at least one of the provided protection modes.
      */
     $in?: Array<ProtectionModeEnum>;
+    /**
+     * Checks if the variable has none of the provided protection modes.
+     */
+    $notIn?: Array<ProtectionModeEnum>;
 };
 
 export type VariableValueFilterProperty = {
@@ -12340,6 +12498,15 @@ export type SetVariableRequest = {
      */
     variables: {
         [key: string]: unknown;
+    };
+    /**
+     * Metadata of the variables, keyed by variable name. Use it to set how a variable is
+     * treated, for example to protect its value. A variable without an entry keeps the
+     * metadata it has, or has none.
+     *
+     */
+    variablesMetadata?: {
+        [key: string]: VariableMetadata;
     };
     /**
      * If set to `true`, the variables are merged strictly into the local scope (as specified
@@ -23957,6 +24124,63 @@ export type GetUserTaskFormResponses = {
 
 export type GetUserTaskFormResponse = GetUserTaskFormResponses[keyof GetUserTaskFormResponses];
 
+export type LookupUserTaskData = {
+    body?: UserTaskLookupRequest;
+    path: {
+        /**
+         * The key of the user task to look up.
+         */
+        userTaskKey: UserTaskKeyWritable;
+    };
+    query?: never;
+    url: '/user-tasks/{userTaskKey}/lookup';
+};
+
+export type LookupUserTaskErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * No active user task with the given key is visible to the caller: the task doesn't exist, was already completed or canceled, or belongs to a tenant the caller isn't assigned to.
+     *
+     */
+    404: ProblemDetail;
+    /**
+     * The user task can't be looked up because its process instance is banned: it hit an unrecoverable error and can only be canceled. More details are provided in the response body.
+     *
+     */
+    409: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type LookupUserTaskError = LookupUserTaskErrors[keyof LookupUserTaskErrors];
+
+export type LookupUserTaskResponses = {
+    /**
+     * The user task and its variables are returned.
+     */
+    200: UserTaskLookupResult;
+};
+
+export type LookupUserTaskResponse = LookupUserTaskResponses[keyof LookupUserTaskResponses];
+
 export type SearchUserTaskVariablesData = {
     body?: UserTaskVariableSearchQueryRequest;
     path: {
@@ -24087,7 +24311,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:cf24fbbd9f4162529bcf49101695b57668fcac8763500a34454e35d2aeaf02d5
+// specHash=sha256:5301b35ddb5ad4d3e36e0747702387186ea0b659d33c9968aad3ab0646ff0b97
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
