@@ -4093,6 +4093,7 @@ export const zJobSearchResult = /*#__PURE__*/ (() => z.object({
     processInstanceKey: zProcessInstanceKey,
     rootProcessInstanceKey: zProcessInstanceKey.nullable(),
     businessId: zBusinessId.nullable(),
+    storageOrdinal: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).nullable(),
     retries: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'The amount of retries left to this job.'
     }),
@@ -6835,7 +6836,7 @@ export const zAuthorizationSearchResult = /*#__PURE__*/ (() => zSearchQueryRespo
 
 export const zOwnAuthorizationSearchResult = /*#__PURE__*/ (() => zAuthorizationSearchResult.and(z.object({
     authorizationsEnabled: z.boolean().register(z.globalRegistry, {
-        description: 'Indicates whether authorization checks are enabled for the cluster.'
+        description: 'Indicates whether authorization checks are enabled for the physical tenant of the request.'
     })
 })))();
 
@@ -7959,7 +7960,7 @@ export const zProcessInstanceCreationInstructionBase = /*#__PURE__*/ (() => z.ob
         description: 'JSON object that will instantiate the variables for the root variable scope\nof the process instance.\n'
     }).optional(),
     variablesMetadata: z.record(z.string(), zVariableMetadata).register(z.globalRegistry, {
-        description: 'Metadata of the variables, keyed by variable name. Use it to set how a variable is\ntreated, for example to protect its value. A variable without an entry has no\nmetadata.\n'
+        description: 'Metadata of the variables, keyed by variable name. Use it to set how a variable is\ntreated, for example to protect its value. Each key must be the name of a variable in\n`variables`. A variable without an entry has no metadata.\n'
     }).optional(),
     tenantId: zTenantId.optional(),
     operationReference: zOperationReference.optional(),
@@ -8047,7 +8048,7 @@ export const zVariableResultBase = /*#__PURE__*/ (() => z.object({
  */
 export const zVariableSearchResult = /*#__PURE__*/ (() => zVariableResultBase.and(z.object({
     value: z.string().register(z.globalRegistry, {
-        description: 'Value of this variable. Can be truncated.'
+        description: 'The value of this variable. Can be truncated or redacted.\n\nIf the value is truncated, `isTruncated` is `true` and the value contains only the\nbeginning of the full value.\n\nIf the variable is redacted, the value is set to `""` instead of the real value. Check\n`metadata.protectionModes` before you use the value: it contains `REDACT` for a redacted\nvariable.\n'
     }),
     isTruncated: z.boolean().register(z.globalRegistry, {
         description: 'Whether the value is truncated or not.'
@@ -8072,7 +8073,7 @@ export const zVariableSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryRespo
  */
 export const zVariableResult = /*#__PURE__*/ (() => zVariableResultBase.and(z.object({
     value: z.string().register(z.globalRegistry, {
-        description: 'Full value of this variable.'
+        description: 'The full value of this variable, or `""` if the variable is redacted.\n\nCheck `metadata.protectionModes` before you use the value: it contains `REDACT` for a\nredacted variable.\n'
     })
 })).register(z.globalRegistry, {
     description: 'Variable search response item.'
@@ -8111,7 +8112,7 @@ export const zSetVariableRequest = /*#__PURE__*/ (() => z.object({
         description: 'JSON object representing the variables to set in the element’s scope.'
     }),
     variablesMetadata: z.record(z.string(), zVariableMetadata).register(z.globalRegistry, {
-        description: 'Metadata of the variables, keyed by variable name. Use it to set how a variable is\ntreated, for example to protect its value. A variable without an entry keeps the\nmetadata it has, or has none.\n'
+        description: 'Metadata of the variables, keyed by variable name. Use it to set how a variable is\ntreated, for example to protect its value. Each key must be the name of a variable in\n`variables`. A variable without an entry keeps the metadata it has, or has none.\n'
     }).optional(),
     local: z.boolean().register(z.globalRegistry, {
         description: 'If set to `true`, the variables are merged strictly into the local scope (as specified\nby the `elementInstanceKey`). Otherwise, the variables are propagated to upper scopes\nand set at the outermost one.\n\nLet\'s consider the following example:\nThere are two scopes \'1\' and \'2\'. Scope \'1\' is the parent scope of \'2\'. The effective\nvariables of the scopes are:\n1 => { "foo" : 2 }\n2 => { "bar" : 1 }\n\nAn update request with elementInstanceKey as \'2\', variables { "foo": 5 }, and local set\nto `true` leaves scope \'1\' unchanged and adjusts scope \'2\' to { "bar": 1, "foo": 5 }. By\ndefault, with local set to `false`, scope \'1\' will be { "foo": 5 } and scope \'2\' will be\n{ "bar": 1 }.'

@@ -1664,7 +1664,7 @@ export type AdvancedActorTypeFilter = {
 
 export type OwnAuthorizationSearchResult = AuthorizationSearchResult & {
     /**
-     * Indicates whether authorization checks are enabled for the cluster.
+     * Indicates whether authorization checks are enabled for the physical tenant of the request.
      */
     authorizationsEnabled: boolean;
 };
@@ -7602,6 +7602,12 @@ export type JobSearchResult = {
      */
     businessId: BusinessId | null;
     /**
+     * The storage ordinal this job's data belongs to. This is `null` for
+     * data exported before storage ordinals were introduced in version 8.11.
+     *
+     */
+    storageOrdinal: number | null;
+    /**
      * The amount of retries left to this job.
      */
     retries: number;
@@ -9802,8 +9808,8 @@ export type ProcessInstanceCreationInstructionBase = {
     };
     /**
      * Metadata of the variables, keyed by variable name. Use it to set how a variable is
-     * treated, for example to protect its value. A variable without an entry has no
-     * metadata.
+     * treated, for example to protect its value. Each key must be the name of a variable in
+     * `variables`. A variable without an entry has no metadata.
      *
      */
     variablesMetadata?: {
@@ -12360,7 +12366,15 @@ export type VariableSearchQueryResult = SearchQueryResponse & {
  */
 export type VariableSearchResult = VariableResultBase & {
     /**
-     * Value of this variable. Can be truncated.
+     * The value of this variable. Can be truncated or redacted.
+     *
+     * If the value is truncated, `isTruncated` is `true` and the value contains only the
+     * beginning of the full value.
+     *
+     * If the variable is redacted, the value is set to `""` instead of the real value. Check
+     * `metadata.protectionModes` before you use the value: it contains `REDACT` for a redacted
+     * variable.
+     *
      */
     value: string;
     /**
@@ -12374,7 +12388,11 @@ export type VariableSearchResult = VariableResultBase & {
  */
 export type VariableResult = VariableResultBase & {
     /**
-     * Full value of this variable.
+     * The full value of this variable, or `""` if the variable is redacted.
+     *
+     * Check `metadata.protectionModes` before you use the value: it contains `REDACT` for a
+     * redacted variable.
+     *
      */
     value: string;
 };
@@ -12501,8 +12519,8 @@ export type SetVariableRequest = {
     };
     /**
      * Metadata of the variables, keyed by variable name. Use it to set how a variable is
-     * treated, for example to protect its value. A variable without an entry keeps the
-     * metadata it has, or has none.
+     * treated, for example to protect its value. Each key must be the name of a variable in
+     * `variables`. A variable without an entry keeps the metadata it has, or has none.
      *
      */
     variablesMetadata?: {
@@ -24311,7 +24329,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:5301b35ddb5ad4d3e36e0747702387186ea0b659d33c9968aad3ab0646ff0b97
+// specHash=sha256:24ae1ee7781ef7d83d91ce87161d69eb57be972250076993fd23216f4759ed63
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
