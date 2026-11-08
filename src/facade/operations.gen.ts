@@ -88,12 +88,10 @@ type _cancelProcessInstancesBatchOperation_Body = CancelProcessInstancesBatchOpe
  * Cancel process instances (batch)
  *
  * Cancels multiple active or suspended process instances.
- * Only ACTIVE and SUSPENDED root instances can be cancelled. A state filter narrows the batch
- * to the given states. Requesting any state other than ACTIVE or SUSPENDED through the `$eq` or
- * `$in` operators is rejected. Other state operators (`$neq`, `$exists`, `$like`) are applied as
- * given, and the batch remains limited to ACTIVE and SUSPENDED instances. Without a state filter,
- * both ACTIVE and SUSPENDED instances are selected. Any given filter for parentProcessInstanceKey
- * is ignored and overridden during this batch operation.
+ * Only ACTIVE and SUSPENDED root instances are cancelled; child instances are cancelled
+ * together with their root instance. The given filter only narrows the batch, so a filter on
+ * parentProcessInstanceKey matches no instances. Other `state` operators (`$neq`, `$notIn`,
+ * `$exists`, `$like`) are applied as given and are not validated.
  * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
  *
   *
@@ -1330,10 +1328,10 @@ type _resumeProcessInstancesBatchOperation_Body = ResumeProcessInstancesBatchOpe
  * Resume process instances (batch)
  *
  * Resumes multiple suspended process instances.
- * Any given filter for state or parentProcessInstanceKey is ignored and overridden, as only
- * SUSPENDED process instances can be resumed and resumption does not cascade between parent
- * and child instances, so child instances are resumed independently of their parent or root
- * instance.
+ * Only SUSPENDED process instances are resumed. The given filter only narrows the batch.
+ * Other `state` operators (`$neq`, `$notIn`, `$exists`, `$like`) are applied as given and are
+ * not validated. Resumption does not cascade, so child instances are resumed independently of their parent
+ * or root instance.
  * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
  *
   *
@@ -2302,10 +2300,10 @@ type _suspendProcessInstancesBatchOperation_Body = SuspendProcessInstancesBatchO
  * Suspend process instances (batch)
  *
  * Suspends multiple running process instances.
- * Any given filter for state or parentProcessInstanceKey is ignored and overridden, as only
- * ACTIVE process instances can be suspended and suspension does not cascade between parent
- * and child instances, so child instances are suspended independently of their parent or
- * root instance.
+ * Only ACTIVE process instances are suspended. The given filter only narrows the batch.
+ * Other `state` operators (`$neq`, `$notIn`, `$exists`, `$like`) are applied as given and are
+ * not validated. Suspension does not cascade, so child instances are suspended independently of their parent
+ * or root instance.
  * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
  *
   *
@@ -7416,4 +7414,4 @@ export function updateUserTask(options?: Parameters<typeof _updateUserTask>[0]):
   return toCancelable(signal => _updateUserTask({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
-// SENTINEL_FACADE_PREWRITE hash=e34114c2108ee325 totalWrappers=244 elements=1508 physicalLines=3910
+// SENTINEL_FACADE_PREWRITE hash=00ec55ba24c4dcd0 totalWrappers=244 elements=1508 physicalLines=3908

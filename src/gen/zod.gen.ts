@@ -6901,7 +6901,7 @@ export const zAuthorizationSearchResult = /*#__PURE__*/ (() => zSearchQueryRespo
 
 export const zOwnAuthorizationSearchResult = /*#__PURE__*/ (() => zAuthorizationSearchResult.and(z.object({
     authorizationsEnabled: z.boolean().register(z.globalRegistry, {
-        description: 'Indicates whether authorization checks are enabled for the cluster.'
+        description: 'Indicates whether authorization checks are enabled for the physical tenant of the request.'
     })
 })))();
 
@@ -7039,8 +7039,7 @@ export const zIncidentProcessInstanceStatisticsByDefinitionQueryResult = /*#__PU
 export const zJobTypeStatisticsQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zJobTypeStatisticsItem).register(z.globalRegistry, {
         description: 'The list of job type statistics items.'
-    }),
-    page: zSearchQueryPageResponse
+    })
 })).register(z.globalRegistry, {
     description: 'Job type statistics query result.'
 }))();
@@ -7051,8 +7050,7 @@ export const zJobTypeStatisticsQueryResult = /*#__PURE__*/ (() => zSearchQueryRe
 export const zJobWorkerStatisticsQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zJobWorkerStatisticsItem).register(z.globalRegistry, {
         description: 'The list of per-worker statistics items.'
-    }),
-    page: zSearchQueryPageResponse
+    })
 })).register(z.globalRegistry, {
     description: 'Job worker statistics query result.'
 }))();
@@ -7063,8 +7061,7 @@ export const zJobWorkerStatisticsQueryResult = /*#__PURE__*/ (() => zSearchQuery
 export const zJobTimeSeriesStatisticsQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zJobTimeSeriesStatisticsItem).register(z.globalRegistry, {
         description: 'The list of time-bucketed statistics items, ordered ascending by time.'
-    }),
-    page: zSearchQueryPageResponse
+    })
 })).register(z.globalRegistry, {
     description: 'Job time-series statistics query result.'
 }))();
@@ -7075,8 +7072,7 @@ export const zJobTimeSeriesStatisticsQueryResult = /*#__PURE__*/ (() => zSearchQ
 export const zJobErrorStatisticsQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
     items: z.array(zJobErrorStatisticsItem).register(z.globalRegistry, {
         description: 'The list of per-error statistics items.'
-    }),
-    page: zSearchQueryPageResponse
+    })
 })).register(z.globalRegistry, {
     description: 'Job error statistics query result.'
 }))();

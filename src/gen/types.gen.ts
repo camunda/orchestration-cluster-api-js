@@ -1664,7 +1664,7 @@ export type AdvancedActorTypeFilter = {
 
 export type OwnAuthorizationSearchResult = AuthorizationSearchResult & {
     /**
-     * Indicates whether authorization checks are enabled for the cluster.
+     * Indicates whether authorization checks are enabled for the physical tenant of the request.
      */
     authorizationsEnabled: boolean;
 };
@@ -6986,7 +6986,6 @@ export type JobTypeStatisticsQueryResult = SearchQueryResponse & {
      * The list of job type statistics items.
      */
     items: Array<JobTypeStatisticsItem>;
-    page: SearchQueryPageResponse;
 };
 
 /**
@@ -7045,7 +7044,6 @@ export type JobWorkerStatisticsQueryResult = SearchQueryResponse & {
      * The list of per-worker statistics items.
      */
     items: Array<JobWorkerStatisticsItem>;
-    page: SearchQueryPageResponse;
 };
 
 /**
@@ -7106,7 +7104,6 @@ export type JobTimeSeriesStatisticsQueryResult = SearchQueryResponse & {
      * The list of time-bucketed statistics items, ordered ascending by time.
      */
     items: Array<JobTimeSeriesStatisticsItem>;
-    page: SearchQueryPageResponse;
 };
 
 /**
@@ -7169,7 +7166,6 @@ export type JobErrorStatisticsQueryResult = SearchQueryResponse & {
      * The list of per-error statistics items.
      */
     items: Array<JobErrorStatisticsItem>;
-    page: SearchQueryPageResponse;
 };
 
 /**
@@ -18904,7 +18900,7 @@ export type CancelProcessInstancesBatchOperationData = {
 
 export type CancelProcessInstancesBatchOperationErrors = {
     /**
-     * The process instance batch operation failed. More details are provided in the response body.
+     * The process instance batch operation failed, for example because the filter requests a top-level `state` other than ACTIVE or SUSPENDED through `$eq` or `$in`. States inside `$or` branches are not validated. More details are provided in the response body.
      *
      */
     400: ProblemDetail;
@@ -19094,7 +19090,7 @@ export type ResumeProcessInstancesBatchOperationData = {
 
 export type ResumeProcessInstancesBatchOperationErrors = {
     /**
-     * The process instance batch operation failed. More details are provided in the response body.
+     * The process instance batch operation failed, for example because the filter requests a top-level `state` other than SUSPENDED through `$eq` or `$in`. States inside `$or` branches are not validated. More details are provided in the response body.
      *
      */
     400: ProblemDetail;
@@ -19169,7 +19165,7 @@ export type SuspendProcessInstancesBatchOperationData = {
 
 export type SuspendProcessInstancesBatchOperationErrors = {
     /**
-     * The process instance batch operation failed. More details are provided in the response body.
+     * The process instance batch operation failed, for example because the filter requests a top-level `state` other than ACTIVE through `$eq` or `$in`. States inside `$or` branches are not validated. More details are provided in the response body.
      *
      */
     400: ProblemDetail;
@@ -23920,7 +23916,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:eba57690d118049a54c27cd2d56cceeb9cd18e26301aa9dae329247a49362651
+// specHash=sha256:4f859bb25976a5cb65013e1576979c4f636052de039093f0c258de6752ccc10d
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
