@@ -68,8 +68,6 @@ describe('mTLS config precedence', () => {
     fs.writeFileSync(certPath, CERT);
     fs.writeFileSync(keyPath, KEY);
     fs.writeFileSync(caPath, CA);
-    // Simulate facade creating an agent by stubbing global variable used in integration
-    (globalThis as any).__CAMUNDA_MTLS_AGENT = { dummy: true };
     const spy = vi.fn(
       async () =>
         new Response(JSON.stringify({ ok: true }), {
@@ -89,6 +87,5 @@ describe('mTLS config precedence', () => {
 
     await camunda.getLicense();
     expect(spy).toHaveBeenCalledTimes(1);
-    delete (globalThis as any).__CAMUNDA_MTLS_AGENT;
   });
 });

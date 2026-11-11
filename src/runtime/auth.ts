@@ -1,5 +1,6 @@
 import { type Clock, liveClock } from './clock';
 import type { Logger } from './logger';
+import { type FetchLike, withMtls } from './mtls';
 import { liveRandom, type RandomSource } from './random';
 import type {
   TelemetryAuthErrorEvent,
@@ -374,6 +375,8 @@ export function createAuthFacade(
     correlationProvider?: () => string | undefined;
     clock?: Clock;
     random?: RandomSource;
+    /** The supplied fetch already applies the mTLS config (set by CamundaCore). */
+    mtlsApplied?: boolean;
   }
 ): AuthFacade {
   const cfg = config;
@@ -405,40 +408,21 @@ export function createAuthFacade(
       opts?.random ?? liveRandom
     );
   else if (cfg.auth.strategy === 'BASIC') basic = new BasicAuthManager(cfg);
-  const fetcher = (input: RequestInfo, init?: RequestInit) =>
+  // mTLS (Node): Node's fetch ignores an https.Agent; TLS material must travel as an
+  // undici dispatcher (#540). CamundaCore passes a fetch that already applies mTLS.
+  let withAgent: (input: RequestInfo, init?: RequestInit) => Promise<Response> = (input, init) =>
     opts?.fetch ? opts.fetch(input, init) : fetch(input, init);
-  // mTLS: if in Node and mtls config present, create https.Agent and augment fetch with agent option.
-  let nodeAgent: any = null;
-  if (cfg.mtls && node && typeof process !== 'undefined' && process.versions?.node) {
+  if (cfg.mtls && !opts?.mtlsApplied) {
     try {
-      const { fs, https } = node;
-      const material: any = {};
-      // Inline PEM wins; otherwise read from the configured path.
-      const pem = (inline?: string, path?: string) =>
-        inline || (path ? fs.readFileSync(path, 'utf8') : inline);
-      if (cfg.mtls.cert || cfg.mtls.certPath) material.cert = pem(cfg.mtls.cert, cfg.mtls.certPath);
-      if (cfg.mtls.key || cfg.mtls.keyPath) material.key = pem(cfg.mtls.key, cfg.mtls.keyPath);
-      if (cfg.mtls.ca || cfg.mtls.caPath) material.ca = pem(cfg.mtls.ca, cfg.mtls.caPath);
-      if (cfg.mtls.keyPassphrase) material.passphrase = cfg.mtls.keyPassphrase;
-      nodeAgent = new https.Agent(material);
-      // Expose for request layer reuse without import cycles.
-      try {
-        (globalThis as any).__CAMUNDA_MTLS_AGENT = nodeAgent;
-      } catch {}
+      const mtlsFetch = withMtls(cfg, opts?.fetch as FetchLike | undefined);
+      if (mtlsFetch) withAgent = mtlsFetch as typeof withAgent;
     } catch (e) {
       authLogger.warn(
-        'Failed to create mTLS agent – proceeding without mTLS',
+        'Failed to load mTLS material – proceeding without mTLS',
         (e as any)?.message || e
       );
     }
   }
-  const withAgent = async (input: RequestInfo, init?: RequestInit) => {
-    if (nodeAgent) {
-      // @ts-ignore Node fetch agent injection
-      return fetcher(input, { ...(init || {}), agent: nodeAgent });
-    }
-    return fetcher(input, init);
-  };
   return {
     async getAuthHeaders() {
       const h: Record<string, string> = {};
