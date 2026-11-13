@@ -272,6 +272,29 @@ describe('sentinel-secret regression test', () => {
     }
   });
 
+  it('keeps the enumerable fields of an Error, at any depth', () => {
+    // An error that carries a credential in a field of its own (an HTTP client error holding
+    // the request or response it failed on) must be rendered with that field, or a leak
+    // through it would pass the assertion.
+    const value = SENTINELS.CAMUNDA_CLIENT_SECRET;
+    const withField = (field: Record<string, unknown>) => Object.assign(new Error('boom'), field);
+    const planted: Array<[string, unknown]> = [
+      ['a field of a nested error', withField({ response: { client_secret: value } })],
+      ['a field of the thrown error', withField({ config: { password: value } })],
+      ['a field of an error cause', new Error('outer', { cause: withField({ detail: value }) })],
+      ['an error held in a field of an error', withField({ inner: withField({ token: value }) })],
+      ['an error inside an array', [withField({ extra: [value] })]],
+    ];
+    for (const [label, err] of planted) {
+      const nested = makeSinks();
+      nested.logTransport({ level: 'error', scope: 'x', args: ['boom', err] });
+      expect(() => expectNoLeak(nested.text(), 'a fixture'), `nested: ${label}`).toThrow();
+      const thrown = makeSinks();
+      thrown.captureError(err);
+      expect(() => expectNoLeak(thrown.text(), 'a fixture'), `thrown: ${label}`).toThrow();
+    }
+  });
+
   it('does not hide a repeated object as circular', () => {
     // A cycle set shared across events would replace the second sighting of an ordinary
     // object with [Circular] and hide whatever it had acquired since.
