@@ -185,13 +185,17 @@ function redactJsonValue(value: unknown, seen: WeakSet<object>): unknown {
 }
 
 /**
- * Last-resort textual sweep for a body that is neither valid JSON nor form-encoded — for
- * example a JSON payload already truncated by a size cap. Matches `"name": "value"` and
- * `name=value` for the known credential field names only.
+ * Textual sweep for a body that is not valid JSON, and a second pass over one that is not
+ * form-encoded either. Matches `"name": "value"` and `name=value` for the known credential
+ * field names only.
+ *
+ * The quoted-value pattern accepts a *missing* closing quote, because a body truncated
+ * mid-credential (`{"access_token":"abc`) would otherwise not match and the credential
+ * would survive the sweep.
  */
 function redactBodyText(body: string): string {
   let out = body.replace(
-    /("([A-Za-z0-9_]+)"\s*:\s*)"(?:[^"\\]|\\.)*"/g,
+    /("([A-Za-z0-9_]+)"\s*:\s*)"(?:[^"\\]|\\.)*("|$)/g,
     (match, prefix: string, name: string) =>
       isSecretBodyField(name) ? `${prefix}"${BODY_REDACTED}"` : match
   );
@@ -221,8 +225,11 @@ export function redactBodyPreview(body: string): string {
         // Not parseable (truncated, or not JSON after all) — fall through to the sweep.
       }
     }
-    if (!trimmed.includes('{') && trimmed.includes('=')) return redactFormBody(body);
-    return redactBodyText(body);
+    // Form redaction first (it understands percent-encoded keys), then the textual sweep
+    // unconditionally: free-form text such as an error page can embed `client_secret=…`
+    // outside any form pair, and the sweep is what catches that.
+    const formFirst = !trimmed.includes('{') && trimmed.includes('=') ? redactFormBody(body) : body;
+    return redactBodyText(formFirst);
   } catch {
     // Never let redaction failure hand the caller the unredacted body.
     return '[body preview omitted: redaction failed]';
@@ -298,7 +305,11 @@ export function wrapFetch(
           else if (typeof FormData !== 'undefined' && body instanceof FormData) {
             const entries: string[] = [];
             for (const [k, v] of (body as any).entries()) {
-              entries.push(`${k}=${typeof v === 'string' ? v.slice(0, 200) : '[File]'}`);
+              // Redact per entry, before joining: the values are not escaped, so a
+              // credential containing `&` would otherwise survive as a trailing fragment
+              // of the joined string.
+              if (isSecretBodyField(String(k))) entries.push(`${k}=${BODY_REDACTED}`);
+              else entries.push(`${k}=${typeof v === 'string' ? v.slice(0, 200) : '[File]'}`);
             }
             bodyPreview = entries.join('&');
           } else if (body instanceof Blob) {

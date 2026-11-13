@@ -67,6 +67,29 @@ describe('redactBodyPreview', () => {
     expect(out).not.toContain(TOKEN);
   });
 
+  it('masks a JSON body truncated in the middle of the credential itself', () => {
+    // No closing quote on the value: the structural parse fails and the textual sweep has
+    // to cope with an unterminated string, or the credential survives.
+    const body = `{"expires_in":300,"access_token":"${TOKEN.slice(0, 20)}`;
+    const out = redactBodyPreview(body);
+    expect(out).not.toContain(TOKEN.slice(0, 20));
+  });
+
+  it('masks a credential embedded in free-form text', () => {
+    // An error page or plain-text response is neither JSON nor a form body.
+    const body = `OAuth failure for request 42: client_secret=${SECRET} was rejected`;
+    const out = redactBodyPreview(body);
+    expect(out).not.toContain(SECRET);
+    expect(out).toContain('OAuth failure for request 42');
+  });
+
+  it('masks a form credential whose value is percent-encoded', () => {
+    const body = `grant_type=x&password=${encodeURIComponent(`prefix&${SECRET}`)}`;
+    const out = redactBodyPreview(body);
+    expect(out).not.toContain(SECRET);
+    expect(out).not.toContain(encodeURIComponent(SECRET));
+  });
+
   it('leaves a body with no credential field untouched', () => {
     const body = JSON.stringify({ processDefinitionKey: '123', variables: { a: 1 } });
     expect(redactBodyPreview(body)).toBe(body);
@@ -90,6 +113,24 @@ describe('silly-level previews through wrapFetch', () => {
     };
     return self;
   }
+
+  it('redacts a FormData credential whose value contains an ampersand', async () => {
+    // The FormData preview joins `k=v` pairs without escaping, so a value containing `&`
+    // would survive as a trailing fragment unless each entry is redacted before the join.
+    const lines: string[] = [];
+    const orig = vi.fn(async () => new Response('{}', { status: 200 }));
+    const wrapped = wrapFetch(orig as any, { logger: sillyLogger(lines), mirrorToLog: true });
+
+    const form = new FormData();
+    form.set('grant_type', 'client_credentials');
+    form.set('password', `prefix&${SECRET}`);
+    await wrapped('https://mock.local/v2/thing', { method: 'POST', body: form as any });
+
+    const all = lines.join('\n');
+    expect(all).toContain('http.body');
+    expect(all).not.toContain(SECRET);
+    expect(all).toContain('grant_type=client_credentials');
+  });
 
   it('redacts the token request body and the token response body', async () => {
     const lines: string[] = [];
