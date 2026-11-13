@@ -1,3 +1,4 @@
+import { inspect } from 'node:util';
 import { describe, expect, it, vi } from 'vitest';
 import { createCamundaClient, ProcessDefinitionKey } from '../src';
 import { CamundaAuthError, createAuthFacade } from '../src/runtime/auth';
@@ -72,30 +73,35 @@ function leakForms(value: string): string[] {
 function renderValue(value: unknown): string {
   const seen = new WeakSet<object>();
   // The error's own enumerable fields come first and are kept (an HTTP client error holds the
-  // request or response it failed on); the replacer then expands any Error nested inside them.
+  // request or response it failed on). Nothing is expanded eagerly: `cause` and every field
+  // are handed back to the replacer, which expands any Error it meets, so a cycle is cut by
+  // the same visited set as for any other object.
   const expandError = (e: Error): Record<string, unknown> => ({
     ...e,
     __error: e.name,
     message: e.message,
     stack: e.stack,
-    cause: (e as any).cause instanceof Error ? expandError((e as any).cause) : (e as any).cause,
+    cause: (e as any).cause,
   });
-  const normalize = (v: unknown): unknown => (v instanceof Error ? expandError(v) : v);
 
   if (typeof value === 'string') return value;
   try {
     return (
-      JSON.stringify(normalize(value), (_k, v) => {
-        const normalized = normalize(v);
-        if (normalized && typeof normalized === 'object') {
-          if (seen.has(normalized)) return '[Circular]';
-          seen.add(normalized);
+      JSON.stringify(value, (_k, v) => {
+        // Track the original object, before it is expanded: an expanded Error is a fresh
+        // object each time, so tracking that would never see a cycle.
+        if (v && typeof v === 'object') {
+          if (seen.has(v)) return '[Circular]';
+          seen.add(v);
         }
-        return typeof normalized === 'bigint' ? String(normalized) : normalized;
+        const out = v instanceof Error ? expandError(v) : v;
+        return typeof out === 'bigint' ? String(out) : out;
       }) ?? String(value)
     );
   } catch {
-    return String(value);
+    // Never fall back to `String(value)`: for an Error that is just its message, which would
+    // let a credential held in a field pass unseen. `inspect` keeps fields and handles cycles.
+    return inspect(value, { depth: null, showHidden: false });
   }
 }
 
