@@ -184,24 +184,57 @@ function redactJsonValue(value: unknown, seen: WeakSet<object>): unknown {
   }
 }
 
+/** Decode the content of a JSON string literal; fall back to the raw text if it is malformed. */
+function decodeJsonKey(raw: string): string {
+  try {
+    return JSON.parse(`"${raw}"`) as string;
+  } catch {
+    return raw;
+  }
+}
+
 /**
  * Textual sweep for a body that is not valid JSON, and a second pass over one that is not
- * form-encoded either. Matches `"name": "value"` and `name=value` for the known credential
+ * form-encoded either. Matches `"name": value` and `name=value` for the known credential
  * field names only.
+ *
+ * Property names are matched as JSON string literals and decoded before the lookup, so an
+ * escaped name such as `"access\u005ftoken"` is recognised like its decoded form.
  *
  * The quoted-value pattern accepts a *missing* closing quote, because a body truncated
  * mid-credential (`{"access_token":"abc`) would otherwise not match and the credential
  * would survive the sweep. For the same reason the string body may end in a lone backslash
  * (a cut between the two characters of an escape such as `\"`), which is still credential.
+ * A non-string value (`"password":12345`) is masked up to the next delimiter.
+ *
+ * For `name=value` the value is the whole quoted string if it starts with a quote;
+ * otherwise everything up to the next `&` (the pair separator of forms and query strings)
+ * or the end of the line. Prose has no other reliable boundary: stopping at the first
+ * space would leave the tail of `password=two words` or the token of
+ * `authorization=Bearer <token>` in the log, so where the boundary cannot be known the
+ * sweep masks to the end of the line rather than guess.
+ *
+ * The name is anchored to the start of a run of name characters (a preceding delimiter,
+ * which is kept) so that a long alphanumeric run without an `=` is scanned once, not once
+ * per starting position.
  */
 function redactBodyText(body: string): string {
   let out = body.replace(
-    /("([A-Za-z0-9_]+)"\s*:\s*)"(?:[^"\\]|\\[\s\S])*\\?("|$)/g,
+    /("((?:[^"\\]|\\[\s\S])*)"\s*:\s*)(?:"(?:[^"\\]|\\[\s\S])*\\?(?:"|$)|[^,}\]\s"][^,}\]\s]*)/g,
     (match, prefix: string, name: string) =>
-      isSecretBodyField(name) ? `${prefix}"${BODY_REDACTED}"` : match
+      isSecretBodyField(decodeJsonKey(name)) ? `${prefix}"${BODY_REDACTED}"` : match
   );
-  out = out.replace(/([A-Za-z0-9_%+.-]+)=([^&\s]*)/g, (match, name: string, _v: string) =>
-    isSecretBodyField(name) ? `${name}=${BODY_REDACTED}` : match
+  out = out.replace(
+    /(^|[^A-Za-z0-9_%+.-])([A-Za-z0-9_%+.-]+)=("(?:[^"\\]|\\[\s\S])*\\?(?:"|$)|'[^']*(?:'|$)|[^&\r\n]*)/g,
+    (match, delim: string, name: string) => {
+      let decoded = name;
+      try {
+        decoded = decodeURIComponent(name.replace(/\+/g, ' '));
+      } catch {
+        /* keep the raw name */
+      }
+      return isSecretBodyField(decoded) ? `${delim}${name}=${BODY_REDACTED}` : match;
+    }
   );
   return out;
 }
@@ -228,8 +261,10 @@ export function redactBodyPreview(body: string): string {
     }
     // Form redaction first (it understands percent-encoded keys), then the textual sweep
     // unconditionally: free-form text such as an error page can embed `client_secret=…`
-    // outside any form pair, and the sweep is what catches that.
-    const formFirst = !trimmed.includes('{') && trimmed.includes('=') ? redactFormBody(body) : body;
+    // outside any form pair, and the sweep is what catches that. The form pass does not
+    // depend on the body being brace-free: a brace in one value says nothing about whether
+    // another key is a percent-encoded credential name.
+    const formFirst = trimmed.includes('=') ? redactFormBody(body) : body;
     return redactBodyText(formFirst);
   } catch {
     // Never let redaction failure hand the caller the unredacted body.
@@ -295,7 +330,12 @@ export function wrapFetch(
         let body: any = init?.body;
         if (body === undefined && typeof Request !== 'undefined' && input instanceof Request) {
           try {
-            body = await (input as Request).clone().text();
+            const cloned = (input as Request).clone();
+            // A multipart Request body is raw boundary-delimited text; reading it as a
+            // FormData lets the per-entry masking below see each field.
+            body = /multipart\/form-data/i.test(cloned.headers.get('content-type') || '')
+              ? await cloned.formData()
+              : await cloned.text();
           } catch {
             body = undefined;
           }
