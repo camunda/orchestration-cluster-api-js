@@ -95,6 +95,49 @@ describe('hydrated config secret redaction on stringify and inspect', () => {
     }
   });
 
+  // `getters: true` makes util.inspect invoke accessors, so an accessor that returns the raw
+  // override map would print every credential the caller passed in.
+  it('getter-enabled inspection of the client does not print a secret value', () => {
+    const client = createCamundaClient({
+      config: envWithAllSecrets() as any,
+      fetch: (async () => new Response('{}', { status: 200 })) as any,
+    });
+
+    const text = inspect(client, { depth: null, showHidden: true, getters: true });
+    for (const key of secretKeys()) {
+      expect(text, `${key} value leaked through a getter-enabled inspect`).not.toContain(
+        sentinelFor(key)
+      );
+    }
+  });
+
+  // Hydration trims some credentials (the OAuth client secret, the basic-auth password), so
+  // the hydrated config holds a different string from the one the caller supplied. Redaction
+  // must cover the trimmed form, not only the supplied one.
+  it('redacts credentials supplied with surrounding whitespace', () => {
+    const padded: Record<string, string> = envWithAllSecrets();
+    for (const k of secretKeys()) padded[k] = `  ${sentinelFor(k)}\n`;
+    const client = createCamundaClient({
+      config: padded as any,
+      fetch: (async () => new Response('{}', { status: 200 })) as any,
+    });
+
+    const json = JSON.stringify(client.config);
+    const text = inspect(client.config, { depth: null, showHidden: false });
+    const clientText = inspect(client, { depth: null, showHidden: true, getters: true });
+    for (const key of secretKeys()) {
+      expect(json, `${key} leaked through JSON.stringify when padded`).not.toContain(
+        sentinelFor(key)
+      );
+      expect(text, `${key} leaked through util.inspect(config) when padded`).not.toContain(
+        sentinelFor(key)
+      );
+      expect(clientText, `${key} leaked through util.inspect(client) when padded`).not.toContain(
+        sentinelFor(key)
+      );
+    }
+  });
+
   it('keeps the override map working for reconfiguration while off the instance', () => {
     const client: any = createCamundaClient({
       config: envWithAllSecrets() as any,
