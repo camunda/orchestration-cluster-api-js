@@ -144,9 +144,24 @@ export class ThreadPool {
       },
     });
 
-    pw.worker.postMessage({ type: 'job', taskId, jobData, handlerModule, clientPort: workerPort }, [
-      workerPort,
-    ]);
+    try {
+      pw.worker.postMessage(
+        { type: 'job', taskId, jobData, handlerModule, clientPort: workerPort },
+        [workerPort]
+      );
+    } catch (err) {
+      // The thread never received the task (typically a DataCloneError on a payload that
+      // cannot be cloned), so nothing will ever answer it. Undo everything registered above
+      // so the thread is not left busy, the task is not left pending and the ports do not
+      // leak. The task is dropped without invoking its callbacks: the failure is reported
+      // to the caller by this rejection alone, so the caller settles the job exactly once.
+      this._pending.delete(taskId);
+      pw.busy = false;
+      pw.currentTaskId = undefined;
+      mainPort.close();
+      workerPort.close();
+      throw err;
+    }
   }
 
   /** Terminate all threads and reject any in-flight tasks. */
