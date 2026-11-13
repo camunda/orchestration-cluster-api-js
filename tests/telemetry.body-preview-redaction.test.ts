@@ -155,21 +155,48 @@ describe('redactBodyPreview', () => {
     expect(out).toContain('extra={}');
   });
 
-  it('does not take quadratic time on long text without an assignment', () => {
-    // A name matcher that is not anchored to the start of a name run re-scans the remainder
-    // of the run from every position. The ratio between two sizes keeps the assertion about
-    // the growth rate, not about the speed of the machine it runs on.
-    const time = (n: number) => {
-      const body = 'a'.repeat(n);
-      const t0 = performance.now();
-      redactBodyPreview(body);
-      return performance.now() - t0;
-    };
-    time(20_000); // warm up
-    const small = Math.max(time(40_000), 1);
-    const large = time(160_000);
-    // 4x the input: linear is about 4x, quadratic about 16x.
-    expect(large / small).toBeLessThan(10);
+  it('masks a credential nested inside a non-secret value of truncated JSON', () => {
+    // The sweep must look inside a non-secret property's value, not consume it whole.
+    for (const body of [
+      `{"nested":{"access_token":"${TOKEN}"},"tru`,
+      `{"a":{"b":{"password":"${SECRET}"}},"tru`,
+      `[{"client_secret":"${SECRET}"},{"x":"tru`,
+      `{"list":[{"refresh_token":"${REFRESH}"}],"tru`,
+    ]) {
+      const out = redactBodyPreview(body);
+      for (const secret of [TOKEN, SECRET, REFRESH]) {
+        expect(out, `${body} -> ${out}`).not.toContain(secret);
+      }
+    }
+  });
+
+  it('masks a credential that follows an unrelated assignment in free text', () => {
+    // A non-secret assignment must not swallow the rest of the line, or a credential after
+    // it is never examined.
+    for (const body of [
+      `OAuth failure: request=42 client_secret=${SECRET} was rejected`,
+      `OAuth failure: a=b=client_secret=${SECRET}`,
+      `retry=3 user=alice password="${SECRET}" host=x`,
+      `trace=1 authorization=Bearer ${TOKEN}`,
+    ]) {
+      const out = redactBodyPreview(body);
+      expect(out, `${body} -> ${out}`).not.toContain(SECRET);
+      expect(out, `${body} -> ${out}`).not.toContain(TOKEN);
+    }
+    expect(redactBodyPreview(`request=42 client_secret=${SECRET}`)).toContain('request=42');
+  });
+
+  it('scans a large body without an assignment in linear time', () => {
+    // A name matcher that is not anchored to the start of a name run re-scans the rest of
+    // the run from every position: tens of seconds at this size, against milliseconds for a
+    // linear scan. There is deliberately no assertion on elapsed time (that would make the
+    // outcome depend on machine load); the size makes a quadratic matcher exceed the test
+    // timeout by orders of magnitude, so the timeout is only the safety net, and the
+    // assertion below is on the result.
+    for (const unit of ['a', 'a1_', 'ab-cd.', 'x%20y']) {
+      const body = unit.repeat(Math.ceil(200_000 / unit.length));
+      expect(redactBodyPreview(body)).toBe(body);
+    }
   });
 
   it('leaves a body with no credential field untouched', () => {
