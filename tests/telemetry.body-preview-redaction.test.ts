@@ -186,16 +186,38 @@ describe('redactBodyPreview', () => {
     expect(redactBodyPreview(`request=42 client_secret=${SECRET}`)).toContain('request=42');
   });
 
-  it('scans a large body without an assignment in linear time', () => {
-    // A name matcher that is not anchored to the start of a name run re-scans the rest of
-    // the run from every position: tens of seconds at this size, against milliseconds for a
-    // linear scan. There is deliberately no assertion on elapsed time (that would make the
-    // outcome depend on machine load); the size makes a quadratic matcher exceed the test
-    // timeout by orders of magnitude, so the timeout is only the safety net, and the
-    // assertion below is on the result.
+  it('reads each character of a long name run a bounded number of times', () => {
+    // A deterministic work count, not a timing: the assignment scan reads characters with
+    // `charCodeAt`, so the number of calls is a direct measure of how much it scans. A
+    // matcher that re-scans a run from every position would make this count grow with the
+    // square of the length. The counter aborts the scan once the budget is spent, so a
+    // regression fails fast instead of running for minutes. (A body with no `=` and no
+    // braces reaches only that scan.)
+    const original = String.prototype.charCodeAt;
+    const measure = (body: string, budget: number) => {
+      let count = 0;
+      String.prototype.charCodeAt = function (this: string, index: number) {
+        if (++count > budget) throw new Error('scan budget exceeded');
+        return original.call(this, index);
+      };
+      let result: string;
+      try {
+        result = redactBodyPreview(body);
+      } finally {
+        String.prototype.charCodeAt = original;
+      }
+      return { count, result };
+    };
+
     for (const unit of ['a', 'a1_', 'ab-cd.', 'x%20y']) {
-      const body = unit.repeat(Math.ceil(200_000 / unit.length));
-      expect(redactBodyPreview(body)).toBe(body);
+      const body = unit.repeat(Math.ceil(20_000 / unit.length));
+      const { count, result } = measure(body, 4 * body.length);
+      expect(count, `no scan happened for ${unit}`).toBeGreaterThan(0);
+      expect(
+        count,
+        `${unit}: more than 4 reads per character of ${body.length}`
+      ).toBeLessThanOrEqual(4 * body.length);
+      expect(result).toBe(body);
     }
   });
 

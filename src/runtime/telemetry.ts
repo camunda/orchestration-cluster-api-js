@@ -244,6 +244,20 @@ function redactJsonProperties(text: string): string {
   return out + text.slice(last);
 }
 
+/** Whether a UTF-16 code unit can be part of an assignment name: `A-Za-z0-9_%+.-`. */
+function isNameCode(c: number): boolean {
+  return (
+    (c >= 48 && c <= 57) || // 0-9
+    (c >= 65 && c <= 90) || // A-Z
+    (c >= 97 && c <= 122) || // a-z
+    c === 95 || // _
+    c === 37 || // %
+    c === 43 || // +
+    c === 46 || // .
+    c === 45 // -
+  );
+}
+
 /**
  * Mask the value of every `name=value` credential assignment in free text.
  *
@@ -255,18 +269,28 @@ function redactJsonProperties(text: string): string {
  * guessed. Only a credential's own value is consumed: after any other assignment the scan
  * resumes at its `=`, so `request=42 client_secret=...` still finds the credential.
  *
- * The name is anchored to the start of a run of name characters (a preceding delimiter,
- * which is kept) so that a long alphanumeric run without an `=` is scanned once, not once
- * per starting position.
+ * A single left-to-right pass: each maximal run of name characters is read once, and only
+ * then is the character after it compared with `=`. That makes the work linear in the
+ * length of the text by construction, however long a run without an `=` is. (A pattern for
+ * the name that is not anchored to the start of the run re-scans the rest of the run from
+ * every position.)
  */
 function redactAssignments(text: string): string {
-  const re = /(^|[^A-Za-z0-9_%+.-])([A-Za-z0-9_%+.-]+)=/g;
+  const n = text.length;
   let out = '';
   let last = 0;
-  for (let m = re.exec(text); m !== null; m = re.exec(text)) {
-    const eq = m.index + m[1].length + m[2].length;
-    if (!isSecretBodyField(decodeFormName(m[2]))) {
-      re.lastIndex = eq;
+  let i = 0;
+  while (i < n) {
+    if (!isNameCode(text.charCodeAt(i))) {
+      i++;
+      continue;
+    }
+    const nameStart = i;
+    while (i < n && isNameCode(text.charCodeAt(i))) i++;
+    if (i >= n || text.charCodeAt(i) !== 61 /* = */) continue;
+    const eq = i;
+    if (!isSecretBodyField(decodeFormName(text.slice(nameStart, eq)))) {
+      i = eq + 1;
       continue;
     }
     const valueStart = eq + 1;
@@ -275,16 +299,14 @@ function redactAssignments(text: string): string {
       end = jsonStringEnd(text, valueStart);
     } else if (text[valueStart] === "'") {
       const close = text.indexOf("'", valueStart + 1);
-      end = close < 0 ? text.length : close + 1;
+      end = close < 0 ? n : close + 1;
     } else {
       end = valueStart;
-      while (end < text.length && text[end] !== '&' && text[end] !== '\r' && text[end] !== '\n') {
-        end++;
-      }
+      while (end < n && text[end] !== '&' && text[end] !== '\r' && text[end] !== '\n') end++;
     }
     out += `${text.slice(last, valueStart)}${BODY_REDACTED}`;
     last = end;
-    re.lastIndex = end;
+    i = end;
   }
   return out + text.slice(last);
 }
