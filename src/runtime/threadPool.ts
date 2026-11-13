@@ -201,7 +201,7 @@ export class ThreadPool {
       }
     });
 
-    worker.on('error', (err) => {
+    worker.on('error', (err: Error) => {
       this._log.error('thread.error', err);
       this._rejectWorkerTask(pw, `Worker thread error: ${err.message}`);
       pw.ready = false;
