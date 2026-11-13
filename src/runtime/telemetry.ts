@@ -149,13 +149,15 @@ function isSecretBodyField(name: string): boolean {
  */
 const MAX_EMBEDDED_DEPTH = 4;
 
-/** Decode a form name or value (`+` is a space); fall back to the raw text if it is malformed. */
+/**
+ * Decode a form name or value (`+` is a space). A malformed escape (`%FF` is not valid UTF-8)
+ * throws, and the throw is deliberately not caught here: falling back to the raw text would
+ * judge an encoded name (`client_%73ecret%FF`) against the credential words and miss it, and
+ * would skip a structure held in a value. It propagates to the preview's error handler, so the
+ * body is omitted.
+ */
 function decodeFormComponent(raw: string): string {
-  try {
-    return decodeURIComponent(raw.replace(/\+/g, ' '));
-  } catch {
-    return raw;
-  }
+  return decodeURIComponent(raw.replace(/\+/g, ' '));
 }
 
 /**
@@ -263,7 +265,8 @@ function omittedPreview(body: string, contentType: string | null | undefined): s
  * credential field masked whole by its name (at any depth, and inside any string value that
  * is itself such a structure). Any other body — free text, JSON cut off by truncation, raw
  * multipart text, a bare JSON scalar — is not logged: the preview carries only its byte length
- * and media type.
+ * and media type. So is a form with a percent-escape that does not decode, and a structure
+ * that fails to redact for any other reason: the preview becomes a placeholder.
  *
  * Not covered, by the nature of the encoding: a credential held in a string under a
  * non-credential field name (`{"note":"my password is hunter2"}`), and a form whose
