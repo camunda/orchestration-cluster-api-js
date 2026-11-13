@@ -150,6 +150,25 @@ let _workerCounter = 0;
 const DEFAULT_LONGPOLL_TIMEOUT = 0;
 
 /**
+ * A fixed, payload-free label for a dispatch failure.
+ *
+ * Job variables are untrusted and a schema transform can throw any value, so the label is
+ * chosen from a closed set with `instanceof` and `typeof` and never read off the thrown
+ * value (`constructor.name` is an arbitrary property: it can carry payload content, or
+ * throw). `instanceof` can itself throw on an exotic value, so that is contained too.
+ */
+function classifyDispatchError(err: unknown): string {
+  try {
+    if (err instanceof RangeError) return 'RangeError';
+    if (err instanceof TypeError) return 'TypeError';
+    if (err instanceof Error) return 'Error';
+  } catch {
+    return 'unknown';
+  }
+  return typeof err;
+}
+
+/**
  * A job worker that runs handler logic in a shared pool of worker_threads,
  * keeping the main Node.js event loop free for polling and I/O.
  *
@@ -360,7 +379,7 @@ export class ThreadedJobWorker {
       // (which can name payload properties) goes to the log or to the broker.
       this._log.error('job.dispatch.error', {
         jobKey: raw.jobKey,
-        errorType: (err as any)?.constructor?.name ?? typeof err,
+        errorType: classifyDispatchError(err),
       });
       settleFailure('Job payload could not be dispatched to a worker thread');
     };

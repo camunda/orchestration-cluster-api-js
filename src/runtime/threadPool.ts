@@ -122,44 +122,67 @@ export class ThreadPool {
     pw.busy = true;
     pw.currentTaskId = taskId;
 
-    this._log.trace(() => ['pool.dispatch', { taskId, jobKey: jobData.jobKey, handlerModule }]);
-
-    const { port1: mainPort, port2: workerPort } = new MessageChannel();
-    installClientCallHandler(mainPort, this._client);
-
-    this._pending.set(taskId, {
-      resolve: (_ok: boolean, completionAction?: { method: string; args: unknown[] }) => {
-        this._log.trace(() => [
-          'pool.resolve',
-          { taskId, hasAction: !!completionAction, method: completionAction?.method },
-        ]);
-        this._pending.delete(taskId);
-        mainPort.close();
-        callbacks.onComplete(completionAction);
-      },
-      reject: (err: Error) => {
-        this._pending.delete(taskId);
-        mainPort.close();
-        callbacks.onError(err);
-      },
-    });
-
+    // Everything from here to the hand-off is guarded: any of it can throw (an exhausted
+    // channel allocator, a failing port subscription, a payload that cannot be cloned), and
+    // the thread is already marked busy. The ports created so far are tracked so the
+    // rollback closes exactly the ones that exist.
+    let mainPort: import('node:worker_threads').MessagePort | undefined;
+    let workerPort: import('node:worker_threads').MessagePort | undefined;
     try {
+      this._log.trace(() => ['pool.dispatch', { taskId, jobKey: jobData.jobKey, handlerModule }]);
+
+      const channel = new MessageChannel();
+      mainPort = channel.port1;
+      workerPort = channel.port2;
+      const main = mainPort;
+      installClientCallHandler(main, this._client);
+
+      this._pending.set(taskId, {
+        resolve: (_ok: boolean, completionAction?: { method: string; args: unknown[] }) => {
+          this._log.trace(() => [
+            'pool.resolve',
+            { taskId, hasAction: !!completionAction, method: completionAction?.method },
+          ]);
+          this._pending.delete(taskId);
+          main.close();
+          callbacks.onComplete(completionAction);
+        },
+        reject: (err: Error) => {
+          this._pending.delete(taskId);
+          main.close();
+          callbacks.onError(err);
+        },
+      });
+
       pw.worker.postMessage(
         { type: 'job', taskId, jobData, handlerModule, clientPort: workerPort },
         [workerPort]
       );
     } catch (err) {
-      // The thread never received the task (typically a DataCloneError on a payload that
-      // cannot be cloned), so nothing will ever answer it. Undo everything registered above
-      // so the thread is not left busy, the task is not left pending and the ports do not
-      // leak. The task is dropped without invoking its callbacks: the failure is reported
-      // to the caller by this rejection alone, so the caller settles the job exactly once.
+      // The thread never received the task, so nothing will ever answer it. Undo everything
+      // registered above so the thread is not left busy, the task is not left pending and
+      // the ports do not leak. The task is dropped without invoking its callbacks: the
+      // failure is reported to the caller by this rejection alone, so the caller settles
+      // the job exactly once.
       this._pending.delete(taskId);
       pw.busy = false;
       pw.currentTaskId = undefined;
-      mainPort.close();
-      workerPort.close();
+      for (const port of [mainPort, workerPort]) {
+        try {
+          port?.close();
+        } catch {
+          /* closing a port that is already closed is not a reason to mask the failure */
+        }
+      }
+      // The thread is idle again. Jobs queued behind it by another worker would otherwise
+      // wait for a readiness signal that only a completed job or a respawn sends; the
+      // failing worker drains only its own queue. A throwing callback must not replace the
+      // dispatch failure the caller is about to receive.
+      try {
+        this._onThreadReady?.();
+      } catch (notifyErr) {
+        this._log.error('thread.ready.callback.error', notifyErr);
+      }
       throw err;
     }
   }
