@@ -144,13 +144,13 @@ describe('hydrated config secret redaction on stringify and inspect', () => {
       fetch: (async () => new Response('{}', { status: 200 })) as any,
     });
 
-    // Not an own property in any form, so no inspection mode can reach it.
+    // Not an own property and not an accessor, so no inspection mode can reach it.
     expect(Object.getOwnPropertyNames(client)).not.toContain('_overrides');
     // Still readable by SDK internals, and still merged on reconfigure.
-    expect(client._overrides.CAMUNDA_CLIENT_SECRET).toBe(sentinelFor('CAMUNDA_CLIENT_SECRET'));
+    expect(client._getOverrides().CAMUNDA_CLIENT_SECRET).toBe(sentinelFor('CAMUNDA_CLIENT_SECRET'));
     client.configure({ config: { CAMUNDA_DEFAULT_TENANT_ID: 'tenant-b' } as any });
     expect(client.config.defaultTenantId).toBe('tenant-b');
-    expect(client._overrides.CAMUNDA_CLIENT_SECRET).toBe(sentinelFor('CAMUNDA_CLIENT_SECRET'));
+    expect(client._getOverrides().CAMUNDA_CLIENT_SECRET).toBe(sentinelFor('CAMUNDA_CLIENT_SECRET'));
     expect(client.config.oauth.clientSecret).toBe(sentinelFor('CAMUNDA_CLIENT_SECRET'));
   });
 

@@ -178,7 +178,11 @@ function collectSecretValues(raw: Record<string, string | undefined>): Set<strin
   for (const k of allKeys()) {
     if (!isSecret(k)) continue;
     const v = raw[k];
-    if (typeof v === 'string' && v.trim() !== '') values.add(v);
+    if (typeof v !== 'string' || v.trim() === '') continue;
+    // Hydration trims some credentials (OAuth client secret, basic-auth password), so the
+    // config holds the trimmed string while the raw map keeps the supplied one. Collect both.
+    values.add(v);
+    values.add(v.trim());
   }
   return values;
 }
