@@ -12,7 +12,16 @@ import { redactBodyPreview, wrapFetch } from '../src/runtime/telemetry';
  * These tests assert the redaction at the field level — the defect class — rather than only
  * for the one form key that leaked: any known credential field name is masked in a
  * form-encoded body, in a JSON body at any depth, and in a response body.
+ *
+ * The policy (see the decision record that superseded "mask to the end of the line"): a body
+ * is logged only if it is a parseable structure — a JSON object or array, or a well-formed
+ * form encoding — and then every credential is masked whole by its key name. Anything else
+ * (free text, truncated JSON, raw multipart text, a JSON scalar) is not logged at all: only
+ * its byte length and media type are. There is no boundary-guessing scan to get wrong.
  */
+
+/** The preview that stands in for a body that is not a parseable structure. */
+const OMITTED = /^\[body preview omitted: \d+ bytes, content-type=[^\]]+\]$/;
 
 const SECRET = 'SNTNL-CLIENT-SECRET-aaaaaaaaaaaaaaaaaaaa-ZQX7';
 const TOKEN = 'SNTNL-ACCESS-TOKEN-aaaaaaaaaaaaaaaaaaaaa-ZQX7';
@@ -61,25 +70,24 @@ describe('redactBodyPreview', () => {
     expect(out).toContain('visible');
   });
 
-  it('still masks a JSON body that has been truncated out of parseability', () => {
+  it('does not log a JSON body that has been truncated out of parseability', () => {
     const body = `{"access_token":"${TOKEN}","expires_in":300,"tru`;
     const out = redactBodyPreview(body);
     expect(out).not.toContain(TOKEN);
+    expect(out).toMatch(OMITTED);
   });
 
-  it('masks a JSON body truncated in the middle of the credential itself', () => {
-    // No closing quote on the value: the structural parse fails and the textual sweep has
-    // to cope with an unterminated string, or the credential survives.
+  it('does not log a JSON body truncated in the middle of the credential itself', () => {
     const body = `{"expires_in":300,"access_token":"${TOKEN.slice(0, 20)}`;
     const out = redactBodyPreview(body);
     expect(out).not.toContain(TOKEN.slice(0, 20));
+    expect(out).toMatch(OMITTED);
   });
 
-  it('masks a JSON credential at every possible truncation point, escapes included', () => {
+  it('does not log a JSON credential at any truncation point, escapes included', () => {
     // The class of defect is "the body ends somewhere inside the credential": cut a body
     // whose value carries JSON escapes at every position, including immediately after a
-    // backslash (a lone backslash is an incomplete escape, which a pattern that only accepts
-    // complete backslash-plus-character pairs would not treat as part of the string).
+    // backslash. A truncated body is not parseable, so none of it is logged.
     const value = 'SNTNL-ESC\\"A\\\\B\\u00e9-TAIL-ZQX7';
     const full = `{"expires_in":300,"access_token":"${value}","scope":"x"}`;
     const start = full.indexOf('SNTNL');
@@ -88,15 +96,20 @@ describe('redactBodyPreview', () => {
       const out = redactBodyPreview(body);
       expect(out, `cut at ${cut}: ${JSON.stringify(body)}`).not.toContain('SNTNL');
       expect(out, `cut at ${cut}: ${JSON.stringify(body)}`).not.toContain('ESC');
+      expect(out, `cut at ${cut}: ${JSON.stringify(body)}`).toMatch(OMITTED);
     }
   });
 
-  it('masks a credential embedded in free-form text', () => {
-    // An error page or plain-text response is neither JSON nor a form body.
+  it('does not log free-form text, so a credential embedded in it cannot survive', () => {
+    // An error page or plain-text response is neither JSON nor a form body: there is no
+    // reliable boundary for a credential inside it, so none of it is logged.
     const body = `OAuth failure for request 42: client_secret=${SECRET} was rejected`;
-    const out = redactBodyPreview(body);
+    const out = redactBodyPreview(body, 'text/plain; charset=utf-8');
     expect(out).not.toContain(SECRET);
-    expect(out).toContain('OAuth failure for request 42');
+    expect(out).not.toContain('OAuth failure');
+    expect(out).toBe(
+      `[body preview omitted: ${new TextEncoder().encode(body).length} bytes, content-type=text/plain]`
+    );
   });
 
   it('masks a form credential whose value is percent-encoded', () => {
@@ -106,10 +119,9 @@ describe('redactBodyPreview', () => {
     expect(out).not.toContain(encodeURIComponent(SECRET));
   });
 
-  it('masks the whole credential when its value contains whitespace', () => {
-    // The value of a credential assignment in free-form text is not delimited by anything
-    // but its quotes (or, unquoted, the end of the line), so masking only up to the first
-    // space leaves the rest of the credential in the log.
+  it('does not log free text whose credential value contains whitespace', () => {
+    // Nothing but a quote (or the end of the line) delimits such a value, so no guess at the
+    // boundary is made: the text is not logged.
     const cases: Array<[string, string[]]> = [
       [`OAuth failure: authorization=Bearer ${TOKEN} rejected`, [TOKEN, 'Bearer SNTNL']],
       [`OAuth failure: password="two words ${SECRET} tail" rejected`, [SECRET, 'two words']],
@@ -120,48 +132,42 @@ describe('redactBodyPreview', () => {
     for (const [body, forbidden] of cases) {
       const out = redactBodyPreview(body);
       for (const f of forbidden) expect(out, `${JSON.stringify(body)} -> ${out}`).not.toContain(f);
-      expect(out).toContain('OAuth failure');
+      expect(out).toMatch(OMITTED);
     }
   });
 
-  it('keeps the next pair readable when an assignment is followed by a separator', () => {
-    const out = redactBodyPreview(`note: client_secret=${SECRET}&audience=zeebe`);
-    expect(out).not.toContain(SECRET);
-    expect(out).toContain('audience=zeebe');
-  });
-
-  it('masks a truncated JSON credential whose property name uses JSON escapes', () => {
-    // `\u005f` is `_`: the decoded key is `access_token`, which the complete-JSON path masks.
+  it('masks a JSON credential whose property name uses JSON escapes', () => {
+    // `\u005f` is `_`: the parsed key is `access_token`.
     for (const key of [
       'access\\u005ftoken',
       'client\\u005Fsecret',
       '\\u0070assword',
       'pass\\u0077ord',
     ]) {
-      const body = `{"${key}":"${SECRET}","tru`;
-      const out = redactBodyPreview(body);
+      const out = redactBodyPreview(`{"${key}":"${SECRET}","keep":"visible"}`);
       expect(out, `${key} -> ${out}`).not.toContain(SECRET);
+      expect(out).toContain('"keep":"visible"');
     }
   });
 
-  it('masks a truncated JSON credential whose value is not a string', () => {
-    const out = redactBodyPreview('{"password":123456789,"tru');
+  it('masks a JSON credential whose value is not a string', () => {
+    const out = redactBodyPreview('{"password":123456789,"keep":1}');
     expect(out).not.toContain('123456789');
+    expect(out).toContain('"keep":1');
   });
 
-  it('masks a percent-encoded form key even when another value contains braces', () => {
-    const out = redactBodyPreview(`client_%73ecret=${SECRET}&extra={}`);
+  it('masks a percent-encoded form key and keeps another percent-encoded value readable', () => {
+    const out = redactBodyPreview(`client_%73ecret=${SECRET}&extra=%7B%7D`);
     expect(out).not.toContain(SECRET);
-    expect(out).toContain('extra={}');
+    expect(out).toContain('extra=%7B%7D');
   });
 
-  it('masks a credential nested inside a non-secret value of truncated JSON', () => {
-    // The sweep must look inside a non-secret property's value, not consume it whole.
+  it('masks a credential nested inside a non-secret value of complete JSON', () => {
     for (const body of [
-      `{"nested":{"access_token":"${TOKEN}"},"tru`,
-      `{"a":{"b":{"password":"${SECRET}"}},"tru`,
-      `[{"client_secret":"${SECRET}"},{"x":"tru`,
-      `{"list":[{"refresh_token":"${REFRESH}"}],"tru`,
+      `{"nested":{"access_token":"${TOKEN}"},"keep":1}`,
+      `{"a":{"b":{"password":"${SECRET}"}},"keep":1}`,
+      `[{"client_secret":"${SECRET}"},{"x":"y"}]`,
+      `{"list":[{"refresh_token":"${REFRESH}"}],"keep":1}`,
     ]) {
       const out = redactBodyPreview(body);
       for (const secret of [TOKEN, SECRET, REFRESH]) {
@@ -170,16 +176,14 @@ describe('redactBodyPreview', () => {
     }
   });
 
-  it('masks a whole container held by a credential property in truncated JSON', () => {
-    // Complete JSON masks the entire value of a credential property, object or array
-    // included, so the sweep has to do the same when the body is cut off: the members of the
-    // container are not credential names, but they are credential content.
+  it('masks a whole container held by a credential property', () => {
+    // The members of the container are not credential names, but they are credential content.
     for (const body of [
-      `{"authorization":{"scheme":"Bearer","token":"${TOKEN}"},"tru`,
-      `{"password":["a","${SECRET}"],"tru`,
-      `{"client_secret":{"parts":[{"v":"${SECRET}"}],"note":"a]b}c \\"${SECRET}"},"tru`,
-      `{"access_token":{"value":"${TOKEN}"`,
-      `{"refresh_token":["${REFRESH}",`,
+      `{"authorization":{"scheme":"Bearer","token":"${TOKEN}"},"keep":1}`,
+      `{"password":["a","${SECRET}"],"keep":1}`,
+      `{"client_secret":{"parts":[{"v":"${SECRET}"}],"note":"a]b}c \\"${SECRET}"},"keep":1}`,
+      `{"access_token":{"value":"${TOKEN}"}}`,
+      `{"refresh_token":["${REFRESH}"]}`,
     ]) {
       const out = redactBodyPreview(body);
       for (const secret of [TOKEN, SECRET, REFRESH]) {
@@ -187,14 +191,12 @@ describe('redactBodyPreview', () => {
       }
     }
     // What follows the container stays readable.
-    const out = redactBodyPreview(`{"password":{"a":"${SECRET}"},"keep":"visible","tru`);
+    const out = redactBodyPreview(`{"password":{"a":"${SECRET}"},"keep":"visible"}`);
     expect(out).not.toContain(SECRET);
     expect(out).toContain('"keep":"visible"');
   });
 
-  it('masks a credential that follows an unrelated assignment in free text', () => {
-    // A non-secret assignment must not swallow the rest of the line, or a credential after
-    // it is never examined.
+  it('does not log a text body in which a credential assignment follows another assignment', () => {
     for (const body of [
       `OAuth failure: request=42 client_secret=${SECRET} was rejected`,
       `OAuth failure: a=b=client_secret=${SECRET}`,
@@ -204,43 +206,294 @@ describe('redactBodyPreview', () => {
       const out = redactBodyPreview(body);
       expect(out, `${body} -> ${out}`).not.toContain(SECRET);
       expect(out, `${body} -> ${out}`).not.toContain(TOKEN);
+      expect(out).toMatch(OMITTED);
     }
-    expect(redactBodyPreview(`request=42 client_secret=${SECRET}`)).toContain('request=42');
   });
 
-  it('reads each character of a long name run a bounded number of times', () => {
-    // A deterministic work count, not a timing: the assignment scan reads characters with
-    // `charCodeAt`, so the number of calls is a direct measure of how much it scans. A
-    // matcher that re-scans a run from every position would make this count grow with the
-    // square of the length. The counter aborts the scan once the budget is spent, so a
-    // regression fails fast instead of running for minutes. (A body with no `=` and no
-    // braces reaches only that scan.)
-    const original = String.prototype.charCodeAt;
-    const measure = (body: string, budget: number) => {
-      let count = 0;
-      String.prototype.charCodeAt = function (this: string, index: number) {
-        if (++count > budget) throw new Error('scan budget exceeded');
-        return original.call(this, index);
-      };
-      let result: string;
-      try {
-        result = redactBodyPreview(body);
-      } finally {
-        String.prototype.charCodeAt = original;
+  describe('an unencoded ampersand (or any other unencoded delimiter) in a form credential', () => {
+    // A form value must be percent-encoded, so `&` always starts the next pair. A body whose
+    // pairs do not all look like `name=value` in the form alphabet is therefore not a
+    // well-formed form encoding, and nothing of it is logged: there is no boundary to guess.
+    it('is not logged when the tail after the ampersand is not a name=value pair', () => {
+      for (const body of [
+        `password=prefix&${SECRET}`,
+        `grant_type=client_credentials&password=prefix&${SECRET}`,
+        `password=${SECRET}&`,
+        `password=${SECRET}&&a=1`,
+        `a=1&password=${SECRET}&tail`,
+      ]) {
+        const out = redactBodyPreview(body);
+        expect(out, `${body} -> ${out}`).not.toContain(SECRET);
+        expect(out, `${body} -> ${out}`).not.toContain('prefix');
+        expect(out, `${body} -> ${out}`).not.toContain('grant_type');
+        expect(out).toMatch(OMITTED);
       }
-      return { count, result };
-    };
+    });
 
-    for (const unit of ['a', 'a1_', 'ab-cd.', 'x%20y']) {
-      const body = unit.repeat(Math.ceil(20_000 / unit.length));
-      const { count, result } = measure(body, 4 * body.length);
-      expect(count, `no scan happened for ${unit}`).toBeGreaterThan(0);
-      expect(
-        count,
-        `${unit}: more than 4 reads per character of ${body.length}`
-      ).toBeLessThanOrEqual(4 * body.length);
-      expect(result).toBe(body);
-    }
+    it('is not logged when the value holds a character outside the form alphabet', () => {
+      // Raw `=`, double quote, space, comma, newline, brace, bracket, colon, slash, backslash, `%`
+      // without two hex digits, `#`, `;` and a non-ASCII letter: each means the body was not
+      // produced by a form encoder, so it is not trusted to split at `&`.
+      for (const bad of [
+        '=',
+        '"',
+        ' ',
+        ',',
+        '\n',
+        '\r\n',
+        '{',
+        '}',
+        '[',
+        ']',
+        ':',
+        '/',
+        '\\',
+        '%',
+        '%4',
+        '%zz',
+        '#',
+        ';',
+        'é',
+      ]) {
+        const body = `a=1&password=ab${bad}${SECRET}&b=2`;
+        const out = redactBodyPreview(body);
+        expect(out, `${JSON.stringify(body)} -> ${out}`).not.toContain(SECRET);
+        expect(out, `${JSON.stringify(body)} -> ${out}`).not.toContain('ab');
+        expect(out, JSON.stringify(body)).toMatch(OMITTED);
+      }
+    });
+
+    it('is not logged when a pair has no name or no equals sign', () => {
+      for (const body of [`=${SECRET}`, `a=1&=${SECRET}`, `password`, `a=1&b`]) {
+        expect(redactBodyPreview(body), JSON.stringify(body)).toMatch(OMITTED);
+      }
+    });
+
+    it('keeps a well-formed form readable, masking every credential pair by key', () => {
+      const body = `grant_type=client_credentials&client_secret=${encodeURIComponent(
+        `a&b=c ${SECRET}`
+      )}&audience=zeebe.camunda.io&scope=a+b&empty=`;
+      const out = redactBodyPreview(body);
+      expect(out).toBe(
+        'grant_type=client_credentials&client_secret=[redacted]&audience=zeebe.camunda.io&scope=a+b&empty='
+      );
+    });
+  });
+
+  describe('structures that are not form or JSON', () => {
+    it('does not log raw multipart text', () => {
+      const body = [
+        '--b0undary',
+        'Content-Disposition: form-data; name="client_secret"',
+        '',
+        SECRET,
+        '--b0undary--',
+        '',
+      ].join('\r\n');
+      const out = redactBodyPreview(body, 'multipart/form-data; boundary=b0undary');
+      expect(out).not.toContain(SECRET);
+      expect(out).not.toContain('b0undary');
+      expect(out).toMatch(/content-type=multipart\/form-data\]$/);
+    });
+
+    it('does not log a JSON scalar, which has no key to judge it by', () => {
+      for (const body of [`"${SECRET}"`, '12345', 'true', 'null']) {
+        const out = redactBodyPreview(body, 'application/json');
+        expect(out, body).not.toContain(SECRET);
+        expect(out, body).toMatch(OMITTED);
+      }
+    });
+
+    it('reports the byte length, not the character count, and a sanitised media type', () => {
+      const body = 'héllo wörld é';
+      const bytes = new TextEncoder().encode(body).length;
+      expect(bytes).toBeGreaterThan(body.length);
+      expect(redactBodyPreview(body, 'Text/Plain; charset=UTF-8')).toBe(
+        `[body preview omitted: ${bytes} bytes, content-type=text/plain]`
+      );
+      // A parameter (a boundary, say) is never echoed; neither is a value that is no media type.
+      expect(redactBodyPreview(body, 'multipart/form-data; boundary=SECRETBOUNDARY')).not.toContain(
+        'SECRETBOUNDARY'
+      );
+      for (const ct of [undefined, null, '', 'not a media type', `x/${'y'.repeat(200)}`, SECRET]) {
+        expect(redactBodyPreview(body, ct), String(ct)).toBe(
+          `[body preview omitted: ${bytes} bytes, content-type=unknown]`
+        );
+      }
+    });
+  });
+
+  describe('credential field names', () => {
+    it('matches a name however it is cased or separated', () => {
+      for (const key of [
+        'Client-Secret',
+        'client.secret',
+        'CLIENT_SECRET',
+        'clientSecret',
+        'API_KEY',
+        'apiKey',
+        'x-api-key',
+        'X-Api-Key',
+        'sessionToken',
+        'authToken',
+        'bearerToken',
+        'Bearer',
+        'Proxy-Authorization',
+        'Set-Cookie',
+        'userPassword',
+        'dbPasswd',
+        'secretKey',
+        'credentials',
+        'private-key',
+        'keyPassphrase',
+        'clientAssertion',
+        'nextPageToken',
+      ]) {
+        const json = redactBodyPreview(JSON.stringify({ [key]: SECRET, keep: 'visible' }));
+        expect(json, `json ${key} -> ${json}`).not.toContain(SECRET);
+        expect(json).toContain('visible');
+        const form = redactBodyPreview(`${encodeURIComponent(key)}=${SECRET}&keep=visible`);
+        expect(form, `form ${key} -> ${form}`).not.toContain(SECRET);
+        expect(form).toContain('keep=visible');
+      }
+    });
+
+    it('does not mask names that merely resemble a credential', () => {
+      const body = JSON.stringify({
+        processDefinitionKey: '123',
+        token_type: 'Bearer',
+        expires_in: 300,
+        key: 'k',
+      });
+      expect(redactBodyPreview(body)).toBe(body);
+    });
+
+    it('masks a credential under a duplicated or prototype-named JSON key', () => {
+      for (const body of [
+        `{"password":"${SECRET}","password":"x"}`,
+        `{"password":"x","password":"${SECRET}"}`,
+        `{"__proto__":{"password":"${SECRET}"},"password":"${SECRET}"}`,
+        `{"constructor":{"prototype":{"token":"${SECRET}"}}}`,
+      ]) {
+        const out = redactBodyPreview(body);
+        expect(out, `${body} -> ${out}`).not.toContain(SECRET);
+      }
+    });
+  });
+
+  describe('a structure carried inside a string value', () => {
+    it('masks credentials in JSON held by a string, at the depth it is nested', () => {
+      const inner = JSON.stringify({ password: SECRET, keep: 'visible' });
+      const twice = JSON.stringify({ wrapped: inner });
+      const out = redactBodyPreview(JSON.stringify({ payload: inner, again: twice, ok: 1 }));
+      expect(out).not.toContain(SECRET);
+      expect(out).toContain('visible');
+      expect(out).toContain('"ok":1');
+    });
+
+    it('masks credentials in a form held by a string, and a form-held JSON string', () => {
+      const out = redactBodyPreview(
+        JSON.stringify({
+          body: `a=1&password=${encodeURIComponent(SECRET)}`,
+          other: `payload=${encodeURIComponent(JSON.stringify({ token: SECRET }))}&b=2`,
+        })
+      );
+      expect(out).not.toContain(SECRET);
+      expect(out).not.toContain(encodeURIComponent(SECRET));
+      expect(out).toContain('a=1');
+      expect(out).toContain('b=2');
+    });
+
+    it('masks a structure nested beyond the depth limit rather than logging it', () => {
+      let value: string = JSON.stringify({ password: SECRET });
+      for (let i = 0; i < 12; i++) value = JSON.stringify({ k: value });
+      expect(redactBodyPreview(value)).not.toContain(SECRET);
+    });
+
+    it('masks credentials in a form value that itself holds JSON', () => {
+      const body = `payload=${encodeURIComponent(JSON.stringify({ client_secret: SECRET }))}`;
+      const out = redactBodyPreview(body);
+      expect(out).not.toContain(SECRET);
+      expect(out).not.toContain(encodeURIComponent(SECRET));
+    });
+  });
+
+  describe('exhaustive check: no fragment of a credential survives any single-delimiter mutation', () => {
+    // A property-style sweep without a generator library: every template that carries a
+    // credential, with every delimiter or quoting character inserted at every position inside
+    // the credential value, cut at every length from the start of the value to the end of the
+    // body. Whatever the result is (masked, or not logged), no character of the credential may
+    // appear in it. The credential is a run of `Z`, and no other text in the corpus or in a
+    // placeholder contains one, so any `Z` in the output is a fragment of the credential.
+    const CRED = 'ZZZZZZZZ';
+    const DELIMITERS = [
+      '&',
+      '=',
+      '"',
+      "'",
+      ' ',
+      '\n',
+      '\r',
+      '\t',
+      '{',
+      '}',
+      '[',
+      ']',
+      ',',
+      ':',
+      ';',
+      '\\',
+      '%',
+      '+',
+      '#',
+      '/',
+      '\u0000',
+      '\u00e9',
+    ];
+    const TEMPLATES: Array<[string, (v: string) => string]> = [
+      ['form', (v) => `grant_type=x&client_secret=${v}`],
+      ['form last', (v) => `a=1&b=2&password=${v}`],
+      ['form middle', (v) => `password=${v}&audience=x`],
+      ['form only', (v) => `refresh_token=${v}`],
+      ['form encoded key', (v) => `client_%73ecret=${v}&a=1`],
+      ['json', (v) => `{"access_token":"${v}","expires_in":300}`],
+      ['json nested', (v) => `{"a":{"b":[{"password":"${v}"}]},"keep":1}`],
+      ['json escaped key', (v) => `{"client\\u005fsecret":"${v}"}`],
+      ['json array', (v) => `[{"refresh_token":"${v}"}]`],
+      ['json non-string', (v) => `{"password":${v},"keep":1}`],
+      ['text', (v) => `OAuth failure: client_secret=${v} was rejected`],
+      ['text quoted', (v) => `failed password="${v}" host=x`],
+      ['text bearer', (v) => `authorization=Bearer ${v}`],
+      ['text json-ish', (v) => `{"access_token": "${v}", "expires`],
+      [
+        'multipart',
+        (v) => `--b\r\nContent-Disposition: form-data; name="password"\r\n\r\n${v}\r\n--b--`,
+      ],
+    ];
+
+    it('holds for every template, delimiter, position and truncation', () => {
+      let checked = 0;
+      for (const [label, make] of TEMPLATES) {
+        for (const delimiter of ['', ...DELIMITERS]) {
+          for (let at = 0; at <= CRED.length; at++) {
+            const value = `${CRED.slice(0, at)}${delimiter}${CRED.slice(at)}`;
+            const full = make(value);
+            const valueStart = make('\u0001').indexOf('\u0001');
+            for (let cut = valueStart + 1; cut <= full.length; cut++) {
+              const body = full.slice(0, cut);
+              const out = redactBodyPreview(body);
+              checked++;
+              if (out.includes('Z')) {
+                expect.fail(
+                  `${label}: a fragment of the credential survived for ${JSON.stringify(body)} -> ${out}`
+                );
+              }
+            }
+          }
+        }
+      }
+      expect(checked).toBeGreaterThan(10_000);
+    });
   });
 
   it('leaves a body with no credential field untouched', () => {
@@ -302,6 +555,126 @@ describe('silly-level previews through wrapFetch', () => {
     expect(all).toContain('http.body');
     expect(all).not.toContain(SECRET);
     expect(all).toContain('grant_type=client_credentials');
+  });
+
+  it('logs only the size and media type of a request body with an unencoded ampersand', async () => {
+    const lines: string[] = [];
+    const orig = vi.fn(async () => new Response('{}', { status: 200 }));
+    const wrapped = wrapFetch(orig as any, { logger: sillyLogger(lines), mirrorToLog: true });
+    const body = `grant_type=password&username=u&password=prefix&${SECRET}`;
+
+    await wrapped('https://login.example.com/oauth/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8' },
+      body,
+    });
+    // The same through a Request, whose content type lives on the Request itself.
+    await wrapped(
+      new Request('https://login.example.com/oauth/token', {
+        method: 'POST',
+        headers: { 'content-type': 'text/plain' },
+        body,
+      })
+    );
+
+    const all = lines.join('\n');
+    expect(all).not.toContain(SECRET);
+    expect(all).not.toContain('prefix');
+    expect(all).toContain(
+      `preview=[body preview omitted: ${body.length} bytes, content-type=application/x-www-form-urlencoded]`
+    );
+    expect(all).toContain(
+      `preview=[body preview omitted: ${body.length} bytes, content-type=text/plain]`
+    );
+  });
+
+  it('reads the content type from a Headers instance and from a pair list', async () => {
+    const lines: string[] = [];
+    const orig = vi.fn(async () => new Response('{}', { status: 200 }));
+    const wrapped = wrapFetch(orig as any, { logger: sillyLogger(lines), mirrorToLog: true });
+    await wrapped('https://mock.local/a', {
+      method: 'POST',
+      headers: new Headers({ 'Content-Type': 'text/csv' }),
+      body: `plain text ${SECRET}`,
+    });
+    await wrapped('https://mock.local/b', {
+      method: 'PUT',
+      headers: [['content-type', 'text/xml']],
+      body: `plain text ${SECRET}`,
+    });
+    const all = lines.join('\n');
+    expect(all).not.toContain(SECRET);
+    expect(all).toContain('content-type=text/csv]');
+    expect(all).toContain('content-type=text/xml]');
+  });
+
+  it('does not log a text response whose credential has no boundary, only its size and type', async () => {
+    const lines: string[] = [];
+    const text = `login failed: password=${SECRET} is wrong`;
+    const orig = vi.fn(
+      async () =>
+        new Response(text, {
+          status: 401,
+          headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+        })
+    );
+    const wrapped = wrapFetch(orig as any, { logger: sillyLogger(lines), mirrorToLog: true });
+    await wrapped('https://mock.local/v2/thing', { method: 'GET' });
+    const all = lines.join('\n');
+    expect(all).toContain('http.response');
+    expect(all).not.toContain(SECRET);
+    expect(all).not.toContain('login failed');
+    expect(all).toContain(
+      `preview=[body preview omitted: ${text.length} bytes, content-type=text/plain]`
+    );
+  });
+
+  it('does not log a response of unknown media type that is not a parseable structure', async () => {
+    const lines: string[] = [];
+    const orig = vi.fn(
+      async () =>
+        new Response(`token: ${SECRET}`, {
+          status: 200,
+          headers: { 'Content-Type': 'application/x-custom' },
+        })
+    );
+    const wrapped = wrapFetch(orig as any, { logger: sillyLogger(lines), mirrorToLog: true });
+    await wrapped('https://mock.local/v2/thing', { method: 'GET' });
+    const all = lines.join('\n');
+    expect(all).not.toContain(SECRET);
+    expect(all).toContain('content-type=application/x-custom]');
+  });
+
+  it('still previews the non-text bodies, which carry no text to redact', async () => {
+    const lines: string[] = [];
+    const orig = vi.fn(async () => new Response('{}', { status: 200 }));
+    const wrapped = wrapFetch(orig as any, { logger: sillyLogger(lines), mirrorToLog: true });
+    await wrapped('https://mock.local/a', { method: 'POST', body: new Blob(['abc']) as any });
+    await wrapped('https://mock.local/b', { method: 'POST', body: new Uint8Array(3) as any });
+    await wrapped('https://mock.local/c', { method: 'POST', body: new ArrayBuffer(5) as any });
+    const all = lines.join('\n');
+    expect(all).toContain('preview=[Blob size=3]');
+    expect(all).toContain('preview=[Uint8Array length=3]');
+    expect(all).toContain('preview=[ArrayBuffer byteLength=5]');
+  });
+
+  it('masks by key a structure carried in a FormData string entry, and a JSON object body', async () => {
+    const lines: string[] = [];
+    const orig = vi.fn(async () => new Response('{}', { status: 200 }));
+    const wrapped = wrapFetch(orig as any, { logger: sillyLogger(lines), mirrorToLog: true });
+    const form = new FormData();
+    form.set('meta', JSON.stringify({ password: SECRET, keep: 'visible' }));
+    form.set('file', new Blob(['x']), 'x.bin');
+    await wrapped('https://mock.local/a', { method: 'POST', body: form as any });
+    await wrapped('https://mock.local/b', {
+      method: 'POST',
+      body: { client_secret: SECRET, keep: 'visible2' } as any,
+    });
+    const all = lines.join('\n');
+    expect(all).not.toContain(SECRET);
+    expect(all).toContain('visible');
+    expect(all).toContain('visible2');
+    expect(all).toContain('file=[File]');
   });
 
   it('redacts the token request body and the token response body', async () => {

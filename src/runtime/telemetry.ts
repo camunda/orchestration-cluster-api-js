@@ -112,84 +112,45 @@ function redactUrl(u: string): string {
 }
 
 /**
- * Field names whose value is a credential wherever it appears in a request or response body.
+ * Whether a body field name denotes a credential.
  *
- * Covers the OAuth token exchange (`client_secret` in the form-encoded request, `access_token`
- * / `id_token` / `refresh_token` in the JSON response), the private-key-JWT and
- * resource-owner grants, and the camelCase spellings the SDK's own JSON bodies would use.
- * Matching is on the whole field name and is case-insensitive.
+ * The name is normalised first (lower-cased, with `_`, `-`, `.` and whitespace removed), so
+ * `client_secret`, `Client-Secret`, `clientSecret` and `CLIENT.SECRET` are one name. A name is
+ * a credential when it contains a credential word (`password`, `passphrase`, `secret`,
+ * `credential`, `assertion`, `apikey`, `privatekey`, `authorization`, `bearer`, `cookie`) or
+ * ends in `token`. Matching is deliberately broad: masking a value that was not a credential
+ * costs a little diagnostic text, while a missed credential is a leak. A bare `key` is not
+ * matched, since entity keys (`processDefinitionKey`) are everywhere in the API.
  */
-const SECRET_BODY_FIELDS = new Set(
-  [
-    'client_secret',
-    'clientsecret',
-    'client_assertion',
-    'clientassertion',
-    'assertion',
-    'password',
-    'passphrase',
-    'key_passphrase',
-    'keypassphrase',
-    'private_key',
-    'privatekey',
-    'access_token',
-    'accesstoken',
-    'refresh_token',
-    'refreshtoken',
-    'id_token',
-    'idtoken',
-    'authorization',
-  ].map((k) => k.toLowerCase())
-);
+const SECRET_FIELD_WORDS = [
+  'password',
+  'passwd',
+  'passphrase',
+  'secret',
+  'credential',
+  'assertion',
+  'apikey',
+  'privatekey',
+  'authorization',
+  'bearer',
+  'cookie',
+];
 
 const BODY_REDACTED = '[redacted]';
 
 function isSecretBodyField(name: string): boolean {
-  return SECRET_BODY_FIELDS.has(name.toLowerCase());
+  const n = name.toLowerCase().replace(/[\s_.-]/g, '');
+  return /tokens?$/.test(n) || SECRET_FIELD_WORDS.some((w) => n.includes(w));
 }
 
-/** Mask the values of credential fields in an `application/x-www-form-urlencoded` body. */
-function redactFormBody(body: string): string {
-  return body
-    .split('&')
-    .map((pair) => {
-      const eq = pair.indexOf('=');
-      if (eq < 0) return pair;
-      const rawName = pair.slice(0, eq);
-      // A malformed escape keeps the raw name: it is not a reason to stop redacting.
-      return isSecretBodyField(decodeFormName(rawName)) ? `${rawName}=${BODY_REDACTED}` : pair;
-    })
-    .join('&');
-}
+/**
+ * How deep a structure carried inside a string value (JSON in a JSON string, a form in a form
+ * value, ...) is unwrapped. Past this a parseable structure is masked whole instead of read.
+ */
+const MAX_EMBEDDED_DEPTH = 4;
 
-/** Mask the values of credential fields anywhere in a parsed JSON body. */
-function redactJsonValue(value: unknown, seen: WeakSet<object>): unknown {
-  if (value === null || typeof value !== 'object') return value;
-  if (seen.has(value)) return '[Circular]';
-  seen.add(value);
-  try {
-    if (Array.isArray(value)) return value.map((v) => redactJsonValue(v, seen));
-    const out: Record<string, unknown> = {};
-    for (const [k, v] of Object.entries(value)) {
-      out[k] = isSecretBodyField(k) ? BODY_REDACTED : redactJsonValue(v, seen);
-    }
-    return out;
-  } finally {
-    seen.delete(value);
-  }
-}
-
-/** Decode the content of a JSON string literal; fall back to the raw text if it is malformed. */
-function decodeJsonKey(raw: string): string {
-  try {
-    return JSON.parse(`"${raw}"`) as string;
-  } catch {
-    return raw;
-  }
-}
-
-/** Decode a form or query-string name; fall back to the raw text if it is malformed. */
-function decodeFormName(raw: string): string {
+/** Decode a form name or value (`+` is a space); fall back to the raw text if it is malformed. */
+function decodeFormComponent(raw: string): string {
   try {
     return decodeURIComponent(raw.replace(/\+/g, ' '));
   } catch {
@@ -197,185 +158,158 @@ function decodeFormName(raw: string): string {
   }
 }
 
-/** End of the JSON string literal whose opening quote is at `start`; tolerates truncation. */
-function jsonStringEnd(text: string, start: number): number {
-  let i = start + 1;
-  while (i < text.length) {
-    const c = text[i];
-    // A backslash escapes the next character; a lone trailing backslash (a cut between
-    // the two characters of an escape) consumes through the end, which is still credential.
-    if (c === '\\') i += 2;
-    else if (c === '"') return i + 1;
-    else i++;
+/**
+ * A well-formed `application/x-www-form-urlencoded` body: every `&`-separated pair is
+ * `name=value`, with a non-empty name, and both made only of the characters a form encoder
+ * emits (letters, digits, `*-._~!'()`, `+` for a space, and `%XX` escapes). Because a value
+ * must be percent-encoded, a raw `&` always starts the next pair, so for such a body the
+ * pair boundaries are known rather than guessed; anything else (a raw space, quote, `=`,
+ * newline, a stray `&`, ...) means the text did not come from a form encoder, and its
+ * boundaries are not known. Built from alternatives that cannot match the same character, so
+ * matching is linear in the length of the text.
+ */
+const FORM_CHAR = "(?:[A-Za-z0-9*\\-._~!'()+]|%[0-9A-Fa-f]{2})";
+const WELL_FORMED_FORM = new RegExp(
+  `^${FORM_CHAR}+=${FORM_CHAR}*(?:&${FORM_CHAR}+=${FORM_CHAR}*)*$`
+);
+
+/** Parse JSON, or return `undefined` if the text is not valid JSON. */
+function tryParseJson(text: string): unknown {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return undefined;
   }
-  return text.length;
 }
 
 /**
- * End of the object or array whose opening bracket is at `start`; the end of the text if it
- * is unterminated. Strings are skipped whole, so a bracket inside one does not count.
+ * Redact a string that is a value inside a parsed structure. If it is itself a parseable
+ * structure (a JSON object or array, or a well-formed form encoding) its credential fields
+ * are masked by name; any other string is returned unchanged.
  */
-function jsonContainerEnd(text: string, start: number): number {
-  let depth = 0;
-  let i = start;
-  while (i < text.length) {
-    const c = text[i];
-    if (c === '"') {
-      i = jsonStringEnd(text, i);
-      continue;
-    }
-    if (c === '{' || c === '[') depth++;
-    else if ((c === '}' || c === ']') && --depth === 0) return i + 1;
-    i++;
+function redactEmbedded(value: string, depth: number): string {
+  const text = value.trim();
+  if (text[0] === '{' || text[0] === '[') {
+    const parsed = tryParseJson(text);
+    if (parsed === null || typeof parsed !== 'object') return value;
+    return depth >= MAX_EMBEDDED_DEPTH
+      ? BODY_REDACTED
+      : JSON.stringify(redactJsonValue(parsed, depth + 1));
   }
-  return text.length;
+  if (value.includes('=') && WELL_FORMED_FORM.test(value)) {
+    return depth >= MAX_EMBEDDED_DEPTH ? BODY_REDACTED : redactFormBody(value, depth + 1);
+  }
+  return value;
 }
 
 /**
- * Mask the value of every credential property in text that is not valid JSON.
- *
- * Property names are matched as JSON string literals and decoded before the lookup, so an
- * escaped name such as `"access\u005ftoken"` is recognised like its decoded form. Only a
- * credential's own value is consumed: for any other property the scan resumes right after
- * `"name":`, so a credential nested inside its value (`{"nested":{"access_token":"..."},"tru`)
- * is still found. A string value is masked through its closing quote, or to the end of the
- * text when it is unterminated (a body truncated mid-credential); an object or array is
- * masked whole, through its matching bracket or to the end of the text; any other value
- * (`"password":12345`) is masked up to the next delimiter.
+ * Mask the credential fields of a well-formed form body (see `WELL_FORMED_FORM`). A value
+ * that is itself a parseable structure is redacted by the same rules and written back encoded.
  */
-function redactJsonProperties(text: string): string {
-  const re = /"((?:[^"\\]|\\[\s\S])*)"\s*:\s*/g;
-  let out = '';
-  let last = 0;
-  for (let m = re.exec(text); m !== null; m = re.exec(text)) {
-    const valueStart = m.index + m[0].length;
-    if (valueStart >= text.length || !isSecretBodyField(decodeJsonKey(m[1]))) continue;
-    if (',}]'.includes(text[valueStart])) continue; // an empty value has nothing to mask
-    let end: number;
-    if (text[valueStart] === '"') {
-      end = jsonStringEnd(text, valueStart);
-    } else if (text[valueStart] === '{' || text[valueStart] === '[') {
-      // The whole container, as complete JSON would mask it: its members are not credential
-      // names, but they are credential content.
-      end = jsonContainerEnd(text, valueStart);
-    } else {
-      end = valueStart;
-      while (end < text.length && !/[,}\]\s]/.test(text[end])) end++;
-    }
-    out += `${text.slice(last, valueStart)}"${BODY_REDACTED}"`;
-    last = end;
-    re.lastIndex = end;
+function redactFormBody(body: string, depth: number): string {
+  return body
+    .split('&')
+    .map((pair) => {
+      const eq = pair.indexOf('=');
+      const rawName = pair.slice(0, eq);
+      if (isSecretBodyField(decodeFormComponent(rawName))) return `${rawName}=${BODY_REDACTED}`;
+      const value = decodeFormComponent(pair.slice(eq + 1));
+      const inner = redactEmbedded(value, depth);
+      return inner === value ? pair : `${rawName}=${encodeURIComponent(inner)}`;
+    })
+    .join('&');
+}
+
+/** Mask the credential fields anywhere in a parsed JSON value. */
+function redactJsonValue(value: unknown, depth: number): unknown {
+  if (typeof value === 'string') return redactEmbedded(value, depth);
+  if (value === null || typeof value !== 'object') return value;
+  if (Array.isArray(value)) return value.map((v) => redactJsonValue(v, depth));
+  // A null prototype: `JSON.parse` can produce an own `__proto__` key, which a plain object
+  // would take as a prototype assignment and silently drop.
+  const out: Record<string, unknown> = Object.create(null);
+  for (const [k, v] of Object.entries(value)) {
+    out[k] = isSecretBodyField(k) ? BODY_REDACTED : redactJsonValue(v, depth);
   }
-  return out + text.slice(last);
+  return out;
 }
 
-/** Whether a UTF-16 code unit can be part of an assignment name: `A-Za-z0-9_%+.-`. */
-function isNameCode(c: number): boolean {
-  return (
-    (c >= 48 && c <= 57) || // 0-9
-    (c >= 65 && c <= 90) || // A-Z
-    (c >= 97 && c <= 122) || // a-z
-    c === 95 || // _
-    c === 37 || // %
-    c === 43 || // +
-    c === 46 || // .
-    c === 45 // -
-  );
+/** The media type of a Content-Type header value, or `unknown` if it is not one. Parameters are dropped. */
+function mediaTypeOf(contentType: string | null | undefined): string {
+  const base = (contentType ?? '').split(';')[0].trim().toLowerCase();
+  return base.length <= 100 && /^[a-z0-9][a-z0-9!#$&^_.+-]*\/[a-z0-9][a-z0-9!#$&^_.+-]*$/.test(base)
+    ? base
+    : 'unknown';
 }
 
-/**
- * Mask the value of every `name=value` credential assignment in free text.
- *
- * The value is the whole quoted string if it starts with a quote; otherwise everything up
- * to the next `&` (the pair separator of forms and query strings) or the end of the line.
- * Prose has no other reliable boundary: stopping at the first space would leave the tail of
- * `password=two words` or the token of `authorization=Bearer <token>` in the log, so where
- * the boundary cannot be known the value is masked to the end of the line rather than
- * guessed. Only a credential's own value is consumed: after any other assignment the scan
- * resumes at its `=`, so `request=42 client_secret=...` still finds the credential.
- *
- * A single left-to-right pass: each maximal run of name characters is read once, and only
- * then is the character after it compared with `=`. That makes the work linear in the
- * length of the text by construction, however long a run without an `=` is. (A pattern for
- * the name that is not anchored to the start of the run re-scans the rest of the run from
- * every position.)
- */
-function redactAssignments(text: string): string {
-  const n = text.length;
-  let out = '';
-  let last = 0;
-  let i = 0;
-  while (i < n) {
-    if (!isNameCode(text.charCodeAt(i))) {
-      i++;
-      continue;
-    }
-    const nameStart = i;
-    while (i < n && isNameCode(text.charCodeAt(i))) i++;
-    if (i >= n || text.charCodeAt(i) !== 61 /* = */) continue;
-    const eq = i;
-    if (!isSecretBodyField(decodeFormName(text.slice(nameStart, eq)))) {
-      i = eq + 1;
-      continue;
-    }
-    const valueStart = eq + 1;
-    let end: number;
-    if (text[valueStart] === '"') {
-      end = jsonStringEnd(text, valueStart);
-    } else if (text[valueStart] === "'") {
-      const close = text.indexOf("'", valueStart + 1);
-      end = close < 0 ? n : close + 1;
-    } else {
-      end = valueStart;
-      while (end < n && text[end] !== '&' && text[end] !== '\r' && text[end] !== '\n') end++;
-    }
-    out += `${text.slice(last, valueStart)}${BODY_REDACTED}`;
-    last = end;
-    i = end;
-  }
-  return out + text.slice(last);
-}
-
-/**
- * Textual sweep for a body that is not valid JSON, and a second pass over one that is not
- * form-encoded either: credential properties (`"name": value`) and credential assignments
- * (`name=value`), for the known credential field names only.
- */
-function redactBodyText(body: string): string {
-  return redactAssignments(redactJsonProperties(body));
+/** What the preview says in place of a body whose structure cannot be trusted. */
+function omittedPreview(body: string, contentType: string | null | undefined): string {
+  const bytes =
+    typeof TextEncoder !== 'undefined' ? new TextEncoder().encode(body).length : body.length;
+  return `[body preview omitted: ${bytes} bytes, content-type=${mediaTypeOf(contentType)}]`;
 }
 
 /**
  * Redact credential values from an HTTP body preview.
  *
- * The silly-level previews below log request and response bodies verbatim, and the OAuth
- * token request runs through this same wrapped fetch — so without this the preview carried
- * `client_secret=…` and the token endpoint's `access_token`. The level is opt-in and warned
- * about, but "a secret must not appear in logs" is unconditional, so redact at the source
- * rather than relying on the warning.
+ * The silly-level previews log request and response bodies, and the OAuth token request runs
+ * through this same wrapped fetch — so without this the preview carried `client_secret=…` and
+ * the token endpoint's `access_token`. The level is opt-in and warned about, but "a secret must
+ * not appear in logs" is unconditional, so redact at the source rather than relying on the
+ * warning.
+ *
+ * The rule is structural, with no guessing of where a credential value ends. A body that
+ * parses as a JSON object or array, or is a well-formed form encoding, is logged with every
+ * credential field masked whole by its name (at any depth, and inside any string value that
+ * is itself such a structure). Any other body — free text, JSON cut off by truncation, raw
+ * multipart text, a bare JSON scalar — is not logged: the preview carries only its byte length
+ * and media type.
+ *
+ * Not covered, by the nature of the encoding: a credential held in a string under a
+ * non-credential field name (`{"note":"my password is hunter2"}`), and a form whose
+ * unencoded `&` is followed by text that happens to read as `name=value`, which is
+ * indistinguishable from a second field.
  */
-export function redactBodyPreview(body: string): string {
+export function redactBodyPreview(body: string, contentType?: string | null): string {
   if (!body) return body;
   try {
     const trimmed = body.trim();
-    if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
-      try {
-        return JSON.stringify(redactJsonValue(JSON.parse(trimmed), new WeakSet()));
-      } catch {
-        // Not parseable (truncated, or not JSON after all) — fall through to the sweep.
+    if (trimmed[0] === '{' || trimmed[0] === '[') {
+      const parsed = tryParseJson(trimmed);
+      if (parsed !== null && typeof parsed === 'object') {
+        return JSON.stringify(redactJsonValue(parsed, 0));
       }
+    } else if (WELL_FORMED_FORM.test(body)) {
+      return redactFormBody(body, 0);
     }
-    // Form redaction first (it understands percent-encoded keys), then the textual sweep
-    // unconditionally: free-form text such as an error page can embed `client_secret=…`
-    // outside any form pair, and the sweep is what catches that. The form pass does not
-    // depend on the body being brace-free: a brace in one value says nothing about whether
-    // another key is a percent-encoded credential name.
-    const formFirst = trimmed.includes('=') ? redactFormBody(body) : body;
-    return redactBodyText(formFirst);
+    return omittedPreview(body, contentType);
   } catch {
     // Never let redaction failure hand the caller the unredacted body.
     return '[body preview omitted: redaction failed]';
   }
+}
+
+/** A header's value from any of the shapes `fetch` accepts, or from a Request's headers. */
+function headerValue(headers: unknown, name: string): string | undefined {
+  try {
+    if (!headers) return undefined;
+    if (typeof (headers as Headers).get === 'function') {
+      return (headers as Headers).get(name) ?? undefined;
+    }
+    const wanted = name.toLowerCase();
+    if (Array.isArray(headers)) {
+      for (const pair of headers) {
+        if (Array.isArray(pair) && String(pair[0]).toLowerCase() === wanted) return String(pair[1]);
+      }
+      return undefined;
+    }
+    for (const [k, v] of Object.entries(headers as Record<string, unknown>)) {
+      if (k.toLowerCase() === wanted) return String(v);
+    }
+  } catch {
+    /* an unreadable header is an unknown media type */
+  }
+  return undefined;
 }
 
 let globalRequestCounter = 0;
@@ -447,16 +381,22 @@ export function wrapFetch(
           }
         }
         if (body !== undefined && body !== null) {
-          if (typeof body === 'string') bodyPreview = body;
-          else if (body instanceof URLSearchParams) bodyPreview = body.toString();
+          // Text that still has to go through `redactBodyPreview`. The other previews below
+          // are built here from structure (FormData entries) or carry no text (a size).
+          let rawText: string | undefined;
+          if (typeof body === 'string') rawText = body;
+          else if (body instanceof URLSearchParams) rawText = body.toString();
           else if (typeof FormData !== 'undefined' && body instanceof FormData) {
             const entries: string[] = [];
             for (const [k, v] of (body as any).entries()) {
-              // Redact per entry, before joining: the values are not escaped, so a
-              // credential containing `&` would otherwise survive as a trailing fragment
-              // of the joined string.
+              // A FormData is already parsed: mask each entry by its name, before joining
+              // (the joined string has no escaping, so it could not be parsed back). A string
+              // value that is itself a structure is masked by the same rules.
               if (isSecretBodyField(String(k))) entries.push(`${k}=${BODY_REDACTED}`);
-              else entries.push(`${k}=${typeof v === 'string' ? v.slice(0, 200) : '[File]'}`);
+              else {
+                const value = typeof v === 'string' ? redactEmbedded(v, 0).slice(0, 200) : '[File]';
+                entries.push(`${k}=${value}`);
+              }
             }
             bodyPreview = entries.join('&');
           } else if (body instanceof Blob) {
@@ -467,14 +407,21 @@ export function wrapFetch(
             bodyPreview = `[Uint8Array length=${(body as Uint8Array).length}]`;
           } else if (typeof body === 'object') {
             try {
-              bodyPreview = JSON.stringify(body);
+              rawText = JSON.stringify(body);
             } catch {
               bodyPreview = '[Unstringifiable object body]';
             }
           }
-          // Redact before the size cap: truncating first would leave a partial credential
-          // in the preview and defeat the structural parse.
-          if (bodyPreview) bodyPreview = redactBodyPreview(bodyPreview);
+          // Redact before the size cap: truncating first would cut a structure out of
+          // parseability and defeat the structural parse.
+          if (rawText) {
+            const contentType =
+              headerValue(init?.headers, 'content-type') ??
+              (typeof Request !== 'undefined' && input instanceof Request
+                ? headerValue(input.headers, 'content-type')
+                : undefined);
+            bodyPreview = redactBodyPreview(rawText, contentType);
+          }
           if (bodyPreview && bodyPreview.length > 4000)
             bodyPreview = `${bodyPreview.slice(0, 4000)}…`;
         }
@@ -537,7 +484,7 @@ export function wrapFetch(
               const text = await cloned.text();
               originalSize = text.length;
               // The OAuth token endpoint answers on this path: redact before truncating.
-              const safe = redactBodyPreview(text);
+              const safe = redactBodyPreview(text, ctype);
               respPreview = safe.slice(0, 4000);
               if (safe.length > 4000) respPreview += '…';
             } catch {
@@ -553,7 +500,7 @@ export function wrapFetch(
               const text = await cloned.text();
               if (text) {
                 originalSize = text.length;
-                const safe = redactBodyPreview(text);
+                const safe = redactBodyPreview(text, ctype);
                 respPreview = safe.slice(0, 200); // shorter for unknown types
                 if (safe.length > 200) respPreview += '…';
               }
