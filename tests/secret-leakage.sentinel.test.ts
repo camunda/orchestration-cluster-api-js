@@ -45,11 +45,28 @@ const OAUTH_URL = 'https://login.example.com/oauth/token';
 const REST_ADDRESS = 'https://mock.local';
 
 /**
+ * The value as it reads after being JSON-escaped once, twice, three and four times. The
+ * renderer stringifies every event, so a log argument that was already a JSON string (a
+ * caller logging `JSON.stringify(body)`) reaches the search escaped at least twice; a
+ * newline in a private key is `\n` after one pass and `\\n` after two, and the single-escape
+ * form never matches that deeper text.
+ */
+function jsonEscapedForms(value: string, passes = 4): string[] {
+  const forms: string[] = [];
+  let current = value;
+  for (let i = 0; i < passes; i++) {
+    current = JSON.stringify(current).slice(1, -1);
+    forms.push(current);
+  }
+  return forms;
+}
+
+/**
  * Every form a credential could plausibly be written in. Base64 matters because basic auth
  * encodes the password into the Authorization header.
  */
 function leakForms(value: string): string[] {
-  const forms = [value, encodeURIComponent(value), JSON.stringify(value).slice(1, -1)];
+  const forms = [value, encodeURIComponent(value), ...jsonEscapedForms(value)];
   try {
     forms.push(Buffer.from(value, 'utf8').toString('base64'));
     forms.push(Buffer.from(`user:${value}`, 'utf8').toString('base64'));
@@ -279,6 +296,36 @@ describe('sentinel-secret regression test', () => {
         data: { value },
       });
       expect(() => expectNoLeak(dataSinks.text(), 'a fixture')).toThrow();
+    }
+  });
+
+  it('detects a credential in a log argument that was already JSON-stringified', () => {
+    // A caller that logs `JSON.stringify(obj)` hands the renderer a string, and the renderer
+    // stringifies the whole event again, so a newline in the credential is escaped twice
+    // (`\\n`), and three times if that string was itself stringified before logging. The single-
+    // escape form alone would let a multi-line private key pass at those depths.
+    const value = SENTINELS.CAMUNDA_MTLS_KEY;
+    let layered = JSON.stringify({ key: value });
+    for (const depth of [1, 2, 3]) {
+      const asArg = makeSinks();
+      asArg.logTransport({ level: 'info', scope: 'x', args: ['payload', layered] });
+      expect(
+        () => expectNoLeak(asArg.text(), 'a fixture'),
+        `a log argument stringified ${depth} time(s) before logging`
+      ).toThrow();
+      const asData = makeSinks();
+      asData.logTransport({
+        level: 'warn',
+        scope: 'x',
+        args: ['msg'],
+        code: 'C',
+        data: { body: layered },
+      });
+      expect(
+        () => expectNoLeak(asData.text(), 'a fixture'),
+        `a data field stringified ${depth} time(s) before logging`
+      ).toThrow();
+      layered = JSON.stringify(layered);
     }
   });
 
