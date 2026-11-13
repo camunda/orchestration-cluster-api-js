@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ThreadedJobWorker } from '../src/runtime/threadedJobWorker';
 
 /**
@@ -128,7 +128,7 @@ describe('ThreadedJobWorker dispatch failure handling', () => {
       customHeaders: {},
     });
 
-    await new Promise((r) => setTimeout(r, 10));
+    await vi.waitFor(() => expect(worker.activeJobs).toBe(0));
 
     expect(dispatched.length, 'an unserializable job must not reach a thread').toBe(0);
     expect(failed.length, 'the job must be failed through the normal failure path').toBe(1);
@@ -163,7 +163,7 @@ describe('ThreadedJobWorker dispatch failure handling', () => {
       variables: deeplyNested(),
       customHeaders: {},
     });
-    await new Promise((r) => setTimeout(r, 10));
+    await vi.waitFor(() => expect(worker.activeJobs).toBe(0));
 
     expect(failed.length).toBe(1);
     expect(failed[0].jobLeaseToken).toBe('lease-abc');
@@ -190,7 +190,7 @@ describe('ThreadedJobWorker dispatch failure handling', () => {
     worker._activeJobs = 1;
 
     worker._handleJob({ jobKey: '81', retries: 4, variables: { ok: true }, customHeaders: {} });
-    await new Promise((r) => setTimeout(r, 10));
+    await vi.waitFor(() => expect(worker.activeJobs).toBe(0));
 
     expect(failed.length, 'an async dispatch rejection must fail the job').toBe(1);
     expect(failed[0].retries).toBe(3);
@@ -201,6 +201,7 @@ describe('ThreadedJobWorker dispatch failure handling', () => {
   it('releases the permit exactly once when a callback and a rejection both fire', async () => {
     const { log } = captureLog();
     const { client, failed } = stubClient(log);
+    const dispatches: Promise<void>[] = [];
     const pool = {
       ready: Promise.resolve(),
       size: 1,
@@ -209,16 +210,23 @@ describe('ThreadedJobWorker dispatch failure handling', () => {
       onThreadReady: undefined as undefined | (() => void),
       getIdleWorker: () => ({ id: 1 }),
       // Reports the job complete and *then* rejects, which must not double-release.
-      dispatch: async (_pw: any, _data: any, _mod: any, cbs: any) => {
-        cbs.onComplete(undefined);
-        throw new Error('late dispatch failure');
+      dispatch: (_pw: any, _data: any, _mod: any, cbs: any) => {
+        const p = (async () => {
+          cbs.onComplete(undefined);
+          throw new Error('late dispatch failure');
+        })();
+        dispatches.push(p);
+        return p;
       },
     } as any;
     const worker = makeWorker(pool, client);
     worker._activeJobs = 2;
 
     worker._handleJob({ jobKey: '82', retries: 2, variables: { ok: true }, customHeaders: {} });
-    await new Promise((r) => setTimeout(r, 10));
+    // Deterministic signal: the dispatch promise has settled and the worker's rejection
+    // handler (attached to that same promise) has run, so the late failure has been seen.
+    await Promise.allSettled(dispatches);
+    await Promise.resolve();
 
     expect(worker.activeJobs, 'the permit must be released exactly once').toBe(1);
     expect(failed.length, 'a completed job must not also be failed').toBe(0);
@@ -235,11 +243,55 @@ describe('ThreadedJobWorker dispatch failure handling', () => {
     worker._activeJobs = 1;
 
     worker._handleJob({ jobKey: '79', retries: 2, variables: { ok: true }, customHeaders: {} });
-    await new Promise((r) => setTimeout(r, 10));
+    await vi.waitFor(() => expect(worker.activeJobs).toBe(0));
 
     expect(failed.length, 'any dispatch failure must fail the job').toBe(1);
     expect(worker.activeJobs, 'any dispatch failure must release the permit').toBe(0);
     expect(rejections).toEqual([]);
+  });
+
+  // The failure classification must not read properties of the thrown value: job variables
+  // are untrusted and a schema `toJSON()` can throw anything, including an object whose
+  // `constructor.name` is payload content, or one whose `constructor` getter itself throws.
+  it('logs no payload-derived text when serialization throws an arbitrary value', async () => {
+    const MARKER = 'PAYLOAD-DERIVED-MARKER-ZQX7';
+    const thrown = [
+      { constructor: { name: MARKER } },
+      Object.defineProperty({}, 'constructor', {
+        get() {
+          throw new Error(MARKER);
+        },
+      }),
+      MARKER,
+      null,
+    ];
+    for (const value of thrown) {
+      const { events, log } = captureLog();
+      const { client, failed } = stubClient(log);
+      const { pool, dispatched } = stubPool();
+      const worker = makeWorker(pool, client);
+      worker._activeJobs = 1;
+
+      worker._handleJob({
+        jobKey: '90',
+        retries: 3,
+        variables: {
+          toJSON() {
+            throw value;
+          },
+        },
+        customHeaders: {},
+      });
+      await vi.waitFor(() => expect(worker.activeJobs).toBe(0));
+
+      expect(dispatched.length).toBe(0);
+      expect(failed.length, 'the job must still be failed').toBe(1);
+      const text = events
+        .map((e) => `${e.level} ${e.args.map((a: any) => JSON.stringify(a)).join(' ')}`)
+        .join('\n');
+      expect(text, 'thrown-value content must not reach the log').not.toContain(MARKER);
+      expect(JSON.stringify(failed[0].errorMessage)).not.toContain(MARKER);
+    }
   });
 
   it('still dispatches a normal job', async () => {
@@ -250,7 +302,6 @@ describe('ThreadedJobWorker dispatch failure handling', () => {
     worker._activeJobs = 1;
 
     worker._handleJob({ jobKey: '80', retries: 2, variables: { a: 1 }, customHeaders: { h: 'x' } });
-    await new Promise((r) => setTimeout(r, 10));
 
     expect(dispatched.length).toBe(1);
     expect(dispatched[0][1]).toMatchObject({ jobKey: '80', variables: { a: 1 } });

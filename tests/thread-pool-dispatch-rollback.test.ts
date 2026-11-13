@@ -146,3 +146,151 @@ describe('ThreadPool.dispatch rollback when postMessage fails', () => {
     expect(pool.busyCount, 'the thread must be free again').toBe(0);
   });
 });
+
+describe('ThreadPool.dispatch rollback when channel setup fails', () => {
+  let pool: ThreadPool | undefined;
+
+  afterEach(() => {
+    pool?.terminate();
+    pool = undefined;
+  });
+
+  it('frees the thread when the MessageChannel cannot be constructed', async () => {
+    const { client } = stubClient();
+    pool = new ThreadPool(client, 1);
+    await pool.ready;
+    const pw = (pool as any)._pool[0];
+    pw.ready = true;
+    (pool as any)._node.MessageChannel = class {
+      constructor() {
+        throw new Error('no more channels');
+      }
+    };
+
+    await expect(
+      pool.dispatch(pw, { jobKey: '1' }, '/dev/null', { onComplete: () => {}, onError: () => {} })
+    ).rejects.toThrow(/no more channels/);
+
+    expect(pw.busy, 'the thread must not stay busy').toBe(false);
+    expect(pw.currentTaskId).toBeUndefined();
+    expect((pool as any)._pending.size).toBe(0);
+  });
+
+  it('frees the thread and closes both ports when the port handler cannot be installed', async () => {
+    const { client } = stubClient();
+    pool = new ThreadPool(client, 1);
+    await pool.ready;
+    const pw = (pool as any)._pool[0];
+    pw.ready = true;
+    const opened = recordPorts(pool);
+    // `installClientCallHandler` subscribes with `port.on`; make that fail on the new port.
+    const Recording = (pool as any)._node.MessageChannel;
+    (pool as any)._node.MessageChannel = class extends Recording {
+      constructor() {
+        super();
+        (this as any).port1.on = () => {
+          throw new Error('cannot listen');
+        };
+      }
+    };
+
+    await expect(
+      pool.dispatch(pw, { jobKey: '1' }, '/dev/null', { onComplete: () => {}, onError: () => {} })
+    ).rejects.toThrow(/cannot listen/);
+
+    expect(pw.busy, 'the thread must not stay busy').toBe(false);
+    expect(pw.currentTaskId).toBeUndefined();
+    expect((pool as any)._pending.size).toBe(0);
+    expect(opened.length).toBe(2);
+    expect(
+      opened.map((p) => p.closed),
+      'both ports must be closed'
+    ).toEqual([true, true]);
+  });
+});
+
+describe('ThreadPool readiness notification after a failed dispatch', () => {
+  let pool: ThreadPool | undefined;
+
+  afterEach(() => {
+    pool?.terminate();
+    pool = undefined;
+  });
+
+  it('tells the registered worker the thread is idle only once it really is', async () => {
+    const { client } = stubClient();
+    pool = new ThreadPool(client, 1);
+    await pool.ready;
+    const pw = breakPostMessage(pool);
+    const opened = recordPorts(pool);
+    const seen: { busy: boolean; pending: number; closed: boolean[] }[] = [];
+    pool.onThreadReady = () =>
+      seen.push({
+        busy: pw.busy,
+        pending: (pool as any)._pending.size,
+        closed: opened.map((p) => p.closed),
+      });
+
+    await pool
+      .dispatch(pw, { jobKey: '1' }, '/dev/null', { onComplete: () => {}, onError: () => {} })
+      .catch(() => undefined);
+
+    expect(seen.length, 'the readiness callback must fire once after the rollback').toBe(1);
+    expect(seen[0].busy).toBe(false);
+    expect(seen[0].pending).toBe(0);
+    expect(seen[0].closed.every(Boolean), 'ports are closed before the notification').toBe(true);
+  });
+
+  it('does not let a throwing readiness callback replace the dispatch failure', async () => {
+    const { client } = stubClient();
+    pool = new ThreadPool(client, 1);
+    await pool.ready;
+    const pw = breakPostMessage(pool);
+    pool.onThreadReady = () => {
+      throw new Error('callback exploded');
+    };
+
+    await expect(
+      pool.dispatch(pw, { jobKey: '1' }, '/dev/null', { onComplete: () => {}, onError: () => {} })
+    ).rejects.toThrow(/could not be cloned/);
+  });
+
+  it('drains a second worker queue that was waiting for the shared thread', async () => {
+    const { client, failed } = stubClient();
+    pool = new ThreadPool(client, 1);
+    await pool.ready;
+    const pw = (pool as any)._pool[0];
+    pw.ready = true;
+    const posted: any[] = [];
+    pw.worker.postMessage = (msg: any) => {
+      posted.push(msg);
+      // Only the first job fails to clone; the next one is accepted.
+      if (posted.length === 1) throw new DOMException('could not be cloned', 'DataCloneError');
+    };
+    const cfg = {
+      handlerModule: '/dev/null',
+      maxParallelJobs: 1,
+      pollIntervalMs: 10_000,
+      autoStart: false,
+    };
+    const failing: any = new ThreadedJobWorker(client, pool, {
+      ...cfg,
+      jobType: 'failing',
+    } as any);
+    // The pool holds one readiness callback; the worker constructed last owns it.
+    const waiting: any = new ThreadedJobWorker(client, pool, { ...cfg, jobType: 'waiting' } as any);
+    waiting._activeJobs = 1;
+    waiting._jobQueue.push({ raw: { jobKey: '2', retries: 1, variables: {}, customHeaders: {} } });
+
+    failing._activeJobs = 1;
+    failing._handleJob({ jobKey: '1', retries: 3, variables: { ok: true }, customHeaders: {} });
+
+    await vi.waitFor(() => expect(failing.activeJobs).toBe(0));
+    expect(failed.map((f: any) => f.jobKey)).toEqual(['1']);
+    expect(
+      posted.map((m) => m.jobData.jobKey),
+      'the waiting worker must be handed the thread the failed dispatch released'
+    ).toEqual(['1', '2']);
+    expect(waiting._jobQueue.length).toBe(0);
+  });
+});
