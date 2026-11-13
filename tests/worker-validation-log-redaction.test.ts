@@ -112,6 +112,25 @@ describe('projectValidationFailure', () => {
     expect(JSON.stringify(projectValidationFailure(result.error))).not.toContain(UNDECLARED_KEY);
   });
 
+  it('pins the known residual: a record key is payload-derived and survives in the path', () => {
+    // Documented in the PR for #619 and deliberately not "fixed" here. For the object
+    // schemas handlers normally write, a path segment is a schema-declared field name. For
+    // z.record() the segment is a key taken from the payload, so the projection is
+    // value-free but not entirely key-free. Narrowing that further — for example omitting
+    // segments whose schema provenance cannot be established — trades away the diagnostic
+    // value of the path, which is a call for the team rather than something to slip in
+    // here. This test exists so the behaviour cannot change silently in either direction.
+    const record = z.record(z.string(), z.number());
+    const result = record.safeParse({ [UNDECLARED_KEY]: 'not-a-number' });
+    if (result.success) throw new Error('expected a validation failure');
+
+    const projection = projectValidationFailure(result.error);
+    // The failing value never appears...
+    expect(JSON.stringify(projection)).not.toContain('not-a-number');
+    // ...but the payload-supplied key does, as the path.
+    expect(projection.issues[0].path).toBe(UNDECLARED_KEY);
+  });
+
   it('renders nested and indexed paths without reading any value', () => {
     const nested = z.object({
       order: z.object({ items: z.array(z.object({ total: z.number() })) }),
