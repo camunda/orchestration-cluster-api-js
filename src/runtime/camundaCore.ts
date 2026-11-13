@@ -156,7 +156,17 @@ export class CamundaCore {
   protected _overrides: EnvOverrides = {};
 
   constructor(opts: CamundaOptions = {}) {
-    if (opts.config) this._overrides = { ...opts.config };
+    // The caller's own override map holds raw credentials and is kept so configure() can
+    // re-hydrate from it. Hold it as a non-enumerable property so it stays off the client's
+    // enumerable surface: `console.log(client)`, `util.inspect(client)` and
+    // `JSON.stringify(client)` would otherwise print every secret the caller passed in,
+    // even though the hydrated `config` itself redacts them.
+    Object.defineProperty(this, '_overrides', {
+      value: opts.config ? { ...opts.config } : {},
+      enumerable: false,
+      writable: true,
+      configurable: true,
+    });
     this._clock = opts.clock ?? createLiveClock();
     this._random = opts.random ?? liveRandom;
     const { config } = hydrateConfig({ overrides: this._overrides, env: opts.env });
