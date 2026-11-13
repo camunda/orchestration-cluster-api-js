@@ -111,6 +111,124 @@ function redactUrl(u: string): string {
   }
 }
 
+/**
+ * Field names whose value is a credential wherever it appears in a request or response body.
+ *
+ * Covers the OAuth token exchange (`client_secret` in the form-encoded request, `access_token`
+ * / `id_token` / `refresh_token` in the JSON response), the private-key-JWT and
+ * resource-owner grants, and the camelCase spellings the SDK's own JSON bodies would use.
+ * Matching is on the whole field name and is case-insensitive.
+ */
+const SECRET_BODY_FIELDS = new Set(
+  [
+    'client_secret',
+    'clientsecret',
+    'client_assertion',
+    'clientassertion',
+    'assertion',
+    'password',
+    'passphrase',
+    'key_passphrase',
+    'keypassphrase',
+    'private_key',
+    'privatekey',
+    'access_token',
+    'accesstoken',
+    'refresh_token',
+    'refreshtoken',
+    'id_token',
+    'idtoken',
+    'authorization',
+  ].map((k) => k.toLowerCase())
+);
+
+const BODY_REDACTED = '[redacted]';
+
+function isSecretBodyField(name: string): boolean {
+  return SECRET_BODY_FIELDS.has(name.toLowerCase());
+}
+
+/** Mask the values of credential fields in an `application/x-www-form-urlencoded` body. */
+function redactFormBody(body: string): string {
+  return body
+    .split('&')
+    .map((pair) => {
+      const eq = pair.indexOf('=');
+      if (eq < 0) return pair;
+      const rawName = pair.slice(0, eq);
+      let name = rawName;
+      try {
+        name = decodeURIComponent(rawName.replace(/\+/g, ' '));
+      } catch {
+        /* keep the raw name; a malformed escape is not a reason to stop redacting */
+      }
+      return isSecretBodyField(name) ? `${rawName}=${BODY_REDACTED}` : pair;
+    })
+    .join('&');
+}
+
+/** Mask the values of credential fields anywhere in a parsed JSON body. */
+function redactJsonValue(value: unknown, seen: WeakSet<object>): unknown {
+  if (value === null || typeof value !== 'object') return value;
+  if (seen.has(value)) return '[Circular]';
+  seen.add(value);
+  try {
+    if (Array.isArray(value)) return value.map((v) => redactJsonValue(v, seen));
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value)) {
+      out[k] = isSecretBodyField(k) ? BODY_REDACTED : redactJsonValue(v, seen);
+    }
+    return out;
+  } finally {
+    seen.delete(value);
+  }
+}
+
+/**
+ * Last-resort textual sweep for a body that is neither valid JSON nor form-encoded — for
+ * example a JSON payload already truncated by a size cap. Matches `"name": "value"` and
+ * `name=value` for the known credential field names only.
+ */
+function redactBodyText(body: string): string {
+  let out = body.replace(
+    /("([A-Za-z0-9_]+)"\s*:\s*)"(?:[^"\\]|\\.)*"/g,
+    (match, prefix: string, name: string) =>
+      isSecretBodyField(name) ? `${prefix}"${BODY_REDACTED}"` : match
+  );
+  out = out.replace(/([A-Za-z0-9_%+.-]+)=([^&\s]*)/g, (match, name: string, _v: string) =>
+    isSecretBodyField(name) ? `${name}=${BODY_REDACTED}` : match
+  );
+  return out;
+}
+
+/**
+ * Redact credential values from an HTTP body preview.
+ *
+ * The silly-level previews below log request and response bodies verbatim, and the OAuth
+ * token request runs through this same wrapped fetch — so without this the preview carried
+ * `client_secret=…` and the token endpoint's `access_token`. The level is opt-in and warned
+ * about, but "a secret must not appear in logs" is unconditional, so redact at the source
+ * rather than relying on the warning.
+ */
+export function redactBodyPreview(body: string): string {
+  if (!body) return body;
+  try {
+    const trimmed = body.trim();
+    if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+      try {
+        return JSON.stringify(redactJsonValue(JSON.parse(trimmed), new WeakSet()));
+      } catch {
+        // Not parseable (truncated, or not JSON after all) — fall through to the sweep.
+      }
+    }
+    if (!trimmed.includes('{') && trimmed.includes('=')) return redactFormBody(body);
+    return redactBodyText(body);
+  } catch {
+    // Never let redaction failure hand the caller the unredacted body.
+    return '[body preview omitted: redaction failed]';
+  }
+}
+
 let globalRequestCounter = 0;
 
 // No-op fast path wrapper
@@ -191,11 +309,14 @@ export function wrapFetch(
             bodyPreview = `[Uint8Array length=${(body as Uint8Array).length}]`;
           } else if (typeof body === 'object') {
             try {
-              bodyPreview = JSON.stringify(body).slice(0, 4000);
+              bodyPreview = JSON.stringify(body);
             } catch {
               bodyPreview = '[Unstringifiable object body]';
             }
           }
+          // Redact before the size cap: truncating first would leave a partial credential
+          // in the preview and defeat the structural parse.
+          if (bodyPreview) bodyPreview = redactBodyPreview(bodyPreview);
           if (bodyPreview && bodyPreview.length > 4000)
             bodyPreview = `${bodyPreview.slice(0, 4000)}…`;
         }
@@ -257,8 +378,10 @@ export function wrapFetch(
             try {
               const text = await cloned.text();
               originalSize = text.length;
-              respPreview = text.slice(0, 4000);
-              if (text.length > 4000) respPreview += '…';
+              // The OAuth token endpoint answers on this path: redact before truncating.
+              const safe = redactBodyPreview(text);
+              respPreview = safe.slice(0, 4000);
+              if (safe.length > 4000) respPreview += '…';
             } catch {
               respPreview = undefined;
             }
@@ -272,8 +395,9 @@ export function wrapFetch(
               const text = await cloned.text();
               if (text) {
                 originalSize = text.length;
-                respPreview = text.slice(0, 200); // shorter for unknown types
-                if (text.length > 200) respPreview += '…';
+                const safe = redactBodyPreview(text);
+                respPreview = safe.slice(0, 200); // shorter for unknown types
+                if (safe.length > 200) respPreview += '…';
               }
             } catch {
               /* ignore */
