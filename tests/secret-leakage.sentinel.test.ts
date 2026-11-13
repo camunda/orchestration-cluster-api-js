@@ -59,31 +59,46 @@ function leakForms(value: string): string[] {
   return [...new Set(forms)].filter((f) => f.length >= 12);
 }
 
+/**
+ * Render anything to a searchable string without dropping content.
+ *
+ * Two traps this has to avoid, or the assertions pass for the wrong reason:
+ * cycle tracking must be scoped to one render — a set shared across events would replace
+ * the *second* sighting of an ordinary object with `[Circular]` and hide anything it has
+ * acquired since — and an `Error` nested inside a log argument must be expanded, because
+ * `JSON.stringify` drops `message`, `stack` and `cause` from a plain Error.
+ */
+function renderValue(value: unknown): string {
+  const seen = new WeakSet<object>();
+  const expandError = (e: Error): Record<string, unknown> => ({
+    __error: e.name,
+    message: e.message,
+    stack: e.stack,
+    cause: (e as any).cause instanceof Error ? expandError((e as any).cause) : (e as any).cause,
+  });
+  const normalize = (v: unknown): unknown => (v instanceof Error ? expandError(v) : v);
+
+  if (typeof value === 'string') return value;
+  try {
+    return (
+      JSON.stringify(normalize(value), (_k, v) => {
+        const normalized = normalize(v);
+        if (normalized && typeof normalized === 'object') {
+          if (seen.has(normalized)) return '[Circular]';
+          seen.add(normalized);
+        }
+        return typeof normalized === 'bigint' ? String(normalized) : normalized;
+      }) ?? String(value)
+    );
+  } catch {
+    return String(value);
+  }
+}
+
 /** Collects every sink and renders it as one searchable string. */
 function makeSinks() {
   const chunks: string[] = [];
-  const seenCycles = new WeakSet<object>();
-  const render = (value: unknown): string => {
-    if (typeof value === 'string') return value;
-    if (value instanceof Error) {
-      return [value.name, value.message, value.stack, render((value as any).cause)]
-        .filter(Boolean)
-        .join('\n');
-    }
-    try {
-      return (
-        JSON.stringify(value, (_k, v) => {
-          if (v && typeof v === 'object') {
-            if (seenCycles.has(v)) return '[Circular]';
-            seenCycles.add(v);
-          }
-          return typeof v === 'bigint' ? String(v) : v;
-        }) ?? String(value)
-      );
-    } catch {
-      return String(value);
-    }
-  };
+  const render = renderValue;
 
   const record = (label: string, value: unknown) => chunks.push(`${label} ${render(value)}`);
 
@@ -107,7 +122,9 @@ function makeSinks() {
   return {
     hooks,
     telemetryEvents,
-    logTransport: (e: any) => record(`log.${e.level}.${e.scope ?? ''}`, e.args ?? e),
+    // The whole event, not just `args`: `logger.code()` emits a structured `data` field
+    // alongside `args`, and a credential there would otherwise never be searched.
+    logTransport: (e: any) => record(`log.${e?.level}.${e?.scope ?? ''}`, e),
     captureError: (e: unknown) => record('thrown', e),
     text: () => chunks.join('\n'),
   };
@@ -155,10 +172,18 @@ function makeClient(
     fetch: fetchImpl,
     // `trace` is the deepest level that is not the explicitly-unsafe `silly`.
     log: { level: 'trace', transport: sinks.logTransport },
-    telemetry: { hooks: sinks.hooks as any },
+    // `mirrorToLog` must be explicit: supplying `hooks` takes the client off the path that
+    // auto-enables HTTP trace mirroring at trace level, so without this the log transport
+    // would never see an HTTP line and the assertions would rest on the hooks alone.
+    telemetry: { hooks: sinks.hooks as any, mirrorToLog: true },
   });
 }
 
+/**
+ * The configurations the scenarios below actually run with, declared once so the coverage
+ * guard can check that every sentinel really enters the SDK somewhere — a sentinel that is
+ * only ever searched for, never configured, would make its assertions vacuous.
+ */
 const OAUTH_CONFIG = {
   CAMUNDA_AUTH_STRATEGY: 'OAUTH',
   CAMUNDA_OAUTH_URL: OAUTH_URL,
@@ -166,6 +191,25 @@ const OAUTH_CONFIG = {
   CAMUNDA_CLIENT_SECRET: SENTINELS.CAMUNDA_CLIENT_SECRET,
   CAMUNDA_OAUTH_RETRY_MAX: '2',
   CAMUNDA_OAUTH_RETRY_BASE_DELAY_MS: '1',
+};
+
+const BASIC_CONFIG = {
+  CAMUNDA_AUTH_STRATEGY: 'BASIC',
+  CAMUNDA_BASIC_AUTH_USERNAME: 'user',
+  CAMUNDA_BASIC_AUTH_PASSWORD: SENTINELS.CAMUNDA_BASIC_AUTH_PASSWORD,
+};
+
+const MTLS_CONFIG = {
+  CAMUNDA_AUTH_STRATEGY: 'NONE',
+  CAMUNDA_MTLS_CERT: CERT,
+  CAMUNDA_MTLS_KEY: SENTINELS.CAMUNDA_MTLS_KEY,
+  CAMUNDA_MTLS_KEY_PASSPHRASE: SENTINELS.CAMUNDA_MTLS_KEY_PASSPHRASE,
+};
+
+const SCENARIO_CONFIGS: Record<string, Record<string, string>> = {
+  oauth: OAUTH_CONFIG,
+  basic: BASIC_CONFIG,
+  mtls: MTLS_CONFIG,
 };
 
 describe('sentinel-secret regression test', () => {
@@ -179,6 +223,22 @@ describe('sentinel-secret regression test', () => {
     ).toEqual(schemaSecrets);
   });
 
+  it('actually configures every sentinel in a scenario', () => {
+    // A sentinel that is searched for but never configured would make its assertions
+    // vacuous: the SDK never holds the value, so of course it never leaks it. Require each
+    // one to appear, with its sentinel value, in a configuration a scenario below runs.
+    const configured = new Set<string>();
+    for (const config of Object.values(SCENARIO_CONFIGS)) {
+      for (const [key, value] of Object.entries(config)) {
+        if (SENTINELS[key] === value) configured.add(key);
+      }
+    }
+    expect(
+      [...configured].sort(),
+      'a sentinel is declared but never configured in any scenario — give the new credential a scenario, not just a sentinel'
+    ).toEqual(Object.keys(SENTINELS).sort());
+  });
+
   it('the leak detector actually detects a leak', () => {
     // Guards against a vacuous suite: if expectNoLeak ever stopped matching, every
     // assertion below would pass for the wrong reason.
@@ -187,7 +247,33 @@ describe('sentinel-secret regression test', () => {
       // Base64 is how a basic-auth password reaches an Authorization header.
       const encoded = Buffer.from(`user:${value}`, 'utf8').toString('base64');
       expect(() => expectNoLeak(`Authorization: Basic ${encoded}`, 'a fixture')).toThrow();
+      // An Error nested inside a log argument: JSON.stringify drops message and stack from
+      // a plain Error, so the renderer has to expand it or this leak would go unseen.
+      const sinks = makeSinks();
+      sinks.logTransport({ level: 'error', scope: 'x', args: ['boom', new Error(value)] });
+      expect(() => expectNoLeak(sinks.text(), 'a fixture')).toThrow();
+      // A credential in the structured `data` field of a logger.code() event.
+      const dataSinks = makeSinks();
+      dataSinks.logTransport({
+        level: 'warn',
+        scope: 'x',
+        args: ['msg'],
+        code: 'C',
+        data: { value },
+      });
+      expect(() => expectNoLeak(dataSinks.text(), 'a fixture')).toThrow();
     }
+  });
+
+  it('does not hide a repeated object as circular', () => {
+    // A cycle set shared across events would replace the second sighting of an ordinary
+    // object with [Circular] and hide whatever it had acquired since.
+    const shared: any = { seen: 'first' };
+    const sinks = makeSinks();
+    sinks.logTransport({ level: 'info', scope: 'x', args: [shared] });
+    shared.seen = SENTINELS.CAMUNDA_CLIENT_SECRET;
+    sinks.logTransport({ level: 'info', scope: 'x', args: [shared] });
+    expect(() => expectNoLeak(sinks.text(), 'a fixture')).toThrow();
   });
 
   it('auth success: no credential reaches logs or telemetry', async () => {
@@ -214,7 +300,10 @@ describe('sentinel-secret regression test', () => {
 
     // The run really did exercise auth and HTTP, so the assertion is not vacuous.
     expect(sinks.telemetryEvents.some((e) => e.type === 'auth.success')).toBe(true);
-    expect(sinks.text()).toContain('http.end');
+    // Specifically through the *log transport*, not only through the telemetry hooks.
+    expect(sinks.text(), 'the HTTP log transport was never exercised').toMatch(
+      /log\.trace\.telemetry .*http\.end/
+    );
     expectNoLeak(sinks.text(), 'the auth success path');
   });
 
@@ -275,11 +364,7 @@ describe('sentinel-secret regression test', () => {
   it('basic auth: the password does not reach logs or telemetry, in any encoding', async () => {
     const sinks = makeSinks();
     const client = makeClient(
-      {
-        CAMUNDA_AUTH_STRATEGY: 'BASIC',
-        CAMUNDA_BASIC_AUTH_USERNAME: 'user',
-        CAMUNDA_BASIC_AUTH_PASSWORD: SENTINELS.CAMUNDA_BASIC_AUTH_PASSWORD,
-      },
+      BASIC_CONFIG,
       sinks,
       makeFetch(() => new Response('{}', { status: 200 }))
     );
@@ -295,12 +380,7 @@ describe('sentinel-secret regression test', () => {
   it('mTLS: the inline private key and passphrase do not reach logs or telemetry', async () => {
     const sinks = makeSinks();
     const client = makeClient(
-      {
-        CAMUNDA_AUTH_STRATEGY: 'NONE',
-        CAMUNDA_MTLS_CERT: CERT,
-        CAMUNDA_MTLS_KEY: SENTINELS.CAMUNDA_MTLS_KEY,
-        CAMUNDA_MTLS_KEY_PASSPHRASE: SENTINELS.CAMUNDA_MTLS_KEY_PASSPHRASE,
-      },
+      MTLS_CONFIG,
       sinks,
       makeFetch(() => new Response('{}', { status: 200 }))
     );
