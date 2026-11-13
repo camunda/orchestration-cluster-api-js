@@ -192,11 +192,11 @@ describe('hydrated config secret redaction on stringify and inspect', () => {
     const { config } = hydrateConfig({ env: envWithAllSecrets() });
     const json = JSON.parse(JSON.stringify(config));
 
-    // The nested credential fields are present but masked.
-    expect(json.oauth.clientSecret).toMatch(/^\*+ZQX7$/);
-    expect(json.auth.basic.password).toMatch(/^\*+ZQX7$/);
-    expect(json.mtls.key).toMatch(/^\*+ZQX7$/);
-    expect(json.mtls.keyPassphrase).toMatch(/^\*+ZQX7$/);
+    // The nested credential fields are present but masked, with no character of them kept.
+    expect(json.oauth.clientSecret).toMatch(/^\*+$/);
+    expect(json.auth.basic.password).toMatch(/^\*+$/);
+    expect(json.mtls.key).toMatch(/^\*+$/);
+    expect(json.mtls.keyPassphrase).toMatch(/^\*+$/);
 
     // `__raw` is the schema-keyed map, so every secret key in it is masked too.
     for (const key of secretKeys()) {

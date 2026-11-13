@@ -173,6 +173,16 @@ function redactSecret(v: string): string {
 }
 
 /**
+ * Mask for the stringify and inspect view: length only, no character of the credential.
+ * Keeping a suffix (as `redactSecret` does for the `redacted` map) can print another
+ * credential in full when that one is the same short string, and for a padded credential
+ * it can show a short value whole.
+ */
+function maskCredential(v: string): string {
+  return '*'.repeat(v.length);
+}
+
+/**
  * Collect the credential values this hydration was given, taken from the schema-keyed raw
  * map so the set is derived from `configSchema.ts` (every key with `secret: true`) rather
  * than from a hand-maintained list of config fields that can drift from it.
@@ -197,7 +207,7 @@ function collectSecretValues(raw: Record<string, string | undefined>): Set<strin
  * credential added to the config shape later is covered without this function changing.
  */
 function redactSecretValues(value: unknown, secrets: Set<string>, seen: WeakSet<object>): unknown {
-  if (typeof value === 'string') return secrets.has(value) ? redactSecret(value) : value;
+  if (typeof value === 'string') return secrets.has(value) ? maskCredential(value) : value;
   if (value === null || typeof value !== 'object') return value;
   if (seen.has(value)) return '[Circular]';
   seen.add(value);
