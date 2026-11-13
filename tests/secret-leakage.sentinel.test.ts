@@ -101,6 +101,18 @@ function renderValue(value: unknown): string {
     cause: (e as any).cause,
   });
 
+  // JSON.stringify renders a Headers, Map, Set or URLSearchParams as `{}`: their entries are
+  // internal slots, not own properties. Hand the replacer their entries instead, so a
+  // credential held in one (a logged request's headers, say) is searched like any other value.
+  // The entries are visited through the same replacer, so nesting and cycles are handled.
+  const expandCollection = (v: unknown): unknown => {
+    if (v instanceof Map || v instanceof Headers || v instanceof URLSearchParams) {
+      return { __collection: v.constructor.name, entries: [...v.entries()] };
+    }
+    if (v instanceof Set) return { __collection: 'Set', values: [...v.values()] };
+    return v;
+  };
+
   if (typeof value === 'string') return value;
   try {
     return (
@@ -111,7 +123,7 @@ function renderValue(value: unknown): string {
           if (seen.has(v)) return '[Circular]';
           seen.add(v);
         }
-        const out = v instanceof Error ? expandError(v) : v;
+        const out = v instanceof Error ? expandError(v) : expandCollection(v);
         return typeof out === 'bigint' ? String(out) : out;
       }) ?? String(value)
     );
@@ -296,6 +308,39 @@ describe('sentinel-secret regression test', () => {
         data: { value },
       });
       expect(() => expectNoLeak(dataSinks.text(), 'a fixture')).toThrow();
+    }
+  });
+
+  it('sees the contents of a Headers, Map, Set or URLSearchParams in a log argument', () => {
+    // JSON.stringify renders every one of these as `{}`: the entries live in internal slots,
+    // not own properties, so a credential logged inside one would pass the check. A request's
+    // headers (`Authorization`), a map of options and a query-string object are all plausible
+    // log arguments.
+    const value = SENTINELS.CAMUNDA_CLIENT_SECRET;
+    const planted: Array<[string, unknown]> = [
+      ['a Headers', new Headers({ authorization: `Bearer ${value}` })],
+      ['a Map value', new Map([['password', value]])],
+      ['a Map key', new Map([[value, 1]])],
+      ['a Map holding an object', new Map([['config', { client_secret: value }]])],
+      ['a Set', new Set(['a', value])],
+      ['a URLSearchParams', new URLSearchParams({ client_secret: value })],
+      ['a Headers inside an object', { request: { headers: new Headers({ 'x-key': value }) } }],
+      ['a Map inside an array', [new Map([['k', new Set([value])]])]],
+      [
+        'a Headers in a field of an Error',
+        Object.assign(new Error('boom'), { headers: new Headers({ a: value }) }),
+      ],
+    ];
+    for (const [label, arg] of planted) {
+      const logged = makeSinks();
+      logged.logTransport({ level: 'info', scope: 'x', args: ['msg', arg] });
+      expect(() => expectNoLeak(logged.text(), 'a fixture'), `log arg: ${label}`).toThrow();
+      const data = makeSinks();
+      data.logTransport({ level: 'warn', scope: 'x', args: ['msg'], code: 'C', data: { arg } });
+      expect(() => expectNoLeak(data.text(), 'a fixture'), `log data: ${label}`).toThrow();
+      const thrown = makeSinks();
+      thrown.captureError(arg);
+      expect(() => expectNoLeak(thrown.text(), 'a fixture'), `thrown: ${label}`).toThrow();
     }
   });
 
