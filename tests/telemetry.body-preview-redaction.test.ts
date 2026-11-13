@@ -170,6 +170,28 @@ describe('redactBodyPreview', () => {
     }
   });
 
+  it('masks a whole container held by a credential property in truncated JSON', () => {
+    // Complete JSON masks the entire value of a credential property, object or array
+    // included, so the sweep has to do the same when the body is cut off: the members of the
+    // container are not credential names, but they are credential content.
+    for (const body of [
+      `{"authorization":{"scheme":"Bearer","token":"${TOKEN}"},"tru`,
+      `{"password":["a","${SECRET}"],"tru`,
+      `{"client_secret":{"parts":[{"v":"${SECRET}"}],"note":"a]b}c \\"${SECRET}"},"tru`,
+      `{"access_token":{"value":"${TOKEN}"`,
+      `{"refresh_token":["${REFRESH}",`,
+    ]) {
+      const out = redactBodyPreview(body);
+      for (const secret of [TOKEN, SECRET, REFRESH]) {
+        expect(out, `${body} -> ${out}`).not.toContain(secret);
+      }
+    }
+    // What follows the container stays readable.
+    const out = redactBodyPreview(`{"password":{"a":"${SECRET}"},"keep":"visible","tru`);
+    expect(out).not.toContain(SECRET);
+    expect(out).toContain('"keep":"visible"');
+  });
+
   it('masks a credential that follows an unrelated assignment in free text', () => {
     // A non-secret assignment must not swallow the rest of the line, or a credential after
     // it is never examined.
