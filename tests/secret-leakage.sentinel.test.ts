@@ -180,37 +180,32 @@ function makeClient(
 }
 
 /**
- * The configurations the scenarios below actually run with, declared once so the coverage
- * guard can check that every sentinel really enters the SDK somewhere — a sentinel that is
- * only ever searched for, never configured, would make its assertions vacuous.
+ * The configurations the scenarios below run with — the only place a scenario's config
+ * comes from. Every scenario reads `SCENARIOS.<name>` rather than a config of its own, so
+ * the coverage guard is a statement about what actually runs: a sentinel that is only ever
+ * searched for, never configured, would make its assertions vacuous.
  */
-const OAUTH_CONFIG = {
-  CAMUNDA_AUTH_STRATEGY: 'OAUTH',
-  CAMUNDA_OAUTH_URL: OAUTH_URL,
-  CAMUNDA_CLIENT_ID: 'sentinel-client-id',
-  CAMUNDA_CLIENT_SECRET: SENTINELS.CAMUNDA_CLIENT_SECRET,
-  CAMUNDA_OAUTH_RETRY_MAX: '2',
-  CAMUNDA_OAUTH_RETRY_BASE_DELAY_MS: '1',
-};
-
-const BASIC_CONFIG = {
-  CAMUNDA_AUTH_STRATEGY: 'BASIC',
-  CAMUNDA_BASIC_AUTH_USERNAME: 'user',
-  CAMUNDA_BASIC_AUTH_PASSWORD: SENTINELS.CAMUNDA_BASIC_AUTH_PASSWORD,
-};
-
-const MTLS_CONFIG = {
-  CAMUNDA_AUTH_STRATEGY: 'NONE',
-  CAMUNDA_MTLS_CERT: CERT,
-  CAMUNDA_MTLS_KEY: SENTINELS.CAMUNDA_MTLS_KEY,
-  CAMUNDA_MTLS_KEY_PASSPHRASE: SENTINELS.CAMUNDA_MTLS_KEY_PASSPHRASE,
-};
-
-const SCENARIO_CONFIGS: Record<string, Record<string, string>> = {
-  oauth: OAUTH_CONFIG,
-  basic: BASIC_CONFIG,
-  mtls: MTLS_CONFIG,
-};
+const SCENARIOS = {
+  oauth: {
+    CAMUNDA_AUTH_STRATEGY: 'OAUTH',
+    CAMUNDA_OAUTH_URL: OAUTH_URL,
+    CAMUNDA_CLIENT_ID: 'sentinel-client-id',
+    CAMUNDA_CLIENT_SECRET: SENTINELS.CAMUNDA_CLIENT_SECRET,
+    CAMUNDA_OAUTH_RETRY_MAX: '2',
+    CAMUNDA_OAUTH_RETRY_BASE_DELAY_MS: '1',
+  },
+  basic: {
+    CAMUNDA_AUTH_STRATEGY: 'BASIC',
+    CAMUNDA_BASIC_AUTH_USERNAME: 'user',
+    CAMUNDA_BASIC_AUTH_PASSWORD: SENTINELS.CAMUNDA_BASIC_AUTH_PASSWORD,
+  },
+  mtls: {
+    CAMUNDA_AUTH_STRATEGY: 'NONE',
+    CAMUNDA_MTLS_CERT: CERT,
+    CAMUNDA_MTLS_KEY: SENTINELS.CAMUNDA_MTLS_KEY,
+    CAMUNDA_MTLS_KEY_PASSPHRASE: SENTINELS.CAMUNDA_MTLS_KEY_PASSPHRASE,
+  },
+} satisfies Record<string, Record<string, string>>;
 
 describe('sentinel-secret regression test', () => {
   it('covers every schema key marked secret: true', () => {
@@ -223,20 +218,32 @@ describe('sentinel-secret regression test', () => {
     ).toEqual(schemaSecrets);
   });
 
-  it('actually configures every sentinel in a scenario', () => {
+  it('actually configures every sentinel in a scenario, and the SDK really holds it', () => {
     // A sentinel that is searched for but never configured would make its assertions
     // vacuous: the SDK never holds the value, so of course it never leaks it. Require each
-    // one to appear, with its sentinel value, in a configuration a scenario below runs.
+    // schema secret to appear, with its sentinel value, in a scenario configuration, and
+    // require the SDK to have accepted it: hydrating that configuration must yield the
+    // sentinel as the value of that schema key.
+    const schemaSecrets = new Set(allKeys().filter((k) => isSecret(k)));
     const configured = new Set<string>();
-    for (const config of Object.values(SCENARIO_CONFIGS)) {
+    for (const [name, config] of Object.entries(SCENARIOS) as [string, Record<string, string>][]) {
+      const { config: hydrated } = hydrateConfig({
+        env: { CAMUNDA_REST_ADDRESS: REST_ADDRESS, ...config },
+      });
       for (const [key, value] of Object.entries(config)) {
-        if (SENTINELS[key] === value) configured.add(key);
+        if (!schemaSecrets.has(key)) continue;
+        expect(value, `${name}: ${key} must be given its sentinel`).toBe(SENTINELS[key]);
+        expect(
+          (hydrated as any).__raw[key],
+          `${name}: the SDK did not receive ${key}; the scenario would search for a value it never held`
+        ).toBe(value);
+        configured.add(key);
       }
     }
     expect(
       [...configured].sort(),
-      'a sentinel is declared but never configured in any scenario — give the new credential a scenario, not just a sentinel'
-    ).toEqual(Object.keys(SENTINELS).sort());
+      'a schema secret is never configured in any scenario — give the new credential a scenario, not just a sentinel'
+    ).toEqual([...schemaSecrets].sort());
   });
 
   it('the leak detector actually detects a leak', () => {
@@ -279,7 +286,7 @@ describe('sentinel-secret regression test', () => {
   it('auth success: no credential reaches logs or telemetry', async () => {
     const sinks = makeSinks();
     const client = makeClient(
-      OAUTH_CONFIG,
+      SCENARIOS.oauth,
       sinks,
       makeFetch(
         () =>
@@ -315,7 +322,7 @@ describe('sentinel-secret regression test', () => {
   async function driveAuthFailure(tokenResponse: () => Response) {
     const sinks = makeSinks();
     const { config } = hydrateConfig({
-      env: { CAMUNDA_REST_ADDRESS: REST_ADDRESS, ...OAUTH_CONFIG },
+      env: { CAMUNDA_REST_ADDRESS: REST_ADDRESS, ...SCENARIOS.oauth },
     });
     const auth = createAuthFacade(config, {
       fetch: makeFetch(tokenResponse) as any,
@@ -364,7 +371,7 @@ describe('sentinel-secret regression test', () => {
   it('basic auth: the password does not reach logs or telemetry, in any encoding', async () => {
     const sinks = makeSinks();
     const client = makeClient(
-      BASIC_CONFIG,
+      SCENARIOS.basic,
       sinks,
       makeFetch(() => new Response('{}', { status: 200 }))
     );
@@ -380,7 +387,7 @@ describe('sentinel-secret regression test', () => {
   it('mTLS: the inline private key and passphrase do not reach logs or telemetry', async () => {
     const sinks = makeSinks();
     const client = makeClient(
-      MTLS_CONFIG,
+      SCENARIOS.mtls,
       sinks,
       makeFetch(() => new Response('{}', { status: 200 }))
     );
