@@ -8,6 +8,7 @@ import {
   DEFAULT_POLL_BACKOFF_MIN_MS,
   nextActivationRetryDelayMs,
 } from './pollBackoff';
+import { projectValidationFailure } from './validationLogging';
 import { stopWorkerGracefully } from './workerGracefulStop';
 import { WorkerStartGate } from './workerStartGate';
 
@@ -381,7 +382,7 @@ export class JobWorker {
       if (this._cfg.inputSchema) {
         const parsed = this._cfg.inputSchema.safeParse(variables);
         if (!parsed.success) {
-          this._log.warn('job.validation.variables.failed', parsed.error.flatten());
+          this._log.warn('job.validation.variables.failed', projectValidationFailure(parsed.error));
           await this._failValidation(raw as ActivatedJobResult, 'Invalid variables');
           return;
         }
@@ -390,7 +391,7 @@ export class JobWorker {
       if (this._cfg.customHeadersSchema) {
         const parsed = this._cfg.customHeadersSchema.safeParse(headers);
         if (!parsed.success) {
-          this._log.warn('job.validation.headers.failed', parsed.error.flatten());
+          this._log.warn('job.validation.headers.failed', projectValidationFailure(parsed.error));
           await this._failValidation(raw as ActivatedJobResult, 'Invalid custom headers');
           return;
         }
