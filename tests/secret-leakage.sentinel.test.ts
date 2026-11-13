@@ -224,7 +224,7 @@ describe('sentinel-secret regression test', () => {
     // schema secret to appear, with its sentinel value, in a scenario configuration, and
     // require the SDK to have accepted it: hydrating that configuration must yield the
     // sentinel as the value of that schema key.
-    const schemaSecrets = new Set(allKeys().filter((k) => isSecret(k)));
+    const schemaSecrets = new Set<string>(allKeys().filter((k) => isSecret(k)));
     const configured = new Set<string>();
     for (const [name, config] of Object.entries(SCENARIOS) as [string, Record<string, string>][]) {
       const { config: hydrated } = hydrateConfig({
