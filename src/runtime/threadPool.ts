@@ -176,13 +176,17 @@ export class ThreadPool {
       }
       // The thread is idle again. Jobs queued behind it by another worker would otherwise
       // wait for a readiness signal that only a completed job or a respawn sends; the
-      // failing worker drains only its own queue. A throwing callback must not replace the
-      // dispatch failure the caller is about to receive.
-      try {
-        this._onThreadReady?.();
-      } catch (notifyErr) {
-        this._log.error('thread.ready.callback.error', notifyErr);
-      }
+      // failing worker drains only its own queue. The notification is deferred to a
+      // microtask: called inline it would re-enter the worker's drain from inside each
+      // failed dispatch, nesting one drain per queued job when many fail in a row. A
+      // throwing callback must not become an unhandled error.
+      queueMicrotask(() => {
+        try {
+          this._onThreadReady?.();
+        } catch (notifyErr) {
+          this._log.error('thread.ready.callback.error', notifyErr);
+        }
+      });
       throw err;
     }
   }
