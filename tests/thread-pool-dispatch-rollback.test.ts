@@ -293,4 +293,37 @@ describe('ThreadPool readiness notification after a failed dispatch', () => {
     ).toEqual(['1', '2']);
     expect(waiting._jobQueue.length).toBe(0);
   });
+
+  it('fails a long queue of unclonable jobs without recursing once per job', async () => {
+    // Notifying inline would re-enter the worker's drain from inside each failed dispatch, so
+    // a queue of N jobs that all fail to clone would nest N drains and exhaust the stack.
+    const { client, failed } = stubClient();
+    pool = new ThreadPool(client, 1);
+    await pool.ready;
+    const pw = (pool as any)._pool[0];
+    pw.ready = true;
+    pw.worker.postMessage = () => {
+      throw new DOMException('could not be cloned', 'DataCloneError');
+    };
+    const queued = 20_000;
+    const worker: any = new ThreadedJobWorker(client, pool, {
+      handlerModule: '/dev/null',
+      maxParallelJobs: queued + 1,
+      pollIntervalMs: 10_000,
+      autoStart: false,
+      jobType: 'long-queue',
+    } as any);
+    worker._activeJobs = queued;
+    for (let i = 0; i < queued; i++) {
+      worker._jobQueue.push({
+        raw: { jobKey: String(i), retries: 1, variables: {}, customHeaders: {} },
+      });
+    }
+
+    worker._drainQueue();
+
+    await vi.waitFor(() => expect(worker.activeJobs).toBe(0), { timeout: 30_000 });
+    expect(failed.length, 'every queued job must be failed exactly once').toBe(queued);
+    expect(pool.busyCount).toBe(0);
+  }, 60_000);
 });
