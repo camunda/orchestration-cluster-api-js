@@ -66,11 +66,15 @@ function leakForms(value: string): string[] {
  * cycle tracking must be scoped to one render — a set shared across events would replace
  * the *second* sighting of an ordinary object with `[Circular]` and hide anything it has
  * acquired since — and an `Error` nested inside a log argument must be expanded, because
- * `JSON.stringify` drops `message`, `stack` and `cause` from a plain Error.
+ * `JSON.stringify` drops `message`, `stack` and `cause` from a plain Error. Its enumerable
+ * fields are kept as well, since a credential can sit in a field of the error itself.
  */
 function renderValue(value: unknown): string {
   const seen = new WeakSet<object>();
+  // The error's own enumerable fields come first and are kept (an HTTP client error holds the
+  // request or response it failed on); the replacer then expands any Error nested inside them.
   const expandError = (e: Error): Record<string, unknown> => ({
+    ...e,
     __error: e.name,
     message: e.message,
     stack: e.stack,
