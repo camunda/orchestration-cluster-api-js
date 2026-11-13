@@ -155,6 +155,23 @@ describe('hydrated config secret redaction on stringify and inspect', () => {
     expect(text, 'short padded credential leaked through util.inspect').not.toContain('Zq7');
   });
 
+  // A mask that keeps the last characters of one credential can print another credential in
+  // full when that one is the same short string. The view therefore reveals no character.
+  it('masks a credential without revealing the characters of another one', () => {
+    const env = envWithAllSecrets();
+    env.CAMUNDA_BASIC_AUTH_PASSWORD = 'Qk7x';
+    env.CAMUNDA_CLIENT_SECRET = 'SNTNL-long-prefix-Qk7x';
+    const client = createCamundaClient({
+      config: env as any,
+      fetch: (async () => new Response('{}', { status: 200 })) as any,
+    });
+
+    const json = JSON.stringify(client.config);
+    const text = inspect(client.config, { depth: null, showHidden: false });
+    expect(json, 'a short credential appeared via another credential mask').not.toContain('Qk7x');
+    expect(text, 'a short credential appeared via another credential mask').not.toContain('Qk7x');
+  });
+
   it('keeps the override map working for reconfiguration while off the instance', () => {
     const client: any = createCamundaClient({
       config: envWithAllSecrets() as any,
