@@ -326,16 +326,34 @@ export class ThreadedJobWorker {
    * an `async` signature turned any throw in here into an unhandled promise rejection —
    * which, under Node's default `--unhandled-rejections=throw`, ends the process — while
    * the job was neither dispatched nor failed and its concurrency permit was never
-   * released. Everything that can throw is therefore contained here: a job that cannot be
-   * dispatched is failed through the normal failure path and its permit released.
+   * released.
+   *
+   * Every way dispatch can fail is therefore contained: a synchronous throw (serialization),
+   * and a rejection from `ThreadPool.dispatch`, which is itself `async` — a `postMessage`
+   * that cannot clone the payload rejects rather than throwing, so a `try`/`catch` alone
+   * would not see it. Whichever happens, the job is failed through the normal failure path
+   * and its permit released exactly once.
    */
   private _dispatchToThread(
     pw: import('./threadPool').PoolWorker,
     raw: ActivatedJobResult & Partial<EnrichedActivatedJob>
   ): void {
-    try {
-      this._dispatchToThreadUnguarded(pw, raw);
-    } catch (err) {
+    // One settlement per dispatched job. Whichever arrives first — a pool callback or a
+    // dispatch failure — releases the permit; later arrivals are ignored, so a failure that
+    // races a callback cannot release the same permit twice.
+    let settled = false;
+    const settleComplete = () => {
+      if (settled) return;
+      settled = true;
+      this._decrementOnce();
+      this._drainQueue();
+    };
+    const settleFailure = (errorMessage: string) => {
+      if (settled) return;
+      settled = true;
+      this._failJobAndRelease(raw, errorMessage);
+    };
+    const onDispatchFailure = (err: unknown) => {
       // `_serializeJob` throws RangeError on a variable payload nested deeper than
       // JSON.stringify can recurse, and TypeError on a structure it cannot serialize.
       // Job variables are untrusted input, so neither the payload nor the error message
@@ -344,7 +362,13 @@ export class ThreadedJobWorker {
         jobKey: raw.jobKey,
         errorType: (err as any)?.constructor?.name ?? typeof err,
       });
-      this._failJobAndRelease(raw, 'Job payload could not be dispatched to a worker thread');
+      settleFailure('Job payload could not be dispatched to a worker thread');
+    };
+
+    try {
+      this._dispatchToThreadUnguarded(pw, raw, settleComplete, settleFailure, onDispatchFailure);
+    } catch (err) {
+      onDispatchFailure(err);
     }
   }
 
@@ -372,7 +396,10 @@ export class ThreadedJobWorker {
 
   private _dispatchToThreadUnguarded(
     pw: import('./threadPool').PoolWorker,
-    raw: ActivatedJobResult & Partial<EnrichedActivatedJob>
+    raw: ActivatedJobResult & Partial<EnrichedActivatedJob>,
+    settleComplete: () => void,
+    settleFailure: (errorMessage: string) => void,
+    onDispatchFailure: (err: unknown) => void
   ): void {
     const jobData = this._serializeJob(raw);
 
@@ -381,7 +408,7 @@ export class ThreadedJobWorker {
       { jobKey: raw.jobKey, handler: this._cfg.handlerModule },
     ]);
 
-    this._pool.dispatch(pw, jobData, this._cfg.handlerModule, {
+    const dispatched = this._pool.dispatch(pw, jobData, this._cfg.handlerModule, {
       onComplete: (completionAction) => {
         this._log.trace(() => [
           'dispatch.onComplete',
@@ -416,14 +443,19 @@ export class ThreadedJobWorker {
         } else {
           this._log.trace(() => ['dispatch.onComplete.noAction', { jobKey: raw.jobKey }]);
         }
-        this._decrementOnce();
-        this._drainQueue();
+        settleComplete();
       },
       onError: (err) => {
         this._log.error('job.thread.error', { jobKey: raw.jobKey, err });
-        this._failJobAndRelease(raw, err?.message || 'Thread handler error');
+        settleFailure(err?.message || 'Thread handler error');
       },
     });
+
+    // `ThreadPool.dispatch` is async, so a failure after the callbacks are registered —
+    // a `postMessage` that cannot clone the payload, for instance — arrives as a rejection,
+    // not as a throw. Without this the job would be dropped with its permit still held and
+    // the rejection would go unhandled.
+    Promise.resolve(dispatched).catch(onDispatchFailure);
   }
 
   private _serializeJob(

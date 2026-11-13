@@ -170,6 +170,61 @@ describe('ThreadedJobWorker dispatch failure handling', () => {
     expect(worker.activeJobs).toBe(0);
   });
 
+  it('releases the permit when the pool rejects asynchronously while dispatching', async () => {
+    // ThreadPool.dispatch is `async`: postMessage failing to clone the payload rejects
+    // rather than throwing, so a synchronous try/catch alone would never see it.
+    const { log } = captureLog();
+    const { client, failed } = stubClient(log);
+    const pool = {
+      ready: Promise.resolve(),
+      size: 1,
+      busyCount: 0,
+      idleCount: 1,
+      onThreadReady: undefined as undefined | (() => void),
+      getIdleWorker: () => ({ id: 1 }),
+      dispatch: async () => {
+        throw new DOMException('could not be cloned', 'DataCloneError');
+      },
+    } as any;
+    const worker = makeWorker(pool, client);
+    worker._activeJobs = 1;
+
+    worker._handleJob({ jobKey: '81', retries: 4, variables: { ok: true }, customHeaders: {} });
+    await new Promise((r) => setTimeout(r, 10));
+
+    expect(failed.length, 'an async dispatch rejection must fail the job').toBe(1);
+    expect(failed[0].retries).toBe(3);
+    expect(worker.activeJobs, 'an async dispatch rejection must release the permit').toBe(0);
+    expect(rejections, 'the rejection must not go unhandled').toEqual([]);
+  });
+
+  it('releases the permit exactly once when a callback and a rejection both fire', async () => {
+    const { log } = captureLog();
+    const { client, failed } = stubClient(log);
+    const pool = {
+      ready: Promise.resolve(),
+      size: 1,
+      busyCount: 0,
+      idleCount: 1,
+      onThreadReady: undefined as undefined | (() => void),
+      getIdleWorker: () => ({ id: 1 }),
+      // Reports the job complete and *then* rejects, which must not double-release.
+      dispatch: async (_pw: any, _data: any, _mod: any, cbs: any) => {
+        cbs.onComplete(undefined);
+        throw new Error('late dispatch failure');
+      },
+    } as any;
+    const worker = makeWorker(pool, client);
+    worker._activeJobs = 2;
+
+    worker._handleJob({ jobKey: '82', retries: 2, variables: { ok: true }, customHeaders: {} });
+    await new Promise((r) => setTimeout(r, 10));
+
+    expect(worker.activeJobs, 'the permit must be released exactly once').toBe(1);
+    expect(failed.length, 'a completed job must not also be failed').toBe(0);
+    expect(rejections).toEqual([]);
+  });
+
   it('releases the permit when the pool itself throws while dispatching', async () => {
     const { log } = captureLog();
     const { client, failed } = stubClient(log);
