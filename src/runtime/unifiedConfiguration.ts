@@ -160,12 +160,16 @@ function deepFreeze<T>(o: T): T {
   return o;
 }
 
-// Secrets redaction (keep length, mask all but last 4; <=4 => all masked)
+// Secrets redaction (keep length, mask all but last 4; <=4 => all masked).
+// The 4-character rule applies to the credential itself, not to any whitespace padding
+// around it: keeping the last four characters of a padded short credential would show it.
 function redactSecret(v: string): string {
-  const len = v.length;
-  if (len <= 4) return '*'.repeat(len);
-  const tail = v.slice(-4);
-  return '*'.repeat(len - 4) + tail;
+  const core = v.trim();
+  const lead = v.length - v.trimStart().length;
+  const trail = v.length - v.trimEnd().length;
+  const maskedCore =
+    core.length <= 4 ? '*'.repeat(core.length) : '*'.repeat(core.length - 4) + core.slice(-4);
+  return '*'.repeat(lead) + maskedCore + '*'.repeat(core.length === 0 ? 0 : trail);
 }
 
 /**
