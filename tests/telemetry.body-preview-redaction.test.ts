@@ -106,6 +106,72 @@ describe('redactBodyPreview', () => {
     expect(out).not.toContain(encodeURIComponent(SECRET));
   });
 
+  it('masks the whole credential when its value contains whitespace', () => {
+    // The value of a credential assignment in free-form text is not delimited by anything
+    // but its quotes (or, unquoted, the end of the line), so masking only up to the first
+    // space leaves the rest of the credential in the log.
+    const cases: Array<[string, string[]]> = [
+      [`OAuth failure: authorization=Bearer ${TOKEN} rejected`, [TOKEN, 'Bearer SNTNL']],
+      [`OAuth failure: password="two words ${SECRET} tail" rejected`, [SECRET, 'two words']],
+      [`OAuth failure: password='two words ${SECRET} tail' rejected`, [SECRET, 'two words']],
+      [`OAuth failure: password=two words ${SECRET}`, [SECRET, 'two words']],
+      [`OAuth failure: password="unterminated ${SECRET}`, [SECRET, 'unterminated']],
+    ];
+    for (const [body, forbidden] of cases) {
+      const out = redactBodyPreview(body);
+      for (const f of forbidden) expect(out, `${JSON.stringify(body)} -> ${out}`).not.toContain(f);
+      expect(out).toContain('OAuth failure');
+    }
+  });
+
+  it('keeps the next pair readable when an assignment is followed by a separator', () => {
+    const out = redactBodyPreview(`note: client_secret=${SECRET}&audience=zeebe`);
+    expect(out).not.toContain(SECRET);
+    expect(out).toContain('audience=zeebe');
+  });
+
+  it('masks a truncated JSON credential whose property name uses JSON escapes', () => {
+    // `\u005f` is `_`: the decoded key is `access_token`, which the complete-JSON path masks.
+    for (const key of [
+      'access\\u005ftoken',
+      'client\\u005Fsecret',
+      '\\u0070assword',
+      'pass\\u0077ord',
+    ]) {
+      const body = `{"${key}":"${SECRET}","tru`;
+      const out = redactBodyPreview(body);
+      expect(out, `${key} -> ${out}`).not.toContain(SECRET);
+    }
+  });
+
+  it('masks a truncated JSON credential whose value is not a string', () => {
+    const out = redactBodyPreview('{"password":123456789,"tru');
+    expect(out).not.toContain('123456789');
+  });
+
+  it('masks a percent-encoded form key even when another value contains braces', () => {
+    const out = redactBodyPreview(`client_%73ecret=${SECRET}&extra={}`);
+    expect(out).not.toContain(SECRET);
+    expect(out).toContain('extra={}');
+  });
+
+  it('does not take quadratic time on long text without an assignment', () => {
+    // A name matcher that is not anchored to the start of a name run re-scans the remainder
+    // of the run from every position. The ratio between two sizes keeps the assertion about
+    // the growth rate, not about the speed of the machine it runs on.
+    const time = (n: number) => {
+      const body = 'a'.repeat(n);
+      const t0 = performance.now();
+      redactBodyPreview(body);
+      return performance.now() - t0;
+    };
+    time(20_000); // warm up
+    const small = Math.max(time(40_000), 1);
+    const large = time(160_000);
+    // 4x the input: linear is about 4x, quadratic about 16x.
+    expect(large / small).toBeLessThan(10);
+  });
+
   it('leaves a body with no credential field untouched', () => {
     const body = JSON.stringify({ processDefinitionKey: '123', variables: { a: 1 } });
     expect(redactBodyPreview(body)).toBe(body);
@@ -141,6 +207,25 @@ describe('silly-level previews through wrapFetch', () => {
     form.set('grant_type', 'client_credentials');
     form.set('password', `prefix&${SECRET}`);
     await wrapped('https://mock.local/v2/thing', { method: 'POST', body: form as any });
+
+    const all = lines.join('\n');
+    expect(all).toContain('http.body');
+    expect(all).not.toContain(SECRET);
+    expect(all).toContain('grant_type=client_credentials');
+  });
+
+  it('redacts a credential in a Request whose body is multipart FormData', async () => {
+    // The generated transport hands fetch a Request, not an init body, and `clone().text()`
+    // of a multipart Request is raw multipart text that per-entry masking never sees.
+    const lines: string[] = [];
+    const orig = vi.fn(async () => new Response('{}', { status: 200 }));
+    const wrapped = wrapFetch(orig as any, { logger: sillyLogger(lines), mirrorToLog: true });
+
+    const form = new FormData();
+    form.set('grant_type', 'client_credentials');
+    form.set('password', SECRET);
+    const req = new Request('https://mock.local/v2/thing', { method: 'POST', body: form });
+    await wrapped(req);
 
     const all = lines.join('\n');
     expect(all).toContain('http.body');
