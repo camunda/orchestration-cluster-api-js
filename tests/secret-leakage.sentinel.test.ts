@@ -299,6 +299,31 @@ describe('sentinel-secret regression test', () => {
     }
   });
 
+  it('keeps the fields of a cyclic Error instead of falling back to its message', () => {
+    // An error that refers back to itself (directly, as its own cause, or through an object it
+    // holds) used to overflow the renderer, which then fell back to `String(error)` and
+    // dropped every field, so a credential on the error passed the check.
+    const value = SENTINELS.CAMUNDA_CLIENT_SECRET;
+    const selfRef: any = Object.assign(new Error('boom'), { detail: value });
+    selfRef.self = selfRef;
+    const ownCause: any = Object.assign(new Error('boom'), { detail: value });
+    ownCause.cause = ownCause;
+    const viaObject: any = Object.assign(new Error('boom'), { detail: value });
+    viaObject.owner = { error: viaObject };
+    for (const [label, err] of [
+      ['an error that holds itself', selfRef],
+      ['an error that is its own cause', ownCause],
+      ['an error reachable from an object it holds', viaObject],
+    ] as const) {
+      const nested = makeSinks();
+      nested.logTransport({ level: 'error', scope: 'x', args: ['boom', err] });
+      expect(() => expectNoLeak(nested.text(), 'a fixture'), `nested: ${label}`).toThrow();
+      const thrown = makeSinks();
+      thrown.captureError(err);
+      expect(() => expectNoLeak(thrown.text(), 'a fixture'), `thrown: ${label}`).toThrow();
+    }
+  });
+
   it('does not hide a repeated object as circular', () => {
     // A cycle set shared across events would replace the second sighting of an ordinary
     // object with [Circular] and hide whatever it had acquired since.
