@@ -138,6 +138,23 @@ describe('hydrated config secret redaction on stringify and inspect', () => {
     }
   });
 
+  // A short credential supplied with padding hydrates to its short trimmed form. Keeping the
+  // last four characters of the *padded* string would show all of it, so the mask has to be
+  // computed on the credential itself.
+  it('fully masks a short credential supplied with surrounding whitespace', () => {
+    const padded: Record<string, string> = envWithAllSecrets();
+    for (const k of secretKeys()) padded[k] = `  Zq7\n`;
+    const client = createCamundaClient({
+      config: padded as any,
+      fetch: (async () => new Response('{}', { status: 200 })) as any,
+    });
+
+    const json = JSON.stringify(client.config);
+    const text = inspect(client.config, { depth: null, showHidden: false });
+    expect(json, 'short padded credential leaked through JSON.stringify').not.toContain('Zq7');
+    expect(text, 'short padded credential leaked through util.inspect').not.toContain('Zq7');
+  });
+
   it('keeps the override map working for reconfiguration while off the instance', () => {
     const client: any = createCamundaClient({
       config: envWithAllSecrets() as any,
