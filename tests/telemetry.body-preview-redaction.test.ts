@@ -162,6 +162,57 @@ describe('redactBodyPreview', () => {
     expect(out).toContain('extra=%7B%7D');
   });
 
+  describe('a form whose percent-escapes do not decode', () => {
+    // `%FF` is well-formed as an escape (it passes the form alphabet) but is not valid UTF-8, so
+    // decoding it throws. Falling back to the raw text would compare an *encoded* name
+    // (`client_%73ecret%FF`) against the credential words and miss it, and would skip the
+    // structure inside a value. The failure has to reach the preview's error handler, which
+    // omits the body.
+    const FAILED = '[body preview omitted: redaction failed]';
+
+    it('omits a body whose credential name has an escape that does not decode', () => {
+      for (const body of [
+        `client_%73ecret%FF=${SECRET}`,
+        `a=1&client_%73ecret%FF=${SECRET}&b=2`,
+        `pass%77ord%C3=${SECRET}`,
+        `client_%73ecret=%FF&client_%73ecret%FF=${SECRET}`,
+      ]) {
+        const out = redactBodyPreview(body);
+        expect(out, body).not.toContain(SECRET);
+        expect(out, body).toBe(FAILED);
+      }
+    });
+
+    it('omits a body whose value carrying JSON has an escape that does not decode', () => {
+      const json = encodeURIComponent(JSON.stringify({ client_secret: SECRET }));
+      for (const body of [`payload=${json}%FF`, `a=1&payload=%FF${json}`, `payload=${json}%C3`]) {
+        const out = redactBodyPreview(body);
+        expect(out, body).not.toContain(SECRET);
+        expect(out, body).not.toContain(encodeURIComponent(SECRET));
+        expect(out, body).toBe(FAILED);
+      }
+    });
+
+    it('omits a body whose embedded form has a credential name that does not decode', () => {
+      const inner = `client_%73ecret%FF=${SECRET}`;
+      for (const body of [
+        JSON.stringify({ payload: inner }),
+        `payload=${encodeURIComponent(inner)}`,
+        JSON.stringify({ outer: JSON.stringify({ payload: inner }) }),
+      ]) {
+        const out = redactBodyPreview(body);
+        expect(out, body).not.toContain(SECRET);
+        expect(out, body).toBe(FAILED);
+      }
+    });
+
+    it('still reads an escape that decodes, in a name and in a value', () => {
+      const out = redactBodyPreview(`client_%73ecret=${SECRET}&caf%C3%A9=cr%C3%A8me`);
+      expect(out).not.toContain(SECRET);
+      expect(out).toContain('caf%C3%A9=cr%C3%A8me');
+    });
+  });
+
   it('masks a credential nested inside a non-secret value of complete JSON', () => {
     for (const body of [
       `{"nested":{"access_token":"${TOKEN}"},"keep":1}`,
@@ -643,6 +694,38 @@ describe('silly-level previews through wrapFetch', () => {
     const all = lines.join('\n');
     expect(all).not.toContain(SECRET);
     expect(all).toContain('content-type=application/x-custom]');
+  });
+
+  it('omits a body whose percent-escapes do not decode, on every preview path', async () => {
+    // `client_%73ecret%FF` passes the form check and then fails to decode. The encoded name
+    // does not read as a credential, so a fallback to the raw text would log the value.
+    const lines: string[] = [];
+    const body = `grant_type=x&client_%73ecret%FF=${SECRET}`;
+    const form = { 'Content-Type': 'application/x-www-form-urlencoded' };
+    const orig = vi.fn(async () => new Response(body, { status: 200, headers: form }));
+    const wrapped = wrapFetch(orig as any, { logger: sillyLogger(lines), mirrorToLog: true });
+
+    await wrapped('https://login.example.com/oauth/token', {
+      method: 'POST',
+      headers: form,
+      body,
+    });
+    await wrapped(
+      new Request('https://login.example.com/oauth/token', {
+        method: 'POST',
+        headers: form,
+        body,
+      })
+    );
+    // A string entry of a FormData that holds the same form.
+    const fd = new FormData();
+    fd.append('payload', body);
+    await wrapped('https://login.example.com/oauth/token', { method: 'POST', body: fd });
+
+    const all = lines.join('\n');
+    expect(all).not.toContain(SECRET);
+    expect(all).toContain('http.response');
+    expect(all).toContain('preview=[body preview omitted: redaction failed]');
   });
 
   it('still previews the non-text bodies, which carry no text to redact', async () => {
