@@ -426,4 +426,52 @@ describe('sentinel-secret regression test', () => {
     expect(sinks.text()).toContain('http.end');
     expectNoLeak(sinks.text(), 'the mTLS path');
   });
+
+  /**
+   * Network failure: every mocked fetch above resolves, so the `http.error` path of the
+   * telemetry wrapper — the `requestError` hook and the mirrored trace line — would
+   * otherwise never run under the sentinel suite.
+   */
+  async function driveNetworkFailure(message: string) {
+    const sinks = makeSinks();
+    const client = makeClient(
+      SCENARIOS.basic,
+      sinks,
+      vi.fn(async () => {
+        throw new TypeError(message);
+      })
+    );
+    const err = await client
+      .createProcessInstance({
+        processDefinitionKey: ProcessDefinitionKey.assumeExists('123'),
+      })
+      .then(
+        () => {
+          throw new Error('expected the request to fail');
+        },
+        (e: unknown) => e
+      );
+    sinks.captureError(err);
+    return sinks;
+  }
+
+  it('network failure: no credential reaches the error, the http.error hook or the logs', async () => {
+    const sinks = await driveNetworkFailure('fetch failed');
+
+    // The failure path really ran, in both sinks, so the assertion is not vacuous.
+    expect(sinks.telemetryEvents.some((e) => e.type === 'http.error')).toBe(true);
+    expect(sinks.text()).toMatch(/telemetry\.requestError /);
+    expect(sinks.text()).toMatch(/log\.trace\.telemetry .*http\.error/);
+    expectNoLeak(sinks.text(), 'the network failure path');
+  });
+
+  it('network failure: a credential in the error message would be detected', async () => {
+    // Self-check for the scenario above: if a credential rode in on a network error, it
+    // would reach the hook, the mirrored log line and the thrown error, and the guard
+    // has to see it in at least one of them.
+    const sinks = await driveNetworkFailure(
+      `connect refused for ${SENTINELS.CAMUNDA_BASIC_AUTH_PASSWORD}`
+    );
+    expect(() => expectNoLeak(sinks.text(), 'the network failure path')).toThrow();
+  });
 });
