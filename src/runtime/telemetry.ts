@@ -156,13 +156,8 @@ function redactFormBody(body: string): string {
       const eq = pair.indexOf('=');
       if (eq < 0) return pair;
       const rawName = pair.slice(0, eq);
-      let name = rawName;
-      try {
-        name = decodeURIComponent(rawName.replace(/\+/g, ' '));
-      } catch {
-        /* keep the raw name; a malformed escape is not a reason to stop redacting */
-      }
-      return isSecretBodyField(name) ? `${rawName}=${BODY_REDACTED}` : pair;
+      // A malformed escape keeps the raw name: it is not a reason to stop redacting.
+      return isSecretBodyField(decodeFormName(rawName)) ? `${rawName}=${BODY_REDACTED}` : pair;
     })
     .join('&');
 }
@@ -193,50 +188,114 @@ function decodeJsonKey(raw: string): string {
   }
 }
 
+/** Decode a form or query-string name; fall back to the raw text if it is malformed. */
+function decodeFormName(raw: string): string {
+  try {
+    return decodeURIComponent(raw.replace(/\+/g, ' '));
+  } catch {
+    return raw;
+  }
+}
+
+/** End of the JSON string literal whose opening quote is at `start`; tolerates truncation. */
+function jsonStringEnd(text: string, start: number): number {
+  let i = start + 1;
+  while (i < text.length) {
+    const c = text[i];
+    // A backslash escapes the next character; a lone trailing backslash (a cut between
+    // the two characters of an escape) consumes through the end, which is still credential.
+    if (c === '\\') i += 2;
+    else if (c === '"') return i + 1;
+    else i++;
+  }
+  return text.length;
+}
+
 /**
- * Textual sweep for a body that is not valid JSON, and a second pass over one that is not
- * form-encoded either. Matches `"name": value` and `name=value` for the known credential
- * field names only.
+ * Mask the value of every credential property in text that is not valid JSON.
  *
  * Property names are matched as JSON string literals and decoded before the lookup, so an
- * escaped name such as `"access\u005ftoken"` is recognised like its decoded form.
+ * escaped name such as `"access\u005ftoken"` is recognised like its decoded form. Only a
+ * credential's own value is consumed: for any other property the scan resumes right after
+ * `"name":`, so a credential nested inside its value (`{"nested":{"access_token":"..."},"tru`)
+ * is still found. A string value is masked through its closing quote, or to the end of the
+ * text when it is unterminated (a body truncated mid-credential); any other value
+ * (`"password":12345`) is masked up to the next delimiter.
+ */
+function redactJsonProperties(text: string): string {
+  const re = /"((?:[^"\\]|\\[\s\S])*)"\s*:\s*/g;
+  let out = '';
+  let last = 0;
+  for (let m = re.exec(text); m !== null; m = re.exec(text)) {
+    const valueStart = m.index + m[0].length;
+    if (valueStart >= text.length || !isSecretBodyField(decodeJsonKey(m[1]))) continue;
+    if (',}]'.includes(text[valueStart])) continue; // an empty value has nothing to mask
+    let end: number;
+    if (text[valueStart] === '"') {
+      end = jsonStringEnd(text, valueStart);
+    } else {
+      end = valueStart;
+      while (end < text.length && !/[,}\]\s]/.test(text[end])) end++;
+    }
+    out += `${text.slice(last, valueStart)}"${BODY_REDACTED}"`;
+    last = end;
+    re.lastIndex = end;
+  }
+  return out + text.slice(last);
+}
+
+/**
+ * Mask the value of every `name=value` credential assignment in free text.
  *
- * The quoted-value pattern accepts a *missing* closing quote, because a body truncated
- * mid-credential (`{"access_token":"abc`) would otherwise not match and the credential
- * would survive the sweep. For the same reason the string body may end in a lone backslash
- * (a cut between the two characters of an escape such as `\"`), which is still credential.
- * A non-string value (`"password":12345`) is masked up to the next delimiter.
- *
- * For `name=value` the value is the whole quoted string if it starts with a quote;
- * otherwise everything up to the next `&` (the pair separator of forms and query strings)
- * or the end of the line. Prose has no other reliable boundary: stopping at the first
- * space would leave the tail of `password=two words` or the token of
- * `authorization=Bearer <token>` in the log, so where the boundary cannot be known the
- * sweep masks to the end of the line rather than guess.
+ * The value is the whole quoted string if it starts with a quote; otherwise everything up
+ * to the next `&` (the pair separator of forms and query strings) or the end of the line.
+ * Prose has no other reliable boundary: stopping at the first space would leave the tail of
+ * `password=two words` or the token of `authorization=Bearer <token>` in the log, so where
+ * the boundary cannot be known the value is masked to the end of the line rather than
+ * guessed. Only a credential's own value is consumed: after any other assignment the scan
+ * resumes at its `=`, so `request=42 client_secret=...` still finds the credential.
  *
  * The name is anchored to the start of a run of name characters (a preceding delimiter,
  * which is kept) so that a long alphanumeric run without an `=` is scanned once, not once
  * per starting position.
  */
-function redactBodyText(body: string): string {
-  let out = body.replace(
-    /("((?:[^"\\]|\\[\s\S])*)"\s*:\s*)(?:"(?:[^"\\]|\\[\s\S])*\\?(?:"|$)|[^,}\]\s"][^,}\]\s]*)/g,
-    (match, prefix: string, name: string) =>
-      isSecretBodyField(decodeJsonKey(name)) ? `${prefix}"${BODY_REDACTED}"` : match
-  );
-  out = out.replace(
-    /(^|[^A-Za-z0-9_%+.-])([A-Za-z0-9_%+.-]+)=("(?:[^"\\]|\\[\s\S])*\\?(?:"|$)|'[^']*(?:'|$)|[^&\r\n]*)/g,
-    (match, delim: string, name: string) => {
-      let decoded = name;
-      try {
-        decoded = decodeURIComponent(name.replace(/\+/g, ' '));
-      } catch {
-        /* keep the raw name */
-      }
-      return isSecretBodyField(decoded) ? `${delim}${name}=${BODY_REDACTED}` : match;
+function redactAssignments(text: string): string {
+  const re = /(^|[^A-Za-z0-9_%+.-])([A-Za-z0-9_%+.-]+)=/g;
+  let out = '';
+  let last = 0;
+  for (let m = re.exec(text); m !== null; m = re.exec(text)) {
+    const eq = m.index + m[1].length + m[2].length;
+    if (!isSecretBodyField(decodeFormName(m[2]))) {
+      re.lastIndex = eq;
+      continue;
     }
-  );
-  return out;
+    const valueStart = eq + 1;
+    let end: number;
+    if (text[valueStart] === '"') {
+      end = jsonStringEnd(text, valueStart);
+    } else if (text[valueStart] === "'") {
+      const close = text.indexOf("'", valueStart + 1);
+      end = close < 0 ? text.length : close + 1;
+    } else {
+      end = valueStart;
+      while (end < text.length && text[end] !== '&' && text[end] !== '\r' && text[end] !== '\n') {
+        end++;
+      }
+    }
+    out += `${text.slice(last, valueStart)}${BODY_REDACTED}`;
+    last = end;
+    re.lastIndex = end;
+  }
+  return out + text.slice(last);
+}
+
+/**
+ * Textual sweep for a body that is not valid JSON, and a second pass over one that is not
+ * form-encoded either: credential properties (`"name": value`) and credential assignments
+ * (`name=value`), for the known credential field names only.
+ */
+function redactBodyText(body: string): string {
+  return redactAssignments(redactJsonProperties(body));
 }
 
 /**
