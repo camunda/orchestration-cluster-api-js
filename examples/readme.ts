@@ -184,6 +184,31 @@ async function _readmeJobWorkerJitter() {
 }
 
 // ---------------------------------------------------------------------------
+// Job Variables Are Untrusted Input
+// ---------------------------------------------------------------------------
+
+function _readmeJobVariablesUntrusted() {
+  const client = createCamundaClient();
+
+  //#region ReadmeJobVariablesUntrusted
+  client.createJobWorker({
+    jobType: 'charge-card',
+    validateSchemas: true,
+    inputSchema: z
+      .object({
+        orderId: z.string().uuid(),
+        amountCents: z.number().int().positive(),
+      })
+      .strict(), // reject variables the process sent that this handler does not expect
+    jobHandler: async (job) => {
+      // job.variables is now known to match the schema
+      return job.complete();
+    },
+  });
+  //#endregion ReadmeJobVariablesUntrusted
+}
+
+// ---------------------------------------------------------------------------
 // Job Worker Graceful Shutdown
 // ---------------------------------------------------------------------------
 
