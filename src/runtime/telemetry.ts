@@ -212,6 +212,26 @@ function jsonStringEnd(text: string, start: number): number {
 }
 
 /**
+ * End of the object or array whose opening bracket is at `start`; the end of the text if it
+ * is unterminated. Strings are skipped whole, so a bracket inside one does not count.
+ */
+function jsonContainerEnd(text: string, start: number): number {
+  let depth = 0;
+  let i = start;
+  while (i < text.length) {
+    const c = text[i];
+    if (c === '"') {
+      i = jsonStringEnd(text, i);
+      continue;
+    }
+    if (c === '{' || c === '[') depth++;
+    else if ((c === '}' || c === ']') && --depth === 0) return i + 1;
+    i++;
+  }
+  return text.length;
+}
+
+/**
  * Mask the value of every credential property in text that is not valid JSON.
  *
  * Property names are matched as JSON string literals and decoded before the lookup, so an
@@ -219,7 +239,8 @@ function jsonStringEnd(text: string, start: number): number {
  * credential's own value is consumed: for any other property the scan resumes right after
  * `"name":`, so a credential nested inside its value (`{"nested":{"access_token":"..."},"tru`)
  * is still found. A string value is masked through its closing quote, or to the end of the
- * text when it is unterminated (a body truncated mid-credential); any other value
+ * text when it is unterminated (a body truncated mid-credential); an object or array is
+ * masked whole, through its matching bracket or to the end of the text; any other value
  * (`"password":12345`) is masked up to the next delimiter.
  */
 function redactJsonProperties(text: string): string {
@@ -233,6 +254,10 @@ function redactJsonProperties(text: string): string {
     let end: number;
     if (text[valueStart] === '"') {
       end = jsonStringEnd(text, valueStart);
+    } else if (text[valueStart] === '{' || text[valueStart] === '[') {
+      // The whole container, as complete JSON would mask it: its members are not credential
+      // names, but they are credential content.
+      end = jsonContainerEnd(text, valueStart);
     } else {
       end = valueStart;
       while (end < text.length && !/[,}\]\s]/.test(text[end])) end++;
