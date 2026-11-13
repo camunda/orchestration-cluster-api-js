@@ -73,18 +73,42 @@ describe('hydrated config secret redaction on stringify and inspect', () => {
     }
   });
 
-  it('inspecting the client itself does not print a secret value', () => {
+  // `console.log('%o', client)` enables showHidden, so a non-enumerable property is not
+  // enough to keep a credential out of an inspect dump — hence both modes here.
+  it.each([
+    { label: 'util.inspect(client)', showHidden: false },
+    {
+      label: "util.inspect(client, { showHidden: true }) / console.log('%o', client)",
+      showHidden: true,
+    },
+  ])('inspecting the client itself does not print a secret value: $label', ({ showHidden }) => {
     const client = createCamundaClient({
       config: envWithAllSecrets() as any,
       fetch: (async () => new Response('{}', { status: 200 })) as any,
     });
 
-    const text = inspect(client, { depth: null, showHidden: false });
+    const text = inspect(client, { depth: null, showHidden });
     for (const key of secretKeys()) {
-      expect(text, `${key} value leaked through util.inspect(client)`).not.toContain(
+      expect(text, `${key} value leaked through an inspect of the client`).not.toContain(
         sentinelFor(key)
       );
     }
+  });
+
+  it('keeps the override map working for reconfiguration while off the instance', () => {
+    const client: any = createCamundaClient({
+      config: envWithAllSecrets() as any,
+      fetch: (async () => new Response('{}', { status: 200 })) as any,
+    });
+
+    // Not an own property in any form, so no inspection mode can reach it.
+    expect(Object.getOwnPropertyNames(client)).not.toContain('_overrides');
+    // Still readable by SDK internals, and still merged on reconfigure.
+    expect(client._overrides.CAMUNDA_CLIENT_SECRET).toBe(sentinelFor('CAMUNDA_CLIENT_SECRET'));
+    client.configure({ config: { CAMUNDA_DEFAULT_TENANT_ID: 'tenant-b' } as any });
+    expect(client.config.defaultTenantId).toBe('tenant-b');
+    expect(client._overrides.CAMUNDA_CLIENT_SECRET).toBe(sentinelFor('CAMUNDA_CLIENT_SECRET'));
+    expect(client.config.oauth.clientSecret).toBe(sentinelFor('CAMUNDA_CLIENT_SECRET'));
   });
 
   it('redacts secrets wherever they sit in the config, including __raw', () => {

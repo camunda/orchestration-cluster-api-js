@@ -153,20 +153,28 @@ export class CamundaCore {
   // Internal fixed error mode for eventual consistency ('throw' | 'result'). Not user mutable after construction.
   protected readonly _errorMode: 'throw' | 'result';
 
-  protected _overrides: EnvOverrides = {};
+  /**
+   * The callers' own override maps, held off the instances entirely.
+   *
+   * The map holds raw credentials and is kept so `configure()` can re-hydrate from it. As
+   * a property — even a non-enumerable one — it still reaches `util.inspect(client,
+   * { showHidden: true })` and `console.log('%o', client)`, which enables `showHidden`,
+   * so every secret the caller passed in would print despite the hydrated `config`
+   * redacting them. Keyed off the instance in a WeakMap, it is not a property at all, so
+   * no inspection mode can reach it, and it is collected with the client.
+   */
+  static readonly #overridesByInstance = new WeakMap<object, EnvOverrides>();
+
+  /** Accessor only: lives on the prototype, so it is not an own property of any instance. */
+  protected get _overrides(): EnvOverrides {
+    return CamundaCore.#overridesByInstance.get(this) ?? {};
+  }
+  protected set _overrides(value: EnvOverrides) {
+    CamundaCore.#overridesByInstance.set(this, value);
+  }
 
   constructor(opts: CamundaOptions = {}) {
-    // The caller's own override map holds raw credentials and is kept so configure() can
-    // re-hydrate from it. Hold it as a non-enumerable property so it stays off the client's
-    // enumerable surface: `console.log(client)`, `util.inspect(client)` and
-    // `JSON.stringify(client)` would otherwise print every secret the caller passed in,
-    // even though the hydrated `config` itself redacts them.
-    Object.defineProperty(this, '_overrides', {
-      value: opts.config ? { ...opts.config } : {},
-      enumerable: false,
-      writable: true,
-      configurable: true,
-    });
+    this._overrides = opts.config ? { ...opts.config } : {};
     this._clock = opts.clock ?? createLiveClock();
     this._random = opts.random ?? liveRandom;
     const { config } = hydrateConfig({ overrides: this._overrides, env: opts.env });
