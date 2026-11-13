@@ -923,7 +923,9 @@ If `validateSchemas` is true:
 
 ### Job variables are untrusted input
 
-`job.variables` and `job.customHeaders` reach your handler from the Orchestration Cluster, but their **content is set by whoever started the process instance** — a form submission, an API caller, an upstream service, a message payload. Treat every value as attacker-controlled: validate it before using it in a database query, a file path, a shell command, an outbound URL or a template.
+`job.variables` reach your handler from the Orchestration Cluster, but their **content is set by whoever started the process instance or wrote to it since** — a form submission, an API caller, an upstream service, a message payload. Treat every value as attacker-controlled: validate it before using it in a database query, a file path, a shell command, an outbound URL or a template.
+
+`job.customHeaders` have a different provenance: they are defined during modelling and reach you from the deployed process model, so they are controlled by whoever deploys processes rather than by whoever starts an instance. That is a narrower trust boundary, not an absent one — validate them too if your handler uses a header to pick a code path, a destination or a credential.
 
 What the SDK does:
 

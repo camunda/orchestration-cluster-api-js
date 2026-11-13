@@ -46,11 +46,15 @@ export interface JobWorkerConfig<
   /**
    * Your handler for an activated job.
    *
-   * **`job.variables` and `job.customHeaders` are untrusted input.** They arrive from the
-   * Orchestration Cluster, but their content is set by whoever started the process
-   * instance — a form, an API caller, an upstream service, a message payload. Treat every
-   * value as attacker-controlled: validate it before using it in a query, a file path, a
-   * shell command, a URL or a template.
+   * **`job.variables` are untrusted input.** They arrive from the Orchestration Cluster,
+   * but their content is set by whoever started the process instance or wrote to it since
+   * — a form, an API caller, an upstream service, a message payload. Treat every value as
+   * attacker-controlled: validate it before using it in a query, a file path, a shell
+   * command, a URL or a template.
+   *
+   * `job.customHeaders` are defined during modelling and reach you from the deployed
+   * process model, so they are controlled by whoever deploys processes rather than by
+   * whoever starts an instance — a narrower trust boundary, not an absent one.
    *
    * What the SDK does for you:
    *
