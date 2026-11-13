@@ -191,11 +191,12 @@ function redactJsonValue(value: unknown, seen: WeakSet<object>): unknown {
  *
  * The quoted-value pattern accepts a *missing* closing quote, because a body truncated
  * mid-credential (`{"access_token":"abc`) would otherwise not match and the credential
- * would survive the sweep.
+ * would survive the sweep. For the same reason the string body may end in a lone backslash
+ * (a cut between the two characters of an escape such as `\"`), which is still credential.
  */
 function redactBodyText(body: string): string {
   let out = body.replace(
-    /("([A-Za-z0-9_]+)"\s*:\s*)"(?:[^"\\]|\\.)*("|$)/g,
+    /("([A-Za-z0-9_]+)"\s*:\s*)"(?:[^"\\]|\\[\s\S])*\\?("|$)/g,
     (match, prefix: string, name: string) =>
       isSecretBodyField(name) ? `${prefix}"${BODY_REDACTED}"` : match
   );

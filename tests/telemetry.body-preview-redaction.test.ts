@@ -75,6 +75,22 @@ describe('redactBodyPreview', () => {
     expect(out).not.toContain(TOKEN.slice(0, 20));
   });
 
+  it('masks a JSON credential at every possible truncation point, escapes included', () => {
+    // The class of defect is "the body ends somewhere inside the credential": cut a body
+    // whose value carries JSON escapes at every position, including immediately after a
+    // backslash (a lone backslash is an incomplete escape, which a pattern that only accepts
+    // complete backslash-plus-character pairs would not treat as part of the string).
+    const value = 'SNTNL-ESC\\"A\\\\B\\u00e9-TAIL-ZQX7';
+    const full = `{"expires_in":300,"access_token":"${value}","scope":"x"}`;
+    const start = full.indexOf('SNTNL');
+    for (let cut = start + 1; cut <= start + value.length; cut++) {
+      const body = full.slice(0, cut);
+      const out = redactBodyPreview(body);
+      expect(out, `cut at ${cut}: ${JSON.stringify(body)}`).not.toContain('SNTNL');
+      expect(out, `cut at ${cut}: ${JSON.stringify(body)}`).not.toContain('ESC');
+    }
+  });
+
   it('masks a credential embedded in free-form text', () => {
     // An error page or plain-text response is neither JSON nor a form body.
     const body = `OAuth failure for request 42: client_secret=${SECRET} was rejected`;
