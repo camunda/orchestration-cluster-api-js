@@ -128,17 +128,18 @@ jobs:
       # exactly like ci.yml's "Generation Drift" gate, and commit separately.
       # Runs here (not on the backport PR) because PR-triggered workflows are
       # read from the PR branch, which is based on stable/* and lacks this file.
+      # Covers backport PRs created by this run and open ones from earlier runs:
+      # on a retry the action reuses existing branches/PRs and doesn't report
+      # them in created_pull_numbers, but a failed regeneration must be retried.
       - name: Use Node.js
-        if: steps.backport.outputs.created_pull_numbers != ''
         uses: actions/setup-node@v6
         with:
           node-version: 22.x
 
       - name: Regenerate generated code on backport branches
-        if: steps.backport.outputs.created_pull_numbers != ''
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          PR_NUMBERS: ${{ steps.backport.outputs.created_pull_numbers }}
+          CREATED_PRS: ${{ steps.backport.outputs.created_pull_numbers }}
           SOURCE_PR: ${{ github.event.pull_request.number || github.event.issue.number }}
           # Committed files derived from the upstream spec or the generator.
           DERIVED: >-
@@ -175,8 +176,24 @@ jobs:
             echo "Committed regenerated output to #$pr."
           }
 
+          # Branch names follow the action's default: backport-<PR>-to-<target>.
+          existing=$(gh pr list --state open --author app/camunda-sdk-automation \
+            --json number,headRefName \
+            -q ".[] | select(.headRefName | startswith(\"backport-$SOURCE_PR-to-\")) | .number") || {
+            echo "::error::Could not list existing backport PRs for #$SOURCE_PR."
+            exit 1
+          }
+          read -ra created <<< "$CREATED_PRS"
+          read -ra existing <<< "$(echo "$existing" | tr '\n' ' ')"
+          pr_numbers=$(printf '%s\n' "${created[@]}" "${existing[@]}" | grep -E '^[0-9]+$' | sort -un | tr '\n' ' ')
+          if [ -z "${pr_numbers// /}" ]; then
+            echo "No backport PRs for #$SOURCE_PR."
+            exit 0
+          fi
+          echo "Backport PRs to regenerate: $pr_numbers"
+
           failed=0
-          for pr in $PR_NUMBERS; do
+          for pr in $pr_numbers; do
             if ! refs=$(gh pr view "$pr" --json headRefName,baseRefName -q '.headRefName + " " + .baseRefName'); then
               echo "::error::Could not read backport PR #$pr."
               failed=1
@@ -193,3 +210,14 @@ jobs:
             echo "::endgroup::"
           done
           exit $failed
+
+      # The action only fails the step on unexpected errors. When a target
+      # can't be backported it comments on the source PR and reports
+      # was_successful=false, so fail the job to make that visible too.
+      - name: Fail if a target could not be backported
+        if: ${{ !cancelled() && steps.backport.outputs.was_successful == 'false' }}
+        env:
+          BY_TARGET: ${{ steps.backport.outputs.was_successful_by_target }}
+        run: |
+          echo "::error::Backport failed for some targets: $BY_TARGET. See the comment on the source PR."
+          exit 1
