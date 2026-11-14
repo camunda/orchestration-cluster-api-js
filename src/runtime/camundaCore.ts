@@ -153,13 +153,34 @@ export class CamundaCore {
   // Internal fixed error mode for eventual consistency ('throw' | 'result'). Not user mutable after construction.
   protected readonly _errorMode: 'throw' | 'result';
 
-  protected _overrides: EnvOverrides = {};
+  /**
+   * The callers' own override maps, held off the instances entirely.
+   *
+   * The map holds raw credentials and is kept so `configure()` can re-hydrate from it. As
+   * a property — even a non-enumerable one — it still reaches `util.inspect(client,
+   * { showHidden: true })` and `console.log('%o', client)`, which enables `showHidden`,
+   * so every secret the caller passed in would print despite the hydrated `config`
+   * redacting them. Keyed off the instance in a WeakMap, it is not a property at all, so
+   * no inspection mode can reach it, and it is collected with the client.
+   */
+  static readonly #overridesByInstance = new WeakMap<object, EnvOverrides>();
+
+  /**
+   * Plain methods, not an accessor: `util.inspect(client, { showHidden: true, getters: true })`
+   * invokes accessors and would print the raw override map, whereas it never calls a method.
+   */
+  protected _getOverrides(): EnvOverrides {
+    return CamundaCore.#overridesByInstance.get(this) ?? {};
+  }
+  protected _setOverrides(value: EnvOverrides): void {
+    CamundaCore.#overridesByInstance.set(this, value);
+  }
 
   constructor(opts: CamundaOptions = {}) {
-    if (opts.config) this._overrides = { ...opts.config };
+    this._setOverrides(opts.config ? { ...opts.config } : {});
     this._clock = opts.clock ?? createLiveClock();
     this._random = opts.random ?? liveRandom;
-    const { config } = hydrateConfig({ overrides: this._overrides, env: opts.env });
+    const { config } = hydrateConfig({ overrides: this._getOverrides(), env: opts.env });
     this._config = deepFreeze(config) as Readonly<CamundaConfig>;
     // Initialize per-client logger
     this._log = createLogger({
@@ -192,7 +213,7 @@ export class CamundaCore {
       /^(trace|silly)$/.test(this._log.level()) &&
       !this._config.telemetry?.log &&
       // No explicit override provided
-      (this._overrides as any)['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined &&
+      (this._getOverrides() as any)['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined &&
       // And env var either absent or truthy enabling value
       (typeof process === 'undefined' ||
         process.env['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined ||
@@ -308,11 +329,11 @@ export class CamundaCore {
 
   // Merge new overrides and re-hydrate.
   configure(next: CamundaOptions) {
-    if (next.config) this._overrides = { ...this._overrides, ...next.config };
+    if (next.config) this._setOverrides({ ...this._getOverrides(), ...next.config });
     if (next.fetch) this._baseFetch = next.fetch;
     // Always wrap from the base fetch to avoid accumulating closure layers on repeated configure() calls.
     this._fetch = this._baseFetch;
-    const { config } = hydrateConfig({ overrides: this._overrides, env: next.env });
+    const { config } = hydrateConfig({ overrides: this._getOverrides(), env: next.env });
     this._config = deepFreeze(config) as Readonly<CamundaConfig>;
     // Re-wrap fetch if telemetry present OR env auto telemetry toggled
     if (next.telemetry) {
@@ -334,7 +355,7 @@ export class CamundaCore {
     } else if (
       /^(trace|silly)$/.test(this._log.level()) &&
       !this._config.telemetry?.log &&
-      (this._overrides as any)['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined &&
+      (this._getOverrides() as any)['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined &&
       (typeof process === 'undefined' ||
         process.env['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined ||
         /^(1|true|yes|on)$/i.test(process.env['CAMUNDA_SDK_TELEMETRY_LOG'] || ''))
