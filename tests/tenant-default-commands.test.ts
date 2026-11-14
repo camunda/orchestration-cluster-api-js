@@ -113,4 +113,61 @@ describe('default tenant on tenant-scoped commands (#647)', () => {
     expect(bodies[0]?.tenantId).toBeUndefined();
     expect(bodies[0]?.filter?.tenantId).toBeUndefined();
   });
+
+  // Regression for the "tenant injection mutates the caller's input" class (PR #648
+  // review): envelope.body aliased the caller's object, so injecting the default
+  // tenant persisted on that object. The injection must go into a shallow copy.
+  // NOTE: these call the client directly (not `send`, which spreads the body and
+  // would mask the aliasing) so the exact caller object reaches the operation.
+  describe('injection does not mutate the caller input', () => {
+    it.each(COMMANDS)('%s accepts a frozen (Object.freeze) input', async (op, body) => {
+      const { client, bodies } = setup({ CAMUNDA_DEFAULT_TENANT_ID: 'tenant-a' });
+      // A frozen input must not throw a TypeError before the request is sent.
+      try {
+        await client[op](Object.freeze({ ...body }));
+      } catch {
+        // response shape is irrelevant; only the request body is asserted
+      }
+      expect(bodies).toHaveLength(1);
+      expect(bodies[0]?.tenantId).toBe('tenant-a');
+    });
+
+    it.each(COMMANDS)('%s leaves a reused input tenant-less', async (op, body) => {
+      const shared: Record<string, unknown> = { ...body };
+      const a = setup({ CAMUNDA_DEFAULT_TENANT_ID: 'tenant-a' });
+      try {
+        await a.client[op](shared);
+      } catch {}
+      // The caller's object must not retain the injected tenant…
+      expect(shared.tenantId).toBeUndefined();
+      // …so a second client with a different default sends its own tenant.
+      const b = setup({ CAMUNDA_DEFAULT_TENANT_ID: 'tenant-b' });
+      try {
+        await b.client[op](shared);
+      } catch {}
+      expect(b.bodies).toHaveLength(1);
+      expect(b.bodies[0]?.tenantId).toBe('tenant-b');
+    });
+
+    it('activateJobs accepts a frozen input and does not mutate a reused one', async () => {
+      const { client, bodies } = setup({ CAMUNDA_DEFAULT_TENANT_ID: 'tenant-a' });
+      try {
+        await client.activateJobs(Object.freeze({ ...ACTIVATE }));
+      } catch {}
+      expect(bodies).toHaveLength(1);
+      expect(bodies[0]?.tenantIds).toEqual(['tenant-a']);
+
+      const shared: Record<string, unknown> = { ...ACTIVATE };
+      const a = setup({ CAMUNDA_DEFAULT_TENANT_ID: 'tenant-a' });
+      try {
+        await a.client.activateJobs(shared);
+      } catch {}
+      expect(shared.tenantIds).toBeUndefined();
+      const b = setup({ CAMUNDA_DEFAULT_TENANT_ID: 'tenant-b' });
+      try {
+        await b.client.activateJobs(shared);
+      } catch {}
+      expect(b.bodies[0]?.tenantIds).toEqual(['tenant-b']);
+    });
+  });
 });

@@ -423,7 +423,12 @@ export type ${o.opId}Consistency = {
         methods.push(
           '      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {'
         );
-        methods.push('        envelope.body.tenantId = this._config.defaultTenantId;');
+        // Inject into a shallow copy: envelope.body aliases the caller's input, so
+        // mutating it would leak the default tenant into reused inputs and throw on
+        // frozen inputs. See issue #647 / PR #648 review.
+        methods.push(
+          '        envelope.body = { ...envelope.body, tenantId: this._config.defaultTenantId };'
+        );
         methods.push(
           "        this._log.trace(() => ['tenant.default.inject', { op: '" +
             o.originalOpId +
@@ -439,7 +444,10 @@ export type ${o.opId}Consistency = {
         methods.push(
           "      if (envelope.body && envelope.body.tenantFilter !== 'ASSIGNED' && this._config.defaultTenantId !== undefined && this._config.defaultTenantId !== null && (!Array.isArray(envelope.body.tenantIds) || envelope.body.tenantIds.length === 0)) {"
         );
-        methods.push('        envelope.body.tenantIds = [this._config.defaultTenantId];');
+        // Shallow copy, same aliasing rationale as the singular tenantId case above.
+        methods.push(
+          '        envelope.body = { ...envelope.body, tenantIds: [this._config.defaultTenantId] };'
+        );
         methods.push(
           "        this._log.trace(() => ['tenant.default.inject', { op: '" +
             o.originalOpId +
