@@ -149,27 +149,46 @@ jobs:
           git config user.name 'camunda-sdk-automation[bot]'
           git config user.email '290741040+camunda-sdk-automation[bot]@users.noreply.github.com'
           read -ra derived <<< "$DERIVED"
+
+          # Every step is guarded with `|| return 1`: errexit does not apply
+          # inside a function called from an `if` condition.
+          regenerate() {
+            local pr=$1 branch=$2 base=$3
+            # Start from a clean tree: a previous target may have failed midway.
+            git reset -q --hard || return 1
+            git clean -fdq || return 1
+            git fetch origin "$branch" "$base" || return 1
+            git checkout -q -f -B "$branch" "origin/$branch" || return 1
+            git restore --source="origin/$base" --staged --worktree -- "${derived[@]}" || return 1
+            npm ci || return 1
+            npx tsx scripts/run-pipeline.ts --no-test || return 1
+            # Compare the staged result with HEAD, not the index: the restore
+            # staged the target's copies, which regeneration may undo.
+            git add -A || return 1
+            if git diff --cached --quiet HEAD; then
+              echo "Generated code already matches #$pr's branch."
+              return 0
+            fi
+            git commit -q -m "chore(gen): regenerate src/gen for backport of #$SOURCE_PR" \
+              -m "Restore the spec and other derived files from $base and regenerate from its spec bundle." || return 1
+            git push origin "HEAD:$branch" || return 1
+            echo "Committed regenerated output to #$pr."
+          }
+
           failed=0
           for pr in $PR_NUMBERS; do
-            branch=$(gh pr view "$pr" --json headRefName -q .headRefName)
-            base=$(gh pr view "$pr" --json baseRefName -q .baseRefName)
-            echo "::group::Regenerate #$pr ($branch -> $base)"
-            if git fetch origin "$branch" "$base" &&
-              git checkout -B "$branch" "origin/$branch" && git clean -fdq &&
-              git restore --source="origin/$base" --staged --worktree -- "${derived[@]}" &&
-              npm ci && npx tsx scripts/run-pipeline.ts --no-test; then
-              if [ -n "$(git status --porcelain)" ]; then
-                git add -A
-                git commit -q -m "chore(gen): regenerate src/gen for backport of #$SOURCE_PR" \
-                  -m "Restore the spec and other derived files from $base and regenerate from its spec bundle."
-                git push origin "HEAD:$branch"
-                echo "Committed regenerated output to #$pr."
-              else
-                echo "Generated code already matches #$pr's branch."
-              fi
-            else
+            if ! refs=$(gh pr view "$pr" --json headRefName,baseRefName -q '.headRefName + " " + .baseRefName'); then
+              echo "::error::Could not read backport PR #$pr."
               failed=1
-              gh pr comment "$pr" --body "Could not regenerate the generated code on this backport (see the [Backport run](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})). Either the cherry-pick left conflicts in hand-written code, or the change depends on spec that \`$base\` doesn't have (then it can't be backported as-is). See AGENTS.md \"Backporting to stable branches\"."
+              continue
+            fi
+            read -r branch base <<< "$refs"
+            echo "::group::Regenerate #$pr ($branch -> $base)"
+            if ! regenerate "$pr" "$branch" "$base"; then
+              failed=1
+              echo "::error::Regeneration failed for #$pr."
+              gh pr comment "$pr" --body "Could not regenerate the generated code on this backport (see the [Backport run](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})), so it may still carry \`main\`'s generated files. Either the cherry-pick left conflicts in hand-written code, the change depends on spec that \`$base\` doesn't have (then it can't be backported as-is), or the commit or push failed. See AGENTS.md \"Backporting to stable branches\"." ||
+                echo "::error::Could not comment on #$pr either."
             fi
             echo "::endgroup::"
           done
