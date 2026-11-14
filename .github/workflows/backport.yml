@@ -35,6 +35,8 @@ jobs:
     # Never react to the automation app's own comments
     # (camunda-sdk-automation[bot], id 290741040). author_association is only a
     # cheap pre-filter; the first step checks real repository permission.
+    outputs:
+      targets: ${{ steps.targets.outputs.targets }}
     if: >
       (
         github.event_name == 'pull_request_target' &&
@@ -124,97 +126,36 @@ jobs:
               "conflict_resolution": "draft_commit_conflicts"
             }
 
-      # The SDK commits derived files (the bundled and upstream spec, branding
-      # metadata, response assertions and src/gen), and PRs are squash-merged,
-      # so a backport carries main's copies of all of them. On a stable branch
-      # these must come from the branch's own upstream spec (stable/10 builds
-      # camunda stable/8.10). Restore them from the target branch, regenerate
-      # exactly like ci.yml's "Generation Drift" gate, and commit separately.
-      # Runs here (not on the backport PR) because PR-triggered workflows are
-      # read from the PR branch, which is based on stable/* and lacks this file.
+      # Collect the backport PRs to regenerate (see the `regenerate` job).
       # Covers backport PRs created by this run and open ones from earlier runs:
       # on a retry the action reuses existing branches/PRs and doesn't report
       # them in created_pull_numbers, but a failed regeneration must be retried.
-      - name: Use Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 22.x
-
-      - name: Regenerate generated code on backport branches
+      # Each target pins the branch head, so the trusted push job refuses to
+      # push if the branch moved after it was regenerated.
+      - name: List backport PRs to regenerate
+        id: targets
+        if: ${{ !cancelled() }}
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           CREATED_PRS: ${{ steps.backport.outputs.created_pull_numbers }}
           SOURCE_PR: ${{ github.event.pull_request.number || github.event.issue.number }}
-          # Committed files derived from the upstream spec or the generator.
-          DERIVED: >-
-            external-spec branding/branding-metadata.json
-            json-body-assertions/responses.json src/gen src/facade/operations.gen.ts
         run: |
-          set -uo pipefail
-          git config user.name 'camunda-sdk-automation[bot]'
-          git config user.email '290741040+camunda-sdk-automation[bot]@users.noreply.github.com'
-          read -ra derived <<< "$DERIVED"
-
-          # Every step is guarded with `|| return 1`: errexit does not apply
-          # inside a function called from an `if` condition.
-          regenerate() {
-            local pr=$1 branch=$2 base=$3
-            # Start from a clean tree: a previous target may have failed midway.
-            git reset -q --hard || return 1
-            git clean -fdq || return 1
-            git fetch origin "$branch" "$base" || return 1
-            git checkout -q -f -B "$branch" "origin/$branch" || return 1
-            git restore --source="origin/$base" --staged --worktree -- "${derived[@]}" || return 1
-            npm ci || return 1
-            npx tsx scripts/run-pipeline.ts --no-test || return 1
-            # Compare the staged result with HEAD, not the index: the restore
-            # staged the target's copies, which regeneration may undo.
-            git add -A || return 1
-            if git diff --cached --quiet HEAD; then
-              echo "Generated code already matches #$pr's branch."
-              return 0
-            fi
-            git commit -q -m "chore(gen): regenerate src/gen for backport of #$SOURCE_PR" \
-              -m "Restore the spec and other derived files from $base and regenerate from its spec bundle." || return 1
-            git push origin "HEAD:$branch" || return 1
-            echo "Committed regenerated output to #$pr."
-          }
-
+          set -euo pipefail
           # Branch names follow the action's default: backport-<PR>-to-<target>.
           # gh pr list returns 30 PRs by default; the app can have more open.
           existing=$(gh pr list --state open --author app/camunda-sdk-automation \
             --limit 1000 --json number,headRefName \
-            -q ".[] | select(.headRefName | startswith(\"backport-$SOURCE_PR-to-\")) | .number") || {
-            echo "::error::Could not list existing backport PRs for #$SOURCE_PR."
-            exit 1
-          }
+            -q ".[] | select(.headRefName | startswith(\"backport-$SOURCE_PR-to-\")) | .number")
           read -ra created <<< "$CREATED_PRS"
           read -ra existing <<< "$(echo "$existing" | tr '\n' ' ')"
-          pr_numbers=$(printf '%s\n' "${created[@]}" "${existing[@]}" | grep -E '^[0-9]+$' | sort -un | tr '\n' ' ')
-          if [ -z "${pr_numbers// /}" ]; then
-            echo "No backport PRs for #$SOURCE_PR."
-            exit 0
-          fi
-          echo "Backport PRs to regenerate: $pr_numbers"
-
-          failed=0
-          for pr in $pr_numbers; do
-            if ! refs=$(gh pr view "$pr" --json headRefName,baseRefName -q '.headRefName + " " + .baseRefName'); then
-              echo "::error::Could not read backport PR #$pr."
-              failed=1
-              continue
-            fi
-            read -r branch base <<< "$refs"
-            echo "::group::Regenerate #$pr ($branch -> $base)"
-            if ! regenerate "$pr" "$branch" "$base"; then
-              failed=1
-              echo "::error::Regeneration failed for #$pr."
-              gh pr comment "$pr" --body "Could not regenerate the generated code on this backport (see the [Backport run](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})), so it may still carry \`main\`'s generated files. Either the cherry-pick left conflicts in hand-written code, the change depends on spec that \`$base\` doesn't have (then it can't be backported as-is), or the commit or push failed. See AGENTS.md \"Backporting to stable branches\"." ||
-                echo "::error::Could not comment on #$pr either."
-            fi
-            echo "::endgroup::"
+          targets='[]'
+          for pr in $(printf '%s\n' "${created[@]}" "${existing[@]}" | grep -E '^[0-9]+$' | sort -un); do
+            t=$(gh pr view "$pr" --json number,headRefName,baseRefName,headRefOid \
+              -q '{pr: .number, branch: .headRefName, base: .baseRefName, sha: .headRefOid}')
+            targets=$(jq -c --argjson t "$t" '. + [$t]' <<< "$targets")
           done
-          exit $failed
+          echo "Backport PRs to regenerate: $targets"
+          echo "targets=$targets" >> "$GITHUB_OUTPUT"
 
       # The action only fails the step on unexpected errors. When a target
       # can't be backported it comments on the source PR and reports
@@ -226,3 +167,187 @@ jobs:
         run: |
           echo "::error::Backport failed for some targets: $BY_TARGET. See the comment on the source PR."
           exit 1
+
+  # The SDK commits derived files (the bundled and upstream spec, branding
+  # metadata, response assertions and src/gen), and PRs are squash-merged,
+  # so a backport carries main's copies of all of them. On a stable branch
+  # these must come from the branch's own upstream spec (stable/10 builds
+  # camunda stable/8.10). Restore them from the target branch, regenerate
+  # exactly like ci.yml's "Generation drift" gate, and commit separately.
+  # Runs here (not on the backport PR) because PR-triggered workflows are
+  # read from the PR branch, which is based on stable/* and lacks this file.
+  #
+  # Threat model: regeneration executes code from the backport branch
+  # (npm ci lifecycle scripts, scripts/run-pipeline.ts), and anyone with write
+  # access can push to that branch and then comment /backport. So the work is
+  # split in two:
+  #   - `regenerate` runs the branch's code with only a read-only GITHUB_TOKEN:
+  #     no App token, no id-token (Vault), no persisted git credentials, no
+  #     caches. Its only output is a patch artifact, which it fully controls.
+  #   - `push` mints the App token but never checks out or executes branch
+  #     code: it runs scripts/check-derived-paths.sh from this workflow's own
+  #     commit, rejects the patch unless every changed path is a derived path
+  #     (fail closed), applies it with git, and pushes only if the branch head
+  #     is still the one that was regenerated.
+  regenerate:
+    name: Regenerate (#${{ matrix.target.pr }})
+    needs: backport
+    if: ${{ !cancelled() && needs.backport.outputs.targets != '' && needs.backport.outputs.targets != '[]' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ${{ fromJSON(needs.backport.outputs.targets) }}
+    steps:
+      # Trusted copy of this workflow's commit, for the restore list only.
+      - uses: actions/checkout@v6
+        with:
+          path: trusted
+          persist-credentials: false
+      - uses: actions/checkout@v6
+        with:
+          path: work
+          ref: ${{ matrix.target.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      # No npm cache: this job runs untrusted code and must not seed shared caches.
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22.x
+      - name: Regenerate and write the patch
+        working-directory: work
+        env:
+          BASE: ${{ matrix.target.base }}
+        run: |
+          set -euo pipefail
+          read -ra derived <<< "$(../trusted/scripts/check-derived-paths.sh --list)"
+          git restore --source="origin/$BASE" --staged --worktree -- "${derived[@]}"
+          npm ci
+          npx tsx scripts/run-pipeline.ts --no-test
+          # Compare the staged result with HEAD, not the index: the restore
+          # staged the target's copies, which regeneration may undo.
+          git add -A
+          mkdir -p "$RUNNER_TEMP/regen"
+          git diff --cached --binary --no-renames HEAD > "$RUNNER_TEMP/regen/regen.patch"
+          git diff --cached --stat HEAD
+      - uses: actions/upload-artifact@v5
+        with:
+          name: regen-${{ matrix.target.pr }}
+          path: ${{ runner.temp }}/regen/regen.patch
+          if-no-files-found: error
+          retention-days: 3
+
+  push:
+    name: Push regenerated code (#${{ matrix.target.pr }})
+    needs: [backport, regenerate]
+    # Also runs when some regenerations failed, to report them on their PRs.
+    if: ${{ !cancelled() && needs.backport.outputs.targets != '' && needs.backport.outputs.targets != '[]' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # Vault JWT auth
+    concurrency:
+      group: backport-push-${{ matrix.target.branch }}
+      cancel-in-progress: false
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ${{ fromJSON(needs.backport.outputs.targets) }}
+    steps:
+      - name: Import secrets
+        id: secrets
+        uses: hashicorp/vault-action@v4.0.0
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          method: jwt
+          path: ${{ secrets.VAULT_JWT_PATH }}
+          role: ${{ secrets.VAULT_JWT_ROLE }}
+          jwtGithubAudience: ${{ secrets.VAULT_JWT_AUDIENCE }}
+          exportEnv: false
+          secrets: |
+            secret/data/products/agentic-experience/github.com/apps/camunda/camunda-sdk-automation GITHUB_APP_ID | APP_ID ;
+            secret/data/products/agentic-experience/github.com/apps/camunda/camunda-sdk-automation GITHUB_APP_PRIVATE_KEY | APP_PRIVATE_KEY ;
+
+      # An app token (not GITHUB_TOKEN) so the pushed commit triggers CI.
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ steps.secrets.outputs.APP_ID }}
+          private-key: ${{ steps.secrets.outputs.APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+
+      # This workflow's own commit: the only code this job executes.
+      - uses: actions/checkout@v6
+        with:
+          path: trusted
+          persist-credentials: false
+
+      - uses: actions/download-artifact@v5
+        id: patch
+        continue-on-error: true
+        with:
+          name: regen-${{ matrix.target.pr }}
+          path: ${{ runner.temp }}/regen
+
+      - name: Check, apply and push the patch
+        id: apply
+        if: ${{ steps.patch.outcome == 'success' }}
+        working-directory: trusted
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR: ${{ matrix.target.pr }}
+          BRANCH: ${{ matrix.target.branch }}
+          BASE: ${{ matrix.target.base }}
+          SHA: ${{ matrix.target.sha }}
+          SOURCE_PR: ${{ github.event.pull_request.number || github.event.issue.number }}
+        run: |
+          set -euo pipefail
+          patch="$RUNNER_TEMP/regen/regen.patch"
+          check="$PWD/scripts/check-derived-paths.sh"
+          # Branch content is only read by git (checkout, apply, commit); none
+          # of it is executed. Use a separate worktree so $check stays trusted.
+          remote="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git fetch -q "$remote" "+refs/heads/$BRANCH:refs/remotes/origin/$BRANCH"
+          if [ "$(git rev-parse "origin/$BRANCH")" != "$SHA" ]; then
+            echo "::error::$BRANCH moved after it was regenerated (expected $SHA); comment /backport on #$SOURCE_PR to retry."
+            exit 1
+          fi
+          if [ ! -s "$patch" ]; then
+            echo "Generated code already matches #$PR's branch."
+            exit 0
+          fi
+          git worktree add -q --detach "$RUNNER_TEMP/branch" "$SHA"
+          cd "$RUNNER_TEMP/branch"
+          # git apply refuses paths outside the worktree, in .git or behind a
+          # symlink. Nothing runs between applying and checking, and the check
+          # sees exactly what would be committed (both sides of any rename).
+          git apply --index --binary "$patch"
+          git diff --cached --name-only --no-renames -z HEAD | "$check"
+          if git diff --cached --quiet HEAD; then
+            echo "Generated code already matches #$PR's branch."
+            exit 0
+          fi
+          git -c user.name='camunda-sdk-automation[bot]' \
+            -c user.email='290741040+camunda-sdk-automation[bot]@users.noreply.github.com' \
+            commit -q -m "chore(gen): regenerate src/gen for backport of #$SOURCE_PR" \
+            -m "Restore the spec and other derived files from $BASE and regenerate from its spec bundle."
+          # Lease on the regenerated head: never overwrite a concurrent push.
+          git push --force-with-lease="refs/heads/$BRANCH:$SHA" "$remote" "HEAD:refs/heads/$BRANCH"
+          echo "Committed regenerated output to #$PR."
+
+      - name: Report a failed regeneration on the backport PR
+        if: ${{ !cancelled() && (steps.patch.outcome != 'success' || steps.apply.outcome == 'failure') }}
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR: ${{ matrix.target.pr }}
+          BASE: ${{ matrix.target.base }}
+        run: |
+          gh pr comment "$PR" -R "$GITHUB_REPOSITORY" --body "Could not regenerate the generated code on this backport (see the [Backport run](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})), so it may still carry \`main\`'s generated files. Either the cherry-pick left conflicts in hand-written code, the change depends on spec that \`$BASE\` doesn't have (then it can't be backported as-is), the regenerated patch touched non-generated paths, the branch moved meanwhile, or the commit or push failed. See AGENTS.md \"Backporting to stable branches\"." ||
+            echo "::error::Could not comment on #$PR either."
+          exit 1
+

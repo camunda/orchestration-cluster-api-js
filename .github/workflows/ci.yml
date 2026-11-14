@@ -141,6 +141,8 @@ jobs:
         run: node scripts/check-example-coverage.cjs
       - name: Check Method Example Completeness
         run: node scripts/check-method-example-completeness.cjs
+      - name: Test the backport derived-path allowlist
+        run: ./scripts/check-derived-paths.test.sh
       # This job builds via `npm run build`, which re-bundles the spec from
       # camunda/camunda@main. Any diff here therefore reflects *upstream spec*
       # movement, which is not this PR's responsibility — hence non-blocking.

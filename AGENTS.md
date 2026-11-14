@@ -173,10 +173,13 @@ Backport user-facing fixes in hand-written code (`src/runtime/`, `src/template/`
 
 The workflow handles this. After creating each backport PR it restores those paths from the target branch, runs `npx tsx scripts/run-pipeline.ts --no-test` (the same command as CI's Generation Drift gate), and pushes any result as a separate `chore(gen): regenerate src/gen for backport of #N` commit. This also clears cherry-pick conflicts in those files.
 
-If that step fails, the bot comments on the backport PR. Two causes:
+Regeneration runs code from the backport branch (`npm ci` and the pipeline), which anyone with write access can change, so it is split across two jobs. `regenerate` runs it with only a read-only `GITHUB_TOKEN` (no App token, no Vault OIDC, no caches) and uploads the result as a patch. `push` mints the App token, never executes branch code, and applies the patch only if every changed path passes `scripts/check-derived-paths.sh` (the allowlist of derived paths, run from the workflow's own commit; fails closed). It pushes only while the branch head is the one that was regenerated. When the derived paths change, update that script (its self-test, `scripts/check-derived-paths.test.sh`, runs in CI).
+
+If that step fails, the bot comments on the backport PR. Causes:
 
 - **Conflicts in hand-written code.** Resolve them on the backport branch and apply any remaining commits (see above) first, then repeat the step yourself: `git restore --source=origin/stable/<N> --staged --worktree -- external-spec branding/branding-metadata.json json-body-assertions/responses.json src/gen src/facade/operations.gen.ts`, run `npx tsx scripts/run-pipeline.ts --no-test`, and commit the regenerated output separately.
 - **The change depends on spec the stable branch doesn't have** (e.g. it wraps an operation that only exists upstream on `main`; the pipeline fails type-checking the examples). It can't be backported as-is. Close the backport PR, or reduce it to the parts that apply to the stable spec.
+- **The patch touched non-generated paths, or the branch moved** while it regenerated. Fix the generator output, or comment `/backport` again on the source PR.
 
 ## Pre-push checklist
 
