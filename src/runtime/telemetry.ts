@@ -111,6 +111,210 @@ function redactUrl(u: string): string {
   }
 }
 
+/**
+ * Whether a body field name denotes a credential.
+ *
+ * The name is normalised first (lower-cased, with `_`, `-`, `.` and whitespace removed), so
+ * `client_secret`, `Client-Secret`, `clientSecret` and `CLIENT.SECRET` are one name. A name is
+ * a credential when it contains a credential word (`password`, `passphrase`, `secret`,
+ * `credential`, `assertion`, `apikey`, `privatekey`, `authorization`, `bearer`, `cookie`) or
+ * ends in `token`. Matching is deliberately broad: masking a value that was not a credential
+ * costs a little diagnostic text, while a missed credential is a leak. A bare `key` is not
+ * matched, since entity keys (`processDefinitionKey`) are everywhere in the API.
+ */
+const SECRET_FIELD_WORDS = [
+  'password',
+  'passwd',
+  'passphrase',
+  'secret',
+  'credential',
+  'assertion',
+  'apikey',
+  'privatekey',
+  'authorization',
+  'bearer',
+  'cookie',
+];
+
+const BODY_REDACTED = '[redacted]';
+
+function isSecretBodyField(name: string): boolean {
+  const n = name.toLowerCase().replace(/[\s_.-]/g, '');
+  return /tokens?$/.test(n) || SECRET_FIELD_WORDS.some((w) => n.includes(w));
+}
+
+/**
+ * How deep a structure carried inside a string value (JSON in a JSON string, a form in a form
+ * value, ...) is unwrapped. Past this a parseable structure is masked whole instead of read.
+ */
+const MAX_EMBEDDED_DEPTH = 4;
+
+/**
+ * Decode a form name or value (`+` is a space). A malformed escape (`%FF` is not valid UTF-8)
+ * throws, and the throw is deliberately not caught here: falling back to the raw text would
+ * judge an encoded name (`client_%73ecret%FF`) against the credential words and miss it, and
+ * would skip a structure held in a value. It propagates to the preview's error handler, so the
+ * body is omitted.
+ */
+function decodeFormComponent(raw: string): string {
+  return decodeURIComponent(raw.replace(/\+/g, ' '));
+}
+
+/**
+ * A well-formed `application/x-www-form-urlencoded` body: every `&`-separated pair is
+ * `name=value`, with a non-empty name, and both made only of the characters a form encoder
+ * emits (letters, digits, `*-._~!'()`, `+` for a space, and `%XX` escapes). Because a value
+ * must be percent-encoded, a raw `&` always starts the next pair, so for such a body the
+ * pair boundaries are known rather than guessed; anything else (a raw space, quote, `=`,
+ * newline, a stray `&`, ...) means the text did not come from a form encoder, and its
+ * boundaries are not known. Built from alternatives that cannot match the same character, so
+ * matching is linear in the length of the text.
+ */
+const FORM_CHAR = "(?:[A-Za-z0-9*\\-._~!'()+]|%[0-9A-Fa-f]{2})";
+const WELL_FORMED_FORM = new RegExp(
+  `^${FORM_CHAR}+=${FORM_CHAR}*(?:&${FORM_CHAR}+=${FORM_CHAR}*)*$`
+);
+
+/** Parse JSON, or return `undefined` if the text is not valid JSON. */
+function tryParseJson(text: string): unknown {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Redact a string that is a value inside a parsed structure. If it is itself a parseable
+ * structure (a JSON object or array, or a well-formed form encoding) its credential fields
+ * are masked by name; any other string is returned unchanged.
+ */
+function redactEmbedded(value: string, depth: number): string {
+  const text = value.trim();
+  if (text[0] === '{' || text[0] === '[') {
+    const parsed = tryParseJson(text);
+    if (parsed === null || typeof parsed !== 'object') return value;
+    return depth >= MAX_EMBEDDED_DEPTH
+      ? BODY_REDACTED
+      : JSON.stringify(redactJsonValue(parsed, depth + 1));
+  }
+  if (value.includes('=') && WELL_FORMED_FORM.test(value)) {
+    return depth >= MAX_EMBEDDED_DEPTH ? BODY_REDACTED : redactFormBody(value, depth + 1);
+  }
+  return value;
+}
+
+/**
+ * Mask the credential fields of a well-formed form body (see `WELL_FORMED_FORM`). A value
+ * that is itself a parseable structure is redacted by the same rules and written back encoded.
+ */
+function redactFormBody(body: string, depth: number): string {
+  return body
+    .split('&')
+    .map((pair) => {
+      const eq = pair.indexOf('=');
+      const rawName = pair.slice(0, eq);
+      if (isSecretBodyField(decodeFormComponent(rawName))) return `${rawName}=${BODY_REDACTED}`;
+      const value = decodeFormComponent(pair.slice(eq + 1));
+      const inner = redactEmbedded(value, depth);
+      return inner === value ? pair : `${rawName}=${encodeURIComponent(inner)}`;
+    })
+    .join('&');
+}
+
+/** Mask the credential fields anywhere in a parsed JSON value. */
+function redactJsonValue(value: unknown, depth: number): unknown {
+  if (typeof value === 'string') return redactEmbedded(value, depth);
+  if (value === null || typeof value !== 'object') return value;
+  if (Array.isArray(value)) return value.map((v) => redactJsonValue(v, depth));
+  // A null prototype: `JSON.parse` can produce an own `__proto__` key, which a plain object
+  // would take as a prototype assignment and silently drop.
+  const out: Record<string, unknown> = Object.create(null);
+  for (const [k, v] of Object.entries(value)) {
+    out[k] = isSecretBodyField(k) ? BODY_REDACTED : redactJsonValue(v, depth);
+  }
+  return out;
+}
+
+/** The media type of a Content-Type header value, or `unknown` if it is not one. Parameters are dropped. */
+function mediaTypeOf(contentType: string | null | undefined): string {
+  const base = (contentType ?? '').split(';')[0].trim().toLowerCase();
+  return base.length <= 100 && /^[a-z0-9][a-z0-9!#$&^_.+-]*\/[a-z0-9][a-z0-9!#$&^_.+-]*$/.test(base)
+    ? base
+    : 'unknown';
+}
+
+/** What the preview says in place of a body whose structure cannot be trusted. */
+function omittedPreview(body: string, contentType: string | null | undefined): string {
+  const bytes =
+    typeof TextEncoder !== 'undefined' ? new TextEncoder().encode(body).length : body.length;
+  return `[body preview omitted: ${bytes} bytes, content-type=${mediaTypeOf(contentType)}]`;
+}
+
+/**
+ * Redact credential values from an HTTP body preview.
+ *
+ * The silly-level previews log request and response bodies, and the OAuth token request runs
+ * through this same wrapped fetch — so without this the preview carried `client_secret=…` and
+ * the token endpoint's `access_token`. The level is opt-in and warned about, but "a secret must
+ * not appear in logs" is unconditional, so redact at the source rather than relying on the
+ * warning.
+ *
+ * The rule is structural, with no guessing of where a credential value ends. A body that
+ * parses as a JSON object or array, or is a well-formed form encoding, is logged with every
+ * credential field masked whole by its name (at any depth, and inside any string value that
+ * is itself such a structure). Any other body — free text, JSON cut off by truncation, raw
+ * multipart text, a bare JSON scalar — is not logged: the preview carries only its byte length
+ * and media type. So is a form with a percent-escape that does not decode, and a structure
+ * that fails to redact for any other reason: the preview becomes a placeholder.
+ *
+ * Not covered, by the nature of the encoding: a credential held in a string under a
+ * non-credential field name (`{"note":"my password is hunter2"}`), and a form whose
+ * unencoded `&` is followed by text that happens to read as `name=value`, which is
+ * indistinguishable from a second field.
+ */
+export function redactBodyPreview(body: string, contentType?: string | null): string {
+  if (!body) return body;
+  try {
+    const trimmed = body.trim();
+    if (trimmed[0] === '{' || trimmed[0] === '[') {
+      const parsed = tryParseJson(trimmed);
+      if (parsed !== null && typeof parsed === 'object') {
+        return JSON.stringify(redactJsonValue(parsed, 0));
+      }
+    } else if (WELL_FORMED_FORM.test(body)) {
+      return redactFormBody(body, 0);
+    }
+    return omittedPreview(body, contentType);
+  } catch {
+    // Never let redaction failure hand the caller the unredacted body.
+    return '[body preview omitted: redaction failed]';
+  }
+}
+
+/** A header's value from any of the shapes `fetch` accepts, or from a Request's headers. */
+function headerValue(headers: unknown, name: string): string | undefined {
+  try {
+    if (!headers) return undefined;
+    if (typeof (headers as Headers).get === 'function') {
+      return (headers as Headers).get(name) ?? undefined;
+    }
+    const wanted = name.toLowerCase();
+    if (Array.isArray(headers)) {
+      for (const pair of headers) {
+        if (Array.isArray(pair) && String(pair[0]).toLowerCase() === wanted) return String(pair[1]);
+      }
+      return undefined;
+    }
+    for (const [k, v] of Object.entries(headers as Record<string, unknown>)) {
+      if (k.toLowerCase() === wanted) return String(v);
+    }
+  } catch {
+    /* an unreadable header is an unknown media type */
+  }
+  return undefined;
+}
+
 let globalRequestCounter = 0;
 
 // No-op fast path wrapper
@@ -169,18 +373,33 @@ export function wrapFetch(
         let body: any = init?.body;
         if (body === undefined && typeof Request !== 'undefined' && input instanceof Request) {
           try {
-            body = await (input as Request).clone().text();
+            const cloned = (input as Request).clone();
+            // A multipart Request body is raw boundary-delimited text; reading it as a
+            // FormData lets the per-entry masking below see each field.
+            body = /multipart\/form-data/i.test(cloned.headers.get('content-type') || '')
+              ? await cloned.formData()
+              : await cloned.text();
           } catch {
             body = undefined;
           }
         }
         if (body !== undefined && body !== null) {
-          if (typeof body === 'string') bodyPreview = body;
-          else if (body instanceof URLSearchParams) bodyPreview = body.toString();
+          // Text that still has to go through `redactBodyPreview`. The other previews below
+          // are built here from structure (FormData entries) or carry no text (a size).
+          let rawText: string | undefined;
+          if (typeof body === 'string') rawText = body;
+          else if (body instanceof URLSearchParams) rawText = body.toString();
           else if (typeof FormData !== 'undefined' && body instanceof FormData) {
             const entries: string[] = [];
             for (const [k, v] of (body as any).entries()) {
-              entries.push(`${k}=${typeof v === 'string' ? v.slice(0, 200) : '[File]'}`);
+              // A FormData is already parsed: mask each entry by its name, before joining
+              // (the joined string has no escaping, so it could not be parsed back). A string
+              // value that is itself a structure is masked by the same rules.
+              if (isSecretBodyField(String(k))) entries.push(`${k}=${BODY_REDACTED}`);
+              else {
+                const value = typeof v === 'string' ? redactEmbedded(v, 0).slice(0, 200) : '[File]';
+                entries.push(`${k}=${value}`);
+              }
             }
             bodyPreview = entries.join('&');
           } else if (body instanceof Blob) {
@@ -191,10 +410,20 @@ export function wrapFetch(
             bodyPreview = `[Uint8Array length=${(body as Uint8Array).length}]`;
           } else if (typeof body === 'object') {
             try {
-              bodyPreview = JSON.stringify(body).slice(0, 4000);
+              rawText = JSON.stringify(body);
             } catch {
               bodyPreview = '[Unstringifiable object body]';
             }
+          }
+          // Redact before the size cap: truncating first would cut a structure out of
+          // parseability and defeat the structural parse.
+          if (rawText) {
+            const contentType =
+              headerValue(init?.headers, 'content-type') ??
+              (typeof Request !== 'undefined' && input instanceof Request
+                ? headerValue(input.headers, 'content-type')
+                : undefined);
+            bodyPreview = redactBodyPreview(rawText, contentType);
           }
           if (bodyPreview && bodyPreview.length > 4000)
             bodyPreview = `${bodyPreview.slice(0, 4000)}…`;
@@ -257,8 +486,10 @@ export function wrapFetch(
             try {
               const text = await cloned.text();
               originalSize = text.length;
-              respPreview = text.slice(0, 4000);
-              if (text.length > 4000) respPreview += '…';
+              // The OAuth token endpoint answers on this path: redact before truncating.
+              const safe = redactBodyPreview(text, ctype);
+              respPreview = safe.slice(0, 4000);
+              if (safe.length > 4000) respPreview += '…';
             } catch {
               respPreview = undefined;
             }
@@ -272,8 +503,9 @@ export function wrapFetch(
               const text = await cloned.text();
               if (text) {
                 originalSize = text.length;
-                respPreview = text.slice(0, 200); // shorter for unknown types
-                if (text.length > 200) respPreview += '…';
+                const safe = redactBodyPreview(text, ctype);
+                respPreview = safe.slice(0, 200); // shorter for unknown types
+                if (safe.length > 200) respPreview += '…';
               }
             } catch {
               /* ignore */
