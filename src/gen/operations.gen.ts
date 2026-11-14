@@ -1429,7 +1429,7 @@ export function activateJobs(core: CamundaCore, arg: any, options?: OperationOpt
     let envelope: any = {};
     envelope.body = _body;
     if (envelope.body && envelope.body.tenantFilter !== 'ASSIGNED' && rt._config.defaultTenantId !== undefined && rt._config.defaultTenantId !== null && (!Array.isArray(envelope.body.tenantIds) || envelope.body.tenantIds.length === 0)) {
-      envelope.body.tenantIds = [rt._config.defaultTenantId];
+      envelope.body = { ...envelope.body, tenantIds: [rt._config.defaultTenantId] };
       rt._log.trace(() => ['tenant.default.inject', { op: 'activateJobs', tenantIds: [rt._config.defaultTenantId] }]);
     }
     if (rt._validation.settings.req !== 'none') {
@@ -2485,7 +2485,7 @@ export function broadcastSignal(core: CamundaCore, arg: any, options?: Operation
     let envelope: any = {};
     envelope.body = _body;
     if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-      envelope.body.tenantId = rt._config.defaultTenantId;
+      envelope.body = { ...envelope.body, tenantId: rt._config.defaultTenantId };
       rt._log.trace(() => ['tenant.default.inject', { op: 'broadcastSignal', tenant: rt._config.defaultTenantId }]);
     }
     if (rt._validation.settings.req !== 'none') {
@@ -3091,7 +3091,7 @@ export function correlateMessage(core: CamundaCore, arg: any, options?: Operatio
     let envelope: any = {};
     envelope.body = _body;
     if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-      envelope.body.tenantId = rt._config.defaultTenantId;
+      envelope.body = { ...envelope.body, tenantId: rt._config.defaultTenantId };
       rt._log.trace(() => ['tenant.default.inject', { op: 'correlateMessage', tenant: rt._config.defaultTenantId }]);
     }
     if (rt._validation.settings.req !== 'none') {
@@ -3353,7 +3353,7 @@ export function createDeployment(core: CamundaCore, arg: any, options?: Operatio
     let envelope: any = {};
     envelope.body = _body;
     if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-      envelope.body.tenantId = rt._config.defaultTenantId;
+      envelope.body = { ...envelope.body, tenantId: rt._config.defaultTenantId };
       rt._log.trace(() => ['tenant.default.inject', { op: 'createDeployment', tenant: rt._config.defaultTenantId }]);
     }
     if (rt._validation.settings.req !== 'none') {
@@ -4021,7 +4021,7 @@ export function createProcessInstance(core: CamundaCore, arg: any, options?: Ope
     let envelope: any = {};
     envelope.body = _body;
     if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-      envelope.body.tenantId = rt._config.defaultTenantId;
+      envelope.body = { ...envelope.body, tenantId: rt._config.defaultTenantId };
       rt._log.trace(() => ['tenant.default.inject', { op: 'createProcessInstance', tenant: rt._config.defaultTenantId }]);
     }
     if (rt._validation.settings.req !== 'none') {
@@ -5749,7 +5749,7 @@ export function evaluateConditionals(core: CamundaCore, arg: any, options?: Oper
     let envelope: any = {};
     envelope.body = _body;
     if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-      envelope.body.tenantId = rt._config.defaultTenantId;
+      envelope.body = { ...envelope.body, tenantId: rt._config.defaultTenantId };
       rt._log.trace(() => ['tenant.default.inject', { op: 'evaluateConditionals', tenant: rt._config.defaultTenantId }]);
     }
     if (rt._validation.settings.req !== 'none') {
@@ -5820,7 +5820,7 @@ export function evaluateDecision(core: CamundaCore, arg: any, options?: Operatio
     let envelope: any = {};
     envelope.body = _body;
     if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-      envelope.body.tenantId = rt._config.defaultTenantId;
+      envelope.body = { ...envelope.body, tenantId: rt._config.defaultTenantId };
       rt._log.trace(() => ['tenant.default.inject', { op: 'evaluateDecision', tenant: rt._config.defaultTenantId }]);
     }
     if (rt._validation.settings.req !== 'none') {
@@ -5891,7 +5891,7 @@ export function evaluateExpression(core: CamundaCore, arg: any, options?: Operat
     let envelope: any = {};
     envelope.body = _body;
     if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-      envelope.body.tenantId = rt._config.defaultTenantId;
+      envelope.body = { ...envelope.body, tenantId: rt._config.defaultTenantId };
       rt._log.trace(() => ['tenant.default.inject', { op: 'evaluateExpression', tenant: rt._config.defaultTenantId }]);
     }
     if (rt._validation.settings.req !== 'none') {
@@ -11368,7 +11368,7 @@ export function publishMessage(core: CamundaCore, arg: any, options?: OperationO
     let envelope: any = {};
     envelope.body = _body;
     if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-      envelope.body.tenantId = rt._config.defaultTenantId;
+      envelope.body = { ...envelope.body, tenantId: rt._config.defaultTenantId };
       rt._log.trace(() => ['tenant.default.inject', { op: 'publishMessage', tenant: rt._config.defaultTenantId }]);
     }
     if (rt._validation.settings.req !== 'none') {
