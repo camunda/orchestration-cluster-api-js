@@ -158,6 +158,18 @@ If `npm run build` (or `npm run build:local`) modifies `src/gen/*` after the gen
 
 The pre-push checklist below still applies: always run the full build before pushing, and commit any regenerated drift before the push.
 
+## Backporting to stable branches
+
+`.github/workflows/backport.yml` (`korthout/backport-action`) opens cherry-pick PRs onto `stable/*` branches:
+
+- Add the label `backport stable/<N>` to a PR. The backport PR opens when the PR merges, or right away if it is already merged.
+- Or comment `/backport` on a merged PR to re-run it for its labels (only people with write access).
+- If the cherry-pick conflicts, the action opens a **draft** PR with the conflicts committed. Resolve them on that branch and mark it ready.
+
+Backport user-facing fixes in hand-written code (`src/runtime/`, `src/template/`, `src/facade/`) when the affected code exists on the stable branch.
+
+**Generator PRs:** only the generator commit belongs on the stable branch — never `src/gen/*`. The stable branch regenerates from its own upstream spec (`stable/10` builds camunda `stable/8.10`). The action cannot filter commits, so a backported generator PR usually arrives as a draft with `src/gen` conflicts. On that branch, drop the `src/gen` changes (`git checkout origin/stable/<N> -- src/gen`), run `npm run build`, and commit any regenerated output separately as `chore(gen): regenerate src/gen for …`.
+
 ## Pre-push checklist
 
 Before pushing any commits, **always** run `npm run build`. This:
