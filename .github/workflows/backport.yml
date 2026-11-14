@@ -76,6 +76,7 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
 
       - name: Create backport PRs
+        id: backport
         uses: korthout/backport-action@v4
         with:
           github_token: ${{ steps.app-token.outputs.token }}
@@ -96,3 +97,58 @@ jobs:
             {
               "conflict_resolution": "draft_commit_conflicts"
             }
+
+      # The SDK commits derived files (the bundled and upstream spec, branding
+      # metadata, response assertions and src/gen), and PRs are squash-merged,
+      # so a backport carries main's copies of all of them. On a stable branch
+      # these must come from the branch's own upstream spec (stable/10 builds
+      # camunda stable/8.10). Restore them from the target branch, regenerate
+      # exactly like ci.yml's "Generation Drift" gate, and commit separately.
+      # Runs here (not on the backport PR) because PR-triggered workflows are
+      # read from the PR branch, which is based on stable/* and lacks this file.
+      - name: Use Node.js
+        if: steps.backport.outputs.created_pull_numbers != ''
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22.x
+
+      - name: Regenerate generated code on backport branches
+        if: steps.backport.outputs.created_pull_numbers != ''
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_NUMBERS: ${{ steps.backport.outputs.created_pull_numbers }}
+          SOURCE_PR: ${{ github.event.pull_request.number || github.event.issue.number }}
+          # Committed files derived from the upstream spec or the generator.
+          DERIVED: >-
+            external-spec branding/branding-metadata.json
+            json-body-assertions/responses.json src/gen src/facade/operations.gen.ts
+        run: |
+          set -uo pipefail
+          git config user.name 'camunda-sdk-automation[bot]'
+          git config user.email '290741040+camunda-sdk-automation[bot]@users.noreply.github.com'
+          read -ra derived <<< "$DERIVED"
+          failed=0
+          for pr in $PR_NUMBERS; do
+            branch=$(gh pr view "$pr" --json headRefName -q .headRefName)
+            base=$(gh pr view "$pr" --json baseRefName -q .baseRefName)
+            echo "::group::Regenerate #$pr ($branch -> $base)"
+            if git fetch origin "$branch" "$base" &&
+              git checkout -B "$branch" "origin/$branch" && git clean -fdq &&
+              git restore --source="origin/$base" --staged --worktree -- "${derived[@]}" &&
+              npm ci && npx tsx scripts/run-pipeline.ts --no-test; then
+              if [ -n "$(git status --porcelain)" ]; then
+                git add -A
+                git commit -q -m "chore(gen): regenerate src/gen for backport of #$SOURCE_PR" \
+                  -m "Restore the spec and other derived files from $base and regenerate from its spec bundle."
+                git push origin "HEAD:$branch"
+                echo "Committed regenerated output to #$pr."
+              else
+                echo "Generated code already matches #$pr's branch."
+              fi
+            else
+              failed=1
+              gh pr comment "$pr" --body "Could not regenerate the generated code on this backport (see the [Backport run](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})). Either the cherry-pick left conflicts in hand-written code, or the change depends on spec that \`$base\` doesn't have (then it can't be backported as-is). See AGENTS.md \"Backporting to stable branches\"."
+            fi
+            echo "::endgroup::"
+          done
+          exit $failed

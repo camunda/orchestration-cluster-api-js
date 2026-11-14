@@ -168,7 +168,14 @@ The pre-push checklist below still applies: always run the full build before pus
 
 Backport user-facing fixes in hand-written code (`src/runtime/`, `src/template/`, `src/facade/`) when the affected code exists on the stable branch.
 
-**Generator PRs:** only the generator commit belongs on the stable branch — never `src/gen/*`. The stable branch regenerates from its own upstream spec (`stable/10` builds camunda `stable/8.10`). The action cannot filter commits, so a backported generator PR usually arrives as a draft with `src/gen` conflicts. On that branch, drop the `src/gen` changes (`git checkout origin/stable/<N> -- src/gen`), run `npm run build`, and commit any regenerated output separately as `chore(gen): regenerate src/gen for …`.
+**Generated code and the spec.** We commit files derived from the upstream spec: `external-spec/`, `branding/branding-metadata.json`, `json-body-assertions/responses.json`, `src/gen/` and `src/facade/operations.gen.ts`. PRs are squash-merged, so the commit the action cherry-picks carries `main`'s copies of all of them, even when the PR kept its generator and `chore(gen)` commits separate. On a stable branch these must come from that branch's own upstream spec (`stable/10` builds camunda `stable/8.10`).
+
+The workflow handles this. After creating each backport PR it restores those paths from the target branch, runs `npx tsx scripts/run-pipeline.ts --no-test` (the same command as CI's Generation Drift gate), and pushes any result as a separate `chore(gen): regenerate src/gen for backport of #N` commit. This also clears cherry-pick conflicts in those files.
+
+If that step fails, the bot comments on the backport PR. Two causes:
+
+- **Conflicts in hand-written code.** Resolve them on the backport branch, then repeat the step yourself: `git restore --source=origin/stable/<N> --staged --worktree -- external-spec branding/branding-metadata.json json-body-assertions/responses.json src/gen src/facade/operations.gen.ts`, run `npx tsx scripts/run-pipeline.ts --no-test`, and commit the regenerated output separately.
+- **The change depends on spec the stable branch doesn't have** (e.g. it wraps an operation that only exists upstream on `main`; the pipeline fails type-checking the examples). It can't be backported as-is. Close the backport PR, or reduce it to the parts that apply to the stable spec.
 
 ## Pre-push checklist
 
