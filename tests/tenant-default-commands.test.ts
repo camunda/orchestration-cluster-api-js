@@ -19,19 +19,30 @@ const COMMANDS: Call[] = [
   ['evaluateDecision', { decisionDefinitionKey: '2251799813685249' }],
   ['evaluateExpression', { expression: '=1' }],
   ['evaluateConditionals', { variables: { a: 1 } }],
+  ['createDeployment', { resources: [new File(['<x/>'], 'p.bpmn', { type: 'application/xml' })] }],
 ];
 
 function setup(config: Record<string, string> = {}) {
   const bodies: any[] = [];
   const fetchMock = vi.fn(async (input: any, init?: any) => {
     const req = input instanceof Request ? input : new Request(input, init);
-    const text = await req.text();
-    bodies.push(text ? JSON.parse(text) : undefined);
+    const ct = req.headers.get('content-type') || '';
+    if (ct.includes('multipart/form-data')) {
+      const form = await req.formData();
+      const fields: Record<string, unknown> = {};
+      for (const [k, v] of form.entries()) if (typeof v === 'string') fields[k] = v;
+      bodies.push(fields);
+    } else {
+      const text = await req.text();
+      bodies.push(text ? JSON.parse(text) : undefined);
+    }
     return new Response('{}', { status: 200, headers: { 'Content-Type': 'application/json' } });
   });
   const client = createCamundaClient({
     config: { CAMUNDA_SDK_VALIDATION: 'none', CAMUNDA_SDK_LOG_LEVEL: 'silent', ...config } as any,
     fetch: fetchMock as any,
+    // isolate from ambient CAMUNDA_* env vars so zero-config cases are deterministic
+    env: {},
   });
   return { client: client as any, bodies };
 }
@@ -48,18 +59,21 @@ describe('default tenant on tenant-scoped commands (#647)', () => {
   it.each(COMMANDS)('%s sends <default> when nothing is configured', async (op, body) => {
     const { client, bodies } = setup();
     await send(client, op, body);
+    expect(bodies).toHaveLength(1);
     expect(bodies[0]?.tenantId).toBe('<default>');
   });
 
   it.each(COMMANDS)('%s sends the configured default tenant', async (op, body) => {
     const { client, bodies } = setup({ CAMUNDA_DEFAULT_TENANT_ID: 'tenant-a' });
     await send(client, op, body);
+    expect(bodies).toHaveLength(1);
     expect(bodies[0]?.tenantId).toBe('tenant-a');
   });
 
   it.each(COMMANDS)('%s keeps an explicit tenant', async (op, body) => {
     const { client, bodies } = setup({ CAMUNDA_DEFAULT_TENANT_ID: 'tenant-a' });
     await send(client, op, { ...body, tenantId: 'explicit' });
+    expect(bodies).toHaveLength(1);
     expect(bodies[0]?.tenantId).toBe('explicit');
   });
 
@@ -86,6 +100,7 @@ describe('default tenant on tenant-scoped commands (#647)', () => {
   it('activateJobs leaves tenantIds alone with tenantFilter ASSIGNED', async () => {
     const { client, bodies } = setup();
     await send(client, 'activateJobs', { ...ACTIVATE, tenantFilter: 'ASSIGNED' });
+    expect(bodies).toHaveLength(1);
     expect(bodies[0]?.tenantIds).toBeUndefined();
   });
 
@@ -94,6 +109,7 @@ describe('default tenant on tenant-scoped commands (#647)', () => {
     try {
       await client.searchProcessInstances({ filter: {} }, { consistency: { waitUpToMs: 0 } });
     } catch {}
+    expect(bodies).toHaveLength(1);
     expect(bodies[0]?.tenantId).toBeUndefined();
     expect(bodies[0]?.filter?.tenantId).toBeUndefined();
   });
