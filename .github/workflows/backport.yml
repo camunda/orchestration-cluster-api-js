@@ -177,8 +177,9 @@ jobs:
           }
 
           # Branch names follow the action's default: backport-<PR>-to-<target>.
+          # gh pr list returns 30 PRs by default; the app can have more open.
           existing=$(gh pr list --state open --author app/camunda-sdk-automation \
-            --json number,headRefName \
+            --limit 1000 --json number,headRefName \
             -q ".[] | select(.headRefName | startswith(\"backport-$SOURCE_PR-to-\")) | .number") || {
             echo "::error::Could not list existing backport PRs for #$SOURCE_PR."
             exit 1
