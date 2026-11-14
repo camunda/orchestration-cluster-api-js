@@ -158,6 +158,26 @@ If `npm run build` (or `npm run build:local`) modifies `src/gen/*` after the gen
 
 The pre-push checklist below still applies: always run the full build before pushing, and commit any regenerated drift before the push.
 
+## Backporting to stable branches
+
+`.github/workflows/backport.yml` (`korthout/backport-action`) opens cherry-pick PRs onto `stable/*` branches:
+
+- Add the label `backport stable/<N>` to a PR. The backport PR opens when the PR merges, or right away if it is already merged.
+- Or comment `/backport` on a merged PR to re-run it for its labels.
+- If the cherry-pick conflicts, the action opens a **draft** PR with the conflicts committed. It stops at the first conflicting commit, so for a PR merged with a merge commit the draft can be a **partial** backport. Resolve the conflicts, cherry-pick any remaining commits the draft's description lists, then regenerate (below) and mark it ready.
+- Labelling an already-merged PR and `/backport` comments only work for people with write access to the repository.
+
+Backport user-facing fixes in hand-written code (`src/runtime/`, `src/template/`, `src/facade/`) when the affected code exists on the stable branch.
+
+**Generated code and the spec.** We commit files derived from the upstream spec: `external-spec/`, `branding/branding-metadata.json`, `json-body-assertions/responses.json`, `src/gen/` and `src/facade/operations.gen.ts`. PRs are usually squash-merged, so the commit the action cherry-picks carries `main`'s copies of all of them, even when the PR kept its generator and `chore(gen)` commits separate. On a stable branch these must come from that branch's own upstream spec (`stable/10` builds camunda `stable/8.10`).
+
+The workflow handles this. After creating each backport PR it restores those paths from the target branch, runs `npx tsx scripts/run-pipeline.ts --no-test` (the same command as CI's Generation Drift gate), and pushes any result as a separate `chore(gen): regenerate src/gen for backport of #N` commit. This also clears cherry-pick conflicts in those files.
+
+If that step fails, the bot comments on the backport PR. Two causes:
+
+- **Conflicts in hand-written code.** Resolve them on the backport branch and apply any remaining commits (see above) first, then repeat the step yourself: `git restore --source=origin/stable/<N> --staged --worktree -- external-spec branding/branding-metadata.json json-body-assertions/responses.json src/gen src/facade/operations.gen.ts`, run `npx tsx scripts/run-pipeline.ts --no-test`, and commit the regenerated output separately.
+- **The change depends on spec the stable branch doesn't have** (e.g. it wraps an operation that only exists upstream on `main`; the pipeline fails type-checking the examples). It can't be backported as-is. Close the backport PR, or reduce it to the parts that apply to the stable spec.
+
 ## Pre-push checklist
 
 Before pushing any commits, **always** run `npm run build`. This:

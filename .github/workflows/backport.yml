@@ -1,0 +1,228 @@
+name: Backport
+
+# Opens cherry-pick PRs onto stable branches.
+#   - Label a PR `backport stable/<N>` before or after merging; the backport
+#     runs when the PR merges (or immediately, via the comment below).
+#   - Or comment `/backport` on a merged PR to (re)run it for its labels.
+# Conflicting cherry-picks open a draft PR with the conflicts committed.
+# See AGENTS.md "Backporting to stable branches" for generator PRs.
+
+on:
+  pull_request_target:
+    types: [closed, labeled]
+  issue_comment:
+    types: [created]
+
+permissions: {}
+
+jobs:
+  backport:
+    name: Create backport PRs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # Vault JWT auth
+    # Job-level, not workflow-level: every comment and label event starts this
+    # workflow, and a skipped run would otherwise replace (cancel) a queued
+    # backport run in the same group. Only runs that pass `if` join the group.
+    # If two real backport runs still collide, the survivor reads the PR's
+    # current labels, so no target is lost.
+    concurrency:
+      group: backport-${{ github.event.pull_request.number || github.event.issue.number }}
+      cancel-in-progress: false
+    # pull_request_target runs this workflow from the default branch and never
+    # checks out PR code, so it is safe for fork PRs.
+    # Never react to the automation app's own comments
+    # (camunda-sdk-automation[bot], id 290741040). author_association is only a
+    # cheap pre-filter; the first step checks real repository permission.
+    if: >
+      (
+        github.event_name == 'pull_request_target' &&
+        github.event.pull_request.merged &&
+        (
+          github.event.action == 'closed' ||
+          startsWith(github.event.label.name, 'backport ')
+        )
+      ) || (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request &&
+        github.event.comment.user.id != 290741040 &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association) &&
+        startsWith(github.event.comment.body, '/backport')
+      )
+    steps:
+      # Merging needs write access, so a merge is trusted (the merger may be a
+      # bot, e.g. Renovate). Labelling an already-merged PR (triage can label)
+      # and commenting are checked: the sender needs write, maintain or admin.
+      - name: Check the sender may trigger backports
+        if: github.event.action != 'closed'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SENDER: ${{ github.event.sender.login }}
+          SENDER_ID: ${{ github.event.sender.id }}
+        run: |
+          set -euo pipefail
+          if [ "$SENDER_ID" = 290741040 ]; then
+            echo "Sender is camunda-sdk-automation[bot]; allowed."
+            exit 0
+          fi
+          role=$(gh api "repos/$GITHUB_REPOSITORY/collaborators/$SENDER/permission" -q .role_name || true)
+          case "$role" in
+            admin|maintain|write) echo "$SENDER has $role access; allowed." ;;
+            *) echo "::error::$SENDER has '${role:-no}' access to this repository; backports need write access."; exit 1 ;;
+          esac
+
+      - name: Import secrets
+        id: secrets
+        uses: hashicorp/vault-action@v4.0.0
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          method: jwt
+          path: ${{ secrets.VAULT_JWT_PATH }}
+          role: ${{ secrets.VAULT_JWT_ROLE }}
+          jwtGithubAudience: ${{ secrets.VAULT_JWT_AUDIENCE }}
+          exportEnv: false
+          secrets: |
+            secret/data/products/agentic-experience/github.com/apps/camunda/camunda-sdk-automation GITHUB_APP_ID | APP_ID ;
+            secret/data/products/agentic-experience/github.com/apps/camunda/camunda-sdk-automation GITHUB_APP_PRIVATE_KEY | APP_PRIVATE_KEY ;
+
+      # An app token (not GITHUB_TOKEN) so the backport PRs trigger CI.
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ steps.secrets.outputs.APP_ID }}
+          private-key: ${{ steps.secrets.outputs.APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Create backport PRs
+        id: backport
+        uses: korthout/backport-action@v4
+        with:
+          github_token: ${{ steps.app-token.outputs.token }}
+          git_committer_name: camunda-sdk-automation[bot]
+          git_committer_email: 290741040+camunda-sdk-automation[bot]@users.noreply.github.com
+          # PRs often contain "Merge branch 'main'" commits; don't cherry-pick them.
+          merge_commits: skip
+          label_pattern: ^backport ([^ ]+)$
+          pull_title: ${pull_title} (backport #${pull_number} to ${target_branch})
+          pull_description: |-
+            Backport of #${pull_number} to `${target_branch}`.
+
+            relates to ${issue_refs}
+          # Bot authors (e.g. app/claude) can't be assigned; the action logs and continues.
+          add_author_as_assignee: true
+          copy_labels_pattern: ^(?!backport ).*
+          experimental: >
+            {
+              "conflict_resolution": "draft_commit_conflicts"
+            }
+
+      # The SDK commits derived files (the bundled and upstream spec, branding
+      # metadata, response assertions and src/gen), and PRs are squash-merged,
+      # so a backport carries main's copies of all of them. On a stable branch
+      # these must come from the branch's own upstream spec (stable/10 builds
+      # camunda stable/8.10). Restore them from the target branch, regenerate
+      # exactly like ci.yml's "Generation Drift" gate, and commit separately.
+      # Runs here (not on the backport PR) because PR-triggered workflows are
+      # read from the PR branch, which is based on stable/* and lacks this file.
+      # Covers backport PRs created by this run and open ones from earlier runs:
+      # on a retry the action reuses existing branches/PRs and doesn't report
+      # them in created_pull_numbers, but a failed regeneration must be retried.
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22.x
+
+      - name: Regenerate generated code on backport branches
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          CREATED_PRS: ${{ steps.backport.outputs.created_pull_numbers }}
+          SOURCE_PR: ${{ github.event.pull_request.number || github.event.issue.number }}
+          # Committed files derived from the upstream spec or the generator.
+          DERIVED: >-
+            external-spec branding/branding-metadata.json
+            json-body-assertions/responses.json src/gen src/facade/operations.gen.ts
+        run: |
+          set -uo pipefail
+          git config user.name 'camunda-sdk-automation[bot]'
+          git config user.email '290741040+camunda-sdk-automation[bot]@users.noreply.github.com'
+          read -ra derived <<< "$DERIVED"
+
+          # Every step is guarded with `|| return 1`: errexit does not apply
+          # inside a function called from an `if` condition.
+          regenerate() {
+            local pr=$1 branch=$2 base=$3
+            # Start from a clean tree: a previous target may have failed midway.
+            git reset -q --hard || return 1
+            git clean -fdq || return 1
+            git fetch origin "$branch" "$base" || return 1
+            git checkout -q -f -B "$branch" "origin/$branch" || return 1
+            git restore --source="origin/$base" --staged --worktree -- "${derived[@]}" || return 1
+            npm ci || return 1
+            npx tsx scripts/run-pipeline.ts --no-test || return 1
+            # Compare the staged result with HEAD, not the index: the restore
+            # staged the target's copies, which regeneration may undo.
+            git add -A || return 1
+            if git diff --cached --quiet HEAD; then
+              echo "Generated code already matches #$pr's branch."
+              return 0
+            fi
+            git commit -q -m "chore(gen): regenerate src/gen for backport of #$SOURCE_PR" \
+              -m "Restore the spec and other derived files from $base and regenerate from its spec bundle." || return 1
+            git push origin "HEAD:$branch" || return 1
+            echo "Committed regenerated output to #$pr."
+          }
+
+          # Branch names follow the action's default: backport-<PR>-to-<target>.
+          # gh pr list returns 30 PRs by default; the app can have more open.
+          existing=$(gh pr list --state open --author app/camunda-sdk-automation \
+            --limit 1000 --json number,headRefName \
+            -q ".[] | select(.headRefName | startswith(\"backport-$SOURCE_PR-to-\")) | .number") || {
+            echo "::error::Could not list existing backport PRs for #$SOURCE_PR."
+            exit 1
+          }
+          read -ra created <<< "$CREATED_PRS"
+          read -ra existing <<< "$(echo "$existing" | tr '\n' ' ')"
+          pr_numbers=$(printf '%s\n' "${created[@]}" "${existing[@]}" | grep -E '^[0-9]+$' | sort -un | tr '\n' ' ')
+          if [ -z "${pr_numbers// /}" ]; then
+            echo "No backport PRs for #$SOURCE_PR."
+            exit 0
+          fi
+          echo "Backport PRs to regenerate: $pr_numbers"
+
+          failed=0
+          for pr in $pr_numbers; do
+            if ! refs=$(gh pr view "$pr" --json headRefName,baseRefName -q '.headRefName + " " + .baseRefName'); then
+              echo "::error::Could not read backport PR #$pr."
+              failed=1
+              continue
+            fi
+            read -r branch base <<< "$refs"
+            echo "::group::Regenerate #$pr ($branch -> $base)"
+            if ! regenerate "$pr" "$branch" "$base"; then
+              failed=1
+              echo "::error::Regeneration failed for #$pr."
+              gh pr comment "$pr" --body "Could not regenerate the generated code on this backport (see the [Backport run](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})), so it may still carry \`main\`'s generated files. Either the cherry-pick left conflicts in hand-written code, the change depends on spec that \`$base\` doesn't have (then it can't be backported as-is), or the commit or push failed. See AGENTS.md \"Backporting to stable branches\"." ||
+                echo "::error::Could not comment on #$pr either."
+            fi
+            echo "::endgroup::"
+          done
+          exit $failed
+
+      # The action only fails the step on unexpected errors. When a target
+      # can't be backported it comments on the source PR and reports
+      # was_successful=false, so fail the job to make that visible too.
+      - name: Fail if a target could not be backported
+        if: ${{ !cancelled() && steps.backport.outputs.was_successful == 'false' }}
+        env:
+          BY_TARGET: ${{ steps.backport.outputs.was_successful_by_target }}
+        run: |
+          echo "::error::Backport failed for some targets: $BY_TARGET. See the comment on the source PR."
+          exit 1
