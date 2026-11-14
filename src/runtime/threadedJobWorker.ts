@@ -150,6 +150,25 @@ let _workerCounter = 0;
 const DEFAULT_LONGPOLL_TIMEOUT = 0;
 
 /**
+ * A fixed, payload-free label for a dispatch failure.
+ *
+ * Job variables are untrusted and a schema transform can throw any value, so the label is
+ * chosen from a closed set with `instanceof` and `typeof` and never read off the thrown
+ * value (`constructor.name` is an arbitrary property: it can carry payload content, or
+ * throw). `instanceof` can itself throw on an exotic value, so that is contained too.
+ */
+function classifyDispatchError(err: unknown): string {
+  try {
+    if (err instanceof RangeError) return 'RangeError';
+    if (err instanceof TypeError) return 'TypeError';
+    if (err instanceof Error) return 'Error';
+  } catch {
+    return 'unknown';
+  }
+  return typeof err;
+}
+
+/**
  * A job worker that runs handler logic in a shared pool of worker_threads,
  * keeping the main Node.js event loop free for polling and I/O.
  *
@@ -319,10 +338,88 @@ export class ThreadedJobWorker {
     }
   }
 
-  private async _dispatchToThread(
+  /**
+   * Hand a job to a worker thread.
+   *
+   * Synchronous by contract. Both call sites invoke this without `await` or `.catch()`, so
+   * an `async` signature turned any throw in here into an unhandled promise rejection —
+   * which, under Node's default `--unhandled-rejections=throw`, ends the process — while
+   * the job was neither dispatched nor failed and its concurrency permit was never
+   * released.
+   *
+   * Every way dispatch can fail is therefore contained: a synchronous throw (serialization),
+   * and a rejection from `ThreadPool.dispatch`, which is itself `async` — a `postMessage`
+   * that cannot clone the payload rejects rather than throwing, so a `try`/`catch` alone
+   * would not see it. Whichever happens, the job is failed through the normal failure path
+   * and its permit released exactly once.
+   */
+  private _dispatchToThread(
     pw: import('./threadPool').PoolWorker,
     raw: ActivatedJobResult & Partial<EnrichedActivatedJob>
-  ) {
+  ): void {
+    // One settlement per dispatched job. Whichever arrives first — a pool callback or a
+    // dispatch failure — releases the permit; later arrivals are ignored, so a failure that
+    // races a callback cannot release the same permit twice.
+    let settled = false;
+    const settleComplete = () => {
+      if (settled) return;
+      settled = true;
+      this._decrementOnce();
+      this._drainQueue();
+    };
+    const settleFailure = (errorMessage: string) => {
+      if (settled) return;
+      settled = true;
+      this._failJobAndRelease(raw, errorMessage);
+    };
+    const onDispatchFailure = (err: unknown) => {
+      // `_serializeJob` throws RangeError on a variable payload nested deeper than
+      // JSON.stringify can recurse, and TypeError on a structure it cannot serialize.
+      // Job variables are untrusted input, so neither the payload nor the error message
+      // (which can name payload properties) goes to the log or to the broker.
+      this._log.error('job.dispatch.error', {
+        jobKey: raw.jobKey,
+        errorType: classifyDispatchError(err),
+      });
+      settleFailure('Job payload could not be dispatched to a worker thread');
+    };
+
+    try {
+      this._dispatchToThreadUnguarded(pw, raw, settleComplete, settleFailure, onDispatchFailure);
+    } catch (err) {
+      onDispatchFailure(err);
+    }
+  }
+
+  /** Fail a job through the broker and release its concurrency permit, whatever happens. */
+  private _failJobAndRelease(
+    raw: ActivatedJobResult & Partial<EnrichedActivatedJob>,
+    errorMessage: string
+  ): void {
+    this._client
+      .failJob({
+        jobKey: raw.jobKey!,
+        errorMessage,
+        retries: typeof raw.retries === 'number' ? Math.max(0, raw.retries - 1) : 0,
+        // Fence the failure against a superseded activation when leased.
+        ...(raw.jobLeaseToken != null ? { jobLeaseToken: raw.jobLeaseToken } : {}),
+      })
+      .catch((failErr: any) => {
+        this._log.error('job.fail.error', failErr);
+      })
+      .finally(() => {
+        this._decrementOnce();
+        this._drainQueue();
+      });
+  }
+
+  private _dispatchToThreadUnguarded(
+    pw: import('./threadPool').PoolWorker,
+    raw: ActivatedJobResult & Partial<EnrichedActivatedJob>,
+    settleComplete: () => void,
+    settleFailure: (errorMessage: string) => void,
+    onDispatchFailure: (err: unknown) => void
+  ): void {
     const jobData = this._serializeJob(raw);
 
     this._log.trace(() => [
@@ -330,7 +427,7 @@ export class ThreadedJobWorker {
       { jobKey: raw.jobKey, handler: this._cfg.handlerModule },
     ]);
 
-    this._pool.dispatch(pw, jobData, this._cfg.handlerModule, {
+    const dispatched = this._pool.dispatch(pw, jobData, this._cfg.handlerModule, {
       onComplete: (completionAction) => {
         this._log.trace(() => [
           'dispatch.onComplete',
@@ -365,28 +462,19 @@ export class ThreadedJobWorker {
         } else {
           this._log.trace(() => ['dispatch.onComplete.noAction', { jobKey: raw.jobKey }]);
         }
-        this._decrementOnce();
-        this._drainQueue();
+        settleComplete();
       },
       onError: (err) => {
         this._log.error('job.thread.error', { jobKey: raw.jobKey, err });
-        this._client
-          .failJob({
-            jobKey: raw.jobKey!,
-            errorMessage: err?.message || 'Thread handler error',
-            retries: typeof raw.retries === 'number' ? Math.max(0, raw.retries - 1) : 0,
-            // Fence the failure against a superseded activation when leased.
-            ...(raw.jobLeaseToken != null ? { jobLeaseToken: raw.jobLeaseToken } : {}),
-          })
-          .catch((failErr: any) => {
-            this._log.error('job.fail.error', failErr);
-          })
-          .finally(() => {
-            this._decrementOnce();
-            this._drainQueue();
-          });
+        settleFailure(err?.message || 'Thread handler error');
       },
     });
+
+    // `ThreadPool.dispatch` is async, so a failure after the callbacks are registered —
+    // a `postMessage` that cannot clone the payload, for instance — arrives as a rejection,
+    // not as a throw. Without this the job would be dropped with its permit still held and
+    // the rejection would go unhandled.
+    Promise.resolve(dispatched).catch(onDispatchFailure);
   }
 
   private _serializeJob(
