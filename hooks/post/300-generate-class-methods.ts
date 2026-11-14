@@ -92,6 +92,66 @@ function collectOpsWithOptionalTenantIdsArray(): Set<string> {
   return result;
 }
 
+/**
+ * Detect operations whose JSON request body carries an optional singular
+ * `tenantId`, including union bodies (`oneOf`/`anyOf`) whose variants are
+ * composed with `allOf`. The bundler's `optionalTenantIdInBody` flag misses
+ * union bodies such as `createProcessInstance`; this complements it (OR-ed)
+ * so every tenant-scoped command gets the default tenant, matching the
+ * Camunda Java client. See issue #647.
+ */
+function collectOpsWithOptionalTenantId(): Set<string> {
+  const result = new Set<string>();
+  if (!fs.existsSync(BUNDLED_SPEC_PATH)) return result;
+  const spec = JSON.parse(fs.readFileSync(BUNDLED_SPEC_PATH, 'utf8'));
+  const schemas = (spec?.components?.schemas || {}) as Record<string, Record<string, unknown>>;
+  const resolve = (s: Record<string, unknown> | undefined) =>
+    s && typeof s['$ref'] === 'string' ? schemas[(s['$ref'] as string).split('/').pop()!] : s;
+
+  // Returns 'optional' | 'required' | 'absent' for tenantId within one (non-union) shape.
+  function tenantIdState(
+    raw: Record<string, unknown> | undefined,
+    depth = 0
+  ): 'optional' | 'required' | 'absent' {
+    const s = resolve(raw);
+    if (!s || depth > 10) return 'absent';
+    const variants = (s['oneOf'] || s['anyOf']) as Record<string, unknown>[] | undefined;
+    if (Array.isArray(variants) && variants.length > 0) {
+      const states = variants.map((v) => tenantIdState(v, depth + 1));
+      return states.every((x) => x === 'optional') ? 'optional' : 'absent';
+    }
+    let state: 'optional' | 'required' | 'absent' = 'absent';
+    const props = s['properties'] as Record<string, unknown> | undefined;
+    if (props?.['tenantId']) state = 'optional';
+    for (const part of (s['allOf'] as Record<string, unknown>[] | undefined) ?? []) {
+      const st = tenantIdState(part, depth + 1);
+      if (st === 'required') return 'required';
+      if (st === 'optional') state = 'optional';
+    }
+    if (((s['required'] as string[] | undefined) ?? []).includes('tenantId')) return 'required';
+    return state;
+  }
+
+  for (const methods of Object.values(
+    (spec?.paths || {}) as Record<string, Record<string, unknown>>
+  )) {
+    for (const op of Object.values(methods)) {
+      const opObj = op as Record<string, unknown>;
+      const opId = opObj['operationId'] as string | undefined;
+      const content = (opObj['requestBody'] as Record<string, unknown> | undefined)?.['content'] as
+        | Record<string, Record<string, unknown>>
+        | undefined;
+      if (!opId || !content) continue;
+      for (const [ct, media] of Object.entries(content)) {
+        if (!/json/i.test(ct)) continue;
+        if (tenantIdState(media?.['schema'] as Record<string, unknown>) === 'optional')
+          result.add(opId);
+      }
+    }
+  }
+  return result;
+}
+
 const MARK_TYPES_START = '// === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===';
 const MARK_TYPES_END = '// === AUTO-GENERATED CAMUNDA SUPPORT TYPES END ===';
 const MARK_METHODS_START = '// === AUTO-GENERATED CAMUNDA METHODS START ===';
@@ -163,6 +223,7 @@ async function main() {
   }
   const ops: OpMeta[] = [];
   const opsWithTenantIdsArray = collectOpsWithOptionalTenantIdsArray();
+  const opsWithTenantId = collectOpsWithOptionalTenantId();
   for (const op of metadata.operations) {
     const originalId = op.operationId;
     const opId = sanitize(originalId);
@@ -179,7 +240,7 @@ async function main() {
       verb: op.method.toLowerCase(),
       pathParams: op.pathParams || [],
       queryParams: op.queryParams || [],
-      optionalTenantIdInBody: op.optionalTenantIdInBody || false,
+      optionalTenantIdInBody: !!op.optionalTenantIdInBody || opsWithTenantId.has(originalId),
       optionalTenantIdsInBody: opsWithTenantIdsArray.has(originalId),
     });
   }
@@ -362,7 +423,12 @@ export type ${o.opId}Consistency = {
         methods.push(
           '      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {'
         );
-        methods.push('        envelope.body.tenantId = this._config.defaultTenantId;');
+        // Inject into a shallow copy: envelope.body aliases the caller's input, so
+        // mutating it would leak the default tenant into reused inputs and throw on
+        // frozen inputs. See issue #647 / PR #648 review.
+        methods.push(
+          '        envelope.body = { ...envelope.body, tenantId: this._config.defaultTenantId };'
+        );
         methods.push(
           "        this._log.trace(() => ['tenant.default.inject', { op: '" +
             o.originalOpId +
@@ -374,10 +440,14 @@ export type ${o.opId}Consistency = {
         // Inject [defaultTenantId] when caller omits tenantIds (or passes empty array).
         // Only inject when a default tenant is configured — otherwise leave the field
         // absent so downstream behavior matches "no default" semantics. See issue #170.
+        // With tenantFilter ASSIGNED the server ignores tenantIds, so leave them alone (#647).
         methods.push(
-          '      if (envelope.body && this._config.defaultTenantId !== undefined && this._config.defaultTenantId !== null && (!Array.isArray(envelope.body.tenantIds) || envelope.body.tenantIds.length === 0)) {'
+          "      if (envelope.body && envelope.body.tenantFilter !== 'ASSIGNED' && this._config.defaultTenantId !== undefined && this._config.defaultTenantId !== null && (!Array.isArray(envelope.body.tenantIds) || envelope.body.tenantIds.length === 0)) {"
         );
-        methods.push('        envelope.body.tenantIds = [this._config.defaultTenantId];');
+        // Shallow copy, same aliasing rationale as the singular tenantId case above.
+        methods.push(
+          '        envelope.body = { ...envelope.body, tenantIds: [this._config.defaultTenantId] };'
+        );
         methods.push(
           "        this._log.trace(() => ['tenant.default.inject', { op: '" +
             o.originalOpId +

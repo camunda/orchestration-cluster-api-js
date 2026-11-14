@@ -108,8 +108,11 @@ describe('default tenantIds (plural) injection — issue #170', () => {
       // Heuristic end: next "  }" at column 2 followed by newline + a method overload.
       // Use a generous slice (4 KB) and search within it.
       const slice = opsSrc.slice(start, start + 4096);
+      // The injection must assign a shallow copy (…envelope.body, tenantIds: […]),
+      // not mutate the caller's object in place (envelope.body.tenantIds = …).
       const ok =
-        /envelope\.body\.tenantIds\s*=/.test(slice) && /rt\._config\.defaultTenantId/.test(slice);
+        /envelope\.body\s*=\s*\{\s*\.\.\.envelope\.body,\s*tenantIds:/.test(slice) &&
+        /rt\._config\.defaultTenantId/.test(slice);
       if (!ok) missing.push(opId);
     }
     expect(missing).toEqual([]);
