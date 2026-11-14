@@ -28,8 +28,9 @@ jobs:
       id-token: write # Vault JWT auth
     # pull_request_target runs this workflow from the default branch and never
     # checks out PR code, so it is safe for fork PRs.
-    # Comments are only honoured from people with write access, and never from
-    # the automation app itself (camunda-sdk-automation[bot], id 290741040).
+    # Never react to the automation app's own comments
+    # (camunda-sdk-automation[bot], id 290741040). author_association is only a
+    # cheap pre-filter; the first step checks real repository permission.
     if: >
       (
         github.event_name == 'pull_request_target' &&
@@ -46,6 +47,27 @@ jobs:
         startsWith(github.event.comment.body, '/backport')
       )
     steps:
+      # Merging needs write access, so a merge is trusted (the merger may be a
+      # bot, e.g. Renovate). Labelling an already-merged PR (triage can label)
+      # and commenting are checked: the sender needs write, maintain or admin.
+      - name: Check the sender may trigger backports
+        if: github.event.action != 'closed'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SENDER: ${{ github.event.sender.login }}
+          SENDER_ID: ${{ github.event.sender.id }}
+        run: |
+          set -euo pipefail
+          if [ "$SENDER_ID" = 290741040 ]; then
+            echo "Sender is camunda-sdk-automation[bot]; allowed."
+            exit 0
+          fi
+          role=$(gh api "repos/$GITHUB_REPOSITORY/collaborators/$SENDER/permission" -q .role_name || true)
+          case "$role" in
+            admin|maintain|write) echo "$SENDER has $role access; allowed." ;;
+            *) echo "::error::$SENDER has '${role:-no}' access to this repository; backports need write access."; exit 1 ;;
+          esac
+
       - name: Import secrets
         id: secrets
         uses: hashicorp/vault-action@v4.0.0
