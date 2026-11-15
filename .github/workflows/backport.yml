@@ -150,7 +150,10 @@ jobs:
             external-spec branding/branding-metadata.json
             json-body-assertions/responses.json src/gen src/facade/operations.gen.ts
         run: |
-          set -uo pipefail
+          # GitHub runs this with `bash -e`. This script handles every failure
+          # itself (and must keep going to the next target), so turn errexit
+          # off: e.g. grep matching nothing would otherwise abort the step.
+          set +e -uo pipefail
           git config user.name 'camunda-sdk-automation[bot]'
           git config user.email '290741040+camunda-sdk-automation[bot]@users.noreply.github.com'
           read -ra derived <<< "$DERIVED"
@@ -190,7 +193,7 @@ jobs:
           }
           read -ra created <<< "$CREATED_PRS"
           read -ra existing <<< "$(echo "$existing" | tr '\n' ' ')"
-          pr_numbers=$(printf '%s\n' "${created[@]}" "${existing[@]}" | grep -E '^[0-9]+$' | sort -un | tr '\n' ' ')
+          pr_numbers=$(printf '%s\n' ${created[@]+"${created[@]}"} ${existing[@]+"${existing[@]}"} | grep -E '^[0-9]+$' | sort -un | tr '\n' ' ')
           if [ -z "${pr_numbers// /}" ]; then
             echo "No backport PRs for #$SOURCE_PR."
             exit 0
