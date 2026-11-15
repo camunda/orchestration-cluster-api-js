@@ -51,6 +51,8 @@ const REPO_ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), 
 // dependencies (zod, effect, ...) from this repo's node_modules.
 const DEFAULT_WORK_DIR = path.join(REPO_ROOT, '.api-compat');
 let WORK_DIR = DEFAULT_WORK_DIR;
+/** Members with more overloads than this have only their last ones compared. */
+const MAX_OVERLOADS = 6;
 
 export interface Break {
   entry: string;
@@ -152,13 +154,16 @@ function preparePackage(
   fs.copyFileSync(path.join(pkgDir, 'package.json'), path.join(out, 'package.json'));
   const classes: ClassIndex = new Map();
   const printer = ts.createPrinter();
+  // Constructors stay, whatever their visibility: a public constructor becoming private
+  // breaks `new X()`.
   const isHidden = (m: ts.ClassElement) =>
-    (m.name !== undefined && ts.isPrivateIdentifier(m.name)) ||
-    (ts.canHaveModifiers(m) &&
-      (ts.getModifiers(m) ?? []).some(
-        (mod) =>
-          mod.kind === ts.SyntaxKind.PrivateKeyword || mod.kind === ts.SyntaxKind.ProtectedKeyword
-      ));
+    !ts.isConstructorDeclaration(m) &&
+    ((m.name !== undefined && ts.isPrivateIdentifier(m.name)) ||
+      (ts.canHaveModifiers(m) &&
+        (ts.getModifiers(m) ?? []).some(
+          (mod) =>
+            mod.kind === ts.SyntaxKind.PrivateKeyword || mod.kind === ts.SyntaxKind.ProtectedKeyword
+        )));
   const stripPrivate: ts.TransformerFactory<ts.SourceFile> = (ctx) => (sf) => {
     const visit = (node: ts.Node): ts.Node => {
       if (ts.isClassDeclaration(node)) {
@@ -179,6 +184,27 @@ function preparePackage(
   const rewrite = (rel: string, dest: string, sf: ts.SourceFile): string => {
     const parts: string[] = [];
     const exportsToAdd: string[] = [];
+    const fileClasses = new Set(
+      sf.statements.flatMap((st) => (ts.isClassDeclaration(st) && st.name ? [st.name.text] : []))
+    );
+    // The kept published class must inherit from the published base, not the current one.
+    const oldHeritage = (clauses: ts.NodeArray<ts.HeritageClause> | undefined) =>
+      clauses?.map((c) =>
+        c.token !== ts.SyntaxKind.ExtendsKeyword
+          ? c
+          : ts.factory.updateHeritageClause(
+              c,
+              c.types.map((t) =>
+                ts.isIdentifier(t.expression) && fileClasses.has(t.expression.text)
+                  ? ts.factory.updateExpressionWithTypeArguments(
+                      t,
+                      ts.factory.createIdentifier(`${OLD_CLASS_PREFIX}${t.expression.text}`),
+                      t.typeArguments
+                    )
+                  : t
+              )
+            )
+      );
     for (const stmt of sf.statements) {
       const name = ts.isClassDeclaration(stmt) ? stmt.name?.text : undefined;
       if (name && mode.kind === 'current') {
@@ -201,7 +227,7 @@ function preparePackage(
               ),
               ts.factory.createIdentifier(`${OLD_CLASS_PREFIX}${name}`),
               stmt.typeParameters,
-              stmt.heritageClauses,
+              oldHeritage(stmt.heritageClauses),
               stmt.members
             ),
             sf
@@ -242,7 +268,11 @@ function preparePackage(
     for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
       const src = path.join(dir, ent.name);
       if (ent.isDirectory()) {
-        if (ent.name !== 'node_modules') walk(src);
+        // Skip dependencies, dot-dirs and this script's own work dir (when the package
+        // is the repo itself, WORK_DIR is inside it).
+        if (ent.name !== 'node_modules' && !ent.name.startsWith('.') && src !== WORK_DIR) {
+          walk(src);
+        }
         continue;
       }
       if (!/\.d\.ts$/.test(ent.name)) continue;
@@ -254,7 +284,28 @@ function preparePackage(
       fs.writeFileSync(dest, rewrite(rel, dest, stripped));
     }
   };
-  walk(pkgDir);
+  // Only the top-level directories the declared entry points live in (e.g. dist/), so a
+  // package that is the repo itself doesn't drag in src/, tests/ and so on.
+  const roots = new Set<string>();
+  const collect = (v: unknown): void => {
+    if (typeof v === 'string') {
+      if (/\.d\.[cm]?ts$/.test(v)) roots.add(path.normalize(v).split(path.sep)[0]);
+    } else if (v && typeof v === 'object') Object.values(v).forEach(collect);
+  };
+  const pj = JSON.parse(fs.readFileSync(path.join(pkgDir, 'package.json'), 'utf8'));
+  collect(pj.exports);
+  collect(pj.types);
+  collect(pj.typings);
+  const dirs = [...roots].map((r) => path.join(pkgDir, r));
+  // Declarations at the package root: walk the whole package.
+  if (
+    dirs.length === 0 ||
+    dirs.some((d) => !fs.statSync(d, { throwIfNoEntry: false })?.isDirectory())
+  ) {
+    walk(pkgDir);
+  } else {
+    dirs.forEach(walk);
+  }
   return { dir: out, classes };
 }
 
@@ -292,7 +343,9 @@ interface Assertion {
   entry: string;
   symbol: string;
   check: string;
+  /** A type expression, or a statement when `statement` is set. */
   code: string;
+  statement?: boolean;
 }
 
 const COMPAT_HELPERS = `// Generated by scripts/api-compat.ts. Do not edit.
@@ -303,9 +356,33 @@ type Params<T> = T extends Fn ? Parameters<T> : never;
 type Ret<T> = T extends Fn ? ReturnType<T> : never;
 type Ctor = abstract new (...args: any) => any;
 type CtorParams<T> = T extends Ctor ? ConstructorParameters<T> : never;
+${overloadHelpers()}
 // Literal-typed constants (e.g. SPEC_HASH) are compared by their base type.
 type Widen<T> = T extends string ? string : T extends number ? number : T extends boolean ? boolean : T;
 `;
+
+/**
+ * Ov<K>_<I><T>: the I-th of exactly K call signatures of T as [args, return]; NewOv the
+ * same for construct signatures. Matching a pattern with exactly as many signatures as
+ * the baseline member has picks each overload out reliably.
+ */
+function overloadHelpers(): string {
+  const lines: string[] = [];
+  for (const [prefix, kw] of [
+    ['Ov', ''],
+    ['NewOv', 'new '],
+  ] as const) {
+    for (let k = 1; k <= MAX_OVERLOADS; k++) {
+      const sigs = Array.from(
+        { length: k },
+        (_, i) => `${kw}(...a: infer A${i}): infer R${i}`
+      ).join('; ');
+      const tuple = Array.from({ length: k }, (_, i) => `[A${i}, R${i}]`).join(', ');
+      lines.push(`type ${prefix}${k}<T> = T extends { ${sigs} } ? [${tuple}] : never;`);
+    }
+  }
+  return lines.join('\n');
+}
 
 function typeArgs(decl: ts.Declaration | undefined): string {
   const params =
@@ -316,6 +393,45 @@ function typeArgs(decl: ts.Declaration | undefined): string {
       ? decl.typeParameters
       : undefined;
   return params?.length ? `<${params.map(() => 'any').join(', ')}>` : '';
+}
+
+/** Type arguments for only the type parameters without a default. */
+function requiredTypeArgs(decl: ts.Declaration | undefined): string {
+  const params =
+    decl &&
+    (ts.isInterfaceDeclaration(decl) ||
+      ts.isTypeAliasDeclaration(decl) ||
+      ts.isClassDeclaration(decl))
+      ? decl.typeParameters
+      : undefined;
+  const required = (params ?? []).filter((p) => !p.default);
+  return required.length ? `<${required.map(() => 'any').join(', ')}>` : '';
+}
+
+/**
+ * A statement that calls (or constructs) the current API with the arguments of each
+ * baseline signature and assigns the result to the baseline return type: if existing
+ * calls still compile, it does. TypeScript's overload resolution picks the new signature.
+ * `$` in the generated code is replaced by a unique suffix.
+ */
+function callChecks(
+  oldFnType: string,
+  newCallee: string,
+  count: number,
+  construct: boolean
+): string[] {
+  const prefix = construct ? 'NewOv' : 'Ov';
+  const k = Math.min(Math.max(count, 1), MAX_OVERLOADS);
+  const out: string[] = [];
+  // With more overloads than MAX_OVERLOADS, compare the last K.
+  for (let i = 0; i < k; i++) {
+    const sig = `${prefix}${k}<${oldFnType}>[${i}]`;
+    const call = construct ? `new n$(...a$)` : `n$(...a$)`;
+    out.push(
+      `declare const n$: ${newCallee}; declare const a$: ${sig}[0]; const r$: ${sig}[1] = ${call};`
+    );
+  }
+  return out;
 }
 
 function isPublicMember(sym: ts.Symbol): boolean {
@@ -344,8 +460,25 @@ function callableMembers(
   return names;
 }
 
-function memberAccess(base: string, member: string): string {
-  return `${base}[${JSON.stringify(member)}]`;
+function modifiersOf(node: ts.Node): readonly ts.ModifierLike[] {
+  return ts.canHaveModifiers(node) ? (ts.getModifiers(node) ?? []) : [];
+}
+
+/** Customers can't construct a class whose constructor is private or protected. */
+function hasNonPublicConstructor(decl: ts.Declaration | undefined): boolean {
+  if (!decl || !ts.isClassDeclaration(decl)) return false;
+  return decl.members.some(
+    (m) =>
+      ts.isConstructorDeclaration(m) &&
+      modifiersOf(m).some(
+        (mod) =>
+          mod.kind === ts.SyntaxKind.PrivateKeyword || mod.kind === ts.SyntaxKind.ProtectedKeyword
+      )
+  );
+}
+
+function isAbstract(decl: ts.Declaration | undefined): boolean {
+  return !!decl && modifiersOf(decl).some((m) => m.kind === ts.SyntaxKind.AbstractKeyword);
 }
 
 /** Build every assertion for the baseline API. */
@@ -422,39 +555,66 @@ function buildAssertions(
           ?.getSourceFile()
           .fileName.startsWith(pristineDir) ?? false;
 
+      const addCalls = (check: string, oldFnType: string, newCallee: string, t: ts.Type) => {
+        const count = t.getCallSignatures().length;
+        callChecks(oldFnType, newCallee, count, false).forEach((code, i) =>
+          assertions.push({
+            entry,
+            symbol: name,
+            check: count > 1 ? `${check} (overload ${i + 1})` : check,
+            code,
+            statement: true,
+          })
+        );
+      };
+      const memberType = (owner: ts.Type, m: string) => {
+        const prop = owner.getProperty(m);
+        return checker.getNonNullableType(checker.getTypeOfSymbol(prop as ts.Symbol));
+      };
+
       if (isValue) {
         const o = `typeof ${oldRef()}`;
         const n = `typeof ${ref(N)}`;
         add('value', `Compat<Widen<${n}>, Widen<${o}>>`);
         const valueType = checker.getTypeOfSymbol(target);
-        // Assignability lets a required parameter replace an optional one, so arguments
-        // are compared as tuples explicitly.
-        if (valueType.getCallSignatures().length > 0) {
-          add('arguments', `Compat<Params<${o}>, Params<${n}>>`);
-          add('return', `Compat<Ret<${n}>, Ret<${o}>>`);
-        }
-        if (valueType.getConstructSignatures().length > 0) {
-          add('constructor arguments', `Compat<CtorParams<${o}>, CtorParams<${n}>>`);
+        // Calls are checked by calling: plain assignability lets a required parameter
+        // replace an optional one, and compares method parameters bivariantly.
+        if (valueType.getCallSignatures().length > 0) addCalls('call', o, n, valueType);
+        const ctorCount = valueType.getConstructSignatures().length;
+        if (ctorCount > 0 && isClass && !hasNonPublicConstructor(decl) && !isAbstract(decl)) {
+          callChecks(o, n, ctorCount, true).forEach((code, i) =>
+            assertions.push({
+              entry,
+              symbol: name,
+              check: ctorCount > 1 ? `constructor (overload ${i + 1})` : 'constructor',
+              code,
+              statement: true,
+            })
+          );
         }
         for (const m of callableMembers(checker, valueType, inPackage)) {
-          const om = memberAccess(`(${o})`, m);
-          const nm = memberAccess(`(${n})`, m);
-          add(`static ${m}() arguments`, `Compat<Params<${om}>, Params<${nm}>>`);
-          add(`static ${m}() return`, `Compat<Ret<${nm}>, Ret<${om}>>`);
+          const key = JSON.stringify(m);
+          addCalls(
+            `static ${m}()`,
+            `NonNullable<(${o})[${key}]>`,
+            `NonNullable<(${n})[${key}]>`,
+            memberType(valueType, m)
+          );
         }
       }
       if (isClass) {
-        // Instances are SDK output: customers read them and call their methods. Methods
-        // are compared one by one because TypeScript compares method parameters
-        // bivariantly in a whole-type check.
+        // Instances are SDK output: customers read them and call their methods.
         const args = typeArgs(decl);
         add('instance', `Compat<${ref(N)}${args}, ${oldRef()}${args}>`);
         const declared = checker.getDeclaredTypeOfSymbol(target);
         for (const m of callableMembers(checker, declared, inPackage)) {
-          const o = memberAccess(`${oldRef()}${args}`, m);
-          const n = memberAccess(`${ref(N)}${args}`, m);
-          add(`${m}() arguments`, `Compat<Params<NonNullable<${o}>>, Params<NonNullable<${n}>>>`);
-          add(`${m}() return`, `Compat<Ret<NonNullable<${n}>>, Ret<NonNullable<${o}>>>`);
+          const key = JSON.stringify(m);
+          addCalls(
+            `${m}()`,
+            `NonNullable<${oldRef()}${args}[${key}]>`,
+            `NonNullable<${ref(N)}${args}[${key}]>`,
+            memberType(declared, m)
+          );
         }
       } else if (isType) {
         // Whether a type change breaks callers depends on the direction it flows (a
@@ -462,6 +622,10 @@ function buildAssertions(
         // signature tells. So types are compared where values and classes use them; on
         // their own they only have to still exist.
         add('type exists', `${ref(N)}${typeArgs(decl)}`);
+        // Code that leaves defaulted type parameters out must still compile.
+        if (requiredTypeArgs(decl) !== typeArgs(decl)) {
+          add('type exists (default type arguments)', `${ref(N)}${requiredTypeArgs(decl)}`);
+        }
       }
     }
   }
@@ -474,7 +638,9 @@ function runAssertions(assertions: Assertion[], imports: string[]): Break[] {
   const checkFile = path.join(WORK_DIR, 'check.ts');
   const header = `${COMPAT_HELPERS}${imports.join('\n')}\n`;
   const headerLines = header.split('\n').length - 1;
-  const body = assertions.map((a, i) => `type _${i} = ${a.code};`).join('\n');
+  const body = assertions
+    .map((a, i) => (a.statement ? a.code.replace(/\$/g, `_${i}`) : `type _${i} = ${a.code};`))
+    .join('\n');
   fs.writeFileSync(checkFile, `${header}${body}\nexport {};\n`);
 
   const program = ts.createProgram([checkFile], {
@@ -572,7 +738,14 @@ export function checkCompat(
 function writeStepSummary(result: ReturnType<typeof checkCompat>, baselineLabel: string): void {
   const file = process.env.GITHUB_STEP_SUMMARY;
   if (!file) return;
-  const cell = (text: string) => text.replace(/\|/g, '\\|').replace(/\n\s*/g, '<br>');
+  const cell = (text: string) =>
+    text
+      .replace(/\\/g, '\\\\')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\|/g, '\\|')
+      .replace(/\n\s*/g, '<br>');
   const lines = [`## API compatibility with ${baselineLabel}`, ''];
   if (result.breaks.length === 0) {
     lines.push(`Compatible (${result.checked} checks).`);

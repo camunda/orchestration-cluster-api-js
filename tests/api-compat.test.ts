@@ -39,6 +39,21 @@ export declare class SdkError extends Error {
 }
 export declare function run(core: Client, req: Req): Promise<Res>;
 export declare function helper(x: number): string;
+export declare class Token {
+  private constructor();
+  readonly value: string;
+}
+declare class Base {
+  readonly id: string;
+}
+export declare class Child extends Base {
+  name: string;
+}
+export declare function pick(x: string): string;
+export declare function pick(x: number, req: Req): number;
+export interface Box<T = string> { v: T }
+// Like tsup output: an explicit export list (otherwise every declaration is exported).
+export {};
 `;
 
 let n = 0;
@@ -137,6 +152,24 @@ describe('api-compat gate', () => {
         edit('export declare function helper(x: number): string;', 'export type helper = string;'),
         'helper',
       ],
+      [
+        'public constructor became private',
+        edit('  code: string;\n}', '  private constructor();\n  code: string;\n}'),
+        'SdkError',
+      ],
+      // The published class must keep its published base, not the current one.
+      [
+        'member inherited from an unexported base changed',
+        edit('readonly id: string;', 'readonly id: string | null;'),
+        'Child',
+      ],
+      // Parameters<> only sees the last overload.
+      [
+        'a non-final overload changed',
+        edit('pick(x: string): string', 'pick(x: string, y: string): string'),
+        'pick',
+      ],
+      ['generic default removed', edit('Box<T = string>', 'Box<T>'), 'Box'],
     ];
     it.each(cases)('%s', (_label, next, symbol) => {
       const { breaks } = compare(next);
@@ -148,8 +181,17 @@ describe('api-compat gate', () => {
       // parameters bivariantly. The per-member arguments check must catch it.
       const { breaks } = compare(edit('create(req: Req)', 'create(req: Req & { owner: string })'));
       expect(breaks).toContainEqual(
-        expect.objectContaining({ symbol: 'Client', check: 'create() arguments' })
+        expect.objectContaining({ symbol: 'Client', check: 'create()' })
       );
+    });
+
+    it("ignores declarations outside the entry points' directories", () => {
+      const base = pkg(BASE);
+      const next = pkg(BASE);
+      // Something like a stale work dir or src/ in the repo root must not be read.
+      fs.mkdirSync(path.join(next, 'stale'));
+      fs.writeFileSync(path.join(next, 'stale', 'x.d.ts'), 'declare class Client { broken: }');
+      expect(checkCompat(base, next, path.join(ROOT, `work-${n++}`)).breaks).toEqual([]);
     });
 
     it('removed entry point', () => {
@@ -174,6 +216,13 @@ describe('api-compat gate', () => {
         edit('url: string }', 'url: string; tenant: string }'),
       ],
       ['literal constant changed', edit('"sha256:aaa"', '"sha256:bbb"')],
+      [
+        'added overload',
+        edit(
+          'export interface Box',
+          'export declare function pick(x: boolean): boolean;\nexport interface Box'
+        ),
+      ],
     ];
     it.each(cases)('%s', (_label, next) => {
       expect(compare(next).breaks).toEqual([]);

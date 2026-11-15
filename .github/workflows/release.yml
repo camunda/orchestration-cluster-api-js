@@ -254,8 +254,9 @@ jobs:
           set -uo pipefail
           tag=$(git describe --tags --abbrev=0 --match 'v[0-9]*' HEAD) || exit 2
           echo "Baseline: ${tag}"
-          npm run -s api-compat -- --baseline-version "${tag#v}"
-          rc=$?
+          # Actions runs this with bash -e: capture the exit code instead of exiting on it.
+          rc=0
+          npm run -s api-compat -- --baseline-version "${tag#v}" || rc=$?
           [ "$rc" -eq 1 ] || exit "$rc"
           if [ "$DISPATCH_APPROVED" = "true" ]; then
             echo "::warning::Breaking API changes approved by the api_break_approved input of this run."
