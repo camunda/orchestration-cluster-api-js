@@ -46,9 +46,11 @@
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
 
-const REPO_ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
+const SCRIPT_PATH = fileURLToPath(import.meta.url);
+const REPO_ROOT = path.resolve(path.dirname(SCRIPT_PATH), '..');
 // The check file is written inside the repo so the .d.ts files resolve their own
 // dependencies (zod, effect, ...) from this repo's node_modules.
 const DEFAULT_WORK_DIR = path.join(REPO_ROOT, '.api-compat');
@@ -139,6 +141,13 @@ type PrepareMode =
    */
   | { kind: 'unified'; currentDir: string; classes: ClassIndex };
 
+/** Top-level interface or type alias name, for indexing and aliasing. */
+function typeDeclName(stmt: ts.Statement): string | undefined {
+  return ts.isInterfaceDeclaration(stmt) || ts.isTypeAliasDeclaration(stmt)
+    ? stmt.name.text
+    : undefined;
+}
+
 /**
  * Copy a package's package.json and declaration files into WORK_DIR/<label>, removing
  * private and protected class members (see PrepareMode for the other rewrites).
@@ -153,12 +162,14 @@ function preparePackage(
   pkgDir: string,
   label: string,
   mode: PrepareMode
-): { dir: string; classes: ClassIndex; replaced: Set<string> } {
+): { dir: string; classes: ClassIndex; types: ClassIndex; replaced: Set<string> } {
   const out = path.join(WORK_DIR, label);
   fs.rmSync(out, { recursive: true, force: true });
   fs.mkdirSync(out, { recursive: true });
   fs.copyFileSync(path.join(pkgDir, 'package.json'), path.join(out, 'package.json'));
   const classes: ClassIndex = new Map();
+  /** Current mode: where each top-level interface and type alias lives, like `classes`. */
+  const types: ClassIndex = new Map();
   /** Unified mode: "<file>::<Name>" of each class replaced by the current one. */
   const replaced = new Set<string>();
   const printer = ts.createPrinter();
@@ -214,6 +225,17 @@ function preparePackage(
             )
       );
     for (const stmt of sf.statements) {
+      // Interfaces and type aliases stay as they are, but get an alias for comparing
+      // received types that aren't exported (current: __apiCompat_, baseline: __apiCompatOld_).
+      const typeName = typeDeclName(stmt);
+      if (typeName && !fileClasses.has(typeName) && mode.kind !== 'pristine') {
+        const prefix = mode.kind === 'current' ? CLASS_EXPORT_PREFIX : OLD_CLASS_PREFIX;
+        exportsToAdd.push(`${typeName} as ${prefix}${typeName}`);
+        if (mode.kind === 'current') {
+          types.set(`${chunkKey(rel)}::${typeName}`, dest);
+          types.set(typeName, types.has(typeName) && types.get(typeName) !== dest ? '' : dest);
+        }
+      }
       const name = ts.isClassDeclaration(stmt) ? stmt.name?.text : undefined;
       if (name && mode.kind === 'current') {
         exportsToAdd.push(`${name} as ${CLASS_EXPORT_PREFIX}${name}`);
@@ -270,7 +292,7 @@ function preparePackage(
       }
       parts.push(printer.printNode(ts.EmitHint.Unspecified, stmt, sf));
     }
-    if (exportsToAdd.length) parts.push(`export { ${exportsToAdd.join(', ')} };`);
+    if (exportsToAdd.length) parts.push(`export { ${[...new Set(exportsToAdd)].join(', ')} };`);
     return `${parts.join('\n')}\n`;
   };
 
@@ -316,7 +338,7 @@ function preparePackage(
   } else {
     dirs.forEach(walk);
   }
-  return { dir: out, classes, replaced };
+  return { dir: out, classes, types, replaced };
 }
 
 /** Entry point subpath ("." , "./logger", ...) -> absolute .d.ts path. */
@@ -374,6 +396,34 @@ type MinArgs<T, Acc extends unknown[] = []> = 0 extends 1 & T
     ? MinArgs<R, [...Acc, H]>
     : Acc;
 ${overloadHelpers()}
+// Field paths of Old that New no longer has, through arrays and nested objects. A removed
+// request field breaks object literals (excess property check), a removed optional result
+// field breaks reads; assignability catches neither. A key counts as kept if any union
+// member has it, as for excess property checks; types without keys accept any.
+type Prim = string | number | boolean | bigint | symbol | null | undefined;
+type Elem<T> = T extends readonly (infer E)[] ? E : T;
+type Obj<T> = Exclude<Elem<NonNullable<T>>, Prim | Fn | Ctor>;
+type AllKeys<T> = T extends unknown ? keyof T : never;
+type Field<T, K> = T extends unknown ? (K extends keyof T ? T[K] : never) : never;
+type LostKeys<O, N, P extends string = '', D extends unknown[] = []> = D['length'] extends 4
+  ? never
+  : 0 extends 1 & O
+    ? never
+    : 0 extends 1 & N
+      ? never
+      : unknown extends N
+        ? never
+        : [AllKeys<Obj<N>>] extends [never]
+          ? never
+          : {
+              [K in AllKeys<Obj<O>> & string]: K extends AllKeys<Obj<N>>
+                ? LostKeys<Field<Obj<O>, K>, Field<Obj<N>, K>, \`\${P}\${K}.\`, [...D, 0]>
+                : \`\${P}\${K}\`;
+            }[AllKeys<Obj<O>> & string];
+// Per argument position, against every current overload.
+type LostArgs<OA, NA> = OA extends readonly unknown[]
+  ? { [I in keyof OA]-?: LostKeys<OA[I], Field<NA, I>> }[number]
+  : never;
 // Literal-typed constants (e.g. SPEC_HASH) are compared by their base type.
 type Widen<T> = T extends string ? string : T extends number ? number : T extends boolean ? boolean : T;
 `;
@@ -429,25 +479,47 @@ function requiredTypeArgs(decl: ts.Declaration | undefined): string {
  * A statement that calls (or constructs) the current API with the arguments of each
  * baseline signature and assigns the result to the baseline return type: if existing
  * calls still compile, it does. TypeScript's overload resolution picks the new signature.
+ * It also checks that no argument or result field was removed and, for generic
+ * signatures, that explicit type arguments and defaulted results still work.
  */
 function callChecks(
   oldFnType: string,
   newCallee: string,
-  count: number,
+  sigs: readonly ts.Signature[],
   construct: boolean
 ): string[] {
   const prefix = construct ? 'NewOv' : 'Ov';
-  const k = Math.min(Math.max(count, 1), MAX_OVERLOADS);
-  const out: string[] = [];
+  const k = Math.min(Math.max(sigs.length, 1), MAX_OVERLOADS);
   // With more overloads than MAX_OVERLOADS, compare the last K.
+  const compared = sigs.slice(-k);
+  const call = (fn: string, args: string) => `${construct ? 'new ' : ''}${fn}(...${args})`;
+  // Every current overload's arguments: an argument field is kept if any accepts it.
+  const newArgs = `${prefix}${MAX_OVERLOADS}<${newCallee}>[number][0]`;
+  const out: string[] = [];
   for (let i = 0; i < k; i++) {
     const sig = `${prefix}${k}<${oldFnType}>[${i}]`;
-    const call = construct ? `new n${ID}(...a${ID})` : `n${ID}(...a${ID})`;
-    const minCall = construct ? `new n${ID}(...m${ID})` : `n${ID}(...m${ID})`;
-    out.push(
-      `declare const n${ID}: ${newCallee}; declare const a${ID}: ${sig}[0]; const r${ID}: ${sig}[1] = ${call}; ` +
-        `declare const m${ID}: MinArgs<${sig}[0]>; ${minCall};`
-    );
+    const parts = [
+      `declare const n${ID}: ${newCallee}; declare const a${ID}: ${sig}[0];`,
+      `const rn${ID} = ${call(`n${ID}`, `a${ID}`)}; const r${ID}: ${sig}[1] = rn${ID};`,
+      `declare const m${ID}: MinArgs<${sig}[0]>; ${call(`n${ID}`, `m${ID}`)};`,
+      `declare const l${ID}: LostArgs<${sig}[0], ${newArgs}> | LostKeys<Awaited<${sig}[1]>, Awaited<typeof rn${ID}>>; const k${ID}: never = l${ID};`,
+    ];
+    const typeParams = compared[i]?.getTypeParameters() ?? [];
+    if (typeParams.length > 0) {
+      // Inferring the signature above turns type parameters into their constraints, so a
+      // changed default (read<T = string>(): T) only shows when both are really called,
+      // without a contextual type to infer T from.
+      parts.push(
+        `declare const o${ID}: ${oldFnType}; const ro${ID} = ${call(`o${ID}`, `m${ID}`)}; const rd${ID} = ${call(`n${ID}`, `m${ID}`)}; const rm${ID}: typeof ro${ID} = rd${ID};`
+      );
+      const required = typeParams.filter(
+        (tp) => !tp.symbol.declarations?.some((d) => ts.isTypeParameterDeclaration(d) && d.default)
+      ).length;
+      for (let c = Math.max(required, 1); c <= typeParams.length; c++) {
+        parts.push(`n${ID}<${Array(c).fill('any').join(', ')}>;`);
+      }
+    }
+    out.push(parts.join(' '));
   }
   return out;
 }
@@ -511,22 +583,45 @@ function isTypeOnlyExport(checker: ts.TypeChecker, sym: ts.Symbol): boolean {
   return false;
 }
 
-/** Every class (in the package) that the declarations of `roots` reference, transitively. */
-function referencedClasses(
+/** Writable in the declaration: not readonly, and not a getter without a setter. */
+function isWritable(prop: ts.Symbol): boolean {
+  const decls = prop.declarations ?? [];
+  if (decls.some(ts.isSetAccessorDeclaration)) return true;
+  return decls.some(
+    (d) =>
+      (ts.isPropertyDeclaration(d) || ts.isPropertySignature(d)) &&
+      !(ts.getCombinedModifierFlags(d) & ts.ModifierFlags.Readonly)
+  );
+}
+
+const RECEIVED_KINDS = ts.SymbolFlags.Class | ts.SymbolFlags.Interface | ts.SymbolFlags.TypeAlias;
+
+/**
+ * Classes, interfaces and type aliases (in the package) whose values customers receive:
+ * reached from the exported values through results and properties. A parameter flips the
+ * direction, so a callback's parameters (e.g. a job handler's job) are received too.
+ * `seen` holds the symbols already walked as [received, passed in].
+ */
+function receivedSymbols(
   checker: ts.TypeChecker,
   roots: ts.Symbol[],
   inPackage: (sym: ts.Symbol) => boolean,
-  seen: Set<ts.Symbol>
+  seen: [Set<ts.Symbol>, Set<ts.Symbol>]
 ): ts.Symbol[] {
   const found: ts.Symbol[] = [];
-  const queue = [...roots];
+  const queue: Array<[ts.Symbol, boolean]> = roots.map((s) => [s, true]);
   while (queue.length > 0) {
-    let sym = queue.pop() as ts.Symbol;
-    if (sym.flags & ts.SymbolFlags.Alias) sym = checker.getAliasedSymbol(sym);
-    if (seen.has(sym) || !inPackage(sym)) continue;
-    seen.add(sym);
-    if (sym.flags & ts.SymbolFlags.Class) found.push(sym);
-    const visit = (node: ts.Node): void => {
+    const [next, received] = queue.pop() as [ts.Symbol, boolean];
+    const sym = next.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(next) : next;
+    const seenHere = seen[received ? 0 : 1];
+    if (seenHere.has(sym) || !inPackage(sym)) continue;
+    seenHere.add(sym);
+    if (received && sym.flags & RECEIVED_KINDS) found.push(sym);
+    const visit = (node: ts.Node, out: boolean): void => {
+      if (ts.isParameter(node)) {
+        if (node.type) visit(node.type, !out);
+        return;
+      }
       const name = ts.isTypeReferenceNode(node)
         ? node.typeName
         : ts.isExpressionWithTypeArguments(node)
@@ -537,10 +632,10 @@ function referencedClasses(
               ? node.qualifier
               : undefined;
       const ref = name && checker.getSymbolAtLocation(name);
-      if (ref) queue.push(ref);
-      ts.forEachChild(node, visit);
+      if (ref) queue.push([ref, out]);
+      ts.forEachChild(node, (child) => visit(child, out));
     };
-    sym.declarations?.forEach(visit);
+    for (const d of sym.declarations ?? []) visit(d, received);
   }
   return found;
 }
@@ -552,7 +647,8 @@ function buildAssertions(
   unifiedDir: string,
   unifiedEntries: Map<string, string>,
   currentEntries: Map<string, string>,
-  replaced: Set<string>
+  replaced: Set<string>,
+  currentTypes: ClassIndex
 ): { assertions: Assertion[]; imports: string[]; missingEntries: Break[] } {
   const program = ts.createProgram([...baselineEntries.values()], {
     strict: true,
@@ -585,7 +681,7 @@ function buildAssertions(
     t: ts.Type
   ) => {
     const count = t.getCallSignatures().length;
-    callChecks(oldFnType, newCallee, count, false).forEach((code, i) =>
+    callChecks(oldFnType, newCallee, t.getCallSignatures(), false).forEach((code, i) =>
       assertions.push({
         entry,
         symbol,
@@ -595,16 +691,24 @@ function buildAssertions(
       })
     );
   };
-  // Instances are SDK output: customers read them and call their methods.
-  const addInstanceChecks = (
+  const addLostKeys = (entry: string, symbol: string, oldType: string, newType: string) =>
+    assertions.push({
+      entry,
+      symbol,
+      check: 'fields kept',
+      code: `declare const l${ID}: LostKeys<${oldType}, ${newType}>; const k${ID}: never = l${ID};`,
+      statement: true,
+    });
+  // Received objects (class instances, results, callback arguments): customers read
+  // their fields and call their methods, one by one because of method bivariance.
+  const addMemberChecks = (
     entry: string,
     symbol: string,
-    check: string,
     oldType: string,
     newType: string,
     declared: ts.Type
   ) => {
-    assertions.push({ entry, symbol, check, code: `Compat<${newType}, ${oldType}>` });
+    addLostKeys(entry, symbol, oldType, newType);
     for (const m of callableMembers(checker, declared, inPackage)) {
       const key = JSON.stringify(m);
       addCalls(
@@ -617,10 +721,33 @@ function buildAssertions(
       );
     }
   };
+  const addInstanceChecks = (
+    entry: string,
+    symbol: string,
+    check: string,
+    oldType: string,
+    newType: string,
+    declared: ts.Type
+  ) => {
+    assertions.push({ entry, symbol, check, code: `Compat<${newType}, ${oldType}>` });
+    addMemberChecks(entry, symbol, oldType, newType, declared);
+    // Assignability ignores readonly, so `x.prop = v` needs its own check.
+    for (const prop of checker.getPropertiesOfType(declared)) {
+      if (!isPublicMember(prop) || !inPackage(prop) || !isWritable(prop)) continue;
+      const key = JSON.stringify(prop.name);
+      assertions.push({
+        entry,
+        symbol,
+        check: `${prop.name} writable`,
+        code: `declare const w${ID}: ${newType}; declare const v${ID}: ${oldType}[${key}]; w${ID}[${key}] = v${ID};`,
+        statement: true,
+      });
+    }
+  };
   const exportedTargets = new Set<ts.Symbol>();
-  /** Classes reached through public signatures, with the first entry that reaches each. */
+  /** Types customers receive, with the first entry that reaches each. */
   const reached: Array<[ts.Symbol, string]> = [];
-  const reachSeen = new Set<ts.Symbol>();
+  const reachSeen: [Set<ts.Symbol>, Set<ts.Symbol>] = [new Set(), new Set()];
 
   let entryIndex = 0;
   for (const [entry, oldDts] of baselineEntries) {
@@ -650,8 +777,13 @@ function buildAssertions(
     imports.push(`import * as ${NV} from '${specifier(newDts)}';`);
 
     const moduleExports = checker.getExportsOfModule(moduleSymbol);
-    for (const cls of referencedClasses(checker, moduleExports, inPackage, reachSeen)) {
-      reached.push([cls, entry]);
+    // Exported types have no direction of their own: where values use them decides it.
+    const valueExports = moduleExports.filter((s) => {
+      const t = s.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(s) : s;
+      return (t.flags & ts.SymbolFlags.Value) !== 0;
+    });
+    for (const sym of receivedSymbols(checker, valueExports, inPackage, reachSeen)) {
+      reached.push([sym, entry]);
     }
     for (const exported of moduleExports) {
       const name = exported.name;
@@ -698,7 +830,7 @@ function buildAssertions(
         }
         const ctorCount = valueType.getConstructSignatures().length;
         if (ctorCount > 0 && !(isClass && (hasNonPublicConstructor(decl) || isAbstract(decl)))) {
-          callChecks(o, n, ctorCount, true).forEach((code, i) =>
+          callChecks(o, n, valueType.getConstructSignatures(), true).forEach((code, i) =>
             assertions.push({
               entry,
               symbol: name,
@@ -743,23 +875,42 @@ function buildAssertions(
       }
     }
   }
-  // Classes that public signatures use without exporting them (e.g. the result of an
-  // exported function) were replaced by their current versions in the unified baseline,
-  // so their own contract is compared here.
-  for (const [cls, entry] of reached) {
-    if (exportedTargets.has(cls)) continue;
-    const decl = cls.declarations?.find(ts.isClassDeclaration);
-    const file = unifiedFileOf(decl);
-    if (!decl || !replaced.has(`${file}::${cls.name}`)) continue;
-    const mod = `import('${specifier(file)}')`;
+  for (const [sym, entry] of reached) {
+    if (sym.flags & ts.SymbolFlags.Class) {
+      // Unexported classes were replaced by their current versions in the unified
+      // baseline, so their own contract is compared here.
+      if (exportedTargets.has(sym)) continue;
+      const decl = sym.declarations?.find(ts.isClassDeclaration);
+      const file = unifiedFileOf(decl);
+      if (!decl || !replaced.has(`${file}::${sym.name}`)) continue;
+      const mod = `import('${specifier(file)}')`;
+      const args = typeArgs(decl);
+      addInstanceChecks(
+        entry,
+        sym.name,
+        'instance (reached through public signatures)',
+        `${mod}.${OLD_CLASS_PREFIX}${sym.name}${args}`,
+        `${mod}.${CUR_CLASS_PREFIX}${sym.name}${args}`,
+        checker.getDeclaredTypeOfSymbol(sym)
+      );
+      continue;
+    }
+    // Received interfaces and type aliases, exported or not. A removed or renamed
+    // unexported one shows in the signatures that use it.
+    const decl = sym.declarations?.find(
+      (d) => ts.isInterfaceDeclaration(d) || ts.isTypeAliasDeclaration(d)
+    );
+    if (!decl) continue;
+    const rel = path.relative(pristineDir, decl.getSourceFile().fileName);
+    const current = currentTypes.get(`${chunkKey(rel)}::${sym.name}`) || currentTypes.get(sym.name);
+    if (!current) continue;
     const args = typeArgs(decl);
-    addInstanceChecks(
+    addMemberChecks(
       entry,
-      cls.name,
-      'instance (reached through public signatures)',
-      `${mod}.${OLD_CLASS_PREFIX}${cls.name}${args}`,
-      `${mod}.${CUR_CLASS_PREFIX}${cls.name}${args}`,
-      checker.getDeclaredTypeOfSymbol(cls)
+      sym.name,
+      `import('${specifier(unifiedFileOf(decl))}').${OLD_CLASS_PREFIX}${sym.name}${args}`,
+      `import('${specifier(current)}').${CLASS_EXPORT_PREFIX}${sym.name}${args}`,
+      checker.getDeclaredTypeOfSymbol(sym)
     );
   }
   return { assertions, imports, missingEntries };
@@ -860,7 +1011,8 @@ export function checkCompat(
     unified.dir,
     typeEntries(unified.dir),
     typeEntries(current.dir),
-    unified.replaced
+    unified.replaced,
+    current.types
   );
   return {
     breaks: [...missingEntries, ...runAssertions(assertions, imports)],
@@ -937,9 +1089,6 @@ function main() {
   process.exit(1);
 }
 
-if (
-  process.argv[1] &&
-  path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname)
-) {
+if (process.argv[1] && path.resolve(process.argv[1]) === SCRIPT_PATH) {
   main();
 }

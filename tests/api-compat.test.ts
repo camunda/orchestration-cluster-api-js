@@ -11,6 +11,7 @@
  * arguments (e.g. fn.activateJobs(core: CamundaClient)), literal constants (SPEC_HASH),
  * and members inherited from outside the SDK.
  */
+import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
@@ -21,12 +22,13 @@ const ROOT = path.resolve(__dirname, '..', '.api-compat', 'unit-tests');
 const BASE = `
 export declare const SPEC_HASH = "sha256:aaa";
 export interface Config { url: string }
-export interface Req { name: string; size?: number; mode: 'a' | 'b' }
-export interface Res { id: string; note: string; tags: string[] }
+export interface Req { name: string; size?: number; mode: 'a' | 'b'; meta?: { a?: string; b?: string } }
+export interface Res { id: string; note: string; hint?: string; tags: string[] }
 export declare class Client {
   private secret;
   constructor(opts?: { url?: string });
   readonly config: Readonly<Config>;
+  label?: string;
   create(req: Req): Promise<Res>;
   get(id: string, opts?: { fresh?: boolean }): Promise<Res>;
 }
@@ -58,6 +60,21 @@ declare class Reply {
 export declare function reply(): Reply;
 export declare const Make: new (x?: any) => object;
 export declare function log(msg?: unknown): void;
+export declare function parse<T>(x: T): string;
+export declare function read<T = string>(): T;
+interface Ticker {
+  advance(ms: number): void;
+  skew?: number;
+}
+export declare function ticker(): Ticker;
+interface Job {
+  complete(v: string): void;
+}
+export declare function work(handler: (job: Job) => void): void;
+interface Sink {
+  write(x: string): void;
+}
+export declare function attach(sink: Sink): void;
 // Like tsup output: an explicit export list (otherwise every declaration is exported).
 export {};
 `;
@@ -199,6 +216,39 @@ describe('api-compat gate', () => {
         edit('log(msg?: unknown)', 'log(msg: unknown)'),
         'log',
       ],
+      // Assignability ignores readonly.
+      [
+        'writable property became readonly',
+        edit('  code: string;\n}', '  readonly code: string;\n}'),
+        'SdkError',
+      ],
+      [
+        'writable property became a getter',
+        edit('  code: string;\n}', '  get code(): string;\n}'),
+        'SdkError',
+      ],
+      // Inferred calls never pass explicit type arguments.
+      ['generic parameter removed', edit('parse<T>(x: T)', 'parse(x: unknown)'), 'parse'],
+      // Object literals are checked for excess properties; variables are not.
+      ['request field removed', edit('size?: number; ', ''), 'run'],
+      ['nested request field removed', edit('; b?: string }', ' }'), 'run'],
+      // Assignability lets an optional field disappear; reading it no longer compiles.
+      ['optional result field removed', edit(' hint?: string;', ''), 'run'],
+      ['optional class property removed', edit('  label?: string;\n', ''), 'Client'],
+      // Inferring the signature reduces T to unknown, hiding the default.
+      ['generic result default changed', edit('read<T = string>', 'read<T = number>'), 'read'],
+      // Methods of received objects are compared bivariantly by assignability.
+      [
+        'method of a returned interface narrowed',
+        edit('advance(ms: number)', 'advance(ms: 0)'),
+        'Ticker',
+      ],
+      ['optional field of a returned interface removed', edit('  skew?: number;\n', ''), 'Ticker'],
+      [
+        'method of a callback argument narrowed',
+        edit('complete(v: string)', "complete(v: 'ok')"),
+        'Job',
+      ],
     ];
     it.each(cases)('%s', (_label, next, symbol) => {
       const { breaks } = compare(next);
@@ -250,6 +300,18 @@ describe('api-compat gate', () => {
         edit('readonly ok: boolean;', 'readonly ok: boolean;\n  extra: string;'),
       ],
       [
+        'writable property became an accessor pair',
+        edit('  code: string;\n}', '  get code(): string;\n  set code(v: string);\n}'),
+      ],
+      ['readonly property became writable', edit('readonly ok: boolean;', 'ok: boolean;')],
+      ['generic default added', edit('parse<T>(x: T)', 'parse<T = string>(x: T)')],
+      // Customers implement Sink; the SDK calls it.
+      [
+        'method of an interface customers implement narrowed',
+        edit('write(x: string)', "write(x: 'a')"),
+      ],
+      ['nested request field added', edit('b?: string }', 'b?: string; c?: string }')],
+      [
         'added overload',
         edit(
           'export interface Box',
@@ -265,5 +327,19 @@ describe('api-compat gate', () => {
       const typeOnly = `${edit('export declare class Worker {', 'declare class Worker {')}\nexport type { Worker };`;
       expect(compare(typeOnly, typeOnly).breaks).toEqual([]);
     });
+  });
+
+  it('runs from a checkout path containing a space', () => {
+    const repo = path.join(ROOT, `with space-${n++}`);
+    const script = path.join(repo, 'scripts', 'api-compat.ts');
+    fs.mkdirSync(path.dirname(script), { recursive: true });
+    fs.copyFileSync(path.resolve(__dirname, '..', 'scripts', 'api-compat.ts'), script);
+    fs.writeFileSync(path.join(repo, 'package.json'), '{"name":"fixture"}');
+    const out = execFileSync(
+      process.execPath,
+      ['--import', 'tsx', script, '--baseline', pkg(BASE), '--current', pkg(BASE)],
+      { encoding: 'utf8' }
+    );
+    expect(out).toContain('API compatible');
   });
 });
