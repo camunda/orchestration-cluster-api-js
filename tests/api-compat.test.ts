@@ -52,6 +52,12 @@ export declare class Child extends Base {
 export declare function pick(x: string): string;
 export declare function pick(x: number, req: Req): number;
 export interface Box<T = string> { v: T }
+declare class Reply {
+  readonly ok: boolean;
+}
+export declare function reply(): Reply;
+export declare const Make: new (x?: any) => object;
+export declare function log(msg?: unknown): void;
 // Like tsup output: an explicit export list (otherwise every declaration is exported).
 export {};
 `;
@@ -170,6 +176,29 @@ describe('api-compat gate', () => {
         'pick',
       ],
       ['generic default removed', edit('Box<T = string>', 'Box<T>'), 'Box'],
+      // Unexported classes are replaced by the current ones wherever signatures use them.
+      [
+        'unexported class returned by a public function changed',
+        edit('readonly ok: boolean;', 'readonly ok: boolean | null;'),
+        'Reply',
+      ],
+      // `typeof` accepts a type-only export; `new Worker()` does not.
+      [
+        'runtime export became type-only',
+        `${edit('export declare class Worker {', 'declare class Worker {')}\nexport type { Worker };`,
+        'Worker',
+      ],
+      [
+        'constructor-valued constant gained a required argument',
+        edit('new (x?: any) => object', 'new (x: any) => object'),
+        'Make',
+      ],
+      // An argument type that accepts undefined hides this from the element-type check.
+      [
+        'optional unknown argument became required',
+        edit('log(msg?: unknown)', 'log(msg: unknown)'),
+        'log',
+      ],
     ];
     it.each(cases)('%s', (_label, next, symbol) => {
       const { breaks } = compare(next);
@@ -217,6 +246,10 @@ describe('api-compat gate', () => {
       ],
       ['literal constant changed', edit('"sha256:aaa"', '"sha256:bbb"')],
       [
+        'unexported returned class gained a field',
+        edit('readonly ok: boolean;', 'readonly ok: boolean;\n  extra: string;'),
+      ],
+      [
         'added overload',
         edit(
           'export interface Box',
@@ -226,6 +259,11 @@ describe('api-compat gate', () => {
     ];
     it.each(cases)('%s', (_label, next) => {
       expect(compare(next).breaks).toEqual([]);
+    });
+
+    it('type-only export that stays type-only', () => {
+      const typeOnly = `${edit('export declare class Worker {', 'declare class Worker {')}\nexport type { Worker };`;
+      expect(compare(typeOnly, typeOnly).breaks).toEqual([]);
     });
   });
 });
