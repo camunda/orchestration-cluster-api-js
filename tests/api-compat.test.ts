@@ -14,8 +14,8 @@
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { afterAll, describe, expect, it } from 'vitest';
-import { checkCompat } from '../scripts/api-compat';
+import { afterAll, afterEach, describe, expect, it } from 'vitest';
+import { checkCompat, latestRelease } from '../scripts/api-compat';
 
 const ROOT = path.resolve(__dirname, '..', '.api-compat', 'unit-tests');
 
@@ -103,6 +103,44 @@ export declare function shaped<T extends {
   b: number;
 }>(x: T): void;
 export declare function tail(x: number): string;
+export declare class Core {
+  protected _clock: number;
+  protected tick(n: number): void;
+  protected poll(n?: unknown): void;
+}
+interface Envelope<T> {
+  readonly data: T;
+}
+interface Job2 {
+  done(v: string): void;
+}
+export declare function job2(): Envelope<Job2>;
+type Only<T extends { a: string }> = Pick<T, 'a'>;
+interface Hidden {
+  a: string;
+  b?: string;
+}
+export declare function only(): Only<Hidden>;
+type OnlyIf<T extends { a: string }> = T extends object ? Pick<T, 'a'> : never;
+interface Hidden2 {
+  a: string;
+  b?: string;
+}
+export declare function onlyIf(): OnlyIf<Hidden2>;
+type View<T> = Readonly<T>;
+interface Conf2 {
+  url: string;
+}
+export declare function view(): View<Conf2>;
+export interface Bound<T extends Core> {
+  value: T;
+}
+interface Internal2 {
+  write(x: string): void;
+  other: number;
+}
+export declare function readW(): Pick<Internal2, 'write'>;
+export declare class Tok<T = string> {}
 interface Inner {
   x: string;
 }
@@ -146,6 +184,9 @@ function edit(from: string, to: string): string {
 }
 
 afterAll(() => fs.rmSync(ROOT, { recursive: true, force: true }));
+// Each test is a synchronous compile. Vitest 3 doesn't yield between synchronous tests, so
+// over ~60s of them its worker RPC (onTaskUpdate) times out; let the event loop run.
+afterEach(() => new Promise<void>((resolve) => setImmediate(resolve)));
 
 describe('api-compat gate', () => {
   it('passes an identical API', () => {
@@ -339,6 +380,66 @@ describe('api-compat gate', () => {
         edit('  x: string;\n}\ninterface Wrapper', '  readonly x: string;\n}\ninterface Wrapper'),
         'Inner',
       ],
+      // Subclasses read protected members.
+      ['protected member removed', edit('  protected _clock: number;\n', ''), 'Core'],
+      [
+        'protected member became private',
+        edit('protected _clock: number;', 'private _clock: number;'),
+        'Core',
+      ],
+      [
+        'protected method parameter narrowed',
+        edit('protected tick(n: number): void;', 'protected tick(n: 0): void;'),
+        'Core',
+      ],
+      // Customers augment exported interfaces; a type alias can't be augmented.
+      [
+        'exported interface became a type alias',
+        edit('export interface Config { url: string }', 'export type Config = { url: string }'),
+        'Config',
+      ],
+      // Box<number> stops compiling; Box<any> doesn't notice.
+      [
+        'exported generic type constraint tightened',
+        edit('Box<T = string>', 'Box<T extends string = string>'),
+        'Box',
+      ],
+      // A package wrapper that exposes its argument whole.
+      [
+        'method of a type returned inside a wrapper narrowed',
+        edit('done(v: string)', "done(v: 'x')"),
+        'Job2',
+      ],
+      // Subclasses also write protected fields and call protected methods.
+      [
+        'protected field became readonly',
+        edit('protected _clock: number;', 'protected readonly _clock: number;'),
+        'Core',
+      ],
+      [
+        'protected field type narrowed',
+        edit('protected _clock: number;', 'protected _clock: 0;'),
+        'Core',
+      ],
+      [
+        'protected optional unknown argument became required',
+        edit('protected poll(n?: unknown)', 'protected poll(n: unknown)'),
+        'Core',
+      ],
+      // An inline result has no named type for the write check.
+      [
+        'inline result field became readonly',
+        edit('peek(): { hint?: string }', 'peek(): { readonly hint?: string }'),
+        'peek',
+      ],
+      // Pick<> hides Internal2, but write() is still called on the result.
+      [
+        'method behind a projection narrowed',
+        edit('write(x: string): void;\n  other', "write(x: 'a'): void;\n  other"),
+        'readW',
+      ],
+      // `let t: Tok` stops compiling.
+      ['exported class generic default removed', edit('Tok<T = string>', 'Tok<T>'), 'Tok'],
       // A multi-line constraint must not shift the diagnostics of later assertions.
       [
         'break after a multi-line constraint',
@@ -434,6 +535,31 @@ describe('api-compat gate', () => {
         'Readonly<> wrapped field became readonly',
         edit('  inner: Inner;', '  readonly inner: Inner;'),
       ],
+      [
+        'protected member added',
+        edit(
+          '  protected _clock: number;\n',
+          '  protected _clock: number;\n  protected _extra: string;\n'
+        ),
+      ],
+      // Only<T> = Pick<T, 'a'> exposes nothing else of Hidden.
+      [
+        'field outside a wrapper projection removed',
+        edit('  b?: string;\n}\nexport declare function only', '}\nexport declare function only'),
+      ],
+      // OnlyIf<T> only exposes Pick<T, 'a'>; the conditional's check operand isn't exposed.
+      [
+        'field outside a conditional projection removed',
+        edit(
+          '  b?: string;\n}\nexport declare function onlyIf',
+          '}\nexport declare function onlyIf'
+        ),
+      ],
+      // View<T> = Readonly<T>: customers can't write Conf2's fields through it.
+      [
+        'field behind a Readonly wrapper alias became readonly',
+        edit('interface Conf2 {\n  url: string;', 'interface Conf2 {\n  readonly url: string;'),
+      ],
       // Customers pass a Sink2 in; the constraint doesn't make it received.
       [
         'method of a constraint customers implement narrowed',
@@ -454,10 +580,54 @@ describe('api-compat gate', () => {
       expect(compare(next).breaks).toEqual([]);
     });
 
+    // `extends Core` needs a runtime export; `export type` has none on either side.
+    it('class with protected members exported type-only, unchanged', () => {
+      const typeOnly = `${edit('export declare class Core {', 'declare class Core {')}\nexport type { Core };`;
+      expect(compare(typeOnly, typeOnly).breaks).toEqual([]);
+    });
+
     it('type-only export that stays type-only', () => {
       const typeOnly = `${edit('export declare class Worker {', 'declare class Worker {')}\nexport type { Worker };`;
       expect(compare(typeOnly, typeOnly).breaks).toEqual([]);
     });
+  });
+
+  // The SDK's declarations import Node built-ins (ThreadPool's node:worker_threads.Worker).
+  it('resolves Node built-ins imported by the declarations', () => {
+    const withNode = `import * as node_worker_threads from 'node:worker_threads';\n${BASE}\ninterface PoolWorker {\n  worker: node_worker_threads.Worker;\n  busy: boolean;\n}\nexport declare function pool(): PoolWorker;\n`;
+    expect(compare(withNode, withNode).breaks).toEqual([]);
+  });
+
+  // An unresolved import types everything from it as any, hiding or inventing breaks.
+  it('fails setup when the declarations import a module that does not resolve', () => {
+    const missing = `import type { Gone } from 'no-such-module';\n${BASE}\nexport declare function gone(): Gone;\n`;
+    expect(() => compare(missing, missing)).toThrow(/don't resolve.*no-such-module/);
+  });
+
+  it.each([
+    ['an import type', `${BASE}\nexport declare function gone(): import('no-such-module').Gone;\n`],
+    [
+      'an import = require',
+      `import gone = require('no-such-module');\n${BASE}\nexport declare function goneToo(): gone.Gone;\n`,
+    ],
+  ])('fails setup when %s names a module that does not resolve', (_label, dts) => {
+    expect(() => compare(dts, dts)).toThrow(/don't resolve.*no-such-module/);
+  });
+
+  it('compares a stable major with its newest release, never a prerelease', () => {
+    const versions = [
+      '9.2.4',
+      '10.0.0-alpha.3',
+      '10.0.0',
+      '10.0.9',
+      '10.0.10',
+      '10.1.0-alpha.1',
+      '11.0.0-alpha.2',
+    ];
+    expect(latestRelease(versions, '10')).toBe('10.0.10');
+    expect(latestRelease(versions, '9')).toBe('9.2.4');
+    // A stable line cut from main before its first release has nothing to compare with.
+    expect(latestRelease(versions, '11')).toBeUndefined();
   });
 
   it('runs from a checkout path containing a space', () => {

@@ -180,7 +180,7 @@ If that step fails, the bot comments on the backport PR. Two causes:
 
 ## API compatibility gate (stable branches)
 
-A release from a `stable/*` branch must not stop customer code that compiled against the previous release on that branch from compiling. `scripts/api-compat.ts` checks this: it downloads the last release published from the branch (the nearest `v*` tag) from npm and type-checks generated assertions over its public API against the current build's `.d.ts` files. It runs in two places:
+A release from a `stable/*` branch must not stop customer code that compiled against the previous release on that branch from compiling. `scripts/api-compat.ts` checks this: it downloads the newest published release of the branch's major (`stable/10` → latest `10.x.y`, never a prerelease; a branch with no release yet skips) from npm and type-checks generated assertions over its public API against the current build's `.d.ts` files. It runs in two places:
 
 - **PRs to `stable/*`**: `.github/workflows/api-compat.yml` (check name `API compatibility`). Breaks are listed in the job summary.
 - **Releases from `stable/*`**: the `publish` job of `release.yml` checks the code it is about to publish, after the final build. This also covers generated code from upstream spec changes, which the release pipeline commits without a PR (`stable/<N>` regenerates from camunda `stable/8.<N>`, a moving branch).
@@ -192,6 +192,7 @@ Breaking means existing code could stop compiling: removed exports, members or e
 Run it locally after `npm run build:types` (or a full build):
 
 ```bash
+npm run api-compat -- --baseline-major 10               # current build vs the newest 10.x.y
 npm run api-compat -- --baseline-version 10.0.1          # current build vs a published version
 npm run api-compat -- --baseline <dir> --current <dir>   # two unpacked packages
 ```
