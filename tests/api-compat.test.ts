@@ -75,6 +75,23 @@ interface Sink {
   write(x: string): void;
 }
 export declare function attach(sink: Sink): void;
+declare class Holder<T> {
+  set(value: T): void;
+}
+export declare function holder(): Holder<number>;
+interface Handler {
+  (x?: unknown): void;
+}
+export declare function factory(): Handler;
+export declare function curry(): (x?: unknown) => void;
+export declare function make<T>(): void;
+export interface Shape { kind: string }
+export declare function within<T extends Shape>(x: T): void;
+interface Internal {
+  keep: number;
+  hidden?: string;
+}
+export declare function readKeep(): Pick<Internal, 'keep'>;
 // Like tsup output: an explicit export list (otherwise every declaration is exported).
 export {};
 `;
@@ -249,6 +266,30 @@ describe('api-compat gate', () => {
         edit('complete(v: string)', "complete(v: 'ok')"),
         'Job',
       ],
+      // Ordinary assignability accepts these, and the types have no callable members.
+      [
+        'returned callable interface tightened',
+        edit('(x?: unknown): void;', '(x: unknown): void;'),
+        'Handler',
+      ],
+      [
+        'returned anonymous function tightened',
+        edit('curry(): (x?: unknown)', 'curry(): (x: unknown)'),
+        'curry',
+      ],
+      // With `any` for T both parameters compare as any.
+      [
+        'generic class method parameter narrowed',
+        edit('set(value: T): void', 'set(value: T & { id: string }): void'),
+        'Holder',
+      ],
+      // make<any>() still compiles; make<number>() doesn't.
+      ['generic constraint added', edit('make<T>()', 'make<T extends string>()'), 'make'],
+      [
+        'generic constraint narrowed',
+        edit('within<T extends Shape>', 'within<T extends Shape & { id: string }>'),
+        'within',
+      ],
     ];
     it.each(cases)('%s', (_label, next, symbol) => {
       const { breaks } = compare(next);
@@ -311,6 +352,13 @@ describe('api-compat gate', () => {
         edit('write(x: string)', "write(x: 'a')"),
       ],
       ['nested request field added', edit('b?: string }', 'b?: string; c?: string }')],
+      // Pick<Internal, 'keep'> is all customers see of Internal.
+      ['field outside a Pick removed', edit('  hidden?: string;\n', '')],
+      ['generic constraint widened', edit('within<T extends Shape>', 'within<T extends object>')],
+      [
+        'generic class method parameter widened',
+        edit('set(value: T): void', 'set(value: T | null): void'),
+      ],
       [
         'added overload',
         edit(

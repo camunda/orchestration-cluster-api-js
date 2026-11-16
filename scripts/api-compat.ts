@@ -476,17 +476,39 @@ function requiredTypeArgs(decl: ts.Declaration | undefined): string {
 }
 
 /**
+ * Baseline type parameters written so check.ts can declare them: `params` with their
+ * constraints (`<T extends X>`), `names` to pass them on.
+ */
+interface TypeParamsText {
+  params: string;
+  names: string[];
+}
+
+interface CallCheckOptions {
+  /**
+   * Symbolic type parameters of the owner are in scope. Field and generic-default checks
+   * are left to the `any`-instantiated pass: TypeScript defers them on symbolic types.
+   */
+  symbolic?: boolean;
+  /** A signature's type parameters, when their constraints can be written in check.ts. */
+  typeParams?: (sig: ts.Signature) => TypeParamsText | undefined;
+  /** Call and construct signatures of a signature's result, checked one level down. */
+  resultSigs?: (sig: ts.Signature) => [readonly ts.Signature[], readonly ts.Signature[]];
+}
+
+/**
  * A statement that calls (or constructs) the current API with the arguments of each
  * baseline signature and assigns the result to the baseline return type: if existing
  * calls still compile, it does. TypeScript's overload resolution picks the new signature.
  * It also checks that no argument or result field was removed and, for generic
- * signatures, that explicit type arguments and defaulted results still work.
+ * signatures, that existing type arguments and defaulted results still work.
  */
 function callChecks(
   oldFnType: string,
   newCallee: string,
   sigs: readonly ts.Signature[],
-  construct: boolean
+  construct: boolean,
+  opts: CallCheckOptions = {}
 ): string[] {
   const prefix = construct ? 'NewOv' : 'Ov';
   const k = Math.min(Math.max(sigs.length, 1), MAX_OVERLOADS);
@@ -499,25 +521,58 @@ function callChecks(
   for (let i = 0; i < k; i++) {
     const sig = `${prefix}${k}<${oldFnType}>[${i}]`;
     const parts = [
-      `declare const n${ID}: ${newCallee}; declare const a${ID}: ${sig}[0];`,
+      `let n${ID}!: ${newCallee}; let a${ID}!: ${sig}[0];`,
       `const rn${ID} = ${call(`n${ID}`, `a${ID}`)}; const r${ID}: ${sig}[1] = rn${ID};`,
-      `declare const m${ID}: MinArgs<${sig}[0]>; ${call(`n${ID}`, `m${ID}`)};`,
-      `declare const l${ID}: LostArgs<${sig}[0], ${newArgs}> | LostKeys<Awaited<${sig}[1]>, Awaited<typeof rn${ID}>>; const k${ID}: never = l${ID};`,
+      `let m${ID}!: MinArgs<${sig}[0]>; ${call(`n${ID}`, `m${ID}`)};`,
     ];
-    const typeParams = compared[i]?.getTypeParameters() ?? [];
-    if (typeParams.length > 0) {
-      // Inferring the signature above turns type parameters into their constraints, so a
-      // changed default (read<T = string>(): T) only shows when both are really called,
-      // without a contextual type to infer T from.
+    if (!opts.symbolic) {
       parts.push(
-        `declare const o${ID}: ${oldFnType}; const ro${ID} = ${call(`o${ID}`, `m${ID}`)}; const rd${ID} = ${call(`n${ID}`, `m${ID}`)}; const rm${ID}: typeof ro${ID} = rd${ID};`
+        `let l${ID}!: LostArgs<${sig}[0], ${newArgs}> | LostKeys<Awaited<${sig}[1]>, Awaited<typeof rn${ID}>>; const k${ID}: never = l${ID};`
       );
+    }
+    const baseline = compared[i];
+    const typeParams = baseline?.getTypeParameters() ?? [];
+    if (typeParams.length > 0) {
+      if (!opts.symbolic) {
+        // Inferring the signature above turns type parameters into their constraints, so
+        // a changed default (read<T = string>(): T) only shows when both are really
+        // called, without a contextual type to infer T from.
+        parts.push(
+          `let o${ID}!: ${oldFnType}; const ro${ID} = ${call(`o${ID}`, `m${ID}`)}; const rd${ID} = ${call(`n${ID}`, `m${ID}`)}; const rm${ID}: typeof ro${ID} = rd${ID};`
+        );
+      }
       const required = typeParams.filter(
         (tp) => !tp.symbol.declarations?.some((d) => ts.isTypeParameterDeclaration(d) && d.default)
       ).length;
-      for (let c = Math.max(required, 1); c <= typeParams.length; c++) {
-        parts.push(`n${ID}<${Array(c).fill('any').join(', ')}>;`);
+      const counts: number[] = [];
+      for (let c = Math.max(required, 1); c <= typeParams.length; c++) counts.push(c);
+      const text = baseline && opts.typeParams?.(baseline);
+      if (text) {
+        // Every type argument the baseline accepted must still be accepted.
+        const probes = counts.map((c) => `p${ID}<${text.names.slice(0, c).join(', ')}>;`);
+        parts.push(
+          `function c${ID}${text.params}() { let p${ID}!: ${newCallee}; ${probes.join(' ')} }`
+        );
+      } else {
+        parts.push(...counts.map((c) => `n${ID}<${Array(c).fill('any').join(', ')}>;`));
       }
+    }
+    const [resultCalls, resultCtors] = (baseline && opts.resultSigs?.(baseline)) ?? [[], []];
+    // A returned function (or constructor) is called by customers too.
+    for (const [nested, isCtor, tag] of [
+      [resultCalls, false, 'r'],
+      [resultCtors, true, 'q'],
+    ] as const) {
+      if (nested.length === 0) continue;
+      const outer = '__OUTER__';
+      const nestedChecks = callChecks(
+        `NonNullable<${sig}[1]>`,
+        `NonNullable<typeof rn${outer}>`,
+        nested,
+        isCtor,
+        { symbolic: opts.symbolic }
+      );
+      parts.push(...nestedChecks.map((c) => c.split(ID).join(`${ID}${tag}`).split(outer).join(ID)));
     }
     out.push(parts.join(' '));
   }
@@ -596,16 +651,43 @@ function isWritable(prop: ts.Symbol): boolean {
 
 const RECEIVED_KINDS = ts.SymbolFlags.Class | ts.SymbolFlags.Interface | ts.SymbolFlags.TypeAlias;
 
+/** Library generics whose type arguments keep their whole shape in the result. */
+const SHAPE_PRESERVING = new Set([
+  'Promise',
+  'PromiseLike',
+  'Array',
+  'ReadonlyArray',
+  'Readonly',
+  'Partial',
+  'Required',
+  'NonNullable',
+  'Awaited',
+  'Set',
+  'ReadonlySet',
+  'Map',
+  'ReadonlyMap',
+  'Record',
+  'Iterable',
+  'IterableIterator',
+  'AsyncIterable',
+  'AsyncIterableIterator',
+  'AsyncGenerator',
+  'Generator',
+]);
+
 /**
  * Classes, interfaces and type aliases (in the package) whose values customers receive:
  * reached from the exported values through results and properties. A parameter flips the
  * direction, so a callback's parameters (e.g. a job handler's job) are received too.
+ * Only the parts of a type customers see are followed: not the operand of `Pick`, `Omit`,
+ * `keyof` or an indexed access, whose other fields aren't part of the API.
  * `seen` holds the symbols already walked as [received, passed in].
  */
 function receivedSymbols(
   checker: ts.TypeChecker,
   roots: ts.Symbol[],
   inPackage: (sym: ts.Symbol) => boolean,
+  isDefaultLib: (sym: ts.Symbol) => boolean,
   seen: [Set<ts.Symbol>, Set<ts.Symbol>]
 ): ts.Symbol[] {
   const found: ts.Symbol[] = [];
@@ -622,6 +704,12 @@ function receivedSymbols(
         if (node.type) visit(node.type, !out);
         return;
       }
+      if (
+        ts.isIndexedAccessTypeNode(node) ||
+        (ts.isTypeOperatorNode(node) && node.operator === ts.SyntaxKind.KeyOfKeyword)
+      ) {
+        return;
+      }
       const name = ts.isTypeReferenceNode(node)
         ? node.typeName
         : ts.isExpressionWithTypeArguments(node)
@@ -631,8 +719,20 @@ function receivedSymbols(
             : ts.isImportTypeNode(node)
               ? node.qualifier
               : undefined;
-      const ref = name && checker.getSymbolAtLocation(name);
-      if (ref) queue.push([ref, out]);
+      const found = name && checker.getSymbolAtLocation(name);
+      if (found) queue.push([found, out]);
+      if (
+        (ts.isTypeReferenceNode(node) || ts.isExpressionWithTypeArguments(node)) &&
+        node.typeArguments
+      ) {
+        const target =
+          found && found.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(found) : found;
+        // Type arguments of other generics may be projected (Pick<T, K>); skip them.
+        if (target && isDefaultLib(target) && SHAPE_PRESERVING.has(target.name)) {
+          for (const arg of node.typeArguments) visit(arg, out);
+        }
+        return;
+      }
       ts.forEachChild(node, (child) => visit(child, out));
     };
     for (const d of sym.declarations ?? []) visit(d, received);
@@ -672,16 +772,91 @@ function buildAssertions(
     const prop = owner.getProperty(m);
     return checker.getNonNullableType(checker.getTypeOfSymbol(prop as ts.Symbol));
   };
+  const isDefaultLib = (sym: ts.Symbol) =>
+    sym.declarations?.some((d) => program.isSourceFileDefaultLibrary(d.getSourceFile())) ?? false;
+  /**
+   * Type parameters written for check.ts: references to package types point at their
+   * baseline declarations, kept as __apiCompatOld_*. Undefined when a constraint uses
+   * something that can't be referenced there (a dependency's type, a namespace, ...).
+   */
+  const typeParamsText = (
+    decls: readonly ts.TypeParameterDeclaration[] | undefined,
+    inScope: ReadonlySet<string> = new Set()
+  ): TypeParamsText | undefined => {
+    if (!decls?.length) return undefined;
+    const names = decls.map((d) => d.name.text);
+    const usable = new Set([...names, ...inScope]);
+    let ok = true;
+    const printer = ts.createPrinter({ removeComments: true });
+    const rewrite = (node: ts.TypeNode): string => {
+      const toCheckFile: ts.TransformerFactory<ts.Node> = (ctx) => (root) => {
+        const visit = (n: ts.Node): ts.Node => {
+          if (ts.isTypeQueryNode(n) || ts.isImportTypeNode(n)) ok = false;
+          if (!ts.isTypeReferenceNode(n)) return ts.visitEachChild(n, visit, ctx);
+          if (!ts.isIdentifier(n.typeName)) {
+            ok = false;
+            return n;
+          }
+          const args = n.typeArguments?.map((a) => visit(a) as ts.TypeNode);
+          const sym = checker.getSymbolAtLocation(n.typeName);
+          const target =
+            sym && sym.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(sym) : sym;
+          const decl = target?.declarations?.[0];
+          if (usable.has(n.typeName.text) || (target && isDefaultLib(target))) {
+            return ts.factory.updateTypeReferenceNode(
+              n,
+              n.typeName,
+              args && ts.factory.createNodeArray(args)
+            );
+          }
+          if (
+            target &&
+            decl &&
+            inPackage(target) &&
+            ts.isSourceFile(decl.parent) &&
+            (ts.isInterfaceDeclaration(decl) ||
+              ts.isTypeAliasDeclaration(decl) ||
+              ts.isClassDeclaration(decl))
+          ) {
+            const ref = `import('${specifier(unifiedFileOf(decl))}').${OLD_CLASS_PREFIX}${target.name}`;
+            return ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(ref), args);
+          }
+          ok = false;
+          return n;
+        };
+        return ts.visitNode(root, visit) as ts.Node;
+      };
+      const [out] = ts.transform(node, [toCheckFile]).transformed;
+      return printer.printNode(ts.EmitHint.Unspecified, out, node.getSourceFile());
+    };
+    const params = decls.map(
+      (d) => `${d.name.text}${d.constraint ? ` extends ${rewrite(d.constraint)}` : ''}`
+    );
+    return ok ? { params: `<${params.join(', ')}>`, names } : undefined;
+  };
+  const sigTypeParams = (sig: ts.Signature) => {
+    const decl = sig.getDeclaration() as ts.SignatureDeclaration | undefined;
+    return decl && 'typeParameters' in decl ? decl.typeParameters : undefined;
+  };
+  const defaultCallOpts = (inScope?: ReadonlySet<string>): CallCheckOptions => ({
+    typeParams: (sig) => typeParamsText(sigTypeParams(sig), inScope),
+    resultSigs: (sig) => {
+      const result = checker.getNonNullableType(checker.getReturnTypeOfSignature(sig));
+      return [result.getCallSignatures(), result.getConstructSignatures()];
+    },
+  });
   const addCalls = (
     entry: string,
     symbol: string,
     check: string,
     oldFnType: string,
     newCallee: string,
-    t: ts.Type
+    t: ts.Type,
+    construct = false
   ) => {
-    const count = t.getCallSignatures().length;
-    callChecks(oldFnType, newCallee, t.getCallSignatures(), false).forEach((code, i) =>
+    const sigs = construct ? t.getConstructSignatures() : t.getCallSignatures();
+    const count = sigs.length;
+    callChecks(oldFnType, newCallee, sigs, construct, defaultCallOpts()).forEach((code, i) =>
       assertions.push({
         entry,
         symbol,
@@ -725,12 +900,41 @@ function buildAssertions(
     entry: string,
     symbol: string,
     check: string,
-    oldType: string,
-    newType: string,
+    oldClass: string,
+    newClass: string,
+    decl: ts.ClassDeclaration | undefined,
     declared: ts.Type
   ) => {
+    const args = typeArgs(decl);
+    const oldType = `${oldClass}${args}`;
+    const newType = `${newClass}${args}`;
     assertions.push({ entry, symbol, check, code: `Compat<${newType}, ${oldType}>` });
     addMemberChecks(entry, symbol, oldType, newType, declared);
+    // With `any` for the class's type parameters, a method parameter that depends on them
+    // (set(value: T)) compares as any, so generic classes are also checked symbolically.
+    const generic = typeParamsText(decl?.typeParameters);
+    if (generic) {
+      const inScope = new Set(generic.names);
+      const tArgs = `<${generic.names.join(', ')}>`;
+      for (const m of callableMembers(checker, declared, inPackage)) {
+        const key = JSON.stringify(m);
+        callChecks(
+          `NonNullable<${oldClass}${tArgs}[${key}]>`,
+          `NonNullable<${newClass}${tArgs}[${key}]>`,
+          memberType(declared, m).getCallSignatures(),
+          false,
+          { symbolic: true, typeParams: (sig) => typeParamsText(sigTypeParams(sig), inScope) }
+        ).forEach((code) =>
+          assertions.push({
+            entry,
+            symbol,
+            check: `${m}() with the class's type parameters`,
+            code: `function s${ID}${generic.params}() { ${code} }`,
+            statement: true,
+          })
+        );
+      }
+    }
     // Assignability ignores readonly, so `x.prop = v` needs its own check.
     for (const prop of checker.getPropertiesOfType(declared)) {
       if (!isPublicMember(prop) || !inPackage(prop) || !isWritable(prop)) continue;
@@ -782,7 +986,7 @@ function buildAssertions(
       const t = s.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(s) : s;
       return (t.flags & ts.SymbolFlags.Value) !== 0;
     });
-    for (const sym of receivedSymbols(checker, valueExports, inPackage, reachSeen)) {
+    for (const sym of receivedSymbols(checker, valueExports, inPackage, isDefaultLib, reachSeen)) {
       reached.push([sym, entry]);
     }
     for (const exported of moduleExports) {
@@ -830,14 +1034,15 @@ function buildAssertions(
         }
         const ctorCount = valueType.getConstructSignatures().length;
         if (ctorCount > 0 && !(isClass && (hasNonPublicConstructor(decl) || isAbstract(decl)))) {
-          callChecks(o, n, valueType.getConstructSignatures(), true).forEach((code, i) =>
-            assertions.push({
-              entry,
-              symbol: name,
-              check: ctorCount > 1 ? `constructor (overload ${i + 1})` : 'constructor',
-              code,
-              statement: true,
-            })
+          callChecks(o, n, valueType.getConstructSignatures(), true, defaultCallOpts()).forEach(
+            (code, i) =>
+              assertions.push({
+                entry,
+                symbol: name,
+                check: ctorCount > 1 ? `constructor (overload ${i + 1})` : 'constructor',
+                code,
+                statement: true,
+              })
           );
         }
         for (const m of callableMembers(checker, valueType, inPackage)) {
@@ -853,13 +1058,13 @@ function buildAssertions(
         }
       }
       if (isClass) {
-        const args = typeArgs(decl);
         addInstanceChecks(
           entry,
           name,
           'instance',
-          `${oldRef()}${args}`,
-          `${ref(N)}${args}`,
+          oldRef(),
+          ref(N),
+          decl && ts.isClassDeclaration(decl) ? decl : undefined,
           checker.getDeclaredTypeOfSymbol(target)
         );
       } else if (isType) {
@@ -884,13 +1089,13 @@ function buildAssertions(
       const file = unifiedFileOf(decl);
       if (!decl || !replaced.has(`${file}::${sym.name}`)) continue;
       const mod = `import('${specifier(file)}')`;
-      const args = typeArgs(decl);
       addInstanceChecks(
         entry,
         sym.name,
         'instance (reached through public signatures)',
-        `${mod}.${OLD_CLASS_PREFIX}${sym.name}${args}`,
-        `${mod}.${CUR_CLASS_PREFIX}${sym.name}${args}`,
+        `${mod}.${OLD_CLASS_PREFIX}${sym.name}`,
+        `${mod}.${CUR_CLASS_PREFIX}${sym.name}`,
+        decl,
         checker.getDeclaredTypeOfSymbol(sym)
       );
       continue;
@@ -905,13 +1110,17 @@ function buildAssertions(
     const current = currentTypes.get(`${chunkKey(rel)}::${sym.name}`) || currentTypes.get(sym.name);
     if (!current) continue;
     const args = typeArgs(decl);
-    addMemberChecks(
-      entry,
-      sym.name,
-      `import('${specifier(unifiedFileOf(decl))}').${OLD_CLASS_PREFIX}${sym.name}${args}`,
-      `import('${specifier(current)}').${CLASS_EXPORT_PREFIX}${sym.name}${args}`,
-      checker.getDeclaredTypeOfSymbol(sym)
-    );
+    const oldType = `import('${specifier(unifiedFileOf(decl))}').${OLD_CLASS_PREFIX}${sym.name}${args}`;
+    const newType = `import('${specifier(current)}').${CLASS_EXPORT_PREFIX}${sym.name}${args}`;
+    const declared = checker.getDeclaredTypeOfSymbol(sym);
+    addMemberChecks(entry, sym.name, oldType, newType, declared);
+    // A received function or constructor type (interface Handler { (x?: unknown): void }).
+    if (declared.getCallSignatures().length > 0) {
+      addCalls(entry, sym.name, 'call', oldType, newType, declared);
+    }
+    if (declared.getConstructSignatures().length > 0) {
+      addCalls(entry, sym.name, 'construct', oldType, newType, declared, true);
+    }
   }
   return { assertions, imports, missingEntries };
 }
