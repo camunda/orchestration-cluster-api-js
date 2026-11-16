@@ -230,7 +230,7 @@ function preparePackage(
     !ts.isConstructorDeclaration(m) &&
     ((m.name !== undefined && ts.isPrivateIdentifier(m.name)) ||
       hasModifier(m, ts.SyntaxKind.PrivateKeyword) ||
-      (mode.kind !== 'current' && hasModifier(m, ts.SyntaxKind.ProtectedKeyword)));
+      (mode.kind === 'unified' && hasModifier(m, ts.SyntaxKind.ProtectedKeyword)));
   /** A type literal of a class's protected instance members, printed in its own file. */
   const protectedType = (cls: ts.ClassDeclaration, sf: ts.SourceFile) => {
     const members: ts.TypeElement[] = [];
@@ -623,6 +623,11 @@ interface CallCheckOptions {
   typeParams?: (sig: ts.Signature) => TypeParamsText | undefined;
   /** Call and construct signatures of a signature's result, checked one level down. */
   resultSigs?: (sig: ts.Signature) => [readonly ts.Signature[], readonly ts.Signature[]];
+  /**
+   * Callable members of a signature's (awaited) result when no named type covers it
+   * (Pick<Internal, 'write'>, an inline object type), checked one level down.
+   */
+  resultMembers?: (sig: ts.Signature) => Array<[string, readonly ts.Signature[]]>;
 }
 
 /**
@@ -655,8 +660,10 @@ function callChecks(
       `let m${ID}!: MinArgs<${sig}[0]>; ${call(`n${ID}`, `m${ID}`)};`,
     ];
     if (!opts.symbolic) {
+      const oldRes = `NonNullable<Awaited<${sig}[1]>>`;
+      const newRes = `NonNullable<Awaited<typeof rn${ID}>>`;
       parts.push(
-        `let l${ID}!: LostArgs<${sig}[0], ${newArgs}> | LostReads<Awaited<${sig}[1]>, Awaited<typeof rn${ID}>>; const k${ID}: never = l${ID};`
+        `let l${ID}!: LostArgs<${sig}[0], ${newArgs}> | LostReads<Awaited<${sig}[1]>, Awaited<typeof rn${ID}>> | LostWrites<${oldRes}, ${newRes}>; const k${ID}: never = l${ID};`
       );
     }
     const baseline = compared[i];
@@ -703,6 +710,21 @@ function callChecks(
       );
       parts.push(...nestedChecks.map((c) => c.split(ID).join(`${ID}${tag}`).split(outer).join(ID)));
     }
+    // Methods of a result no named type covers are compared one by one too (method
+    // bivariance), e.g. read(): Pick<Internal, 'write'>.
+    const members = (baseline && opts.resultMembers?.(baseline)) ?? [];
+    members.forEach(([key, memberSigs], j) => {
+      const outer = '__OUTER__';
+      const k = JSON.stringify(key);
+      const memberChecks = callChecks(
+        `NonNullable<NonNullable<Awaited<${sig}[1]>>[${k}]>`,
+        `NonNullable<NonNullable<Awaited<typeof rn${outer}>>[${k}]>`,
+        memberSigs,
+        false,
+        { symbolic: opts.symbolic }
+      );
+      parts.push(...memberChecks.map((c) => c.split(ID).join(`${ID}x${j}`).split(outer).join(ID)));
+    });
     out.push(parts.join(' '));
   }
   return out;
@@ -780,6 +802,12 @@ function isWritable(prop: ts.Symbol): boolean {
 
 const RECEIVED_KINDS = ts.SymbolFlags.Class | ts.SymbolFlags.Interface | ts.SymbolFlags.TypeAlias;
 
+/** How a package generic exposes a type argument: direction, and whether writable there. */
+interface Exposure {
+  same: boolean;
+  write: boolean;
+}
+
 /** Library generics whose type arguments keep their whole shape in the result. */
 const SHAPE_PRESERVING = new Set([
   'Promise',
@@ -825,14 +853,15 @@ function receivedSymbols(
   const queue: Array<[ts.Symbol, boolean, boolean]> = roots.map((s) => [s, true, true]);
   const resolve = (s: ts.Symbol | undefined) =>
     s && s.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(s) : s;
-  const exposureMemo = new Map<ts.Symbol, Array<Set<boolean>>>();
+  const exposureMemo = new Map<ts.Symbol, Array<Exposure[]>>();
   /**
    * For each type parameter of a package generic (e.g. CancelablePromise<T>,
-   * Envelope<T>), the directions in which its argument is exposed whole: true for the
-   * reference's own direction, false for the opposite. A parameter only used through a
-   * projection (Pick<T, K>, T[K], keyof T) is not exposed.
+   * Envelope<T>), how its argument is exposed whole: in the reference's own direction
+   * (`same`) or the opposite, and whether writable there (not directly under Readonly).
+   * A parameter only used through a projection (Pick<T, K>, T[K], keyof T, a
+   * conditional's check) is not exposed.
    */
-  const exposure = (generic: ts.Symbol): Array<Set<boolean>> => {
+  const exposure = (generic: ts.Symbol): Array<Exposure[]> => {
     const memo = exposureMemo.get(generic);
     if (memo) return memo;
     const index = new Map<ts.Symbol, number>();
@@ -851,10 +880,13 @@ function receivedSymbols(
         count = Math.max(count, d.typeParameters.length);
       }
     }
-    const result = Array.from({ length: count }, () => new Set<boolean>());
+    const result = Array.from({ length: count }, (): Exposure[] => []);
     // Set before walking, so a recursive generic sees the partial result.
     exposureMemo.set(generic, result);
-    const walk = (node: ts.Node, same: boolean): void => {
+    const add = (i: number, e: Exposure) => {
+      if (!result[i].some((x) => x.same === e.same && x.write === e.write)) result[i].push(e);
+    };
+    const walk = (node: ts.Node, same: boolean, write = true): void => {
       if (ts.isParameter(node)) {
         if (node.type) walk(node.type, !same);
         return;
@@ -866,6 +898,19 @@ function receivedSymbols(
       ) {
         return;
       }
+      if (ts.isConditionalTypeNode(node)) {
+        walk(node.trueType, same, write);
+        walk(node.falseType, same, write);
+        return;
+      }
+      if (ts.isUnionTypeNode(node) || ts.isIntersectionTypeNode(node)) {
+        for (const t of node.types) walk(t, same, write);
+        return;
+      }
+      if (ts.isParenthesizedTypeNode(node)) {
+        walk(node.type, same, write);
+        return;
+      }
       if (ts.isTypeReferenceNode(node) || ts.isExpressionWithTypeArguments(node)) {
         const target = resolve(
           checker.getSymbolAtLocation(
@@ -874,11 +919,11 @@ function receivedSymbols(
         );
         const i = target && index.get(target);
         if (i !== undefined && target) {
-          result[i].add(same);
+          add(i, { same, write });
           return;
         }
-        for (const [arg, dirs] of argDirections(target, node.typeArguments)) {
-          for (const d of dirs) walk(arg, d ? same : !same);
+        for (const [arg, exps] of argDirections(target, node.typeArguments)) {
+          for (const e of exps) walk(arg, e.same ? same : !same, e.write);
         }
         return;
       }
@@ -887,18 +932,23 @@ function receivedSymbols(
     for (const d of generic.declarations ?? []) walk(d, true);
     return result;
   };
-  /** The type arguments of a generic reference worth following, with their directions. */
+  /** The type arguments of a generic reference worth following, with how each is exposed. */
   const argDirections = (
     target: ts.Symbol | undefined,
     args: ts.NodeArray<ts.TypeNode> | undefined
-  ): Array<[ts.TypeNode, Set<boolean>]> => {
+  ): Array<[ts.TypeNode, Exposure[]]> => {
     if (!target || !args) return [];
     if (isDefaultLib(target)) {
-      return SHAPE_PRESERVING.has(target.name) ? args.map((a) => [a, new Set([true])]) : [];
+      if (!SHAPE_PRESERVING.has(target.name)) return [];
+      // Readonly is shallow: only its argument's own fields lose write access.
+      const write = target.name !== 'Readonly';
+      return args.map((a) => [a, [{ same: true, write }]]);
     }
     if (!inPackage(target)) return [];
     const ex = exposure(target);
-    return args.flatMap((a, i): Array<[ts.TypeNode, Set<boolean>]> => (ex[i] ? [[a, ex[i]]] : []));
+    return args.flatMap(
+      (a, i): Array<[ts.TypeNode, Exposure[]]> => (ex[i]?.length ? [[a, ex[i]]] : [])
+    );
   };
   while (queue.length > 0) {
     const [next, received, canWrite] = queue.pop() as [ts.Symbol, boolean, boolean];
@@ -921,6 +971,12 @@ function receivedSymbols(
         ts.isIndexedAccessTypeNode(node) ||
         (ts.isTypeOperatorNode(node) && node.operator === ts.SyntaxKind.KeyOfKeyword)
       ) {
+        return;
+      }
+      // Only a conditional's results are exposed; its check operand is a projection.
+      if (ts.isConditionalTypeNode(node)) {
+        visit(node.trueType, out, canWrite);
+        visit(node.falseType, out, canWrite);
         return;
       }
       // Readonly<A | B> applies to each member.
@@ -949,11 +1005,9 @@ function receivedSymbols(
       ) {
         const target =
           found && found.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(found) : found;
-        // Readonly is shallow: only its argument's own fields lose write access.
-        const argWrite = !(target && isDefaultLib(target) && target.name === 'Readonly');
         // Arguments of projecting generics (Pick<T, K>) are skipped: argDirections.
-        for (const [arg, dirs] of argDirections(target, node.typeArguments)) {
-          for (const d of dirs) visit(arg, d ? out : !out, argWrite);
+        for (const [arg, exps] of argDirections(target, node.typeArguments)) {
+          for (const e of exps) visit(arg, e.same ? out : !out, e.write);
         }
         return;
       }
@@ -1049,7 +1103,14 @@ function buildAssertions(
               ts.isTypeAliasDeclaration(decl) ||
               ts.isClassDeclaration(decl))
           ) {
-            const ref = `import('${specifier(unifiedFileOf(decl))}').${OLD_CLASS_PREFIX}${target.name}`;
+            const file = unifiedFileOf(decl);
+            // An SDK class stands for the current one, as in the unified baseline: the
+            // published copy drops protected members, so it can't satisfy the constraint.
+            const prefix =
+              ts.isClassDeclaration(decl) && replaced.has(`${file}::${target.name}`)
+                ? CUR_CLASS_PREFIX
+                : OLD_CLASS_PREFIX;
+            const ref = `import('${specifier(file)}').${prefix}${target.name}`;
             return ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(ref), args);
           }
           ok = false;
@@ -1074,6 +1135,18 @@ function buildAssertions(
     resultSigs: (sig) => {
       const result = checker.getNonNullableType(checker.getReturnTypeOfSignature(sig));
       return [result.getCallSignatures(), result.getConstructSignatures()];
+    },
+    resultMembers: (sig) => {
+      const ret = checker.getNonNullableType(checker.getReturnTypeOfSignature(sig));
+      const result = checker.getNonNullableType(checker.getAwaitedType(ret) ?? ret);
+      // A named package type is already checked as a received type.
+      const named = [result.aliasSymbol, result.getSymbol()].some(
+        (s) => s && s.flags & RECEIVED_KINDS && inPackage(s)
+      );
+      if (named) return [];
+      return callableMembers(checker, result, inPackage).map(
+        (m): [string, readonly ts.Signature[]] => [m, memberType(result, m).getCallSignatures()]
+      );
     },
   });
   const addCalls = (
@@ -1325,19 +1398,66 @@ function buildAssertions(
               ts.isConstructorDeclaration(m) &&
               modifiersOf(m).some((mod) => mod.kind === ts.SyntaxKind.PrivateKeyword)
           );
-        if (prot && !ctorPrivate && name !== 'default') {
+        if (
+          prot &&
+          !ctorPrivate &&
+          name !== 'default' &&
+          decl &&
+          ts.isClassDeclaration(decl) &&
+          // `extends` needs the class at runtime.
+          !isTypeOnlyExport(checker, exported)
+        ) {
           const args = typeArgs(decl);
           const protType = `import('${specifier(unifiedFile)}').${PROTECTED_PREFIX}${target.name}${args}`;
-          const reads = prot
-            .map((m, i) => `const m${i}${ID}: (typeof o${ID})[${JSON.stringify(m)}] = this.${m};`)
-            .join(' ');
+          const outer = '__OUTER__';
+          const body: string[] = [];
+          const classType = checker.getDeclaredTypeOfSymbol(target);
+          prot.forEach((m, i) => {
+            const key = JSON.stringify(m);
+            body.push(`const m${i}${ID}: (typeof o${ID})[${key}] = this.${m};`);
+            const members = decl.members.filter(
+              (el) => el.name && ts.isIdentifier(el.name) && el.name.text === m
+            );
+            // Subclasses assign to protected fields that were writable.
+            const writable =
+              members.some(ts.isSetAccessorDeclaration) ||
+              members.some(
+                (el) =>
+                  ts.isPropertyDeclaration(el) &&
+                  !modifiersOf(el).some((mod) => mod.kind === ts.SyntaxKind.ReadonlyKeyword)
+              );
+            if (writable) {
+              body.push(`{ let w${i}${ID}!: (typeof o${ID})[${key}]; this.${m} = w${i}${ID}; }`);
+            }
+            // And call protected methods: check arity like public ones.
+            if (members.some(ts.isMethodDeclaration)) {
+              const propSym = classType.getProperty(m);
+              const sigs = propSym
+                ? checker.getNonNullableType(checker.getTypeOfSymbol(propSym)).getCallSignatures()
+                : [];
+              const calls = callChecks(
+                `NonNullable<(typeof o${outer})[${key}]>`,
+                `NonNullable<typeof this.${m}>`,
+                sigs,
+                false,
+                defaultCallOpts()
+              );
+              body.push(
+                ...calls.map((c) => `{ ${c.split(ID).join(`${ID}c${i}`).split(outer).join(ID)} }`)
+              );
+            }
+          });
           assertions.push({
             entry,
             symbol: name,
             check: 'protected members (subclasses)',
-            code: `abstract class P${ID} extends ${ref(NV)}${args} { p${ID}() { let o${ID}!: ${protType}; ${reads} } }`,
+            code: `abstract class P${ID} extends ${ref(NV)}${args} { p${ID}() { let o${ID}!: ${protType}; ${body.join(' ')} } }`,
             statement: true,
           });
+        }
+        // Code that leaves defaulted type parameters out must still compile.
+        if (requiredTypeArgs(decl) !== typeArgs(decl)) {
+          add('type exists (default type arguments)', `${ref(N)}${requiredTypeArgs(decl)}`);
         }
       } else if (isType) {
         // Whether a type change breaks callers depends on the direction it flows (a
