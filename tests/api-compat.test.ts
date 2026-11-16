@@ -15,7 +15,7 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
-import { checkCompat } from '../scripts/api-compat';
+import { checkCompat, latestRelease } from '../scripts/api-compat';
 
 const ROOT = path.resolve(__dirname, '..', '.api-compat', 'unit-tests');
 
@@ -103,6 +103,23 @@ export declare function shaped<T extends {
   b: number;
 }>(x: T): void;
 export declare function tail(x: number): string;
+export declare class Core {
+  protected _clock: number;
+  protected tick(n: number): void;
+}
+interface Envelope<T> {
+  readonly data: T;
+}
+interface Job2 {
+  done(v: string): void;
+}
+export declare function job2(): Envelope<Job2>;
+type Only<T extends { a: string }> = Pick<T, 'a'>;
+interface Hidden {
+  a: string;
+  b?: string;
+}
+export declare function only(): Only<Hidden>;
 interface Inner {
   x: string;
 }
@@ -339,6 +356,36 @@ describe('api-compat gate', () => {
         edit('  x: string;\n}\ninterface Wrapper', '  readonly x: string;\n}\ninterface Wrapper'),
         'Inner',
       ],
+      // Subclasses read protected members.
+      ['protected member removed', edit('  protected _clock: number;\n', ''), 'Core'],
+      [
+        'protected member became private',
+        edit('protected _clock: number;', 'private _clock: number;'),
+        'Core',
+      ],
+      [
+        'protected method parameter narrowed',
+        edit('protected tick(n: number): void;', 'protected tick(n: 0): void;'),
+        'Core',
+      ],
+      // Customers augment exported interfaces; a type alias can't be augmented.
+      [
+        'exported interface became a type alias',
+        edit('export interface Config { url: string }', 'export type Config = { url: string }'),
+        'Config',
+      ],
+      // Box<number> stops compiling; Box<any> doesn't notice.
+      [
+        'exported generic type constraint tightened',
+        edit('Box<T = string>', 'Box<T extends string = string>'),
+        'Box',
+      ],
+      // A package wrapper that exposes its argument whole.
+      [
+        'method of a type returned inside a wrapper narrowed',
+        edit('done(v: string)', "done(v: 'x')"),
+        'Job2',
+      ],
       // A multi-line constraint must not shift the diagnostics of later assertions.
       [
         'break after a multi-line constraint',
@@ -434,6 +481,18 @@ describe('api-compat gate', () => {
         'Readonly<> wrapped field became readonly',
         edit('  inner: Inner;', '  readonly inner: Inner;'),
       ],
+      [
+        'protected member added',
+        edit(
+          '  protected _clock: number;\n',
+          '  protected _clock: number;\n  protected _extra: string;\n'
+        ),
+      ],
+      // Only<T> = Pick<T, 'a'> exposes nothing else of Hidden.
+      [
+        'field outside a wrapper projection removed',
+        edit('  b?: string;\n}\nexport declare function only', '}\nexport declare function only'),
+      ],
       // Customers pass a Sink2 in; the constraint doesn't make it received.
       [
         'method of a constraint customers implement narrowed',
@@ -470,6 +529,32 @@ describe('api-compat gate', () => {
   it('fails setup when the declarations import a module that does not resolve', () => {
     const missing = `import type { Gone } from 'no-such-module';\n${BASE}\nexport declare function gone(): Gone;\n`;
     expect(() => compare(missing, missing)).toThrow(/don't resolve.*no-such-module/);
+  });
+
+  it.each([
+    ['an import type', `${BASE}\nexport declare function gone(): import('no-such-module').Gone;\n`],
+    [
+      'an import = require',
+      `import gone = require('no-such-module');\n${BASE}\nexport declare function goneToo(): gone.Gone;\n`,
+    ],
+  ])('fails setup when %s names a module that does not resolve', (_label, dts) => {
+    expect(() => compare(dts, dts)).toThrow(/don't resolve.*no-such-module/);
+  });
+
+  it('compares a stable major with its newest release, never a prerelease', () => {
+    const versions = [
+      '9.2.4',
+      '10.0.0-alpha.3',
+      '10.0.0',
+      '10.0.9',
+      '10.0.10',
+      '10.1.0-alpha.1',
+      '11.0.0-alpha.2',
+    ];
+    expect(latestRelease(versions, '10')).toBe('10.0.10');
+    expect(latestRelease(versions, '9')).toBe('9.2.4');
+    // A stable line cut from main before its first release has nothing to compare with.
+    expect(latestRelease(versions, '11')).toBeUndefined();
   });
 
   it('runs from a checkout path containing a space', () => {

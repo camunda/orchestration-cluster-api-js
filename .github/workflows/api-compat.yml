@@ -43,25 +43,18 @@ jobs:
       - name: Install deps
         run: npm ci
 
-      - name: Find the last release on ${{ github.base_ref }}
-        id: baseline
-        env:
-          BASE_REF: ${{ github.base_ref }}
-        run: |
-          tag=$(git describe --tags --abbrev=0 --match 'v[0-9]*' "origin/${BASE_REF}")
-          echo "Baseline: ${tag}"
-          echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
-
       - name: Build type declarations
         run: npm run build:types
 
       - name: Check API compatibility
         env:
-          BASELINE: ${{ steps.baseline.outputs.version }}
+          # stable/<N>: compared with the newest published N.x.y. A branch with no N.x
+          # release yet (just cut from main) has nothing to compare with and passes.
+          MAJOR: ${{ github.base_ref }}
           APPROVED: ${{ contains(github.event.pull_request.labels.*.name, 'api-break-approved') }}
         run: |
           set +e
-          npm run -s api-compat -- --baseline-version "$BASELINE"
+          npm run -s api-compat -- --baseline-major "${MAJOR#stable/}"
           rc=$?
           set -e
           if [ "$rc" -eq 1 ] && [ "$APPROVED" = "true" ]; then
