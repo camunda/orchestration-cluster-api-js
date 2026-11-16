@@ -178,6 +178,26 @@ If that step fails, the bot comments on the backport PR. Two causes:
 - **Conflicts in hand-written code.** Resolve them on the backport branch and apply any remaining commits (see above) first, then repeat the step yourself: `git restore --source=origin/stable/<N> --staged --worktree -- external-spec branding/branding-metadata.json json-body-assertions/responses.json src/gen src/facade/operations.gen.ts`, run `npx tsx scripts/run-pipeline.ts --no-test`, and commit the regenerated output separately.
 - **The change depends on spec the stable branch doesn't have** (e.g. it wraps an operation that only exists upstream on `main`; the pipeline fails type-checking the examples). It can't be backported as-is. Close the backport PR, or reduce it to the parts that apply to the stable spec.
 
+## API compatibility gate (stable branches)
+
+A release from a `stable/*` branch must not stop customer code that compiled against the previous release on that branch from compiling. `scripts/api-compat.ts` checks this: it downloads the last release published from the branch (the nearest `v*` tag) from npm and type-checks generated assertions over its public API against the current build's `.d.ts` files. It runs in two places:
+
+- **PRs to `stable/*`**: `.github/workflows/api-compat.yml` (check name `API compatibility`). Breaks are listed in the job summary.
+- **Releases from `stable/*`**: the `publish` job of `release.yml` checks the code it is about to publish, after the final build. This also covers generated code from upstream spec changes, which the release pipeline commits without a PR (`stable/<N>` regenerates from camunda `stable/8.<N>`, a moving branch).
+
+Breaking means existing code could stop compiling: removed exports, members or entry points; new required arguments or request fields; narrowed argument types; result fields that become nullable, optional or removed; widened return types. Additions, new optional arguments or fields, and widened request types pass. Types are compared where signatures use them (arguments old→new, results new→old). `main` is not gated: it releases the next major.
+
+**Override.** When a break is intended (typically a bug fix that has to change the API), apply the **`api-break-approved`** label to the PR; the check still lists the breaks but passes. The release gate passes if any PR merged since the last release has the label. For a break with no PR to label (upstream spec drift), run the Release workflow manually with `api_break_approved` checked.
+
+Run it locally after `npm run build:types` (or a full build):
+
+```bash
+npm run api-compat -- --baseline-version 10.0.1          # current build vs a published version
+npm run api-compat -- --baseline <dir> --current <dir>   # two unpacked packages
+```
+
+Tests: `tests/api-compat.test.ts` covers each kind of break and of compatible change. When you change the checker, keep it green against real releases too: a release compared with itself must report nothing.
+
 ## Pre-push checklist
 
 Before pushing any commits, **always** run `npm run build`. This:
