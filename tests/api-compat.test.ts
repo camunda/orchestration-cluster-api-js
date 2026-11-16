@@ -106,6 +106,7 @@ export declare function tail(x: number): string;
 export declare class Core {
   protected _clock: number;
   protected tick(n: number): void;
+  protected poll(n?: unknown): void;
 }
 interface Envelope<T> {
   readonly data: T;
@@ -120,6 +121,26 @@ interface Hidden {
   b?: string;
 }
 export declare function only(): Only<Hidden>;
+type OnlyIf<T extends { a: string }> = T extends object ? Pick<T, 'a'> : never;
+interface Hidden2 {
+  a: string;
+  b?: string;
+}
+export declare function onlyIf(): OnlyIf<Hidden2>;
+type View<T> = Readonly<T>;
+interface Conf2 {
+  url: string;
+}
+export declare function view(): View<Conf2>;
+export interface Bound<T extends Core> {
+  value: T;
+}
+interface Internal2 {
+  write(x: string): void;
+  other: number;
+}
+export declare function readW(): Pick<Internal2, 'write'>;
+export declare class Tok<T = string> {}
 interface Inner {
   x: string;
 }
@@ -389,6 +410,36 @@ describe('api-compat gate', () => {
         edit('done(v: string)', "done(v: 'x')"),
         'Job2',
       ],
+      // Subclasses also write protected fields and call protected methods.
+      [
+        'protected field became readonly',
+        edit('protected _clock: number;', 'protected readonly _clock: number;'),
+        'Core',
+      ],
+      [
+        'protected field type narrowed',
+        edit('protected _clock: number;', 'protected _clock: 0;'),
+        'Core',
+      ],
+      [
+        'protected optional unknown argument became required',
+        edit('protected poll(n?: unknown)', 'protected poll(n: unknown)'),
+        'Core',
+      ],
+      // An inline result has no named type for the write check.
+      [
+        'inline result field became readonly',
+        edit('peek(): { hint?: string }', 'peek(): { readonly hint?: string }'),
+        'peek',
+      ],
+      // Pick<> hides Internal2, but write() is still called on the result.
+      [
+        'method behind a projection narrowed',
+        edit('write(x: string): void;\n  other', "write(x: 'a'): void;\n  other"),
+        'readW',
+      ],
+      // `let t: Tok` stops compiling.
+      ['exported class generic default removed', edit('Tok<T = string>', 'Tok<T>'), 'Tok'],
       // A multi-line constraint must not shift the diagnostics of later assertions.
       [
         'break after a multi-line constraint',
@@ -496,6 +547,19 @@ describe('api-compat gate', () => {
         'field outside a wrapper projection removed',
         edit('  b?: string;\n}\nexport declare function only', '}\nexport declare function only'),
       ],
+      // OnlyIf<T> only exposes Pick<T, 'a'>; the conditional's check operand isn't exposed.
+      [
+        'field outside a conditional projection removed',
+        edit(
+          '  b?: string;\n}\nexport declare function onlyIf',
+          '}\nexport declare function onlyIf'
+        ),
+      ],
+      // View<T> = Readonly<T>: customers can't write Conf2's fields through it.
+      [
+        'field behind a Readonly wrapper alias became readonly',
+        edit('interface Conf2 {\n  url: string;', 'interface Conf2 {\n  readonly url: string;'),
+      ],
       // Customers pass a Sink2 in; the constraint doesn't make it received.
       [
         'method of a constraint customers implement narrowed',
@@ -514,6 +578,12 @@ describe('api-compat gate', () => {
     ];
     it.each(cases)('%s', (_label, next) => {
       expect(compare(next).breaks).toEqual([]);
+    });
+
+    // `extends Core` needs a runtime export; `export type` has none on either side.
+    it('class with protected members exported type-only, unchanged', () => {
+      const typeOnly = `${edit('export declare class Core {', 'declare class Core {')}\nexport type { Core };`;
+      expect(compare(typeOnly, typeOnly).breaks).toEqual([]);
     });
 
     it('type-only export that stays type-only', () => {
