@@ -424,6 +424,31 @@ type LostKeys<O, N, P extends string = '', D extends unknown[] = []> = D['length
 type LostArgs<OA, NA> = OA extends readonly unknown[]
   ? { [I in keyof OA]-?: LostKeys<OA[I], Field<NA, I>> }[number]
   : never;
+// Field paths customers could read on Old but not on New. Unlike request fields, a key
+// read without narrowing must be on every union member, and an empty type has none.
+type LostReads<O, N, P extends string = '', D extends unknown[] = []> = D['length'] extends 4
+  ? never
+  : 0 extends 1 & O
+    ? never
+    : 0 extends 1 & N
+      ? never
+      : {
+          [K in AllKeys<Obj<O>> & string]: K extends (K extends keyof Obj<O> ? keyof Obj<N> : AllKeys<Obj<N>>)
+            ? LostReads<Field<Obj<O>, K>, Field<Obj<N>, K>, \`\${P}\${K}.\`, [...D, 0]>
+            : \`\${P}\${K}\`;
+        }[AllKeys<Obj<O>> & string];
+// Assignability ignores readonly; this compares it (a getter without setter counts as readonly).
+type Same<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? true : false;
+type Writable<T, K extends keyof T> = Same<Pick<T, K>, { -readonly [P in K]: T[P] }>;
+type LostWrites<O, N> = {
+  [K in keyof O & keyof N & string]-?: string extends K
+    ? never
+    : Writable<O, K> extends true
+      ? Writable<N, K> extends true
+        ? never
+        : K
+      : never;
+}[keyof O & keyof N & string];
 // Literal-typed constants (e.g. SPEC_HASH) are compared by their base type.
 type Widen<T> = T extends string ? string : T extends number ? number : T extends boolean ? boolean : T;
 `;
@@ -527,7 +552,7 @@ function callChecks(
     ];
     if (!opts.symbolic) {
       parts.push(
-        `let l${ID}!: LostArgs<${sig}[0], ${newArgs}> | LostKeys<Awaited<${sig}[1]>, Awaited<typeof rn${ID}>>; const k${ID}: never = l${ID};`
+        `let l${ID}!: LostArgs<${sig}[0], ${newArgs}> | LostReads<Awaited<${sig}[1]>, Awaited<typeof rn${ID}>>; const k${ID}: never = l${ID};`
       );
     }
     const baseline = compared[i];
@@ -698,12 +723,16 @@ function receivedSymbols(
     const seenHere = seen[received ? 0 : 1];
     if (seenHere.has(sym) || !inPackage(sym)) continue;
     seenHere.add(sym);
+    // A class passed in is an instance the SDK handed out, not one customers implement.
+    if (!received && sym.flags & ts.SymbolFlags.Class) continue;
     if (received && sym.flags & RECEIVED_KINDS) found.push(sym);
     const visit = (node: ts.Node, out: boolean): void => {
       if (ts.isParameter(node)) {
         if (node.type) visit(node.type, !out);
         return;
       }
+      // A constraint takes the direction of the type parameter's uses (queued below).
+      if (ts.isTypeParameterDeclaration(node)) return;
       if (
         ts.isIndexedAccessTypeNode(node) ||
         (ts.isTypeOperatorNode(node) && node.operator === ts.SyntaxKind.KeyOfKeyword)
@@ -735,7 +764,13 @@ function receivedSymbols(
       }
       ts.forEachChild(node, (child) => visit(child, out));
     };
-    for (const d of sym.declarations ?? []) visit(d, received);
+    for (const d of sym.declarations ?? []) {
+      if (ts.isTypeParameterDeclaration(d)) {
+        if (d.constraint) visit(d.constraint, received);
+      } else {
+        visit(d, received);
+      }
+    }
   }
   return found;
 }
@@ -871,7 +906,7 @@ function buildAssertions(
       entry,
       symbol,
       check: 'fields kept',
-      code: `declare const l${ID}: LostKeys<${oldType}, ${newType}>; const k${ID}: never = l${ID};`,
+      code: `declare const l${ID}: LostReads<${oldType}, ${newType}>; const k${ID}: never = l${ID};`,
       statement: true,
     });
   // Received objects (class instances, results, callback arguments): customers read
@@ -916,6 +951,13 @@ function buildAssertions(
     if (generic) {
       const inScope = new Set(generic.names);
       const tArgs = `<${generic.names.join(', ')}>`;
+      assertions.push({
+        entry,
+        symbol,
+        check: `${check} with the class's type parameters`,
+        code: `function s${ID}${generic.params}() { let n${ID}!: ${newClass}${tArgs}; const o${ID}: ${oldClass}${tArgs} = n${ID}; }`,
+        statement: true,
+      });
       for (const m of callableMembers(checker, declared, inPackage)) {
         const key = JSON.stringify(m);
         callChecks(
@@ -1114,6 +1156,13 @@ function buildAssertions(
     const newType = `import('${specifier(current)}').${CLASS_EXPORT_PREFIX}${sym.name}${args}`;
     const declared = checker.getDeclaredTypeOfSymbol(sym);
     addMemberChecks(entry, sym.name, oldType, newType, declared);
+    assertions.push({
+      entry,
+      symbol: sym.name,
+      check: 'fields still writable',
+      code: `declare const l${ID}: LostWrites<${oldType}, ${newType}>; const k${ID}: never = l${ID};`,
+      statement: true,
+    });
     // A received function or constructor type (interface Handler { (x?: unknown): void }).
     if (declared.getCallSignatures().length > 0) {
       addCalls(entry, sym.name, 'call', oldType, newType, declared);
@@ -1131,10 +1180,12 @@ function runAssertions(assertions: Assertion[], imports: string[]): Break[] {
   const checkFile = path.join(WORK_DIR, 'check.ts');
   const header = `${COMPAT_HELPERS}${imports.join('\n')}\n`;
   const headerLines = header.split('\n').length - 1;
-  const body = assertions
-    .map((a, i) => (a.statement ? a.code.split(ID).join(`_${i}`) : `type _${i} = ${a.code};`))
-    .join('\n');
-  fs.writeFileSync(checkFile, `${header}${body}\nexport {};\n`);
+  const rendered = assertions.map((a, i) =>
+    a.statement ? a.code.split(ID).join(`_${i}`) : `type _${i} = ${a.code};`
+  );
+  // An assertion can span lines (a printed constraint can), so map every line to its owner.
+  const owners = rendered.flatMap((text, i) => text.split('\n').map(() => i));
+  fs.writeFileSync(checkFile, `${header}${rendered.join('\n')}\nexport {};\n`);
 
   const program = ts.createProgram([checkFile], {
     strict: true,
@@ -1162,9 +1213,9 @@ function runAssertions(assertions: Assertion[], imports: string[]): Break[] {
       continue;
     }
     const line = d.file.getLineAndCharacterOfPosition(d.start).line;
-    const index = line - headerLines;
-    const a = assertions[index];
-    if (!a) {
+    const index = owners[line - headerLines];
+    const a = index === undefined ? undefined : assertions[index];
+    if (!a || index === undefined) {
       other.push(`check.ts:${line + 1}: ${text}`);
       continue;
     }

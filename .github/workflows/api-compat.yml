@@ -10,10 +10,11 @@ on:
   pull_request:
     branches:
       - 'stable/**'
-    # labeled/unlabeled: re-evaluate when api-break-approved is added or removed. The job
-    # must run for every label event: a skipped run would replace a failed one and the
-    # required check would count as passing.
-    types: [opened, synchronize, reopened, labeled, unlabeled]
+    # labeled/unlabeled: re-evaluate when api-break-approved is added or removed. edited:
+    # re-evaluate when the PR is retargeted to another stable branch. The job must run for
+    # every such event: a skipped run would replace a failed one and the required check
+    # would count as passing.
+    types: [opened, synchronize, reopened, labeled, unlabeled, edited]
 
 permissions:
   contents: read

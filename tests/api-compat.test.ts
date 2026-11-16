@@ -76,6 +76,7 @@ interface Sink {
 }
 export declare function attach(sink: Sink): void;
 declare class Holder<T> {
+  readonly value: T;
   set(value: T): void;
 }
 export declare function holder(): Holder<number>;
@@ -92,6 +93,16 @@ interface Internal {
   hidden?: string;
 }
 export declare function readKeep(): Pick<Internal, 'keep'>;
+export declare function peek(): { hint?: string };
+interface Sink2 {
+  write(x: string): void;
+}
+export declare function attachAny<T extends Sink2>(sink: T): void;
+export declare function shaped<T extends {
+  a: string;
+  b: number;
+}>(x: T): void;
+export declare function tail(x: number): string;
 // Like tsup output: an explicit export list (otherwise every declaration is exported).
 export {};
 `;
@@ -290,6 +301,37 @@ describe('api-compat gate', () => {
         edit('within<T extends Shape>', 'within<T extends Shape & { id: string }>'),
         'within',
       ],
+      // Results lose readable fields to an empty type or a new union member without them.
+      [
+        'optional result field removed, leaving no fields',
+        edit('peek(): { hint?: string }', 'peek(): {}'),
+        'peek',
+      ],
+      [
+        'result gained a union member without an optional field',
+        edit(
+          'run(core: Client, req: Req): Promise<Res>',
+          'run(core: Client, req: Req): Promise<Res | { id: string; note: string; tags: string[] }>'
+        ),
+        'run',
+      ],
+      // Methods are checked symbolically too; fields need the whole-instance check.
+      [
+        'generic class property type changed',
+        edit('readonly value: T;', 'readonly value: string;'),
+        'Holder',
+      ],
+      [
+        'received interface field became readonly',
+        edit('{ id: string; note', '{ readonly id: string; note'),
+        'Res',
+      ],
+      // A multi-line constraint must not shift the diagnostics of later assertions.
+      [
+        'break after a multi-line constraint',
+        edit('tail(x: number)', 'tail(x: number, y: number)'),
+        'tail',
+      ],
     ];
     it.each(cases)('%s', (_label, next, symbol) => {
       const { breaks } = compare(next);
@@ -358,6 +400,22 @@ describe('api-compat gate', () => {
       [
         'generic class method parameter widened',
         edit('set(value: T): void', 'set(value: T | null): void'),
+      ],
+      // Client is passed back into run(); that must not make its method arguments received.
+      [
+        'request field became readonly',
+        edit(
+          'export interface Req { name: string;',
+          'export interface Req { readonly name: string;'
+        ),
+      ],
+      // Customers pass a Sink2 in; the constraint doesn't make it received.
+      [
+        'method of a constraint customers implement narrowed',
+        edit(
+          '  write(x: string): void;\n}\nexport declare function attachAny',
+          "  write(x: 'a'): void;\n}\nexport declare function attachAny"
+        ),
       ],
       [
         'added overload',
