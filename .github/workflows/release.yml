@@ -238,7 +238,19 @@ jobs:
           DISPATCH_APPROVED: ${{ github.event_name == 'workflow_dispatch' && inputs.api_break_approved }}
         run: |
           set -uo pipefail
-          tag=$(git describe --tags --abbrev=0 --match 'v[0-9]*' HEAD) || exit 2
+          # The newest published release of this stable major, not the nearest tag: a
+          # stable branch is cut from main at an alpha.
+          major="${GITHUB_REF_NAME#stable/}"
+          version=$(npm run -s api-compat -- --print-baseline-major "$major") || exit 2
+          if [ -z "$version" ]; then
+            echo "::notice::No ${major}.x release published yet; nothing to compare against."
+            exit 0
+          fi
+          tag="v${version}"
+          git rev-parse -q --verify "refs/tags/${tag}" >/dev/null || {
+            echo "::error::Baseline ${version} has no ${tag} tag to list the PRs merged since."
+            exit 2
+          }
           echo "Baseline: ${tag}"
           # Actions runs this with bash -e: capture the exit code instead of exiting on it.
           rc=0

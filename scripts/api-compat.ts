@@ -68,6 +68,10 @@ export interface Break {
 interface Args {
   baseline?: string;
   baselineVersion?: string;
+  /** Compare with the newest release of this major (a stable/<major> branch). */
+  baselineMajor?: string;
+  /** Only print the version --baseline-major would pick (empty if none) and exit. */
+  printBaselineMajor?: string;
   current: string;
   json?: string;
 }
@@ -83,14 +87,47 @@ function parseArgs(argv: string[]): Args {
     };
     if (a === '--baseline') args.baseline = path.resolve(next());
     else if (a === '--baseline-version') args.baselineVersion = next();
+    else if (a === '--baseline-major') args.baselineMajor = next();
+    else if (a === '--print-baseline-major') args.printBaselineMajor = next();
     else if (a === '--current') args.current = path.resolve(next());
     else if (a === '--json') args.json = path.resolve(next());
     else throw new Error(`Unknown argument: ${a}`);
   }
-  if (!args.baseline === !args.baselineVersion) {
-    throw new Error('Pass exactly one of --baseline <dir> or --baseline-version <version>');
+  const sources = [args.baseline, args.baselineVersion, args.baselineMajor].filter(Boolean);
+  if (!args.printBaselineMajor && sources.length !== 1) {
+    throw new Error(
+      'Pass exactly one of --baseline <dir>, --baseline-version <version> or --baseline-major <N>'
+    );
   }
   return args;
+}
+
+/**
+ * The newest published release of a major, ignoring prereleases. A stable branch is cut
+ * from main at an alpha, so the nearest tag can be a prerelease that customers on the
+ * stable line never used; and before the first N.0.0 there is nothing to compare with.
+ */
+export function latestRelease(versions: readonly string[], major: string): string | undefined {
+  const parse = (v: string) =>
+    v
+      .match(/^(\d+)\.(\d+)\.(\d+)$/)
+      ?.slice(1)
+      .map(Number);
+  return versions
+    .map((v) => [v, parse(v)] as const)
+    .filter(([, p]) => p && String(p[0]) === major)
+    .sort(
+      ([, a], [, b]) =>
+        (a as number[])[1] - (b as number[])[1] || (a as number[])[2] - (b as number[])[2]
+    )
+    .at(-1)?.[0];
+}
+
+function publishedVersions(): string[] {
+  const name = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'package.json'), 'utf8')).name;
+  const out = execFileSync('npm', ['view', name, 'versions', '--json'], { encoding: 'utf8' });
+  const versions = JSON.parse(out);
+  return Array.isArray(versions) ? versions : [versions];
 }
 
 /** Download a published version of this package and return its extracted directory. */
@@ -124,6 +161,8 @@ const CLASS_EXPORT_PREFIX = '__apiCompat_';
 const OLD_CLASS_PREFIX = '__apiCompatOld_';
 /** In the unified baseline, the current class that replaced it is exported under this prefix. */
 const CUR_CLASS_PREFIX = '__apiCompatCur_';
+/** In the unified baseline, each class's protected members as a type literal. */
+const PROTECTED_PREFIX = '__apiCompatProt_';
 /** Replaced by a unique suffix per statement assertion. */
 const ID = '__ID__';
 
@@ -150,19 +189,27 @@ function typeDeclName(stmt: ts.Statement): string | undefined {
 
 /**
  * Copy a package's package.json and declaration files into WORK_DIR/<label>, removing
- * private and protected class members (see PrepareMode for the other rewrites).
+ * private class members, and in the baseline copies protected ones too (see PrepareMode
+ * for the other rewrites).
  *
- * TypeScript compares classes that have private members nominally: two separately
- * declared copies of the same class are never assignable, whatever their public API.
- * Customers can't use private members, so they are not part of the compatibility
- * contract. (Protected members are only reachable by subclassing SDK classes, which we
- * don't support as API.)
+ * TypeScript compares classes that have private or protected members nominally: two
+ * separately declared copies of the same class are never assignable, whatever their
+ * public API. Customers can't use private members, so they are not part of the
+ * compatibility contract. Protected members are, for subclasses: the current copy keeps
+ * them, and the unified baseline lists each class's protected members as a separate type
+ * (__apiCompatProt_<Name>) for the subclass probes.
  */
 function preparePackage(
   pkgDir: string,
   label: string,
   mode: PrepareMode
-): { dir: string; classes: ClassIndex; types: ClassIndex; replaced: Set<string> } {
+): {
+  dir: string;
+  classes: ClassIndex;
+  types: ClassIndex;
+  replaced: Set<string>;
+  protectedMembers: Map<string, string[]>;
+} {
   const out = path.join(WORK_DIR, label);
   fs.rmSync(out, { recursive: true, force: true });
   fs.mkdirSync(out, { recursive: true });
@@ -172,17 +219,51 @@ function preparePackage(
   const types: ClassIndex = new Map();
   /** Unified mode: "<file>::<Name>" of each class replaced by the current one. */
   const replaced = new Set<string>();
+  /** Unified mode: "<file>::<Name>" -> the class's protected instance member names. */
+  const protectedMembers = new Map<string, string[]>();
   const printer = ts.createPrinter();
+  const hasModifier = (m: ts.Node, kind: ts.SyntaxKind) =>
+    ts.canHaveModifiers(m) && (ts.getModifiers(m) ?? []).some((mod) => mod.kind === kind);
   // Constructors stay, whatever their visibility: a public constructor becoming private
   // breaks `new X()`.
   const isHidden = (m: ts.ClassElement) =>
     !ts.isConstructorDeclaration(m) &&
     ((m.name !== undefined && ts.isPrivateIdentifier(m.name)) ||
-      (ts.canHaveModifiers(m) &&
-        (ts.getModifiers(m) ?? []).some(
-          (mod) =>
-            mod.kind === ts.SyntaxKind.PrivateKeyword || mod.kind === ts.SyntaxKind.ProtectedKeyword
-        )));
+      hasModifier(m, ts.SyntaxKind.PrivateKeyword) ||
+      (mode.kind !== 'current' && hasModifier(m, ts.SyntaxKind.ProtectedKeyword)));
+  /** A type literal of a class's protected instance members, printed in its own file. */
+  const protectedType = (cls: ts.ClassDeclaration, sf: ts.SourceFile) => {
+    const members: ts.TypeElement[] = [];
+    const names: string[] = [];
+    for (const m of cls.members) {
+      if (
+        !hasModifier(m, ts.SyntaxKind.ProtectedKeyword) ||
+        hasModifier(m, ts.SyntaxKind.StaticKeyword) ||
+        !m.name ||
+        !ts.isIdentifier(m.name)
+      ) {
+        continue;
+      }
+      if (ts.isPropertyDeclaration(m) || ts.isGetAccessorDeclaration(m)) {
+        const q = ts.isPropertyDeclaration(m) ? m.questionToken : undefined;
+        members.push(ts.factory.createPropertySignature(undefined, m.name, q, m.type));
+      } else if (ts.isMethodDeclaration(m)) {
+        // A function-typed property, not a method: methods compare parameters bivariantly.
+        const fn = ts.factory.createFunctionTypeNode(
+          m.typeParameters,
+          m.parameters,
+          m.type ?? ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)
+        );
+        members.push(ts.factory.createPropertySignature(undefined, m.name, m.questionToken, fn));
+      } else {
+        continue;
+      }
+      if (!names.includes(m.name.text)) names.push(m.name.text);
+    }
+    if (names.length === 0) return undefined;
+    const literal = ts.factory.createTypeLiteralNode(members);
+    return { text: printer.printNode(ts.EmitHint.Unspecified, literal, sf), names };
+  };
   const stripPrivate: ts.TransformerFactory<ts.SourceFile> = (ctx) => (sf) => {
     const visit = (node: ts.Node): ts.Node => {
       if (ts.isClassDeclaration(node)) {
@@ -200,9 +281,27 @@ function preparePackage(
     return ts.visitNode(sf, visit) as ts.SourceFile;
   };
 
-  const rewrite = (rel: string, dest: string, sf: ts.SourceFile): string => {
+  const rewrite = (
+    rel: string,
+    dest: string,
+    sf: ts.SourceFile,
+    original: ts.SourceFile
+  ): string => {
     const parts: string[] = [];
     const exportsToAdd: string[] = [];
+    if (mode.kind === 'unified') {
+      for (const st of original.statements) {
+        if (!ts.isClassDeclaration(st) || !st.name) continue;
+        const prot = protectedType(st, original);
+        if (!prot) continue;
+        const tps = st.typeParameters?.length
+          ? `<${st.typeParameters.map((tp) => printer.printNode(ts.EmitHint.Unspecified, tp, original)).join(', ')}>`
+          : '';
+        parts.push(`type ${PROTECTED_PREFIX}${st.name.text}${tps} = ${prot.text};`);
+        exportsToAdd.push(`${PROTECTED_PREFIX}${st.name.text}`);
+        protectedMembers.set(`${dest}::${st.name.text}`, prot.names);
+      }
+    }
     const fileClasses = new Set(
       sf.statements.flatMap((st) => (ts.isClassDeclaration(st) && st.name ? [st.name.text] : []))
     );
@@ -313,7 +412,7 @@ function preparePackage(
       fs.mkdirSync(path.dirname(dest), { recursive: true });
       const sf = ts.createSourceFile(src, fs.readFileSync(src, 'utf8'), ts.ScriptTarget.Latest);
       const [stripped] = ts.transform(sf, [stripPrivate]).transformed;
-      fs.writeFileSync(dest, rewrite(rel, dest, stripped));
+      fs.writeFileSync(dest, rewrite(rel, dest, stripped, sf));
     }
   };
   // Only the top-level directories the declared entry points live in (e.g. dist/), so a
@@ -338,7 +437,7 @@ function preparePackage(
   } else {
     dirs.forEach(walk);
   }
-  return { dir: out, classes, types, replaced };
+  return { dir: out, classes, types, replaced, protectedMembers };
 }
 
 /** Entry point subpath ("." , "./logger", ...) -> absolute .d.ts path. */
@@ -378,6 +477,11 @@ interface Assertion {
   /** A type expression, or a statement when `statement` is set. */
   code: string;
   statement?: boolean;
+  /**
+   * Checked in a program of its own. Module augmentations are program-wide, and one for
+   * an interface that no longer exists creates it, hiding the removal from other checks.
+   */
+  isolated?: boolean;
 }
 
 const COMPAT_HELPERS = `// Generated by scripts/api-compat.ts. Do not edit.
@@ -719,6 +823,83 @@ function receivedSymbols(
 ): ts.Symbol[] {
   const found: ts.Symbol[] = [];
   const queue: Array<[ts.Symbol, boolean, boolean]> = roots.map((s) => [s, true, true]);
+  const resolve = (s: ts.Symbol | undefined) =>
+    s && s.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(s) : s;
+  const exposureMemo = new Map<ts.Symbol, Array<Set<boolean>>>();
+  /**
+   * For each type parameter of a package generic (e.g. CancelablePromise<T>,
+   * Envelope<T>), the directions in which its argument is exposed whole: true for the
+   * reference's own direction, false for the opposite. A parameter only used through a
+   * projection (Pick<T, K>, T[K], keyof T) is not exposed.
+   */
+  const exposure = (generic: ts.Symbol): Array<Set<boolean>> => {
+    const memo = exposureMemo.get(generic);
+    if (memo) return memo;
+    const index = new Map<ts.Symbol, number>();
+    let count = 0;
+    for (const d of generic.declarations ?? []) {
+      if (
+        (ts.isClassDeclaration(d) ||
+          ts.isInterfaceDeclaration(d) ||
+          ts.isTypeAliasDeclaration(d)) &&
+        d.typeParameters
+      ) {
+        d.typeParameters.forEach((tp, i) => {
+          const s = checker.getSymbolAtLocation(tp.name);
+          if (s) index.set(s, i);
+        });
+        count = Math.max(count, d.typeParameters.length);
+      }
+    }
+    const result = Array.from({ length: count }, () => new Set<boolean>());
+    // Set before walking, so a recursive generic sees the partial result.
+    exposureMemo.set(generic, result);
+    const walk = (node: ts.Node, same: boolean): void => {
+      if (ts.isParameter(node)) {
+        if (node.type) walk(node.type, !same);
+        return;
+      }
+      if (
+        ts.isTypeParameterDeclaration(node) ||
+        ts.isIndexedAccessTypeNode(node) ||
+        (ts.isTypeOperatorNode(node) && node.operator === ts.SyntaxKind.KeyOfKeyword)
+      ) {
+        return;
+      }
+      if (ts.isTypeReferenceNode(node) || ts.isExpressionWithTypeArguments(node)) {
+        const target = resolve(
+          checker.getSymbolAtLocation(
+            ts.isTypeReferenceNode(node) ? node.typeName : node.expression
+          )
+        );
+        const i = target && index.get(target);
+        if (i !== undefined && target) {
+          result[i].add(same);
+          return;
+        }
+        for (const [arg, dirs] of argDirections(target, node.typeArguments)) {
+          for (const d of dirs) walk(arg, d ? same : !same);
+        }
+        return;
+      }
+      ts.forEachChild(node, (child) => walk(child, same));
+    };
+    for (const d of generic.declarations ?? []) walk(d, true);
+    return result;
+  };
+  /** The type arguments of a generic reference worth following, with their directions. */
+  const argDirections = (
+    target: ts.Symbol | undefined,
+    args: ts.NodeArray<ts.TypeNode> | undefined
+  ): Array<[ts.TypeNode, Set<boolean>]> => {
+    if (!target || !args) return [];
+    if (isDefaultLib(target)) {
+      return SHAPE_PRESERVING.has(target.name) ? args.map((a) => [a, new Set([true])]) : [];
+    }
+    if (!inPackage(target)) return [];
+    const ex = exposure(target);
+    return args.flatMap((a, i): Array<[ts.TypeNode, Set<boolean>]> => (ex[i] ? [[a, ex[i]]] : []));
+  };
   while (queue.length > 0) {
     const [next, received, canWrite] = queue.pop() as [ts.Symbol, boolean, boolean];
     const sym = next.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(next) : next;
@@ -768,11 +949,11 @@ function receivedSymbols(
       ) {
         const target =
           found && found.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(found) : found;
-        // Type arguments of other generics may be projected (Pick<T, K>); skip them.
-        if (target && isDefaultLib(target) && SHAPE_PRESERVING.has(target.name)) {
-          // Readonly is shallow: only its argument's own fields lose write access.
-          const argWrite = target.name !== 'Readonly';
-          for (const arg of node.typeArguments) visit(arg, out, argWrite);
+        // Readonly is shallow: only its argument's own fields lose write access.
+        const argWrite = !(target && isDefaultLib(target) && target.name === 'Readonly');
+        // Arguments of projecting generics (Pick<T, K>) are skipped: argDirections.
+        for (const [arg, dirs] of argDirections(target, node.typeArguments)) {
+          for (const d of dirs) visit(arg, d ? out : !out, argWrite);
         }
         return;
       }
@@ -797,7 +978,8 @@ function buildAssertions(
   unifiedEntries: Map<string, string>,
   currentEntries: Map<string, string>,
   replaced: Set<string>,
-  currentTypes: ClassIndex
+  currentTypes: ClassIndex,
+  protectedMembers: Map<string, string[]>
 ): { assertions: Assertion[]; imports: string[]; missingEntries: Break[] } {
   const program = ts.createProgram([...baselineEntries.values()], {
     strict: true,
@@ -1005,6 +1187,7 @@ function buildAssertions(
     }
   };
   const exportedTargets = new Set<ts.Symbol>();
+  const augmented = new Set<ts.Symbol>();
   /** Types customers receive, with the first entry that reaches each. */
   const reached: Array<[ts.Symbol, string]> = [];
   const reachSeen: [Set<ts.Symbol>, Set<ts.Symbol>] = [new Set(), new Set()];
@@ -1131,6 +1314,31 @@ function buildAssertions(
           decl && ts.isClassDeclaration(decl) ? decl : undefined,
           checker.getDeclaredTypeOfSymbol(target)
         );
+        // Subclasses use protected members; a private constructor rules subclassing out.
+        const unifiedFile = unifiedFileOf(decl);
+        const prot = protectedMembers.get(`${unifiedFile}::${target.name}`);
+        const ctorPrivate =
+          decl &&
+          ts.isClassDeclaration(decl) &&
+          decl.members.some(
+            (m) =>
+              ts.isConstructorDeclaration(m) &&
+              modifiersOf(m).some((mod) => mod.kind === ts.SyntaxKind.PrivateKeyword)
+          );
+        if (prot && !ctorPrivate && name !== 'default') {
+          const args = typeArgs(decl);
+          const protType = `import('${specifier(unifiedFile)}').${PROTECTED_PREFIX}${target.name}${args}`;
+          const reads = prot
+            .map((m, i) => `const m${i}${ID}: (typeof o${ID})[${JSON.stringify(m)}] = this.${m};`)
+            .join(' ');
+          assertions.push({
+            entry,
+            symbol: name,
+            check: 'protected members (subclasses)',
+            code: `abstract class P${ID} extends ${ref(NV)}${args} { p${ID}() { let o${ID}!: ${protType}; ${reads} } }`,
+            statement: true,
+          });
+        }
       } else if (isType) {
         // Whether a type change breaks callers depends on the direction it flows (a
         // request type may widen, a response type may narrow), which only its use in a
@@ -1140,6 +1348,45 @@ function buildAssertions(
         // Code that leaves defaulted type parameters out must still compile.
         if (requiredTypeArgs(decl) !== typeArgs(decl)) {
           add('type exists (default type arguments)', `${ref(N)}${requiredTypeArgs(decl)}`);
+        }
+        const tpDecls =
+          decl && (ts.isInterfaceDeclaration(decl) || ts.isTypeAliasDeclaration(decl))
+            ? decl.typeParameters
+            : undefined;
+        // `any` passes any constraint; Box<number> stops compiling after Box<T extends string>.
+        const generic = typeParamsText(tpDecls);
+        if (generic) {
+          assertions.push({
+            entry,
+            symbol: name,
+            check: 'type accepts the same type arguments',
+            code: `function c${ID}${generic.params}() { let t${ID}!: ${ref(N)}<${generic.names.join(', ')}>; }`,
+            statement: true,
+          });
+        }
+        // Customers augment exported interfaces (declare module ... { interface X {} });
+        // a type alias, even a structurally identical one, can't be augmented.
+        const isInterface = (target.flags & ts.SymbolFlags.Interface) !== 0 && !isClass;
+        const unconstrained = !tpDecls?.some((tp) => tp.constraint || tp.default);
+        // Once per interface: two augmentations of one interface through different entry
+        // points conflict with each other.
+        if (
+          isInterface &&
+          name === target.name &&
+          name !== 'default' &&
+          unconstrained &&
+          !augmented.has(target)
+        ) {
+          augmented.add(target);
+          const tps = tpDecls?.length ? `<${tpDecls.map((tp) => tp.name.text).join(', ')}>` : '';
+          assertions.push({
+            entry,
+            symbol: name,
+            check: 'interface can still be augmented',
+            code: `declare module '${specifier(newDts)}' { interface ${name}${tps} {} }`,
+            statement: true,
+            isolated: true,
+          });
         }
       }
     }
@@ -1211,20 +1458,47 @@ function assertImportsResolve(program: ts.Program, options: ts.CompilerOptions):
       .map((m) => m.name.replace(/^"|"$/g, ''))
   );
   const unresolved = new Set<string>();
+  const check = (sf: ts.SourceFile, spec: string) => {
+    if (ambient.has(spec)) return;
+    if (!ts.resolveModuleName(spec, sf.fileName, options, host).resolvedModule) {
+      unresolved.add(spec);
+    }
+  };
+  // Every form that names a module: import/export declarations, import('x').T types,
+  // `import x = require('x')`, and `declare module 'x'` augmentations.
+  const specOf = (node: ts.Node): string | undefined => {
+    if (
+      (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) &&
+      node.moduleSpecifier &&
+      ts.isStringLiteral(node.moduleSpecifier)
+    ) {
+      return node.moduleSpecifier.text;
+    }
+    if (
+      ts.isImportTypeNode(node) &&
+      ts.isLiteralTypeNode(node.argument) &&
+      ts.isStringLiteral(node.argument.literal)
+    ) {
+      return node.argument.literal.text;
+    }
+    if (
+      ts.isImportEqualsDeclaration(node) &&
+      ts.isExternalModuleReference(node.moduleReference) &&
+      ts.isStringLiteral(node.moduleReference.expression)
+    ) {
+      return node.moduleReference.expression.text;
+    }
+    if (ts.isModuleDeclaration(node) && ts.isStringLiteral(node.name)) return node.name.text;
+    return undefined;
+  };
   for (const sf of program.getSourceFiles()) {
     if (!sf.isDeclarationFile || !sf.fileName.startsWith(WORK_DIR)) continue;
-    for (const st of sf.statements) {
-      const spec =
-        (ts.isImportDeclaration(st) || ts.isExportDeclaration(st)) &&
-        st.moduleSpecifier &&
-        ts.isStringLiteral(st.moduleSpecifier)
-          ? st.moduleSpecifier.text
-          : undefined;
-      if (!spec || ambient.has(spec)) continue;
-      if (!ts.resolveModuleName(spec, sf.fileName, options, host).resolvedModule) {
-        unresolved.add(spec);
-      }
-    }
+    const visit = (node: ts.Node): void => {
+      const spec = specOf(node);
+      if (spec) check(sf, spec);
+      ts.forEachChild(node, visit);
+    };
+    visit(sf);
   }
   if (unresolved.size > 0) {
     throw new Error(
@@ -1233,10 +1507,28 @@ function assertImportsResolve(program: ts.Program, options: ts.CompilerOptions):
   }
 }
 
-/** Write the check file, type-check it, and map each diagnostic back to its assertion. */
+/** Type-check the assertions, isolated ones in a program of their own. */
 function runAssertions(assertions: Assertion[], imports: string[]): Break[] {
+  return [
+    ...runProgram(
+      'check.ts',
+      assertions.filter((a) => !a.isolated),
+      imports
+    ),
+    // Augmentations only apply to modules already in the program.
+    ...runProgram(
+      'check-isolated.ts',
+      assertions.filter((a) => a.isolated),
+      imports
+    ),
+  ];
+}
+
+/** Write a check file, type-check it, and map each diagnostic back to its assertion. */
+function runProgram(fileName: string, assertions: Assertion[], imports: string[]): Break[] {
+  if (assertions.length === 0) return [];
   fs.mkdirSync(WORK_DIR, { recursive: true });
-  const checkFile = path.join(WORK_DIR, 'check.ts');
+  const checkFile = path.join(WORK_DIR, fileName);
   const header = `${COMPAT_HELPERS}${imports.join('\n')}\n`;
   const headerLines = header.split('\n').length - 1;
   const rendered = assertions.map((a, i) =>
@@ -1278,7 +1570,7 @@ function runAssertions(assertions: Assertion[], imports: string[]): Break[] {
     const index = owners[line - headerLines];
     const a = index === undefined ? undefined : assertions[index];
     if (!a || index === undefined) {
-      other.push(`check.ts:${line + 1}: ${text}`);
+      other.push(`${fileName}:${line + 1}: ${text}`);
       continue;
     }
     if (!breaks.has(index)) {
@@ -1334,7 +1626,8 @@ export function checkCompat(
     typeEntries(unified.dir),
     typeEntries(current.dir),
     unified.replaced,
-    current.types
+    current.types,
+    unified.protectedMembers
   );
   return {
     breaks: [...missingEntries, ...runAssertions(assertions, imports)],
@@ -1383,6 +1676,19 @@ function main() {
   let result: ReturnType<typeof checkCompat>;
   let baselineLabel: string;
   try {
+    if (args.printBaselineMajor) {
+      console.log(latestRelease(publishedVersions(), args.printBaselineMajor) ?? '');
+      return;
+    }
+    if (args.baselineMajor) {
+      args.baselineVersion = latestRelease(publishedVersions(), args.baselineMajor);
+      if (!args.baselineVersion) {
+        console.log(
+          `::notice::No ${args.baselineMajor}.x release published yet; nothing to compare against.`
+        );
+        return;
+      }
+    }
     const baselineDir = args.baseline ?? fetchBaseline(args.baselineVersion as string);
     baselineLabel =
       args.baselineVersion ??
