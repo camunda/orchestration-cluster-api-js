@@ -103,6 +103,13 @@ export declare function shaped<T extends {
   b: number;
 }>(x: T): void;
 export declare function tail(x: number): string;
+interface Inner {
+  x: string;
+}
+interface Wrapper {
+  inner: Inner;
+}
+export declare function wrapped(): Readonly<Wrapper>;
 // Like tsup output: an explicit export list (otherwise every declaration is exported).
 export {};
 `;
@@ -326,6 +333,12 @@ describe('api-compat gate', () => {
         edit('{ id: string; note', '{ readonly id: string; note'),
         'Res',
       ],
+      // Readonly<> is shallow: fields of nested types stay writable.
+      [
+        'field nested behind Readonly<> became readonly',
+        edit('  x: string;\n}\ninterface Wrapper', '  readonly x: string;\n}\ninterface Wrapper'),
+        'Inner',
+      ],
       // A multi-line constraint must not shift the diagnostics of later assertions.
       [
         'break after a multi-line constraint',
@@ -408,6 +421,18 @@ describe('api-compat gate', () => {
           'export interface Req { name: string;',
           'export interface Req { readonly name: string;'
         ),
+      ],
+      // Customers only ever see these through Readonly<>.
+      [
+        'field only exposed through Readonly<> became readonly',
+        edit(
+          'export interface Config { url: string }',
+          'export interface Config { readonly url: string }'
+        ),
+      ],
+      [
+        'Readonly<> wrapped field became readonly',
+        edit('  inner: Inner;', '  readonly inner: Inner;'),
       ],
       // Customers pass a Sink2 in; the constraint doesn't make it received.
       [

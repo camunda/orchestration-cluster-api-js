@@ -706,27 +706,30 @@ const SHAPE_PRESERVING = new Set([
  * direction, so a callback's parameters (e.g. a job handler's job) are received too.
  * Only the parts of a type customers see are followed: not the operand of `Pick`, `Omit`,
  * `keyof` or an indexed access, whose other fields aren't part of the API.
- * `seen` holds the symbols already walked as [received, passed in].
+ * `seen` holds the symbols already walked as [received, passed in]; `writable` collects the
+ * received ones customers can write to somewhere, i.e. not only behind `Readonly<>`.
  */
 function receivedSymbols(
   checker: ts.TypeChecker,
   roots: ts.Symbol[],
   inPackage: (sym: ts.Symbol) => boolean,
   isDefaultLib: (sym: ts.Symbol) => boolean,
-  seen: [Set<ts.Symbol>, Set<ts.Symbol>]
+  seen: [Set<ts.Symbol>, Set<ts.Symbol>],
+  writable: Set<ts.Symbol>
 ): ts.Symbol[] {
   const found: ts.Symbol[] = [];
-  const queue: Array<[ts.Symbol, boolean]> = roots.map((s) => [s, true]);
+  const queue: Array<[ts.Symbol, boolean, boolean]> = roots.map((s) => [s, true, true]);
   while (queue.length > 0) {
-    const [next, received] = queue.pop() as [ts.Symbol, boolean];
+    const [next, received, canWrite] = queue.pop() as [ts.Symbol, boolean, boolean];
     const sym = next.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(next) : next;
+    if (received && canWrite) writable.add(sym);
     const seenHere = seen[received ? 0 : 1];
     if (seenHere.has(sym) || !inPackage(sym)) continue;
     seenHere.add(sym);
     // A class passed in is an instance the SDK handed out, not one customers implement.
     if (!received && sym.flags & ts.SymbolFlags.Class) continue;
     if (received && sym.flags & RECEIVED_KINDS) found.push(sym);
-    const visit = (node: ts.Node, out: boolean): void => {
+    const visit = (node: ts.Node, out: boolean, canWrite = true): void => {
       if (ts.isParameter(node)) {
         if (node.type) visit(node.type, !out);
         return;
@@ -739,6 +742,15 @@ function receivedSymbols(
       ) {
         return;
       }
+      // Readonly<A | B> applies to each member.
+      if (ts.isUnionTypeNode(node) || ts.isIntersectionTypeNode(node)) {
+        for (const t of node.types) visit(t, out, canWrite);
+        return;
+      }
+      if (ts.isParenthesizedTypeNode(node)) {
+        visit(node.type, out, canWrite);
+        return;
+      }
       const name = ts.isTypeReferenceNode(node)
         ? node.typeName
         : ts.isExpressionWithTypeArguments(node)
@@ -749,7 +761,7 @@ function receivedSymbols(
               ? node.qualifier
               : undefined;
       const found = name && checker.getSymbolAtLocation(name);
-      if (found) queue.push([found, out]);
+      if (found) queue.push([found, out, canWrite]);
       if (
         (ts.isTypeReferenceNode(node) || ts.isExpressionWithTypeArguments(node)) &&
         node.typeArguments
@@ -758,7 +770,9 @@ function receivedSymbols(
           found && found.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(found) : found;
         // Type arguments of other generics may be projected (Pick<T, K>); skip them.
         if (target && isDefaultLib(target) && SHAPE_PRESERVING.has(target.name)) {
-          for (const arg of node.typeArguments) visit(arg, out);
+          // Readonly is shallow: only its argument's own fields lose write access.
+          const argWrite = target.name !== 'Readonly';
+          for (const arg of node.typeArguments) visit(arg, out, argWrite);
         }
         return;
       }
@@ -994,6 +1008,7 @@ function buildAssertions(
   /** Types customers receive, with the first entry that reaches each. */
   const reached: Array<[ts.Symbol, string]> = [];
   const reachSeen: [Set<ts.Symbol>, Set<ts.Symbol>] = [new Set(), new Set()];
+  const writableReached = new Set<ts.Symbol>();
 
   let entryIndex = 0;
   for (const [entry, oldDts] of baselineEntries) {
@@ -1028,7 +1043,14 @@ function buildAssertions(
       const t = s.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(s) : s;
       return (t.flags & ts.SymbolFlags.Value) !== 0;
     });
-    for (const sym of receivedSymbols(checker, valueExports, inPackage, isDefaultLib, reachSeen)) {
+    for (const sym of receivedSymbols(
+      checker,
+      valueExports,
+      inPackage,
+      isDefaultLib,
+      reachSeen,
+      writableReached
+    )) {
       reached.push([sym, entry]);
     }
     for (const exported of moduleExports) {
@@ -1156,13 +1178,15 @@ function buildAssertions(
     const newType = `import('${specifier(current)}').${CLASS_EXPORT_PREFIX}${sym.name}${args}`;
     const declared = checker.getDeclaredTypeOfSymbol(sym);
     addMemberChecks(entry, sym.name, oldType, newType, declared);
-    assertions.push({
-      entry,
-      symbol: sym.name,
-      check: 'fields still writable',
-      code: `declare const l${ID}: LostWrites<${oldType}, ${newType}>; const k${ID}: never = l${ID};`,
-      statement: true,
-    });
+    if (writableReached.has(sym)) {
+      assertions.push({
+        entry,
+        symbol: sym.name,
+        check: 'fields still writable',
+        code: `declare const l${ID}: LostWrites<${oldType}, ${newType}>; const k${ID}: never = l${ID};`,
+        statement: true,
+      });
+    }
     // A received function or constructor type (interface Handler { (x?: unknown): void }).
     if (declared.getCallSignatures().length > 0) {
       addCalls(entry, sym.name, 'call', oldType, newType, declared);
