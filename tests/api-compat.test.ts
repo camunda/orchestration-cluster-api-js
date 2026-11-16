@@ -14,7 +14,7 @@
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { afterAll, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, describe, expect, it } from 'vitest';
 import { checkCompat, latestRelease } from '../scripts/api-compat';
 
 const ROOT = path.resolve(__dirname, '..', '.api-compat', 'unit-tests');
@@ -163,6 +163,9 @@ function edit(from: string, to: string): string {
 }
 
 afterAll(() => fs.rmSync(ROOT, { recursive: true, force: true }));
+// Each test is a synchronous compile. Vitest 3 doesn't yield between synchronous tests, so
+// over ~60s of them its worker RPC (onTaskUpdate) times out; let the event loop run.
+afterEach(() => new Promise<void>((resolve) => setImmediate(resolve)));
 
 describe('api-compat gate', () => {
   it('passes an identical API', () => {
