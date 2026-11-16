@@ -1198,6 +1198,41 @@ function buildAssertions(
   return { assertions, imports, missingEntries };
 }
 
+/**
+ * skipLibCheck hides an import in the declarations that doesn't resolve, and its types
+ * then become `any`: that both hides breaks and reports false ones. Fail instead.
+ */
+function assertImportsResolve(program: ts.Program, options: ts.CompilerOptions): void {
+  const host = ts.createCompilerHost(options);
+  const ambient = new Set(
+    program
+      .getTypeChecker()
+      .getAmbientModules()
+      .map((m) => m.name.replace(/^"|"$/g, ''))
+  );
+  const unresolved = new Set<string>();
+  for (const sf of program.getSourceFiles()) {
+    if (!sf.isDeclarationFile || !sf.fileName.startsWith(WORK_DIR)) continue;
+    for (const st of sf.statements) {
+      const spec =
+        (ts.isImportDeclaration(st) || ts.isExportDeclaration(st)) &&
+        st.moduleSpecifier &&
+        ts.isStringLiteral(st.moduleSpecifier)
+          ? st.moduleSpecifier.text
+          : undefined;
+      if (!spec || ambient.has(spec)) continue;
+      if (!ts.resolveModuleName(spec, sf.fileName, options, host).resolvedModule) {
+        unresolved.add(spec);
+      }
+    }
+  }
+  if (unresolved.size > 0) {
+    throw new Error(
+      `The declarations import modules that don't resolve, so their types would be any: ${[...unresolved].join(', ')}. Install the dependencies (npm ci) first.`
+    );
+  }
+}
+
 /** Write the check file, type-check it, and map each diagnostic back to its assertion. */
 function runAssertions(assertions: Assertion[], imports: string[]): Break[] {
   fs.mkdirSync(WORK_DIR, { recursive: true });
@@ -1211,7 +1246,7 @@ function runAssertions(assertions: Assertion[], imports: string[]): Break[] {
   const owners = rendered.flatMap((text, i) => text.split('\n').map(() => i));
   fs.writeFileSync(checkFile, `${header}${rendered.join('\n')}\nexport {};\n`);
 
-  const program = ts.createProgram([checkFile], {
+  const options: ts.CompilerOptions = {
     strict: true,
     // Customer projects mostly don't enable this; it would also make additions of
     // optional fields look breaking in the read direction.
@@ -1221,8 +1256,11 @@ function runAssertions(assertions: Assertion[], imports: string[]): Break[] {
     module: ts.ModuleKind.ESNext,
     moduleResolution: ts.ModuleResolutionKind.Bundler,
     target: ts.ScriptTarget.ES2022,
-    types: [],
-  });
+    // The SDK's declarations import Node built-ins (node:worker_threads).
+    types: ['node'],
+  };
+  const program = ts.createProgram([checkFile], options);
+  assertImportsResolve(program, options);
   const diagnostics = ts.getPreEmitDiagnostics(program);
   const breaks = new Map<number, Break>();
   const other: string[] = [];

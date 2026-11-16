@@ -460,6 +460,18 @@ describe('api-compat gate', () => {
     });
   });
 
+  // The SDK's declarations import Node built-ins (ThreadPool's node:worker_threads.Worker).
+  it('resolves Node built-ins imported by the declarations', () => {
+    const withNode = `import * as node_worker_threads from 'node:worker_threads';\n${BASE}\ninterface PoolWorker {\n  worker: node_worker_threads.Worker;\n  busy: boolean;\n}\nexport declare function pool(): PoolWorker;\n`;
+    expect(compare(withNode, withNode).breaks).toEqual([]);
+  });
+
+  // An unresolved import types everything from it as any, hiding or inventing breaks.
+  it('fails setup when the declarations import a module that does not resolve', () => {
+    const missing = `import type { Gone } from 'no-such-module';\n${BASE}\nexport declare function gone(): Gone;\n`;
+    expect(() => compare(missing, missing)).toThrow(/don't resolve.*no-such-module/);
+  });
+
   it('runs from a checkout path containing a space', () => {
     const repo = path.join(ROOT, `with space-${n++}`);
     const script = path.join(repo, 'scripts', 'api-compat.ts');
