@@ -9,7 +9,7 @@ import { enrichActivatedJob, EnrichedActivatedJob, EnrichedActivatedJobOf } from
 import * as Sdk from './sdk.gen';
 
 // Generated
-// Operations: 247
+// Operations: 249
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -769,6 +769,9 @@ type resumeClusterExportingOptions = Parameters<typeof Sdk.resumeClusterExportin
 export type resumeClusterExportingInput = void;
 type resumeExportingOptions = Parameters<typeof Sdk.resumeExporting>[0];
 export type resumeExportingInput = void;
+type resumeProcessDefinitionsOptions = Parameters<typeof Sdk.resumeProcessDefinitions>[0];
+type resumeProcessDefinitionsBody = (NonNullable<resumeProcessDefinitionsOptions> extends { body?: infer B } ? B : never);
+export type resumeProcessDefinitionsInput = resumeProcessDefinitionsBody;
 type resumeProcessInstanceOptions = Parameters<typeof Sdk.resumeProcessInstance>[0];
 type resumeProcessInstanceBody = (NonNullable<resumeProcessInstanceOptions> extends { body?: infer B } ? B : never);
 type resumeProcessInstancePathParam_processInstanceKey = (NonNullable<resumeProcessInstanceOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
@@ -1188,6 +1191,9 @@ type suspendBatchOperationOptions = Parameters<typeof Sdk.suspendBatchOperation>
 type suspendBatchOperationBody = (NonNullable<suspendBatchOperationOptions> extends { body?: infer B } ? B : never);
 type suspendBatchOperationPathParam_batchOperationKey = (NonNullable<suspendBatchOperationOptions> extends { path: { batchOperationKey: infer P } } ? P : any);
 export type suspendBatchOperationInput = suspendBatchOperationBody & { batchOperationKey: suspendBatchOperationPathParam_batchOperationKey };
+type suspendProcessDefinitionsOptions = Parameters<typeof Sdk.suspendProcessDefinitions>[0];
+type suspendProcessDefinitionsBody = (NonNullable<suspendProcessDefinitionsOptions> extends { body?: infer B } ? B : never);
+export type suspendProcessDefinitionsInput = suspendProcessDefinitionsBody;
 type suspendProcessInstanceOptions = Parameters<typeof Sdk.suspendProcessInstance>[0];
 type suspendProcessInstanceBody = (NonNullable<suspendProcessInstanceOptions> extends { body?: infer B } ? B : never);
 type suspendProcessInstancePathParam_processInstanceKey = (NonNullable<suspendProcessInstanceOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
@@ -12075,6 +12081,75 @@ export function resumeExporting(core: CamundaCore, options?: OperationOptions): 
 }
 
 /**
+ * Resume process definitions
+ *
+ * Resumes suspended process definitions so that process instances can be created from them again.
+ * The definition is selected either by `processDefinitionKey`, which identifies exactly one
+ * version, or by `processDefinitionId` with an optional `processDefinitionVersion` and
+ * `tenantId`. Without a version, all versions of the process definition ID are resumed.
+ * Set `includeProcessInstances` to also resume the suspended process instances of the affected
+ * versions; the instances are changed by a batch operation, returned as `batchOperationKey`.
+ *
+  *
+ * @operationId resumeProcessDefinitions
+ * @tags Process definition
+ */
+export function resumeProcessDefinitions(core: CamundaCore, input: resumeProcessDefinitionsInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.resumeProcessDefinitions>>;
+export function resumeProcessDefinitions(core: CamundaCore, arg: any, options?: OperationOptions): CancelablePromise<any> {
+  const rt = core as unknown as OperationRuntime;
+  return toCancelable(async signal => {
+    const _body = arg;
+    let envelope: any = {};
+    envelope.body = _body;
+    if (rt._validation.settings.req !== 'none') {
+      const _schemas = await import('./zod/resumeProcessDefinitions.gen');
+      if (envelope.body !== undefined) {
+        const maybeBody = await rt._validation.gateRequest('resumeProcessDefinitions', _schemas.zResumeProcessDefinitionsBody, envelope.body);
+        if (rt._validation.settings.req === 'strict') envelope.body = maybeBody;
+      }
+    }
+    const opts: any = { client: rt._client, signal, throwOnError: false };
+    if (envelope.body !== undefined) opts.body = envelope.body;
+    const call = async () => {
+      try {
+      const _raw = await Sdk.resumeProcessDefinitions(opts);
+      let data = rt._evaluateResponse(_raw, 'resumeProcessDefinitions', (resp: any) => {
+        const st = resp.status ?? resp.response?.status;
+        if (!st) return undefined;
+        const candidate = st === 429 || st === 503 || st === 500;
+        if (!candidate) return undefined;
+        let prob: any = undefined;
+        if (resp.error && typeof resp.error === 'object') prob = resp.error;
+        const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+        err.status = st; err.name = 'HttpSdkError';
+        if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+        const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+        if (!isBp) err.nonRetryable = true;
+        return err;
+      });
+      const _respSchemaName = 'zResumeProcessDefinitionsResponse';
+      if (_isVoidResponse(_respSchemaName)) {
+        data = undefined;
+      }
+      if (rt._validation.settings.res !== 'none') {
+        const _schemas = await import('./zod/resumeProcessDefinitions.gen');
+        const _schema = _schemas.zResumeProcessDefinitionsResponse;
+        if (_schema) {
+          const maybeR = await rt._validation.gateResponse('resumeProcessDefinitions', _schema, data);
+          if (rt._validation.settings.res === 'strict') data = maybeR;
+        }
+      }
+      return data;
+      } catch(e) {
+        // Defer normalization to outer executeWithHttpRetry boundary
+        throw e;
+      }
+    };
+    return rt._invokeWithRetry(() => call(), { opId: 'resumeProcessDefinitions', exempt: false, retryOverride: options?.retry });
+  });
+}
+
+/**
  * Resume process instance
  *
  * Resumes a suspended process instance, returning it to the ACTIVE state and continuing processing.
@@ -15748,6 +15823,75 @@ export function suspendBatchOperation(core: CamundaCore, arg: any, options?: Ope
       }
     };
     return rt._invokeWithRetry(() => call(), { opId: 'suspendBatchOperation', exempt: false, retryOverride: options?.retry });
+  });
+}
+
+/**
+ * Suspend process definitions
+ *
+ * Suspends process definitions so that no new process instances can be created from them.
+ * The definition is selected either by `processDefinitionKey`, which identifies exactly one
+ * version, or by `processDefinitionId` with an optional `processDefinitionVersion` and
+ * `tenantId`. Without a version, all versions of the process definition ID are suspended.
+ * Set `includeProcessInstances` to also suspend the running process instances of the affected
+ * versions; the instances are changed by a batch operation, returned as `batchOperationKey`.
+ *
+  *
+ * @operationId suspendProcessDefinitions
+ * @tags Process definition
+ */
+export function suspendProcessDefinitions(core: CamundaCore, input: suspendProcessDefinitionsInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.suspendProcessDefinitions>>;
+export function suspendProcessDefinitions(core: CamundaCore, arg: any, options?: OperationOptions): CancelablePromise<any> {
+  const rt = core as unknown as OperationRuntime;
+  return toCancelable(async signal => {
+    const _body = arg;
+    let envelope: any = {};
+    envelope.body = _body;
+    if (rt._validation.settings.req !== 'none') {
+      const _schemas = await import('./zod/suspendProcessDefinitions.gen');
+      if (envelope.body !== undefined) {
+        const maybeBody = await rt._validation.gateRequest('suspendProcessDefinitions', _schemas.zSuspendProcessDefinitionsBody, envelope.body);
+        if (rt._validation.settings.req === 'strict') envelope.body = maybeBody;
+      }
+    }
+    const opts: any = { client: rt._client, signal, throwOnError: false };
+    if (envelope.body !== undefined) opts.body = envelope.body;
+    const call = async () => {
+      try {
+      const _raw = await Sdk.suspendProcessDefinitions(opts);
+      let data = rt._evaluateResponse(_raw, 'suspendProcessDefinitions', (resp: any) => {
+        const st = resp.status ?? resp.response?.status;
+        if (!st) return undefined;
+        const candidate = st === 429 || st === 503 || st === 500;
+        if (!candidate) return undefined;
+        let prob: any = undefined;
+        if (resp.error && typeof resp.error === 'object') prob = resp.error;
+        const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+        err.status = st; err.name = 'HttpSdkError';
+        if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+        const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+        if (!isBp) err.nonRetryable = true;
+        return err;
+      });
+      const _respSchemaName = 'zSuspendProcessDefinitionsResponse';
+      if (_isVoidResponse(_respSchemaName)) {
+        data = undefined;
+      }
+      if (rt._validation.settings.res !== 'none') {
+        const _schemas = await import('./zod/suspendProcessDefinitions.gen');
+        const _schema = _schemas.zSuspendProcessDefinitionsResponse;
+        if (_schema) {
+          const maybeR = await rt._validation.gateResponse('suspendProcessDefinitions', _schema, data);
+          if (rt._validation.settings.res === 'strict') data = maybeR;
+        }
+      }
+      return data;
+      } catch(e) {
+        // Defer normalization to outer executeWithHttpRetry boundary
+        throw e;
+      }
+    };
+    return rt._invokeWithRetry(() => call(), { opId: 'suspendProcessDefinitions', exempt: false, retryOverride: options?.retry });
   });
 }
 

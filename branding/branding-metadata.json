@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2.0.0",
-  "specHash": "sha256:dcfd1b015d1e24c70c3288101ab7cbbab420a4ebda5641d68e787a32eaee0266",
+  "specHash": "sha256:b3f76640cfd9a8771b984eeb0967bbcd60e2f81b262f82f8ffdf86999b38f4df",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -3014,6 +3014,52 @@
       }
     },
     {
+      "name": "ProcessDefinitionResumptionInstruction",
+      "kind": "union-wrapper",
+      "description": "Instruction to resume process definitions, selected either by key or by ID.\n",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "ProcessDefinitionResumptionInstructionByKey"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "ProcessDefinitionResumptionInstructionById"
+        }
+      ],
+      "stableId": "process-definition-resumption-instruction",
+      "tsType": "ProcessDefinitionResumptionInstructionByKey | ProcessDefinitionResumptionInstructionById",
+      "zod": {
+        "schemaName": "zProcessDefinitionResumptionInstruction"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ProcessDefinitionResumptionInstruction"
+      }
+    },
+    {
+      "name": "ProcessDefinitionSuspensionInstruction",
+      "kind": "union-wrapper",
+      "description": "Instruction to suspend process definitions, selected either by key or by ID.\n",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "ProcessDefinitionSuspensionInstructionByKey"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "ProcessDefinitionSuspensionInstructionById"
+        }
+      ],
+      "stableId": "process-definition-suspension-instruction",
+      "tsType": "ProcessDefinitionSuspensionInstructionByKey | ProcessDefinitionSuspensionInstructionById",
+      "zod": {
+        "schemaName": "zProcessDefinitionSuspensionInstruction"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ProcessDefinitionSuspensionInstruction"
+      }
+    },
+    {
       "name": "ProcessInstanceCreationInstruction",
       "kind": "union-wrapper",
       "description": "Instructions for creating a process instance. The process definition can be specified\neither by id, by id and version tag, or by key.\n",
@@ -3456,7 +3502,7 @@
   ],
   "integrity": {
     "totalPrimaryKeys": 44,
-    "totalUnionWrappers": 69,
+    "totalUnionWrappers": 71,
     "implicitCamundaKeys": []
   }
 }
