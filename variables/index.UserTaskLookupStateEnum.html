@@ -11,10 +11,11 @@
 <li><a href="../modules/index.html">index</a></li>
 <li><a href="" aria-current="page">UserTaskLookupStateEnum</a></li></ul>
 <h1>Variable UserTaskLookupStateEnum<code class="tsd-tag">Const</code></h1></div>
-<div class="tsd-signature"><span class="tsd-kind-variable">UserTaskLookupStateEnum</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{</span><br/>    <span class="tsd-kind-property">ASSIGNING</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;ASSIGNING&quot;</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">CANCELING</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;CANCELING&quot;</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">CLAIMING</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;CLAIMING&quot;</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">COMPLETING</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;COMPLETING&quot;</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">CREATED</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;CREATED&quot;</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">CREATING</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;CREATING&quot;</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">UPDATING</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;UPDATING&quot;</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol"> = ...</span></div>
+<div class="tsd-signature"><span class="tsd-kind-variable">UserTaskLookupStateEnum</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{</span><br/>    <span class="tsd-kind-property">ASSIGNING</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;ASSIGNING&quot;</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">CANCELING</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;CANCELING&quot;</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">COMPLETING</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;COMPLETING&quot;</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">CREATED</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;CREATED&quot;</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">CREATING</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;CREATING&quot;</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">UPDATING</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;UPDATING&quot;</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol"> = ...</span></div>
 <div class="tsd-comment tsd-typography"><p>The lifecycle state of an active user task. A state ending in <code>-ING</code> means a change to the
 task is in progress, for example waiting for task listeners; the task fields still hold
-the values from before the change.</p>
+the values from before the change. A claim in progress is reported as <code>ASSIGNING</code>, as in
+the user task search.</p>
 </div>
 <div class="tsd-type-declaration">
 <h4>Type Declaration</h4>
@@ -24,8 +25,6 @@ the values from before the change.</p>
 <li class="tsd-parameter">
 <h5 id="canceling"><code class="tsd-tag">Readonly</code><span class="tsd-kind-property">CANCELING</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;CANCELING&quot;</span></h5></li>
 <li class="tsd-parameter">
-<h5 id="claiming"><code class="tsd-tag">Readonly</code><span class="tsd-kind-property">CLAIMING</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;CLAIMING&quot;</span></h5></li>
-<li class="tsd-parameter">
 <h5 id="completing"><code class="tsd-tag">Readonly</code><span class="tsd-kind-property">COMPLETING</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;COMPLETING&quot;</span></h5></li>
 <li class="tsd-parameter">
 <h5 id="created"><code class="tsd-tag">Readonly</code><span class="tsd-kind-property">CREATED</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;CREATED&quot;</span></h5></li>
@@ -34,8 +33,8 @@ the values from before the change.</p>
 <li class="tsd-parameter">
 <h5 id="updating"><code class="tsd-tag">Readonly</code><span class="tsd-kind-property">UPDATING</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;UPDATING&quot;</span></h5></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/7b991597af83a9c6e4f27f553597bb1660baeddd/src/gen/types.gen.ts#L12059">src/gen/types.gen.ts:12059</a></li>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/7b991597af83a9c6e4f27f553597bb1660baeddd/src/gen/types.gen.ts#L12068">src/gen/types.gen.ts:12068</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/da2c6b7e17a675a40e246b16196ed6c108fe1c02/src/gen/types.gen.ts#L12078">src/gen/types.gen.ts:12078</a></li>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/da2c6b7e17a675a40e246b16196ed6c108fe1c02/src/gen/types.gen.ts#L12086">src/gen/types.gen.ts:12086</a></li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
