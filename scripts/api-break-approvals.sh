@@ -3,14 +3,21 @@
 #
 # Prints `#N <merge-sha>` for each PR labelled api-break-approved that was merged into
 # <release-branch> after <baseline-tag>, newest merge first. A label on a PR merged elsewhere
-# (say `main`, whose commits a backport shares), before the baseline, or on a history that
-# diverged before it (a reset release branch) approves nothing here.
+# (say `main`, whose commits a backport shares) or before the baseline approves nothing here,
+# and nothing does unless the tag is on HEAD's first-parent line (a reset or merged-back
+# release branch); the manual override still covers that.
 # Exits non-zero if a lookup fails, so the caller can tell "none" from "unknown".
 set -euo pipefail
 
 tag="$1"
 branch="$2"
-shas=$(git log --ancestry-path --format=%H "${tag}..HEAD")
+tag_sha=$(git rev-parse --verify "${tag}^{commit}")
+line=$(git rev-list --first-parent HEAD)
+if ! grep -qx "$tag_sha" <<<"$line"; then
+  echo "::notice::${tag} is not on the first-parent history of HEAD; no label can approve this release." >&2
+  exit 0
+fi
+shas=$(git log --first-parent --format=%H "${tag}..HEAD")
 
 # A file, not `$(...)`: command substitution does not inherit `set -e`, so a failed lookup
 # on any but the last commit would be swallowed.

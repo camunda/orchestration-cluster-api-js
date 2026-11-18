@@ -164,9 +164,56 @@ jobs:
         if: needs.generate.outputs.changed != 'true'
         run: echo "No generated drift detected; fast-forward skipped."
 
+  # Builds the newest api-break-approved merge's type declarations for the publish job's API
+  # gate. Historical code is built here, without publishing credentials, never in publish.
+  api-compat-baselines:
+    name: Stage approved API baselines
+    needs: merge
+    if: startsWith(github.ref_name, 'stable/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      artifact-id: ${{ steps.upload.outputs.artifact-id }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install deps
+        run: npm ci --ignore-scripts
+
+      - name: Build the newest approved merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          API_COMPAT_BASELINES: ${{ runner.temp }}/api-compat-baselines
+        run: |
+          set -uo pipefail
+          version=$(npm run -s api-compat -- --print-baseline-major "${GITHUB_REF_NAME#stable/}") || exit 2
+          [ -z "$version" ] || bash scripts/api-compat-release-gate.sh --prepare "$version"
+
+      - name: Upload approved API baselines
+        id: upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: api-compat-baselines-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/api-compat-baselines
+          if-no-files-found: ignore
+          retention-days: 1
+
   publish:
     name: Version & Publish (${{ github.ref_name }})
-    needs: merge
+    needs: [merge, api-compat-baselines]
+    # api-compat-baselines is skipped on main; publish must still run there.
+    if: ${{ !cancelled() && needs.merge.result == 'success' && contains(fromJSON('["success", "skipped"]'), needs.api-compat-baselines.result) }}
     runs-on: ubuntu-latest
     steps:
       # The release pushes directly to a ruleset-protected branch. GITHUB_TOKEN can never
@@ -253,6 +300,14 @@ jobs:
           npm version ${{ steps.next_version.outputs.version }} --no-git-tag-version
           npm run build
 
+      - name: Download approved API baselines
+        if: steps.next_version.outputs.publish_needed == 'true' && needs.api-compat-baselines.outputs.artifact-id != ''
+        uses: actions/download-artifact@v8
+        with:
+          artifact-ids: ${{ needs.api-compat-baselines.outputs.artifact-id }}
+          path: ${{ runner.temp }}/api-compat-baselines
+          merge-multiple: true
+
       # Stable branches must not break customer code that compiled against the last release
       # on the branch. This checks the code actually being published, which includes
       # generated code from upstream spec changes that no PR reviewed. Override: the
@@ -263,6 +318,7 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           DISPATCH_APPROVED: ${{ github.event_name == 'workflow_dispatch' && inputs.api_break_approved }}
+          API_COMPAT_BASELINES: ${{ runner.temp }}/api-compat-baselines
         run: |
           set -uo pipefail
           # The newest published release of this stable major, not the nearest tag: a

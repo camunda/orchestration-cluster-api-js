@@ -41,7 +41,8 @@ beforeEach(() => {
   const commits: Partial<typeof shas> = {};
   for (const name of ['before', 'first', 'second'] as const) {
     fs.writeFileSync(path.join(repo, 'marker'), name);
-    git('add', 'marker');
+    fs.writeFileSync(path.join(repo, 'package.json'), `{"version":"${name}"}`);
+    git('add', 'marker', 'package.json');
     git('commit', '-q', '-m', name);
     commits[name] = git('rev-parse', 'HEAD');
     if (name === 'before') git('tag', 'v10.0.0');
@@ -121,6 +122,18 @@ describe.skipIf(!hasJq)('api-break-approvals.sh', () => {
     expect(approvals(pr(8, 'stable/10', shas.second))).toEqual([]);
   });
 
+  it('ignores a tag reached only through a second parent', () => {
+    // A reset release branch that merged the published history back in: every later merge
+    // descends from the tag, but none was made on the line the tag was released from.
+    const published = git('commit-tree', 'HEAD^{tree}', '-p', shas.before, '-m', 'published');
+    git('tag', '-f', 'v10.0.0', published);
+    const merged = git('commit-tree', 'HEAD^{tree}', '-p', 'HEAD', '-p', published, '-m', 'merge');
+    const approved = git('commit-tree', 'HEAD^{tree}', '-p', merged, '-m', 'labelled PR');
+    git('reset', '-q', '--hard', approved);
+    const r = search({ [approved]: [pr(9, 'stable/10', approved)] });
+    expect([r.status, r.stdout], r.stderr).toEqual([0, '']);
+  });
+
   it('lists the newest merge first', () => {
     const r = search({
       [shas.first]: [pr(6, 'stable/10', shas.first)],
@@ -140,9 +153,11 @@ describe.skipIf(!hasJq)('api-break-approvals.sh', () => {
 
 describe('api-compat-release-gate.sh', () => {
   let home: string;
+  let baselines: string;
 
   beforeEach(() => {
     home = path.join(tmp, 'home');
+    baselines = path.join(tmp, 'baselines');
     fs.mkdirSync(home);
     fs.mkdirSync(path.join(tmp, 'tmpdir'));
     fs.mkdirSync(path.join(tmp, 'scripts'));
@@ -152,7 +167,7 @@ describe('api-compat-release-gate.sh', () => {
     );
   });
 
-  function gate(baseline: string, env: Record<string, string> = {}) {
+  function gate(baseline: string, env: Record<string, string> = {}, mode: string[] = []) {
     fs.writeFileSync(path.join(home, 'calls'), '');
     write(
       path.join(tmp, 'scripts', 'api-break-approvals.sh'),
@@ -166,14 +181,14 @@ case "$*" in
   "run -s api-compat -- --baseline-version "*) echo release >> "$HOME/calls"; exit "$RC_RELEASE" ;;
   "run -s api-compat -- --baseline "*) echo "since $(cat "\${@: -1}/marker")" >> "$HOME/calls"; exit "$(cat "$HOME/rc_since")" ;;
   "ci "*) echo "ci $(cat marker) token=\${GH_TOKEN:-none} oidc=\${ACTIONS_ID_TOKEN_REQUEST_TOKEN:-none}" >> "$HOME/calls" ;;
-  "run -s build:types") echo "build $(cat marker)" >> "$HOME/calls"; [ ! -e "$HOME/fail_build" ] ;;
+  "run -s build:types") echo "build $(cat marker)" >> "$HOME/calls"; mkdir -p dist && cp marker dist/index.d.ts; [ ! -e "$HOME/fail_build" ] ;;
   *) exit 99 ;;
 esac
 `
     );
     fs.writeFileSync(path.join(home, 'rc_since'), env.RC_SINCE ?? '0');
     if (env.FAIL_BUILD) fs.writeFileSync(path.join(home, 'fail_build'), '');
-    const r = spawnSync('bash', [path.join(tmp, 'scripts', 'gate.sh'), baseline], {
+    const r = spawnSync('bash', [path.join(tmp, 'scripts', 'gate.sh'), ...mode, baseline], {
       cwd: repo,
       encoding: 'utf8',
       env: {
@@ -181,6 +196,7 @@ esac
         PATH: `${path.join(tmp, 'bin')}${path.delimiter}${process.env.PATH}`,
         HOME: home,
         TMPDIR: path.join(tmp, 'tmpdir'),
+        API_COMPAT_BASELINES: baselines,
         GITHUB_REF_NAME: 'stable/10',
         GITHUB_REPOSITORY: 'o/r',
         GH_TOKEN: 'release-token',
@@ -221,40 +237,73 @@ esac
     expect(gate('10.0.0', { APPROVALS_FAIL: '1' }).rc).toBe(2);
   });
 
-  it('passes a break approved at HEAD without rebuilding', () => {
-    const { rc, out, calls } = gate('10.0.0', { APPROVALS: `#7 ${shas.second}` });
-    expect([rc, calls], out).toEqual([0, ['release', 'approvals stable/10']]);
-  });
+  const prepare = (env: Record<string, string>) => gate('10.0.0', env, ['--prepare']);
+  // The prepare job's output for the merge whose marker file holds `name`.
+  function stage(sha: string, name: string) {
+    fs.mkdirSync(path.join(baselines, sha), { recursive: true });
+    fs.writeFileSync(path.join(baselines, sha, 'package.json'), '{}');
+    fs.writeFileSync(path.join(baselines, sha, 'marker'), name);
+  }
 
-  it('checks the release against the newest approved merge, built without credentials', () => {
-    const { rc, out, calls } = gate('10.0.0', { APPROVALS: `#6 ${shas.first}` });
+  it('prepare builds the newest approved merge without credentials and stages its types', () => {
+    const { rc, out, calls } = prepare({ APPROVALS: `#6 ${shas.first}` });
     expect([rc, calls], out).toEqual([
       0,
-      [
-        'release',
-        'approvals stable/10',
-        'ci first token=none oidc=none',
-        'build first',
-        'since first',
-      ],
+      ['approvals stable/10', 'ci first token=none oidc=none', 'build first'],
+    ]);
+    expect(fs.readdirSync(path.join(baselines, shas.first)).sort()).toEqual([
+      'dist',
+      'package.json',
+    ]);
+    expect(fs.readdirSync(path.join(tmp, 'tmpdir'))).toEqual([]);
+  });
+
+  it('prepare builds an approved merge at HEAD too', () => {
+    // The publish job regenerates code before its check, so HEAD as committed is not what it publishes.
+    const { rc, calls } = prepare({ APPROVALS: `#7 ${shas.second}` });
+    expect([rc, calls]).toEqual([
+      0,
+      ['approvals stable/10', 'ci second token=none oidc=none', 'build second'],
     ]);
   });
 
+  it('prepare stages nothing without an approval', () => {
+    const { rc, calls } = prepare({});
+    expect([rc, calls, fs.existsSync(baselines)]).toEqual([0, ['approvals stable/10'], false]);
+  });
+
+  it.each([
+    ['build', { FAIL_BUILD: '1' }],
+    ['approval search', { APPROVALS_FAIL: '1' }],
+  ])('prepare treats a failed %s as a setup error', (_, env) => {
+    expect(prepare({ APPROVALS: `#6 ${shas.first}`, ...env }).rc).toBe(2);
+  });
+
+  it('checks the release against the staged build of the newest approved merge, never building', () => {
+    stage(shas.first, 'first');
+    const { rc, out, calls } = gate('10.0.0', { APPROVALS: `#6 ${shas.first}` });
+    expect([rc, calls], out).toEqual([0, ['release', 'approvals stable/10', 'since first']]);
+  });
+
+  it('blocks generated changes released at an approved HEAD', () => {
+    stage(shas.second, 'second');
+    const { rc, out, calls } = gate('10.0.0', { APPROVALS: `#7 ${shas.second}`, RC_SINCE: '1' });
+    expect([rc, calls]).toEqual([1, ['release', 'approvals stable/10', 'since second']]);
+    expect(out).toContain('added after #7');
+  });
+
   it('blocks a break added after the newest approved merge', () => {
+    stage(shas.first, 'first');
     const { rc, out } = gate('10.0.0', { APPROVALS: `#6 ${shas.first}`, RC_SINCE: '1' });
     expect(rc).toBe(1);
     expect(out).toContain('added after #6');
   });
 
   it.each([
-    ['comparison', { RC_SINCE: '2' }],
-    ['build', { FAIL_BUILD: '1' }],
-  ])('treats a failed %s of the approved merge as a setup error', (_, env) => {
+    ['a comparison error', true, { RC_SINCE: '2' }],
+    ['a missing staged build', false, {}],
+  ])('treats %s as a setup error', (_, staged, env) => {
+    if (staged) stage(shas.first, 'first');
     expect(gate('10.0.0', { APPROVALS: `#6 ${shas.first}`, ...env }).rc).toBe(2);
-  });
-
-  it('removes the approved build', () => {
-    gate('10.0.0', { APPROVALS: `#6 ${shas.first}` });
-    expect(fs.readdirSync(path.join(tmp, 'tmpdir'))).toEqual([]);
   });
 });
