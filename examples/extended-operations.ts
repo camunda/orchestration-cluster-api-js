@@ -277,6 +277,29 @@ async function getProcessDefinitionMessageSubscriptionStatisticsExample() {
 }
 //#endregion GetProcessDefinitionMessageSubscriptionStatistics
 
+//#region SuspendProcessDefinitions
+async function suspendProcessDefinitionsExample(processDefinitionId: ProcessDefinitionId) {
+  const camunda = createCamundaClient();
+
+  const result = await camunda.suspendProcessDefinitions({
+    processDefinitionId,
+    includeProcessInstances: true,
+  });
+
+  if (result.batchOperationKey) {
+    console.log(`Batch operation key: ${result.batchOperationKey}`);
+  }
+}
+//#endregion SuspendProcessDefinitions
+
+//#region ResumeProcessDefinitions
+async function resumeProcessDefinitionsExample(processDefinitionKey: ProcessDefinitionKey) {
+  const camunda = createCamundaClient();
+
+  await camunda.resumeProcessDefinitions({ processDefinitionKey });
+}
+//#endregion ResumeProcessDefinitions
+
 //#region GetStartProcessForm
 async function getStartProcessFormExample(processDefinitionKey: ProcessDefinitionKey) {
   const camunda = createCamundaClient();
@@ -471,6 +494,8 @@ void getProcessDefinitionStatisticsExample;
 void getProcessDefinitionInstanceStatisticsExample;
 void getProcessDefinitionInstanceVersionStatisticsExample;
 void getProcessDefinitionMessageSubscriptionStatisticsExample;
+void suspendProcessDefinitionsExample;
+void resumeProcessDefinitionsExample;
 void getStartProcessFormExample;
 void getVariableExample;
 void searchVariablesExample;

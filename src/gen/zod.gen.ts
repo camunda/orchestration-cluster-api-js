@@ -380,6 +380,7 @@ export const zPermissionTypeEnum = /*#__PURE__*/ (() => z.enum([
     'READ_TASK_LISTENER',
     'RESTORE',
     'REVEAL',
+    'SUSPEND_PROCESS_DEFINITION',
     'SUSPEND_PROCESS_INSTANCE',
     'UPDATE',
     'UPDATE_PROCESS_INSTANCE',
@@ -5397,6 +5398,114 @@ export const zProblemDetail = /*#__PURE__*/ (() => z.object({
     })
 }).register(z.globalRegistry, {
     description: 'A Problem detail object as described in [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457). There may be additional properties specific to the problem type.\n'
+}))();
+
+/**
+ * Process definition suspension by key
+ */
+export const zProcessDefinitionSuspensionInstructionByKey = /*#__PURE__*/ (() => z.object({
+    processDefinitionKey: zProcessDefinitionKey,
+    includeProcessInstances: z.boolean().register(z.globalRegistry, {
+        description: 'Whether to also suspend the process instances of the affected\nprocess definition versions. The instances are changed by a batch operation.\n'
+    }).optional().default(false)
+}))();
+
+/**
+ * Process definition suspension by ID
+ */
+export const zProcessDefinitionSuspensionInstructionById = /*#__PURE__*/ (() => z.object({
+    processDefinitionId: zProcessDefinitionId,
+    processDefinitionVersion: z.int().gte(1).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+        description: 'The version of the process definition. Must be 1 or greater; `-1` is not accepted.\nIf omitted, all versions are affected.\n'
+    }).optional(),
+    tenantId: zTenantId.optional(),
+    includeProcessInstances: z.boolean().register(z.globalRegistry, {
+        description: 'Whether to also suspend the process instances of the affected\nprocess definition versions. The instances are changed by a batch operation.\n'
+    }).optional().default(false)
+}))();
+
+/**
+ * Instruction to suspend process definitions, selected either by key or by ID.
+ *
+ */
+export const zProcessDefinitionSuspensionInstruction = /*#__PURE__*/ (() => z.union([
+    zProcessDefinitionSuspensionInstructionByKey,
+    zProcessDefinitionSuspensionInstructionById
+]))();
+
+export const zProcessDefinitionSuspensionVersionResult = /*#__PURE__*/ (() => z.object({
+    processDefinitionKey: zProcessDefinitionKey,
+    processDefinitionVersion: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+        description: 'The version of the process definition.'
+    }),
+    outcome: z.enum([
+        'SUSPENDED',
+        'ALREADY_SUSPENDED',
+        'DRAINING'
+    ]).register(z.globalRegistry, {
+        description: '`SUSPENDED` if the version was active and is now suspended. The suspension applies to\nall partitions shortly after the response.\n`ALREADY_SUSPENDED` if the version was already suspended, so its state is unchanged.\nWith `includeProcessInstances`, its process instances are still suspended by the\nbatch operation.\n`DRAINING` if it is being deleted and is left unchanged. This only occurs when the\nrequest selects by ID without a version; selecting a single draining version is rejected\nwith 409.\n'
+    })
+}))();
+
+export const zProcessDefinitionSuspensionResult = /*#__PURE__*/ (() => z.object({
+    processDefinitions: z.array(zProcessDefinitionSuspensionVersionResult).register(z.globalRegistry, {
+        description: 'The affected process definition versions.'
+    }),
+    batchOperationKey: zBatchOperationKey.nullable()
+}))();
+
+/**
+ * Process definition resumption by key
+ */
+export const zProcessDefinitionResumptionInstructionByKey = /*#__PURE__*/ (() => z.object({
+    processDefinitionKey: zProcessDefinitionKey,
+    includeProcessInstances: z.boolean().register(z.globalRegistry, {
+        description: 'Whether to also resume the process instances of the affected\nprocess definition versions. The instances are changed by a batch operation.\n'
+    }).optional().default(false)
+}))();
+
+/**
+ * Process definition resumption by ID
+ */
+export const zProcessDefinitionResumptionInstructionById = /*#__PURE__*/ (() => z.object({
+    processDefinitionId: zProcessDefinitionId,
+    processDefinitionVersion: z.int().gte(1).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+        description: 'The version of the process definition. Must be 1 or greater; `-1` is not accepted.\nIf omitted, all versions are affected.\n'
+    }).optional(),
+    tenantId: zTenantId.optional(),
+    includeProcessInstances: z.boolean().register(z.globalRegistry, {
+        description: 'Whether to also resume the process instances of the affected\nprocess definition versions. The instances are changed by a batch operation.\n'
+    }).optional().default(false)
+}))();
+
+/**
+ * Instruction to resume process definitions, selected either by key or by ID.
+ *
+ */
+export const zProcessDefinitionResumptionInstruction = /*#__PURE__*/ (() => z.union([
+    zProcessDefinitionResumptionInstructionByKey,
+    zProcessDefinitionResumptionInstructionById
+]))();
+
+export const zProcessDefinitionResumptionVersionResult = /*#__PURE__*/ (() => z.object({
+    processDefinitionKey: zProcessDefinitionKey,
+    processDefinitionVersion: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+        description: 'The version of the process definition.'
+    }),
+    outcome: z.enum([
+        'RESUMED',
+        'ALREADY_RESUMED',
+        'DRAINING'
+    ]).register(z.globalRegistry, {
+        description: '`RESUMED` if the version was suspended and is now active again. The resumption applies\nto all partitions shortly after the response.\n`ALREADY_RESUMED` if the version was already active, so its state is unchanged.\nWith `includeProcessInstances`, its suspended process instances are still resumed by\nthe batch operation.\n`DRAINING` if it is being deleted and is left unchanged. This only occurs when the\nrequest selects by ID without a version; selecting a single draining version is rejected\nwith 409.\n'
+    })
+}))();
+
+export const zProcessDefinitionResumptionResult = /*#__PURE__*/ (() => z.object({
+    processDefinitions: z.array(zProcessDefinitionResumptionVersionResult).register(z.globalRegistry, {
+        description: 'The affected process definition versions.'
+    }),
+    batchOperationKey: zBatchOperationKey.nullable()
 }))();
 
 /**
@@ -11481,6 +11590,13 @@ export const zPublishMessageBody = zMessagePublicationRequest;
  */
 export const zPublishMessageResponse = zMessagePublicationResult;
 
+export const zResumeProcessDefinitionsBody = zProcessDefinitionResumptionInstruction;
+
+/**
+ * The resumption request was accepted.
+ */
+export const zResumeProcessDefinitionsResponse = zProcessDefinitionResumptionResult;
+
 export const zSearchProcessDefinitionsBody = zProcessDefinitionSearchQuery;
 
 /**
@@ -11501,6 +11617,13 @@ export const zGetProcessDefinitionInstanceStatisticsBody = zProcessDefinitionIns
  * The process definition instance statistic result.
  */
 export const zGetProcessDefinitionInstanceStatisticsResponse = zProcessDefinitionInstanceStatisticsQueryResult;
+
+export const zSuspendProcessDefinitionsBody = zProcessDefinitionSuspensionInstruction;
+
+/**
+ * The suspension request was accepted.
+ */
+export const zSuspendProcessDefinitionsResponse = zProcessDefinitionSuspensionResult;
 
 export const zGetProcessDefinitionPath = /*#__PURE__*/ (() => z.object({
     processDefinitionKey: zProcessDefinitionKeyWritable

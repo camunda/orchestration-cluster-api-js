@@ -1910,6 +1910,7 @@ export const PermissionTypeEnum = {
   READ_TASK_LISTENER: 'READ_TASK_LISTENER',
   RESTORE: 'RESTORE',
   REVEAL: 'REVEAL',
+  SUSPEND_PROCESS_DEFINITION: 'SUSPEND_PROCESS_DEFINITION',
   SUSPEND_PROCESS_INSTANCE: 'SUSPEND_PROCESS_INSTANCE',
   UPDATE: 'UPDATE',
   UPDATE_PROCESS_INSTANCE: 'UPDATE_PROCESS_INSTANCE',
@@ -9432,6 +9433,178 @@ export type ProblemDetail = {
      * A URI path identifying the origin of the problem.
      */
     instance: string;
+};
+
+/**
+ * Instruction to suspend process definitions, selected either by key or by ID.
+ *
+ */
+export type ProcessDefinitionSuspensionInstruction = ProcessDefinitionSuspensionInstructionByKey | ProcessDefinitionSuspensionInstructionById;
+
+/**
+ * Process definition suspension by key
+ */
+export type ProcessDefinitionSuspensionInstructionByKey = {
+    /**
+     * The key of the process definition version to suspend.
+     */
+    processDefinitionKey: ProcessDefinitionKey;
+    /**
+     * Whether to also suspend the process instances of the affected
+     * process definition versions. The instances are changed by a batch operation.
+     *
+     */
+    includeProcessInstances?: boolean;
+};
+
+/**
+ * Process definition suspension by ID
+ */
+export type ProcessDefinitionSuspensionInstructionById = {
+    /**
+     * The BPMN process ID of the process definition.
+     */
+    processDefinitionId: ProcessDefinitionId;
+    /**
+     * The version of the process definition. Must be 1 or greater; `-1` is not accepted.
+     * If omitted, all versions are affected.
+     *
+     */
+    processDefinitionVersion?: number;
+    /**
+     * The tenant of the process definition. Required when multi-tenancy is enabled;
+     * if multi-tenancy is disabled, it can be omitted and the default tenant is used.
+     *
+     */
+    tenantId?: TenantId;
+    /**
+     * Whether to also suspend the process instances of the affected
+     * process definition versions. The instances are changed by a batch operation.
+     *
+     */
+    includeProcessInstances?: boolean;
+};
+
+export type ProcessDefinitionSuspensionResult = {
+    /**
+     * The affected process definition versions.
+     */
+    processDefinitions: Array<ProcessDefinitionSuspensionVersionResult>;
+    /**
+     * The key of the batch operation that suspends the running process instances.
+     * Null when `includeProcessInstances` is not set.
+     *
+     */
+    batchOperationKey: BatchOperationKey | null;
+};
+
+export type ProcessDefinitionSuspensionVersionResult = {
+    /**
+     * The key of the process definition version.
+     */
+    processDefinitionKey: ProcessDefinitionKey;
+    /**
+     * The version of the process definition.
+     */
+    processDefinitionVersion: number;
+    /**
+     * `SUSPENDED` if the version was active and is now suspended. The suspension applies to
+     * all partitions shortly after the response.
+     * `ALREADY_SUSPENDED` if the version was already suspended, so its state is unchanged.
+     * With `includeProcessInstances`, its process instances are still suspended by the
+     * batch operation.
+     * `DRAINING` if it is being deleted and is left unchanged. This only occurs when the
+     * request selects by ID without a version; selecting a single draining version is rejected
+     * with 409.
+     *
+     */
+    outcome: 'SUSPENDED' | 'ALREADY_SUSPENDED' | 'DRAINING';
+};
+
+/**
+ * Instruction to resume process definitions, selected either by key or by ID.
+ *
+ */
+export type ProcessDefinitionResumptionInstruction = ProcessDefinitionResumptionInstructionByKey | ProcessDefinitionResumptionInstructionById;
+
+/**
+ * Process definition resumption by key
+ */
+export type ProcessDefinitionResumptionInstructionByKey = {
+    /**
+     * The key of the process definition version to resume.
+     */
+    processDefinitionKey: ProcessDefinitionKey;
+    /**
+     * Whether to also resume the process instances of the affected
+     * process definition versions. The instances are changed by a batch operation.
+     *
+     */
+    includeProcessInstances?: boolean;
+};
+
+/**
+ * Process definition resumption by ID
+ */
+export type ProcessDefinitionResumptionInstructionById = {
+    /**
+     * The BPMN process ID of the process definition.
+     */
+    processDefinitionId: ProcessDefinitionId;
+    /**
+     * The version of the process definition. Must be 1 or greater; `-1` is not accepted.
+     * If omitted, all versions are affected.
+     *
+     */
+    processDefinitionVersion?: number;
+    /**
+     * The tenant of the process definition. Required when multi-tenancy is enabled;
+     * if multi-tenancy is disabled, it can be omitted and the default tenant is used.
+     *
+     */
+    tenantId?: TenantId;
+    /**
+     * Whether to also resume the process instances of the affected
+     * process definition versions. The instances are changed by a batch operation.
+     *
+     */
+    includeProcessInstances?: boolean;
+};
+
+export type ProcessDefinitionResumptionResult = {
+    /**
+     * The affected process definition versions.
+     */
+    processDefinitions: Array<ProcessDefinitionResumptionVersionResult>;
+    /**
+     * The key of the batch operation that resumes the suspended process instances.
+     * Null when `includeProcessInstances` is not set.
+     *
+     */
+    batchOperationKey: BatchOperationKey | null;
+};
+
+export type ProcessDefinitionResumptionVersionResult = {
+    /**
+     * The key of the process definition version.
+     */
+    processDefinitionKey: ProcessDefinitionKey;
+    /**
+     * The version of the process definition.
+     */
+    processDefinitionVersion: number;
+    /**
+     * `RESUMED` if the version was suspended and is now active again. The resumption applies
+     * to all partitions shortly after the response.
+     * `ALREADY_RESUMED` if the version was already active, so its state is unchanged.
+     * With `includeProcessInstances`, its suspended process instances are still resumed by
+     * the batch operation.
+     * `DRAINING` if it is being deleted and is left unchanged. This only occurs when the
+     * request selects by ID without a version; selecting a single draining version is rejected
+     * with 409.
+     *
+     */
+    outcome: 'RESUMED' | 'ALREADY_RESUMED' | 'DRAINING';
 };
 
 export type ProcessDefinitionSearchQuerySortRequest = {
@@ -18732,6 +18905,59 @@ export type PublishMessageResponses = {
 
 export type PublishMessageResponse = PublishMessageResponses[keyof PublishMessageResponses];
 
+export type ResumeProcessDefinitionsData = {
+    body: ProcessDefinitionResumptionInstruction;
+    path?: never;
+    query?: never;
+    url: '/process-definitions/resumption';
+};
+
+export type ResumeProcessDefinitionsErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * No process definition matches the request.
+     */
+    404: ProblemDetail;
+    /**
+     * The request conflicts with the current state of the process definition, likely because
+     * the process definition is in a state that cannot be resumed.
+     * More details are provided in the response body.
+     *
+     */
+    409: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type ResumeProcessDefinitionsError = ResumeProcessDefinitionsErrors[keyof ResumeProcessDefinitionsErrors];
+
+export type ResumeProcessDefinitionsResponses = {
+    /**
+     * The resumption request was accepted.
+     */
+    200: ProcessDefinitionResumptionResult;
+};
+
+export type ResumeProcessDefinitionsResponse = ResumeProcessDefinitionsResponses[keyof ResumeProcessDefinitionsResponses];
+
 export type SearchProcessDefinitionsData = {
     body?: ProcessDefinitionSearchQuery;
     path?: never;
@@ -18842,6 +19068,59 @@ export type GetProcessDefinitionInstanceStatisticsResponses = {
 };
 
 export type GetProcessDefinitionInstanceStatisticsResponse = GetProcessDefinitionInstanceStatisticsResponses[keyof GetProcessDefinitionInstanceStatisticsResponses];
+
+export type SuspendProcessDefinitionsData = {
+    body: ProcessDefinitionSuspensionInstruction;
+    path?: never;
+    query?: never;
+    url: '/process-definitions/suspension';
+};
+
+export type SuspendProcessDefinitionsErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * No process definition matches the request.
+     */
+    404: ProblemDetail;
+    /**
+     * The request conflicts with the current state of the process definition, likely because
+     * the process definition is in a state that cannot be suspended.
+     * More details are provided in the response body.
+     *
+     */
+    409: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type SuspendProcessDefinitionsError = SuspendProcessDefinitionsErrors[keyof SuspendProcessDefinitionsErrors];
+
+export type SuspendProcessDefinitionsResponses = {
+    /**
+     * The suspension request was accepted.
+     */
+    200: ProcessDefinitionSuspensionResult;
+};
+
+export type SuspendProcessDefinitionsResponse = SuspendProcessDefinitionsResponses[keyof SuspendProcessDefinitionsResponses];
 
 export type GetProcessDefinitionData = {
     body?: never;
@@ -24247,7 +24526,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:dcfd1b015d1e24c70c3288101ab7cbbab420a4ebda5641d68e787a32eaee0266
+// specHash=sha256:b3f76640cfd9a8771b984eeb0967bbcd60e2f81b262f82f8ffdf86999b38f4df
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
