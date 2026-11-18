@@ -2,7 +2,6 @@ import { inspect } from 'node:util';
 import { describe, expect, it, vi } from 'vitest';
 import { createCamundaClient, ProcessDefinitionKey } from '../src';
 import { CamundaAuthError, createAuthFacade } from '../src/runtime/auth';
-import { createTestClock } from '../src/runtime/clock';
 import { allKeys, isSecret } from '../src/runtime/configSchema';
 import { createLogger } from '../src/runtime/logger';
 import { hydrateConfig } from '../src/runtime/unifiedConfiguration';
@@ -478,7 +477,6 @@ describe('sentinel-secret regression test', () => {
       fetch: makeFetch(tokenResponse) as any,
       logger: createLogger({ level: 'trace', transport: sinks.logTransport }),
       telemetryHooks: sinks.hooks as any,
-      clock: createTestClock({ start: 1_700_000_000_000 }),
     });
 
     const err = await auth.getAuthHeaders().then(
