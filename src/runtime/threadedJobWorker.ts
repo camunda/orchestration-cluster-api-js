@@ -354,8 +354,6 @@ export class ThreadedJobWorker {
         jobKey: raw.jobKey!,
         errorMessage,
         retries: typeof raw.retries === 'number' ? Math.max(0, raw.retries - 1) : 0,
-        // Fence the failure against a superseded activation when leased.
-        ...(raw.jobLeaseToken != null ? { jobLeaseToken: raw.jobLeaseToken } : {}),
       })
       .catch((failErr: any) => {
         this._log.error('job.fail.error', failErr);
@@ -419,23 +417,7 @@ export class ThreadedJobWorker {
       },
       onError: (err) => {
         this._log.error('job.thread.error', { jobKey: raw.jobKey, err });
-<<<<<<< HEAD
-        this._client
-          .failJob({
-            jobKey: raw.jobKey!,
-            errorMessage: err?.message || 'Thread handler error',
-            retries: typeof raw.retries === 'number' ? Math.max(0, raw.retries - 1) : 0,
-          })
-          .catch((failErr: any) => {
-            this._log.error('job.fail.error', failErr);
-          })
-          .finally(() => {
-            this._decrementOnce();
-            this._drainQueue();
-          });
-=======
         settleFailure(err?.message || 'Thread handler error');
->>>>>>> b8211ea06e (fix: fail the job when it cannot be dispatched to a thread (#627))
       },
     });
 

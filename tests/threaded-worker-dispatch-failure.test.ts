@@ -149,27 +149,6 @@ describe('ThreadedJobWorker dispatch failure handling', () => {
     ).not.toContain('nested');
   });
 
-  it('fences the failure with the lease token when the job was leased', async () => {
-    const { log } = captureLog();
-    const { client, failed } = stubClient(log);
-    const { pool } = stubPool();
-    const worker = makeWorker(pool, client);
-    worker._activeJobs = 1;
-
-    worker._handleJob({
-      jobKey: '78',
-      retries: 1,
-      jobLeaseToken: 'lease-abc',
-      variables: deeplyNested(),
-      customHeaders: {},
-    });
-    await vi.waitFor(() => expect(worker.activeJobs).toBe(0));
-
-    expect(failed.length).toBe(1);
-    expect(failed[0].jobLeaseToken).toBe('lease-abc');
-    expect(worker.activeJobs).toBe(0);
-  });
-
   it('releases the permit when the pool rejects asynchronously while dispatching', async () => {
     // ThreadPool.dispatch is `async`: postMessage failing to clone the payload rejects
     // rather than throwing, so a synchronous try/catch alone would never see it.
