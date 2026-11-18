@@ -1,3 +1,14 @@
+## [9.1.6](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.1.5...v9.1.6) (2026-11-18)
+
+
+### Bug Fixes
+
+* derive support-log redaction from the configuration schema ([#623](https://github.com/camunda/orchestration-cluster-api-js/issues/623)) ([#667](https://github.com/camunda/orchestration-cluster-api-js/issues/667)) ([c48904a](https://github.com/camunda/orchestration-cluster-api-js/commit/c48904ae605edd07ecac97af76482a088f5f3a83)), closes [#615](https://github.com/camunda/orchestration-cluster-api-js/issues/615)
+* fail the job when it cannot be dispatched to a thread (backport ([#675](https://github.com/camunda/orchestration-cluster-api-js/issues/675)) ([f8a887a](https://github.com/camunda/orchestration-cluster-api-js/commit/f8a887aa603d2bbf42d678de4aa53b9df3db9ae9))
+* log validation failures without job variable content (backport ([#673](https://github.com/camunda/orchestration-cluster-api-js/issues/673)) ([9743566](https://github.com/camunda/orchestration-cluster-api-js/commit/974356670eb87dea172a3b5f06444de68b6f48be))
+* redact credentials from silly-level HTTP body previews ([#625](https://github.com/camunda/orchestration-cluster-api-js/issues/625)) ([#671](https://github.com/camunda/orchestration-cluster-api-js/issues/671)) ([a402fea](https://github.com/camunda/orchestration-cluster-api-js/commit/a402fead11b7d5e8ea7bbd87db5aa7e744d70a07)), closes [#617](https://github.com/camunda/orchestration-cluster-api-js/issues/617) [#644](https://github.com/camunda/orchestration-cluster-api-js/issues/644) [#641](https://github.com/camunda/orchestration-cluster-api-js/issues/641)
+* redact secrets when the config or client is stringified (backport ([#669](https://github.com/camunda/orchestration-cluster-api-js/issues/669)) ([3a85c6c](https://github.com/camunda/orchestration-cluster-api-js/commit/3a85c6c6b7792dcf33b93570d139deafc5c0cea7)), closes [#624](https://github.com/camunda/orchestration-cluster-api-js/issues/624)
+
 ## [9.1.5](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.1.4...v9.1.5) (2026-09-04)
 
 
