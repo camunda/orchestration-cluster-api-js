@@ -423,6 +423,11 @@ export const RESPONSE_INDEX = {
       '200': 1
     }
   },
+  '/process-definitions/resumption': {
+    'POST': {
+      '200': 1
+    }
+  },
   '/process-definitions/search': {
     'POST': {
       '200': 1
@@ -434,6 +439,11 @@ export const RESPONSE_INDEX = {
     }
   },
   '/process-definitions/statistics/process-instances': {
+    'POST': {
+      '200': 1
+    }
+  },
+  '/process-definitions/suspension': {
     'POST': {
       '200': 1
     }
