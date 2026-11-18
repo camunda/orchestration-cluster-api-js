@@ -1,3 +1,14 @@
+# [11.0.0-alpha.5](https://github.com/camunda/orchestration-cluster-api-js/compare/v11.0.0-alpha.4...v11.0.0-alpha.5) (2026-11-18)
+
+
+### Bug Fixes
+
+* derive support-log redaction from the configuration schema ([#623](https://github.com/camunda/orchestration-cluster-api-js/issues/623)) ([c582531](https://github.com/camunda/orchestration-cluster-api-js/commit/c58253150639cbb6af080c95ec420922dbd28db0)), closes [#615](https://github.com/camunda/orchestration-cluster-api-js/issues/615)
+* fail the job when it cannot be dispatched to a thread ([#627](https://github.com/camunda/orchestration-cluster-api-js/issues/627)) ([b8211ea](https://github.com/camunda/orchestration-cluster-api-js/commit/b8211ea06ef90d4f4562524bd9617c50c2f082b3)), closes [#622](https://github.com/camunda/orchestration-cluster-api-js/issues/622)
+* log validation failures without job variable content ([#626](https://github.com/camunda/orchestration-cluster-api-js/issues/626)) ([7b99159](https://github.com/camunda/orchestration-cluster-api-js/commit/7b991597af83a9c6e4f27f553597bb1660baeddd)), closes [#619](https://github.com/camunda/orchestration-cluster-api-js/issues/619)
+* redact credentials from silly-level HTTP body previews ([#625](https://github.com/camunda/orchestration-cluster-api-js/issues/625)) ([d55f885](https://github.com/camunda/orchestration-cluster-api-js/commit/d55f8854c05c482736114c9a05769029a1d178f5)), closes [#617](https://github.com/camunda/orchestration-cluster-api-js/issues/617) [#644](https://github.com/camunda/orchestration-cluster-api-js/issues/644) [#641](https://github.com/camunda/orchestration-cluster-api-js/issues/641)
+* redact secrets when the config or client is stringified ([#624](https://github.com/camunda/orchestration-cluster-api-js/issues/624)) ([255de51](https://github.com/camunda/orchestration-cluster-api-js/commit/255de51fc14a13d34983df0a8fd52103f59f8cfb)), closes [#616](https://github.com/camunda/orchestration-cluster-api-js/issues/616)
+
 # [11.0.0-alpha.4](https://github.com/camunda/orchestration-cluster-api-js/compare/v11.0.0-alpha.3...v11.0.0-alpha.4) (2026-11-04)
 
 
