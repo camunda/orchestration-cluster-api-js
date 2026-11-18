@@ -160,12 +160,92 @@ function deepFreeze<T>(o: T): T {
   return o;
 }
 
-// Secrets redaction (keep length, mask all but last 4; <=4 => all masked)
+// Secrets redaction (keep length, mask all but last 4; <=4 => all masked).
+// The 4-character rule applies to the credential itself, not to any whitespace padding
+// around it: keeping the last four characters of a padded short credential would show it.
 function redactSecret(v: string): string {
-  const len = v.length;
-  if (len <= 4) return '*'.repeat(len);
-  const tail = v.slice(-4);
-  return '*'.repeat(len - 4) + tail;
+  const core = v.trim();
+  const lead = v.length - v.trimStart().length;
+  const trail = v.length - v.trimEnd().length;
+  const maskedCore =
+    core.length <= 4 ? '*'.repeat(core.length) : '*'.repeat(core.length - 4) + core.slice(-4);
+  return '*'.repeat(lead) + maskedCore + '*'.repeat(core.length === 0 ? 0 : trail);
+}
+
+/**
+ * Mask for the stringify and inspect view: length only, no character of the credential.
+ * Keeping a suffix (as `redactSecret` does for the `redacted` map) can print another
+ * credential in full when that one is the same short string, and for a padded credential
+ * it can show a short value whole.
+ */
+function maskCredential(v: string): string {
+  return '*'.repeat(v.length);
+}
+
+/**
+ * Collect the credential values this hydration was given, taken from the schema-keyed raw
+ * map so the set is derived from `configSchema.ts` (every key with `secret: true`) rather
+ * than from a hand-maintained list of config fields that can drift from it.
+ */
+function collectSecretValues(raw: Record<string, string | undefined>): Set<string> {
+  const values = new Set<string>();
+  for (const k of allKeys()) {
+    if (!isSecret(k)) continue;
+    const v = raw[k];
+    if (typeof v !== 'string' || v.trim() === '') continue;
+    // Hydration trims some credentials (OAuth client secret, basic-auth password), so the
+    // config holds the trimmed string while the raw map keeps the supplied one. Collect both.
+    values.add(v);
+    values.add(v.trim());
+  }
+  return values;
+}
+
+/**
+ * Structure-preserving redaction: walk a value and mask any string that *is* one of the
+ * credentials, wherever it sits. Matching on the value rather than on a field path means a
+ * credential added to the config shape later is covered without this function changing.
+ */
+function redactSecretValues(value: unknown, secrets: Set<string>, seen: WeakSet<object>): unknown {
+  if (typeof value === 'string') return secrets.has(value) ? maskCredential(value) : value;
+  if (value === null || typeof value !== 'object') return value;
+  if (seen.has(value)) return '[Circular]';
+  seen.add(value);
+  try {
+    if (Array.isArray(value)) return value.map((v) => redactSecretValues(v, secrets, seen));
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value)) out[k] = redactSecretValues(v, secrets, seen);
+    return out;
+  } finally {
+    seen.delete(value);
+  }
+}
+
+/**
+ * Give the hydrated config a redacted `toJSON()` and Node inspect view, so
+ * `JSON.stringify(client.config)`, `console.log(client.config)` and anything that inspects
+ * the client (util.inspect recurses into the config) print masked credentials.
+ *
+ * Both hooks are non-enumerable, so the config's own shape — `Object.keys`, spreads,
+ * destructuring and direct property reads by SDK internals — is unchanged.
+ */
+function attachSecretRedactionHooks(
+  config: CamundaConfig,
+  raw: Record<string, string | undefined>
+): void {
+  const secrets = collectSecretValues(raw);
+  const view = () => redactSecretValues(config, secrets, new WeakSet());
+  const define = (key: string | symbol, fn: () => unknown) => {
+    Object.defineProperty(config, key, {
+      value: fn,
+      enumerable: false,
+      writable: false,
+      configurable: false,
+    });
+  };
+  define('toJSON', view);
+  // Node's util.inspect honours this symbol; it is a plain symbol elsewhere and harmless.
+  define(Symbol.for('nodejs.util.inspect.custom'), view);
 }
 
 // Boolean parser
@@ -778,6 +858,11 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
         : undefined,
     __raw: { ...rawMap },
   };
+
+  // The hydrated config is public API (`client.config`) and holds every credential the SDK
+  // was given, so anything that stringifies or inspects it would otherwise print them.
+  // Attach the redaction hooks before freezing — a frozen object cannot take them later.
+  attachSecretRedactionHooks(config, rawMap);
 
   deepFreeze(config);
 

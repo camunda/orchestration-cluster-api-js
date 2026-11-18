@@ -6,6 +6,13 @@ on:
       - main
       - 'stable/**'
   workflow_dispatch:
+    inputs:
+      api_break_approved:
+        description: >-
+          Release even though the public API breaks compatibility with the last release on
+          this stable branch (for breaks with no PR to label, e.g. from upstream spec drift).
+        type: boolean
+        default: false
 
 concurrency:
   group: orchestration-cluster-api-js-release-${{ github.ref_name }}
@@ -232,6 +239,54 @@ jobs:
         run: |
           npm version ${{ steps.next_version.outputs.version }} --no-git-tag-version
           npm run build
+
+      # Stable branches must not break customer code that compiled against the last release
+      # on the branch. This checks the code actually being published, which includes
+      # generated code from upstream spec changes that no PR reviewed. Override: the
+      # api-break-approved label on any PR merged since that release, or the
+      # api_break_approved input of a manual run.
+      - name: API compatibility gate (stable branches)
+        if: steps.next_version.outputs.publish_needed == 'true' && startsWith(github.ref_name, 'stable/')
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          DISPATCH_APPROVED: ${{ github.event_name == 'workflow_dispatch' && inputs.api_break_approved }}
+        run: |
+          set -uo pipefail
+          # The newest published release of this stable major, not the nearest tag: a
+          # stable branch is cut from main at an alpha.
+          major="${GITHUB_REF_NAME#stable/}"
+          version=$(npm run -s api-compat -- --print-baseline-major "$major") || exit 2
+          if [ -z "$version" ]; then
+            echo "::notice::No ${major}.x release published yet; nothing to compare against."
+            exit 0
+          fi
+          tag="v${version}"
+          git rev-parse -q --verify "refs/tags/${tag}" >/dev/null || {
+            echo "::error::Baseline ${version} has no ${tag} tag to list the PRs merged since."
+            exit 2
+          }
+          echo "Baseline: ${tag}"
+          # Actions runs this with bash -e: capture the exit code instead of exiting on it.
+          rc=0
+          npm run -s api-compat -- --baseline-version "${tag#v}" || rc=$?
+          [ "$rc" -eq 1 ] || exit "$rc"
+          if [ "$DISPATCH_APPROVED" = "true" ]; then
+            echo "::warning::Breaking API changes approved by the api_break_approved input of this run."
+            exit 0
+          fi
+          approved=""
+          while read -r sha; do
+            prs=$(gh api "repos/${GITHUB_REPOSITORY}/commits/${sha}/pulls" \
+              --jq '.[] | select(.merged_at != null) | select(any(.labels[]; .name == "api-break-approved")) | "#\(.number)"') || exit 2
+            approved="${approved} ${prs}"
+          done < <(git log --format=%H "${tag}..HEAD")
+          approved=$(echo "$approved" | xargs -n1 2>/dev/null | sort -u | xargs)
+          if [ -n "$approved" ]; then
+            echo "::warning::Breaking API changes approved with the api-break-approved label on: ${approved}"
+            exit 0
+          fi
+          echo "::error::Release blocked: the public API breaks compatibility with ${tag}. If intended, label the PR that made the change api-break-approved (or re-run this workflow manually with api_break_approved), then re-run."
+          exit 1
 
       - name: Smoke tests (post-bump)
         if: steps.next_version.outputs.publish_needed == 'true'
