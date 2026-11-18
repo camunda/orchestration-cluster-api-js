@@ -1,0 +1,68 @@
+name: API compatibility
+
+# Blocks PRs to stable branches whose public TypeScript API would stop existing customer
+# code from compiling, compared with the last release published from that branch (see
+# scripts/api-compat.ts). When a break is intended (e.g. a bug fix that must change the
+# API), apply the `api-break-approved` label: the check still runs and lists the breaks,
+# but passes. The release workflow repeats the check on the code it is about to publish.
+
+on:
+  pull_request:
+    branches:
+      - 'stable/**'
+    # labeled/unlabeled: re-evaluate when api-break-approved is added or removed. edited:
+    # re-evaluate when the PR is retargeted to another stable branch. The job must run for
+    # every such event: a skipped run would replace a failed one and the required check
+    # would count as passing.
+    types: [opened, synchronize, reopened, labeled, unlabeled, edited]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: api-compat-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  api-compat:
+    name: API compatibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # Tags are needed to find the last release on the base branch.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22.x
+          cache: 'npm'
+          cache-dependency-path: package.json
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build type declarations
+        run: npm run build:types
+
+      - name: Check API compatibility
+        env:
+          # stable/<N>: compared with the newest published N.x.y. A branch with no N.x
+          # release yet (just cut from main) has nothing to compare with and passes.
+          MAJOR: ${{ github.base_ref }}
+          APPROVED: ${{ contains(github.event.pull_request.labels.*.name, 'api-break-approved') }}
+        run: |
+          set +e
+          npm run -s api-compat -- --baseline-major "${MAJOR#stable/}"
+          rc=$?
+          set -e
+          if [ "$rc" -eq 1 ] && [ "$APPROVED" = "true" ]; then
+            echo "::warning::Breaking API changes approved with the api-break-approved label."
+            echo "Approved with the \`api-break-approved\` label." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          if [ "$rc" -eq 1 ]; then
+            echo "::error::If this break is intended (e.g. a bug fix that must change the API), apply the api-break-approved label. Otherwise make the change backward compatible."
+          fi
+          exit "$rc"

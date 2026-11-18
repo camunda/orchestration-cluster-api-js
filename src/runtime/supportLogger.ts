@@ -3,6 +3,7 @@
 // Tree-shakable: Node-only modules imported dynamically and guarded by process/version detection.
 
 import { packageVersion } from '../runtime/version';
+import { type EnvVarKey, isSecret, SCHEMA } from './configSchema';
 import type { CamundaConfig } from './unifiedConfiguration';
 import { node } from '#platform';
 
@@ -45,20 +46,23 @@ function safeStringify(obj: any, indentation = 2) {
   }
 }
 
-// Sensitive key elision – we rely on raw env config values.
-const SENSITIVE_KEYS = [
-  'CAMUNDA_BASIC_AUTH_PASSWORD',
-  'CAMUNDA_CLIENT_SECRET',
-  'CAMUNDA_MTLS_KEY_PASSPHRASE',
-];
+// Sensitive key elision. `configSchema.ts` is the canonical registry of which keys hold a
+// credential, so the decision is derived from it rather than from a second hand-maintained
+// list here: a list that diverges from the schema silently stops redacting a key the schema
+// knows is secret (that is how the inline mTLS private key reached this file in cleartext).
+function isSecretKey(key: string): boolean {
+  // `__raw` is schema-keyed, but stay defensive: an unknown key is simply not a known secret.
+  if (!Object.hasOwn(SCHEMA, key)) return false;
+  return isSecret(key as EnvVarKey);
+}
+
 function obscureSensitiveInfo(raw: Record<string, string | undefined>) {
   const redacted: Record<string, string | undefined> = {};
   for (const [k, v] of Object.entries(raw)) {
-    if (v && SENSITIVE_KEYS.includes(k)) {
-      const prefix = v.slice(0, 4);
-      const omitted = Math.max(0, v.length - 4);
-      redacted[k] = `${prefix}...[${omitted} chars omitted]`;
-    } else redacted[k] = v;
+    // Disclose only the length: the support log is written to disk to be sent to Camunda
+    // Technical Support, so no fragment of a credential belongs in it.
+    if (v && isSecretKey(k)) redacted[k] = `[redacted ${v.length} chars]`;
+    else redacted[k] = v;
   }
   return redacted;
 }
