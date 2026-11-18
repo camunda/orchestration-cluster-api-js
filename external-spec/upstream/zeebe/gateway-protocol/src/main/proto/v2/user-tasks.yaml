@@ -705,7 +705,6 @@ components:
             Whether the user task is suspended because its owning process instance is
             suspended.
           type: boolean
-          nullable: true
         assignee:
           allOf:
             - $ref: 'filters.yaml#/components/schemas/StringFilterProperty'
@@ -1114,15 +1113,13 @@ components:
       additionalProperties: true
       properties:
         dueDate:
-          type: string
-          format: date-time
+          allOf:
+            - $ref: 'common-schemas.yaml#/components/schemas/ClearableDateTime'
           description: The due date of the task. Reset by providing an empty String.
-          nullable: true
         followUpDate:
-          type: string
-          format: date-time
+          allOf:
+            - $ref: 'common-schemas.yaml#/components/schemas/ClearableDateTime'
           description: The follow-up date of the task. Reset by providing an empty String.
-          nullable: true
         candidateUsers:
           type: array
           description: The list of candidate users of the task. Reset by providing an empty list.
@@ -1391,13 +1388,13 @@ components:
       description: |
         The lifecycle state of an active user task. A state ending in `-ING` means a change to the
         task is in progress, for example waiting for task listeners; the task fields still hold
-        the values from before the change.
+        the values from before the change. A claim in progress is reported as `ASSIGNING`, as in
+        the user task search.
       type: string
       enum:
         - CREATING
         - CREATED
         - ASSIGNING
-        - CLAIMING
         - UPDATING
         - COMPLETING
         - CANCELING

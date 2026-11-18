@@ -4020,6 +4020,10 @@ export function createProcessInstance(core: CamundaCore, arg: any, options?: Ope
     const _body = arg;
     let envelope: any = {};
     envelope.body = _body;
+    if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
+      envelope.body.tenantId = rt._config.defaultTenantId;
+      rt._log.trace(() => ['tenant.default.inject', { op: 'createProcessInstance', tenant: rt._config.defaultTenantId }]);
+    }
     if (rt._validation.settings.req !== 'none') {
       const _schemas = await import('./zod/createProcessInstance.gen');
       if (envelope.body !== undefined) {
@@ -6215,7 +6219,7 @@ export function getAuditLog(core: CamundaCore, arg: any, /** Management of event
 /**
  * Get current user
  *
- * Retrieves the current authenticated user.
+ * Retrieves the current authenticated user. On an unprotected API (`camunda.security.authentication.unprotected-api=true`) a caller without an identity gets a result with `isAnonymous` set to `true` instead of a `401`, because no credentials can authenticate it there.
   *
  * @operationId getAuthentication
  * @tags Authentication

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2.0.0",
-  "specHash": "sha256:24ae1ee7781ef7d83d91ce87161d69eb57be972250076993fd23216f4759ed63",
+  "specHash": "sha256:dcfd1b015d1e24c70c3288101ab7cbbab420a4ebda5641d68e787a32eaee0266",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -2248,6 +2248,27 @@
       }
     },
     {
+      "name": "ClearableDateTime",
+      "kind": "hybrid-union",
+      "description": "A date-time in RFC 3339 format, or an empty string to clear the persisted value.\nA `null` value or omitting the property preserves the persisted value.\n",
+      "branches": [
+        {
+          "branchType": "other"
+        },
+        {
+          "branchType": "other"
+        }
+      ],
+      "stableId": "clearable-date-time",
+      "tsType": "string | string",
+      "zod": {
+        "schemaName": "zClearableDateTime"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ClearableDateTime"
+      }
+    },
+    {
       "name": "ClusterRestoreOperation",
       "kind": "union-wrapper",
       "description": "A single operation that is part of a restore. Every operation names the broker that applies it; the rest of its properties depend on what the operation does, so it is reported as one of the variants below, distinguished by `operation`. A property a variant does not declare is absent from the response rather than reported as null.",
@@ -3104,29 +3125,6 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/ProcessInstanceStateFilterProperty"
-      }
-    },
-    {
-      "name": "ProtectionModeFilterProperty",
-      "kind": "union-wrapper",
-      "description": "ProtectionModeEnum property with full advanced search capabilities.",
-      "branches": [
-        {
-          "branchType": "branded-ref",
-          "ref": "ProtectionModeExactMatch"
-        },
-        {
-          "branchType": "branded-ref",
-          "ref": "AdvancedProtectionModeFilter"
-        }
-      ],
-      "stableId": "protection-mode-filter-property",
-      "tsType": "ProtectionModeExactMatch | AdvancedProtectionModeFilter",
-      "zod": {
-        "schemaName": "zProtectionModeFilterProperty"
-      },
-      "source": {
-        "schemaPointer": "#/components/schemas/ProtectionModeFilterProperty"
       }
     },
     {

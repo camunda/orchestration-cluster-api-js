@@ -7,6 +7,20 @@ export type ClientOptions = {
     baseUrl: '{schema}://{host}:{port}/v2' | '{schema}://{host}:{port}' | (string & {});
 };
 
+/**
+ * A `CamundaUserResult` with `isAnonymous` set to `false`, so `username` is always set. `GET /authentication/me` returns `CamundaUserResult`. Clients that only handle a caller with an identity can narrow the result to this schema once they checked `isAnonymous`.
+ */
+export type AuthenticatedCamundaUserResult = CamundaUserResult & {
+    /**
+     * Always `false`, because the caller has an identity.
+     */
+    isAnonymous?: false;
+    /**
+     * The username of the user.
+     */
+    username?: Username;
+};
+
 export type AgentDefinitionSearchQuerySortRequest = {
     /**
      * The field to sort by.
@@ -1671,9 +1685,13 @@ export type OwnAuthorizationSearchResult = AuthorizationSearchResult & {
 
 export type CamundaUserResult = {
     /**
-     * The username of the user.
+     * Whether the caller has no identity. Only an unprotected API answers an anonymous caller; a protected API returns `401` instead. When `true`, `username`, `displayName` and `email` are `null` and the lists are empty.
      */
-    username: Username;
+    isAnonymous: boolean;
+    /**
+     * The username of the user. `null` when `isAnonymous` is `true`.
+     */
+    username: Username | null;
     /**
      * The display name of the user.
      */
@@ -1683,7 +1701,7 @@ export type CamundaUserResult = {
      */
     email: string | null;
     /**
-     * The web components the user is authorized to use. When authorizations are disabled for the cluster, this always returns `["*"]`, regardless of the user's actual permissions, since access is not restricted in that case.
+     * The web components the user is authorized to use. When authorizations are disabled for the cluster, this always returns `["*"]`, regardless of the user's actual permissions, since access is not restricted in that case. An anonymous caller of an unprotected API also gets `["*"]`, for the same reason.
      */
     authorizedComponents: Array<string>;
     /**
@@ -1850,6 +1868,7 @@ export type AuthorizationCreateResult = {
  */
 export const PermissionTypeEnum = {
   ACCESS: 'ACCESS',
+  ANSWER: 'ANSWER',
   CANCEL_PROCESS_INSTANCE: 'CANCEL_PROCESS_INSTANCE',
   CLAIM: 'CLAIM',
   CLAIM_USER_TASK: 'CLAIM_USER_TASK',
@@ -1917,6 +1936,7 @@ export const ResourceTypeEnum = {
   GROUP: 'GROUP',
   MAPPING_RULE: 'MAPPING_RULE',
   MESSAGE: 'MESSAGE',
+  PROBE: 'PROBE',
   PROCESS_DEFINITION: 'PROCESS_DEFINITION',
   RESOURCE: 'RESOURCE',
   ROLE: 'ROLE',
@@ -3906,6 +3926,13 @@ export type RestorePartitionStatus = {
      */
     completedAt: string | null;
 };
+
+/**
+ * A date-time in RFC 3339 format, or an empty string to clear the persisted value.
+ * A `null` value or omitting the property preserves the persisted value.
+ *
+ */
+export type ClearableDateTime = string | null | string | null | null;
 
 export type ConditionalEvaluationInstruction = {
     /**
@@ -7768,13 +7795,13 @@ export type JobResultCorrections = {
      */
     assignee?: string | null;
     /**
-     * The due date of the task.
+     * The due date of the task. Clear by providing an empty String.
      */
-    dueDate?: string | null;
+    dueDate?: ClearableDateTime;
     /**
-     * The follow-up date of the task.
+     * The follow-up date of the task. Clear by providing an empty String.
      */
-    followUpDate?: string | null;
+    followUpDate?: ClearableDateTime;
     /**
      * The list of candidate users of the task.
      */
@@ -9807,15 +9834,6 @@ export type ProcessInstanceCreationInstructionBase = {
         [key: string]: unknown;
     };
     /**
-     * Metadata of the variables, keyed by variable name. Use it to set how a variable is
-     * treated, for example to protect its value. Each key must be the name of a variable in
-     * `variables`. A variable without an entry has no metadata.
-     *
-     */
-    variablesMetadata?: {
-        [key: string]: VariableMetadata;
-    };
-    /**
      * The tenant id of the process definition.
      * If multi-tenancy is enabled, provide the tenant id of the process definition to start a
      * process instance of. If multi-tenancy is disabled, don't provide this parameter.
@@ -11592,7 +11610,7 @@ export type UserTaskFilterFields = {
      * Whether the user task is suspended because its owning process instance is suspended.
      *
      */
-    isSuspended?: boolean | null;
+    isSuspended?: boolean;
     /**
      * The assignee of the user task.
      */
@@ -11856,11 +11874,11 @@ export type Changeset = {
     /**
      * The due date of the task. Reset by providing an empty String.
      */
-    dueDate?: string | null;
+    dueDate?: ClearableDateTime;
     /**
      * The follow-up date of the task. Reset by providing an empty String.
      */
-    followUpDate?: string | null;
+    followUpDate?: ClearableDateTime;
     /**
      * The list of candidate users of the task. Reset by providing an empty list.
      */
@@ -12053,14 +12071,14 @@ export type UserTaskLookupResult = {
 /**
  * The lifecycle state of an active user task. A state ending in `-ING` means a change to the
  * task is in progress, for example waiting for task listeners; the task fields still hold
- * the values from before the change.
+ * the values from before the change. A claim in progress is reported as `ASSIGNING`, as in
+ * the user task search.
  *
  */
 export const UserTaskLookupStateEnum = {
   CREATING: 'CREATING',
   CREATED: 'CREATED',
   ASSIGNING: 'ASSIGNING',
-  CLAIMING: 'CLAIMING',
   UPDATING: 'UPDATING',
   COMPLETING: 'COMPLETING',
   CANCELING: 'CANCELING',
@@ -12345,10 +12363,6 @@ export type VariableFilter = {
      * The key of the process instance of this variable.
      */
     processInstanceKey?: ProcessInstanceKeyFilterProperty;
-    /**
-     * The protection modes applied to the variable.
-     */
-    protectionMode?: ProtectionModeFilterProperty;
 };
 
 /**
@@ -12366,15 +12380,7 @@ export type VariableSearchQueryResult = SearchQueryResponse & {
  */
 export type VariableSearchResult = VariableResultBase & {
     /**
-     * The value of this variable. Can be truncated or redacted.
-     *
-     * If the value is truncated, `isTruncated` is `true` and the value contains only the
-     * beginning of the full value.
-     *
-     * If the variable is redacted, the value is set to `""` instead of the real value. Check
-     * `metadata.protectionModes` before you use the value: it contains `REDACT` for a redacted
-     * variable.
-     *
+     * Value of this variable. Can be truncated.
      */
     value: string;
     /**
@@ -12388,11 +12394,7 @@ export type VariableSearchResult = VariableResultBase & {
  */
 export type VariableResult = VariableResultBase & {
     /**
-     * The full value of this variable, or `""` if the variable is redacted.
-     *
-     * Check `metadata.protectionModes` before you use the value: it contains `REDACT` for a
-     * redacted variable.
-     *
+     * Full value of this variable.
      */
     value: string;
 };
@@ -12432,67 +12434,6 @@ export type VariableResultBase = {
      *
      */
     rootProcessInstanceKey: ProcessInstanceKey | null;
-    /**
-     * Metadata of this variable.
-     */
-    metadata: VariableMetadata;
-};
-
-/**
- * Metadata describing how a variable is treated.
- */
-export type VariableMetadata = {
-    /**
-     * The protections applied to the variable. The value of a variable protected with
-     * `REDACT` is irrecoverably replaced before it is stored in secondary storage, so it is
-     * never readable.
-     *
-     */
-    protectionModes: Array<ProtectionModeEnum>;
-};
-
-/**
- * The kind of protection applied to a variable value. `REDACT` irrecoverably replaces the
- * value before it reaches secondary storage.
- *
- */
-export const ProtectionModeEnum = {
-  REDACT: 'REDACT',
-} as const;
-export type ProtectionModeEnum = (typeof ProtectionModeEnum)[keyof typeof ProtectionModeEnum];
-/**
- * ProtectionModeEnum property with full advanced search capabilities.
- */
-export type ProtectionModeFilterProperty = ProtectionModeExactMatch | AdvancedProtectionModeFilter;
-
-/**
- * Advanced filter
- *
- * Advanced ProtectionModeEnum filter.
- */
-export type AdvancedProtectionModeFilter = {
-    /**
-     * Checks if the variable has the provided protection mode.
-     */
-    $eq?: ProtectionModeEnum;
-    /**
-     * Checks if the variable does not have the provided protection mode.
-     */
-    $neq?: ProtectionModeEnum;
-    /**
-     * Checks if the variable has any protection mode. Use `false` to match the variables
-     * that are not protected.
-     *
-     */
-    $exists?: boolean;
-    /**
-     * Checks if the variable has at least one of the provided protection modes.
-     */
-    $in?: Array<ProtectionModeEnum>;
-    /**
-     * Checks if the variable has none of the provided protection modes.
-     */
-    $notIn?: Array<ProtectionModeEnum>;
 };
 
 export type VariableValueFilterProperty = {
@@ -12516,15 +12457,6 @@ export type SetVariableRequest = {
      */
     variables: {
         [key: string]: unknown;
-    };
-    /**
-     * Metadata of the variables, keyed by variable name. Use it to set how a variable is
-     * treated, for example to protect its value. Each key must be the name of a variable in
-     * `variables`. A variable without an entry keeps the metadata it has, or has none.
-     *
-     */
-    variablesMetadata?: {
-        [key: string]: VariableMetadata;
     };
     /**
      * If set to `true`, the variables are merged strictly into the local scope (as specified
@@ -12895,13 +12827,6 @@ export type ProcessInstanceStateExactMatch = ProcessInstanceStateEnum;
  * Matches the value exactly.
  */
 export type UserTaskStateExactMatch = UserTaskStateEnum;
-
-/**
- * Exact match
- *
- * Matches variables that have this protection mode.
- */
-export type ProtectionModeExactMatch = ProtectionModeEnum;
 
 /**
  * System-generated key for an authorization.
@@ -13515,13 +13440,6 @@ export type ProcessInstanceStateExactMatchWritable = ProcessInstanceStateEnum;
  * Matches the value exactly.
  */
 export type UserTaskStateExactMatchWritable = UserTaskStateEnum;
-
-/**
- * Exact match
- *
- * Matches variables that have this protection mode.
- */
-export type ProtectionModeExactMatchWritable = ProtectionModeEnum;
 
 export type GetAgentDefinitionData = {
     body?: never;
@@ -24329,7 +24247,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:24ae1ee7781ef7d83d91ce87161d69eb57be972250076993fd23216f4759ed63
+// specHash=sha256:dcfd1b015d1e24c70c3288101ab7cbbab420a4ebda5641d68e787a32eaee0266
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

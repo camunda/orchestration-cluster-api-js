@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2.0.0",
-  "specHash": "sha256:24ae1ee7781ef7d83d91ce87161d69eb57be972250076993fd23216f4759ed63",
+  "specHash": "sha256:dcfd1b015d1e24c70c3288101ab7cbbab420a4ebda5641d68e787a32eaee0266",
   "semanticKeys": [
     {
       "name": "AgentDefinitionKey",
@@ -1579,6 +1579,20 @@
       "stableId": "category-filter-property"
     },
     {
+      "name": "ClearableDateTime",
+      "kind": "hybrid-union",
+      "description": "A date-time in RFC 3339 format, or an empty string to clear the persisted value.\nA `null` value or omitting the property preserves the persisted value.\n",
+      "branches": [
+        {
+          "branchType": "other"
+        },
+        {
+          "branchType": "other"
+        }
+      ],
+      "stableId": "clearable-date-time"
+    },
+    {
       "name": "ClusterRestoreOperation",
       "kind": "union-wrapper",
       "description": "A single operation that is part of a restore. Every operation names the broker that applies it; the rest of its properties depend on what the operation does, so it is reported as one of the variants below, distinguished by `operation`. A property a variant does not declare is absent from the response rather than reported as null.",
@@ -2177,22 +2191,6 @@
         }
       ],
       "stableId": "process-instance-state-filter-property"
-    },
-    {
-      "name": "ProtectionModeFilterProperty",
-      "kind": "union-wrapper",
-      "description": "ProtectionModeEnum property with full advanced search capabilities.",
-      "branches": [
-        {
-          "branchType": "ref",
-          "ref": "ProtectionModeExactMatch"
-        },
-        {
-          "branchType": "ref",
-          "ref": "AdvancedProtectionModeFilter"
-        }
-      ],
-      "stableId": "protection-mode-filter-property"
     },
     {
       "name": "ResourceKey",
@@ -3530,7 +3528,7 @@
         "Authentication"
       ],
       "summary": "Get current user",
-      "description": "Retrieves the current authenticated user.",
+      "description": "Retrieves the current authenticated user. On an unprotected API (`camunda.security.authentication.unprotected-api=true`) a caller without an identity gets a result with `isAnonymous` set to `true` instead of a `401`, because no credentials can authenticate it there.",
       "eventuallyConsistent": false,
       "hasRequestBody": false,
       "requestBodyUnion": false,
@@ -8330,7 +8328,7 @@
         "ProcessInstanceCreationInstructionById",
         "ProcessInstanceCreationInstructionByVersionTag"
       ],
-      "optionalTenantIdInBody": false,
+      "optionalTenantIdInBody": true,
       "sourceFile": "process-instances.yaml",
       "requestBodyContentTypes": [
         "application/json"

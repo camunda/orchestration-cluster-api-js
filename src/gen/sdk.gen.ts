@@ -191,7 +191,7 @@ export const getAuditLog = <ThrowOnError extends boolean = true>(options: Option
 /**
  * Get current user
  *
- * Retrieves the current authenticated user.
+ * Retrieves the current authenticated user. On an unprotected API (`camunda.security.authentication.unprotected-api=true`) a caller without an identity gets a result with `isAnonymous` set to `true` instead of a `401`, because no credentials can authenticate it there.
  */
 export const getAuthentication = <ThrowOnError extends boolean = true>(options?: Options<GetAuthenticationData, ThrowOnError>): RequestResult<GetAuthenticationResponses, GetAuthenticationErrors, ThrowOnError> => (options?.client ?? client).get<GetAuthenticationResponses, GetAuthenticationErrors, ThrowOnError>({
     requestValidator: undefined,

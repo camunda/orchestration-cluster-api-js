@@ -3,7 +3,7 @@
     "sourceRepo": "https://github.com/camunda/camunda",
     "commit": "local",
     "specPath": "zeebe/gateway-protocol/src/main/proto/v2/rest-api.yaml",
-    "specSha256": "54544c139fa42ae22bb9b719343c04fe9b70a39a3abe92860b865cd890559f12"
+    "specSha256": "4792739ffd414360ef67b210d8afdf99c6c81f2b95a28798fc0dd61d4d02a2c1"
   },
   "responses": [
     {
@@ -1335,6 +1335,10 @@
             "type": "array<string>"
           },
           {
+            "name": "isAnonymous",
+            "type": "boolean"
+          },
+          {
             "name": "roles",
             "type": "array<string>"
           },
@@ -1367,7 +1371,8 @@
           },
           {
             "name": "username",
-            "type": "string"
+            "type": "string",
+            "nullable": true
           }
         ],
         "optional": []
@@ -1441,6 +1446,7 @@
                     "GROUP",
                     "MAPPING_RULE",
                     "MESSAGE",
+                    "PROBE",
                     "PROCESS_DEFINITION",
                     "RESOURCE",
                     "ROLE",
@@ -1564,6 +1570,7 @@
                     "GROUP",
                     "MAPPING_RULE",
                     "MESSAGE",
+                    "PROBE",
                     "PROCESS_DEFINITION",
                     "RESOURCE",
                     "ROLE",
@@ -1668,6 +1675,7 @@
               "GROUP",
               "MAPPING_RULE",
               "MESSAGE",
+              "PROBE",
               "PROCESS_DEFINITION",
               "RESOURCE",
               "ROLE",
@@ -12170,19 +12178,6 @@
                   "type": "boolean"
                 },
                 {
-                  "name": "metadata",
-                  "type": "additionalProperties",
-                  "children": {
-                    "required": [
-                      {
-                        "name": "protectionModes",
-                        "type": "array<string>"
-                      }
-                    ],
-                    "optional": []
-                  }
-                },
-                {
                   "name": "name",
                   "type": "string"
                 },
@@ -12368,7 +12363,6 @@
               "CREATING",
               "CREATED",
               "ASSIGNING",
-              "CLAIMING",
               "UPDATING",
               "COMPLETING",
               "CANCELING"
@@ -12412,19 +12406,6 @@
                 {
                   "name": "isTruncated",
                   "type": "boolean"
-                },
-                {
-                  "name": "metadata",
-                  "type": "additionalProperties",
-                  "children": {
-                    "required": [
-                      {
-                        "name": "protectionModes",
-                        "type": "array<string>"
-                      }
-                    ],
-                    "optional": []
-                  }
                 },
                 {
                   "name": "name",
@@ -12506,19 +12487,6 @@
                   "type": "boolean"
                 },
                 {
-                  "name": "metadata",
-                  "type": "additionalProperties",
-                  "children": {
-                    "required": [
-                      {
-                        "name": "protectionModes",
-                        "type": "array<string>"
-                      }
-                    ],
-                    "optional": []
-                  }
-                },
-                {
                   "name": "name",
                   "type": "string"
                 },
@@ -12588,19 +12556,6 @@
       "status": "200",
       "schema": {
         "required": [
-          {
-            "name": "metadata",
-            "type": "additionalProperties",
-            "children": {
-              "required": [
-                {
-                  "name": "protectionModes",
-                  "type": "array<string>"
-                }
-              ],
-              "optional": []
-            }
-          },
           {
             "name": "name",
             "type": "string"
