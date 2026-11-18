@@ -10,6 +10,7 @@ import {
   nextActivationRetryDelayMs,
 } from './pollBackoff';
 import type { ThreadPool } from './threadPool';
+import { projectValidationFailure } from './validationLogging';
 import { stopWorkerGracefully } from './workerGracefulStop';
 import { WorkerStartGate } from './workerStartGate';
 
@@ -522,7 +523,7 @@ export class ThreadedJobWorker {
       if (this._cfg.inputSchema) {
         const parsed = this._cfg.inputSchema.safeParse(variables);
         if (!parsed.success) {
-          this._log.warn('job.validation.variables.failed', parsed.error.flatten());
+          this._log.warn('job.validation.variables.failed', projectValidationFailure(parsed.error));
           this._failValidation(raw as ActivatedJobResult, 'Invalid variables');
           return;
         }
@@ -531,7 +532,7 @@ export class ThreadedJobWorker {
       if (this._cfg.customHeadersSchema) {
         const parsed = this._cfg.customHeadersSchema.safeParse(headers);
         if (!parsed.success) {
-          this._log.warn('job.validation.headers.failed', parsed.error.flatten());
+          this._log.warn('job.validation.headers.failed', projectValidationFailure(parsed.error));
           this._failValidation(raw as ActivatedJobResult, 'Invalid custom headers');
           return;
         }
