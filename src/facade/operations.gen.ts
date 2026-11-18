@@ -2673,6 +2673,11 @@ export function deleteProcessInstance(options?: Parameters<typeof _deleteProcess
  * definitions; for other resource types (forms, generic resources) the flag is ignored and no
  * history is deleted.
  *
+ * Deleting a process definition that is already draining is accepted again and changes
+ * nothing: the definition stays `DRAINING` until its running instances finish. The one repeated
+ * deletion that is rejected is one with `deleteHistory` set to `true`, because the history
+ * cannot be deleted before the drain finishes.
+ *
  * The two supported types differ in how the history is removed. For a decision requirements
  * definition the history is deleted asynchronously via a batch operation whose details are
  * returned in the `batchOperation` field of the response. For a process definition that still
@@ -5401,4 +5406,4 @@ export function updateUserTask(options?: Parameters<typeof _updateUserTask>[0]):
   return toCancelable(signal => _updateUserTask({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
-// SENTINEL_FACADE_PREWRITE hash=b106aa425d465532 totalWrappers=183 elements=1162 physicalLines=2855
+// SENTINEL_FACADE_PREWRITE hash=d2d061988ca33062 totalWrappers=183 elements=1162 physicalLines=2860

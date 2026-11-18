@@ -2831,7 +2831,10 @@ export const zBatchOperationCreatedResult = z.object({
 export const zBatchOperationResponse = z.object({
     batchOperationKey: zBatchOperationKey,
     state: zBatchOperationStateEnum,
-    batchOperationType: zBatchOperationTypeEnum,
+    batchOperationType: z.union([
+        zBatchOperationTypeEnum,
+        z.null()
+    ]),
     startDate: z.union([
         z.iso.datetime(),
         z.null()
@@ -4349,7 +4352,7 @@ export const zRoleGroupResult = z.object({
  * Limit-based pagination
  */
 export const zLimitPagination = z.object({
-    limit: z.optional(z.int().gte(1).lte(10000).register(z.globalRegistry, {
+    limit: z.optional(z.int().gte(0).lte(10000).register(z.globalRegistry, {
         description: 'The maximum number of items to return in one request.'
     })).default(100)
 });
@@ -4361,7 +4364,7 @@ export const zOffsetPagination = z.object({
     from: z.optional(z.int().gte(0).register(z.globalRegistry, {
         description: 'The index of items to start searching from.'
     })),
-    limit: z.optional(z.int().gte(1).register(z.globalRegistry, {
+    limit: z.optional(z.int().gte(0).register(z.globalRegistry, {
         description: 'The maximum number of items to return in one request.'
     })).default(100)
 });
@@ -4371,7 +4374,7 @@ export const zOffsetPagination = z.object({
  */
 export const zCursorForwardPagination = z.object({
     after: zEndCursor,
-    limit: z.optional(z.int().gte(1).lte(10000).register(z.globalRegistry, {
+    limit: z.optional(z.int().gte(0).lte(10000).register(z.globalRegistry, {
         description: 'The maximum number of items to return in one request.'
     })).default(100)
 });
@@ -4421,7 +4424,7 @@ export const zJobErrorStatisticsQuery = z.object({
  */
 export const zCursorBackwardPagination = z.object({
     before: zStartCursor,
-    limit: z.optional(z.int().gte(1).lte(10000).register(z.globalRegistry, {
+    limit: z.optional(z.int().gte(0).lte(10000).register(z.globalRegistry, {
         description: 'The maximum number of items to return in one request.'
     })).default(100)
 });
@@ -5149,8 +5152,7 @@ export const zIncidentProcessInstanceStatisticsByDefinitionQueryResult = zSearch
 export const zJobTypeStatisticsQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zJobTypeStatisticsItem).register(z.globalRegistry, {
         description: 'The list of job type statistics items.'
-    }),
-    page: zSearchQueryPageResponse
+    })
 }).register(z.globalRegistry, {
     description: 'Job type statistics query result.'
 }));
@@ -5161,8 +5163,7 @@ export const zJobTypeStatisticsQueryResult = zSearchQueryResponse.and(z.object({
 export const zJobWorkerStatisticsQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zJobWorkerStatisticsItem).register(z.globalRegistry, {
         description: 'The list of per-worker statistics items.'
-    }),
-    page: zSearchQueryPageResponse
+    })
 }).register(z.globalRegistry, {
     description: 'Job worker statistics query result.'
 }));
@@ -5173,8 +5174,7 @@ export const zJobWorkerStatisticsQueryResult = zSearchQueryResponse.and(z.object
 export const zJobTimeSeriesStatisticsQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zJobTimeSeriesStatisticsItem).register(z.globalRegistry, {
         description: 'The list of time-bucketed statistics items, ordered ascending by time.'
-    }),
-    page: zSearchQueryPageResponse
+    })
 }).register(z.globalRegistry, {
     description: 'Job time-series statistics query result.'
 }));
@@ -5185,8 +5185,7 @@ export const zJobTimeSeriesStatisticsQueryResult = zSearchQueryResponse.and(z.ob
 export const zJobErrorStatisticsQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zJobErrorStatisticsItem).register(z.globalRegistry, {
         description: 'The list of per-error statistics items.'
-    }),
-    page: zSearchQueryPageResponse
+    })
 }).register(z.globalRegistry, {
     description: 'Job error statistics query result.'
 }));
@@ -5438,7 +5437,7 @@ export const zCamundaUserResult = z.object({
         z.null()
     ]),
     authorizedComponents: z.array(z.string()).register(z.globalRegistry, {
-        description: 'The web components the user is authorized to use.'
+        description: "The web components the user is authorized to use. When authorizations are disabled for the cluster, this always returns `[\"*\"]`, regardless of the user's actual permissions, since access is not restricted in that case."
     }),
     tenants: z.array(zTenantResult).register(z.globalRegistry, {
         description: 'The tenants the user is a member of.'
@@ -9003,7 +9002,7 @@ export const zDeleteResourceData = z.object({
 });
 
 /**
- * The resource is deleted.
+ * The resource is deleted. For a process definition that is already draining, the repeated deletion is accepted without effect and the definition stays `DRAINING`.
  */
 export const zDeleteResourceResponse2 = zDeleteResourceResponse;
 

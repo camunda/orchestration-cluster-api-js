@@ -555,7 +555,7 @@ export type CamundaUserResult = {
      */
     email: string | null;
     /**
-     * The web components the user is authorized to use.
+     * The web components the user is authorized to use. When authorizations are disabled for the cluster, this always returns `["*"]`, regardless of the user's actual permissions, since access is not restricted in that case.
      */
     authorizedComponents: Array<string>;
     /**
@@ -882,7 +882,13 @@ export type BatchOperationResponse = {
      */
     batchOperationKey: BatchOperationKey;
     state: BatchOperationStateEnum;
-    batchOperationType: BatchOperationTypeEnum;
+    /**
+     * The type of the batch operation.
+     * This is `null` for batch operations whose type was never recorded in
+     * secondary storage, such as legacy Operate batch operations.
+     *
+     */
+    batchOperationType: BatchOperationTypeEnum | null;
     /**
      * The start date of the batch operation.
      * This is `null` if the batch operation has not yet started.
@@ -3556,7 +3562,8 @@ export type IncidentFilter = {
      */
     errorType?: IncidentErrorTypeFilterProperty;
     /**
-     * The error message of this incident.
+     * The error message of this incident. For `$eq`, `$neq`, `$in`, and `$notIn`, matching is case-insensitive and matches if the incident's error message contains the given value as a phrase, not necessarily the entire error message. `$like` matches on individual words of the error message and does not support multi-word patterns.
+     *
      */
     errorMessage?: StringFilterProperty;
     /**
@@ -3950,7 +3957,6 @@ export type JobTypeStatisticsQueryResult = SearchQueryResponse & {
      * The list of job type statistics items.
      */
     items: Array<JobTypeStatisticsItem>;
-    page: SearchQueryPageResponse;
 };
 
 /**
@@ -4009,7 +4015,6 @@ export type JobWorkerStatisticsQueryResult = SearchQueryResponse & {
      * The list of per-worker statistics items.
      */
     items: Array<JobWorkerStatisticsItem>;
-    page: SearchQueryPageResponse;
 };
 
 /**
@@ -4070,7 +4075,6 @@ export type JobTimeSeriesStatisticsQueryResult = SearchQueryResponse & {
      * The list of time-bucketed statistics items, ordered ascending by time.
      */
     items: Array<JobTimeSeriesStatisticsItem>;
-    page: SearchQueryPageResponse;
 };
 
 /**
@@ -4133,7 +4137,6 @@ export type JobErrorStatisticsQueryResult = SearchQueryResponse & {
      * The list of per-error statistics items.
      */
     items: Array<JobErrorStatisticsItem>;
-    page: SearchQueryPageResponse;
 };
 
 /**
@@ -13616,6 +13619,13 @@ export type CancelProcessInstanceErrors = {
      */
     404: ProblemDetail;
     /**
+     * The process instance cannot be canceled, for example because it is already being
+     * terminated or because it is a child process instance.
+     * More details are provided in the response body.
+     *
+     */
+    409: ProblemDetail;
+    /**
      * An internal error occurred while processing the request.
      */
     500: ProblemDetail;
@@ -14057,6 +14067,10 @@ export type DeleteResourceErrors = {
      */
     404: ProblemDetail;
     /**
+     * The process definition is still draining, so its history cannot be deleted yet. Retry with `deleteHistory` set to `true` once the definition is fully deleted; the batch operation is then created immediately.
+     */
+    409: ProblemDetail;
+    /**
      * An internal error occurred while processing the request.
      */
     500: ProblemDetail;
@@ -14071,7 +14085,7 @@ export type DeleteResourceError = DeleteResourceErrors[keyof DeleteResourceError
 
 export type DeleteResourceResponses = {
     /**
-     * The resource is deleted.
+     * The resource is deleted. For a process definition that is already draining, the repeated deletion is accepted without effect and the definition stays `DRAINING`.
      */
     200: DeleteResourceResponse;
 };
@@ -16904,7 +16918,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:31e6f176400015aac7b3e4e2275a3b8f36ec0ed84bb7de539c8bbba1d612d874
+// specHash=sha256:a9902e1a2f069d33d4851aad3a987c95656dcad55050057726724c56d8462e0b
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

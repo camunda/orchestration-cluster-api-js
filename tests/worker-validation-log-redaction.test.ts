@@ -144,69 +144,69 @@ describe('projectValidationFailure', () => {
   });
 });
 
-describe.each(['JobWorker', 'ThreadedJobWorker'] as const)(
-  '%s validation failure logging',
-  (name) => {
-    /**
-     * Constructed directly and driven through the private job-handling entry point, so the
-     * test exercises validation without starting a poll loop or spawning worker threads.
-     */
-    function makeWorker(extra: any) {
-      const { events, log } = captureLog();
-      const { client, failed } = stubClient(log);
-      const cfg = {
-        jobType: `validation-log-${name}`,
-        jobHandler: async () => undefined,
-        handlerModule: '/dev/null',
-        maxParallelJobs: 1,
-        pollIntervalMs: 10_000,
-        validateSchemas: true,
-        autoStart: false,
-        ...extra,
-      };
-      const worker: any =
-        name === 'JobWorker'
-          ? new JobWorker(client, cfg as any)
-          : new ThreadedJobWorker(client, stubPool(), cfg as any);
-      return { worker, events, failed };
-    }
-
-    it('does not log variable content when the input schema rejects the payload', async () => {
-      const { worker, events, failed } = makeWorker({ inputSchema });
-
-      await worker._handleJob({
-        jobKey: '1',
-        retries: 3,
-        variables: badPayload(),
-        customHeaders: {},
-      });
-      await new Promise((r) => setTimeout(r, 0));
-
-      const text = renderedText(events);
-      expect(text, 'a validation failure must still be reported').toContain(
-        'job.validation.variables.failed'
-      );
-      expect(text, 'the received variable value reached the log').not.toContain(SECRET_VALUE);
-      expect(text, 'an undeclared variable name reached the log').not.toContain(UNDECLARED_KEY);
-      expect(failed.length).toBe(1);
-    });
-
-    it('does not log header content when the custom-headers schema rejects the payload', async () => {
-      const { worker, events, failed } = makeWorker({ customHeadersSchema: headersSchema });
-
-      await worker._handleJob({
-        jobKey: '2',
-        retries: 3,
-        variables: {},
-        customHeaders: badHeaders(),
-      });
-      await new Promise((r) => setTimeout(r, 0));
-
-      const text = renderedText(events);
-      expect(text).toContain('job.validation.headers.failed');
-      expect(text, 'the received header value reached the log').not.toContain(SECRET_VALUE);
-      expect(text, 'an undeclared header name reached the log').not.toContain(UNDECLARED_KEY);
-      expect(failed.length).toBe(1);
-    });
+describe.each([
+  'JobWorker',
+  'ThreadedJobWorker',
+] as const)('%s validation failure logging', (name) => {
+  /**
+   * Constructed directly and driven through the private job-handling entry point, so the
+   * test exercises validation without starting a poll loop or spawning worker threads.
+   */
+  function makeWorker(extra: any) {
+    const { events, log } = captureLog();
+    const { client, failed } = stubClient(log);
+    const cfg = {
+      jobType: `validation-log-${name}`,
+      jobHandler: async () => undefined,
+      handlerModule: '/dev/null',
+      maxParallelJobs: 1,
+      pollIntervalMs: 10_000,
+      validateSchemas: true,
+      autoStart: false,
+      ...extra,
+    };
+    const worker: any =
+      name === 'JobWorker'
+        ? new JobWorker(client, cfg as any)
+        : new ThreadedJobWorker(client, stubPool(), cfg as any);
+    return { worker, events, failed };
   }
-);
+
+  it('does not log variable content when the input schema rejects the payload', async () => {
+    const { worker, events, failed } = makeWorker({ inputSchema });
+
+    await worker._handleJob({
+      jobKey: '1',
+      retries: 3,
+      variables: badPayload(),
+      customHeaders: {},
+    });
+    await new Promise((r) => setTimeout(r, 0));
+
+    const text = renderedText(events);
+    expect(text, 'a validation failure must still be reported').toContain(
+      'job.validation.variables.failed'
+    );
+    expect(text, 'the received variable value reached the log').not.toContain(SECRET_VALUE);
+    expect(text, 'an undeclared variable name reached the log').not.toContain(UNDECLARED_KEY);
+    expect(failed.length).toBe(1);
+  });
+
+  it('does not log header content when the custom-headers schema rejects the payload', async () => {
+    const { worker, events, failed } = makeWorker({ customHeadersSchema: headersSchema });
+
+    await worker._handleJob({
+      jobKey: '2',
+      retries: 3,
+      variables: {},
+      customHeaders: badHeaders(),
+    });
+    await new Promise((r) => setTimeout(r, 0));
+
+    const text = renderedText(events);
+    expect(text).toContain('job.validation.headers.failed');
+    expect(text, 'the received header value reached the log').not.toContain(SECRET_VALUE);
+    expect(text, 'an undeclared header name reached the log').not.toContain(UNDECLARED_KEY);
+    expect(failed.length).toBe(1);
+  });
+});
