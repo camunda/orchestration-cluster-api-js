@@ -7,12 +7,7 @@ import {
   DEFAULT_POLL_BACKOFF_MIN_MS,
   nextActivationRetryDelayMs,
 } from './pollBackoff';
-<<<<<<< HEAD
-=======
 import { projectValidationFailure } from './validationLogging';
-import { stopWorkerGracefully } from './workerGracefulStop';
-import { WorkerStartGate } from './workerStartGate';
->>>>>>> 7b991597af (fix: log validation failures without job variable content (#626))
 
 type ActivatedJobResult = ActivateJobsResponses[200]['jobs'][number];
 

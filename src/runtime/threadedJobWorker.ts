@@ -9,12 +9,7 @@ import {
   nextActivationRetryDelayMs,
 } from './pollBackoff';
 import type { ThreadPool } from './threadPool';
-<<<<<<< HEAD
-=======
 import { projectValidationFailure } from './validationLogging';
-import { stopWorkerGracefully } from './workerGracefulStop';
-import { WorkerStartGate } from './workerStartGate';
->>>>>>> 7b991597af (fix: log validation failures without job variable content (#626))
 
 type ActivatedJobResult = ActivateJobsResponses[200]['jobs'][number];
 
