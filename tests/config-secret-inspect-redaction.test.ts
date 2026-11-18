@@ -111,6 +111,29 @@ describe('hydrated config secret redaction on stringify and inspect', () => {
     }
   });
 
+  // 10.0.x exposed the override map as a `protected _overrides` field. Subclasses written
+  // against it must keep compiling and working on stable/10, without reopening the leak.
+  it('keeps the protected _overrides accessor for subclasses without leaking it', () => {
+    const client: any = createCamundaClient({
+      config: envWithAllSecrets() as any,
+      fetch: (async () => new Response('{}', { status: 200 })) as any,
+    });
+
+    expect(client._overrides.CAMUNDA_CLIENT_SECRET).toBe(sentinelFor('CAMUNDA_CLIENT_SECRET'));
+    client._overrides.CAMUNDA_DEFAULT_TENANT_ID = 'tenant-c';
+    expect(client._getOverrides().CAMUNDA_DEFAULT_TENANT_ID).toBe('tenant-c');
+    client._overrides = { ...client._overrides, CAMUNDA_DEFAULT_TENANT_ID: 'tenant-d' };
+    expect(client._getOverrides().CAMUNDA_DEFAULT_TENANT_ID).toBe('tenant-d');
+
+    for (const text of [
+      inspect(client._overrides, { depth: null, showHidden: true, getters: true }),
+      inspect(client, { depth: null, showHidden: true, getters: true }),
+      JSON.stringify(client._overrides),
+    ]) {
+      for (const key of secretKeys()) expect(text).not.toContain(sentinelFor(key));
+    }
+  });
+
   // Hydration trims some credentials (the OAuth client secret, the basic-auth password), so
   // the hydrated config holds a different string from the one the caller supplied. Redaction
   // must cover the trimmed form, not only the supplied one.

@@ -248,6 +248,25 @@ function attachSecretRedactionHooks(
   define(Symbol.for('nodejs.util.inspect.custom'), view);
 }
 
+/**
+ * Give a caller's override map the same redacted `toJSON()` and Node inspect view as the
+ * hydrated config. Secrets are collected at call time, so keys set on the map later are
+ * masked too. Both hooks are non-enumerable: keys, spreads and property reads are unchanged.
+ */
+export function attachOverrideRedactionHooks<T extends object>(overrides: T): T {
+  const view = () =>
+    redactSecretValues(
+      overrides,
+      collectSecretValues(overrides as Record<string, string | undefined>),
+      new WeakSet()
+    );
+  for (const key of ['toJSON', Symbol.for('nodejs.util.inspect.custom')]) {
+    if (Object.hasOwn(overrides, key)) continue;
+    Object.defineProperty(overrides, key, { value: view, enumerable: false });
+  }
+  return overrides;
+}
+
 // Boolean parser
 function parseBoolean(raw: string, key: string, errors: ConfigErrorDetail[]): boolean | undefined {
   const v = raw.trim().toLowerCase();

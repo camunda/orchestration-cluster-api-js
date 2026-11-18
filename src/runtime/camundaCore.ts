@@ -26,7 +26,7 @@ import { defaultHttpClassifier, executeWithHttpRetry, type HttpRetryPolicy } fro
 import { createSupportLogger, type SupportLogger, writeSupportLogPreamble } from './supportLogger';
 import { withCorrelation as _withCorrelation, getCorrelation, wrapFetch } from './telemetry';
 import type { CamundaConfig } from './unifiedConfiguration';
-import { hydrateConfig } from './unifiedConfiguration';
+import { attachOverrideRedactionHooks, hydrateConfig } from './unifiedConfiguration';
 import { ValidationManager } from './validationManager';
 
 // Internal deep-freeze to make exposed config immutable for consumers.
@@ -173,7 +173,20 @@ export class CamundaCore {
     return CamundaCore.#overridesByInstance.get(this) ?? {};
   }
   protected _setOverrides(value: EnvOverrides): void {
-    CamundaCore.#overridesByInstance.set(this, value);
+    CamundaCore.#overridesByInstance.set(this, attachOverrideRedactionHooks(value));
+  }
+
+  /**
+   * Kept for subclasses written against 10.0.x, where this was a `protected` field. Reads,
+   * writes and in-place mutation keep working. Getter-enabled `util.inspect` does invoke
+   * this, so the map carries the same redacted inspect/JSON view as `config`.
+   * @deprecated Use `_getOverrides()` / `_setOverrides()`.
+   */
+  protected get _overrides(): EnvOverrides {
+    return this._getOverrides();
+  }
+  protected set _overrides(value: EnvOverrides) {
+    this._setOverrides(value);
   }
 
   constructor(opts: CamundaOptions = {}) {
