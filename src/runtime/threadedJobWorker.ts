@@ -9,6 +9,12 @@ import {
   nextActivationRetryDelayMs,
 } from './pollBackoff';
 import type { ThreadPool } from './threadPool';
+<<<<<<< HEAD
+=======
+import { projectValidationFailure } from './validationLogging';
+import { stopWorkerGracefully } from './workerGracefulStop';
+import { WorkerStartGate } from './workerStartGate';
+>>>>>>> 7b991597af (fix: log validation failures without job variable content (#626))
 
 type ActivatedJobResult = ActivateJobsResponses[200]['jobs'][number];
 
@@ -460,7 +466,7 @@ export class ThreadedJobWorker {
       if (this._cfg.inputSchema) {
         const parsed = this._cfg.inputSchema.safeParse(variables);
         if (!parsed.success) {
-          this._log.warn('job.validation.variables.failed', parsed.error.flatten());
+          this._log.warn('job.validation.variables.failed', projectValidationFailure(parsed.error));
           this._failValidation(raw as ActivatedJobResult, 'Invalid variables');
           return;
         }
@@ -469,7 +475,7 @@ export class ThreadedJobWorker {
       if (this._cfg.customHeadersSchema) {
         const parsed = this._cfg.customHeadersSchema.safeParse(headers);
         if (!parsed.success) {
-          this._log.warn('job.validation.headers.failed', parsed.error.flatten());
+          this._log.warn('job.validation.headers.failed', projectValidationFailure(parsed.error));
           this._failValidation(raw as ActivatedJobResult, 'Invalid custom headers');
           return;
         }
