@@ -1,3 +1,14 @@
+## [10.0.2](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.1...v10.0.2) (2026-11-19)
+
+
+### Bug Fixes
+
+* derive support-log redaction from the configuration schema ([#623](https://github.com/camunda/orchestration-cluster-api-js/issues/623)) ([#666](https://github.com/camunda/orchestration-cluster-api-js/issues/666)) ([8d3d0a2](https://github.com/camunda/orchestration-cluster-api-js/commit/8d3d0a2f1972a595e2af7a1f19fd40a43075f4f3)), closes [#615](https://github.com/camunda/orchestration-cluster-api-js/issues/615)
+* fail the job when it cannot be dispatched to a thread ([#627](https://github.com/camunda/orchestration-cluster-api-js/issues/627)) ([#674](https://github.com/camunda/orchestration-cluster-api-js/issues/674)) ([ea5afb1](https://github.com/camunda/orchestration-cluster-api-js/commit/ea5afb1661754f9d92badab1563b447ae3f84dde)), closes [#622](https://github.com/camunda/orchestration-cluster-api-js/issues/622)
+* log validation failures without job variable content ([#626](https://github.com/camunda/orchestration-cluster-api-js/issues/626)) ([#672](https://github.com/camunda/orchestration-cluster-api-js/issues/672)) ([42b0b14](https://github.com/camunda/orchestration-cluster-api-js/commit/42b0b14f183ad07968febae7b568892bceb0a365)), closes [#619](https://github.com/camunda/orchestration-cluster-api-js/issues/619)
+* redact credentials from silly-level HTTP body previews ([#625](https://github.com/camunda/orchestration-cluster-api-js/issues/625)) ([#670](https://github.com/camunda/orchestration-cluster-api-js/issues/670)) ([f7e5bcc](https://github.com/camunda/orchestration-cluster-api-js/commit/f7e5bccfffed1e5f512b98d0774ad4b7529612c0)), closes [#617](https://github.com/camunda/orchestration-cluster-api-js/issues/617) [#644](https://github.com/camunda/orchestration-cluster-api-js/issues/644) [#641](https://github.com/camunda/orchestration-cluster-api-js/issues/641)
+* redact secrets when the config or client is stringified (backport ([#668](https://github.com/camunda/orchestration-cluster-api-js/issues/668)) ([a1c8903](https://github.com/camunda/orchestration-cluster-api-js/commit/a1c8903cd2e39539d05716b64b6455cabcce24c1)), closes [#624](https://github.com/camunda/orchestration-cluster-api-js/issues/624) [#616](https://github.com/camunda/orchestration-cluster-api-js/issues/616)
+
 ## [10.0.1](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0...v10.0.1) (2026-10-25)
 
 
