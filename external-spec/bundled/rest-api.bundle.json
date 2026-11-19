@@ -19453,6 +19453,7 @@
                       "deployment": {
                         "isMultiTenancyEnabled": false,
                         "isTenantsApiEnabled": false,
+                        "isWaitStatesEnabled": true,
                         "maxRequestSize": 4194304
                       },
                       "authentication": {
@@ -47904,6 +47905,7 @@
         "required": [
           "isMultiTenancyEnabled",
           "isTenantsApiEnabled",
+          "isWaitStatesEnabled",
           "maxRequestSize"
         ],
         "properties": {
@@ -47917,6 +47919,11 @@
             "type": "boolean",
             "example": false
           },
+          "isWaitStatesEnabled": {
+            "description": "Whether wait-state tracking is enabled.",
+            "type": "boolean",
+            "example": true
+          },
           "maxRequestSize": {
             "description": "The maximum HTTP request size in bytes.",
             "type": "integer",
@@ -47927,6 +47934,10 @@
         "x-properties-added-in-version": [
           {
             "propertyName": "isTenantsApiEnabled",
+            "addedInVersion": "8.11"
+          },
+          {
+            "propertyName": "isWaitStatesEnabled",
             "addedInVersion": "8.11"
           }
         ]
