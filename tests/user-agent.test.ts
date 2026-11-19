@@ -153,6 +153,31 @@ describe('User-Agent attribution (#693)', () => {
       `${SDK_UA} good-app/1.0`
     );
   });
+
+  it('a rejected configure() does not retain its overrides (r4626806581)', () => {
+    const { fn } = recordingFetch();
+    const client = createCamundaClient({
+      env: {},
+      config: {
+        CAMUNDA_REST_ADDRESS: 'https://example.com',
+        CAMUNDA_USER_AGENT: 'good-app/1.0',
+      } as any,
+      fetch: fn as any,
+    });
+    // The invalid agent is rejected …
+    expect(() =>
+      client.configure({
+        config: { CAMUNDA_USER_AGENT: 'bad\nagent', CAMUNDA_SDK_LOG_LEVEL: 'silly' },
+      })
+    ).toThrowError(/CAMUNDA_USER_AGENT/);
+    // … and none of the rejected update is retained: a later unrelated configure()
+    // must neither throw on the stored invalid agent nor apply the rejected settings.
+    expect(() =>
+      client.configure({ config: { CAMUNDA_USER_AGENT: 'good-app/2.0' } })
+    ).not.toThrow();
+    expect(client.getConfig().userAgent).toBe('good-app/2.0');
+    expect(client.getConfig().logLevel).not.toBe('silly');
+  });
 });
 
 describe('User-Agent header selection by platform (#693)', () => {

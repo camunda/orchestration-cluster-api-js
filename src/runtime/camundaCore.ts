@@ -330,11 +330,16 @@ export class CamundaCore {
 
   // Merge new overrides and re-hydrate.
   configure(next: CamundaOptions) {
-    if (next.config) this._setOverrides({ ...this._getOverrides(), ...next.config });
-    // Re-hydrate BEFORE mutating fetch/config state: a hydration failure (e.g. an
-    // invalid CAMUNDA_USER_AGENT, issue #693) must leave the client fully on its
-    // previous configuration rather than half-switched.
-    const { config } = hydrateConfig({ overrides: this._getOverrides(), env: next.env });
+    // Re-hydrate the CANDIDATE override map BEFORE committing anything: a hydration
+    // failure (e.g. an invalid CAMUNDA_USER_AGENT, issue #693) must leave the client
+    // fully on its previous configuration — neither config/fetch state nor the stored
+    // overrides may change, or the rejected update would leak into later configure()
+    // calls (r4626806581).
+    const candidate = next.config
+      ? { ...this._getOverrides(), ...next.config }
+      : this._getOverrides();
+    const { config } = hydrateConfig({ overrides: candidate, env: next.env });
+    if (next.config) this._setOverrides(candidate);
     this._config = deepFreeze(config) as Readonly<CamundaConfig>;
     if (next.fetch) this._baseFetch = next.fetch;
     // Always wrap from the base fetch to avoid accumulating closure layers on repeated configure() calls.
