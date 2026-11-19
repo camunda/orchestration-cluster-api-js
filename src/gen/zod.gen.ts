@@ -7481,6 +7481,9 @@ export const zDeploymentConfigurationResponse = /*#__PURE__*/ (() => z.object({
     isTenantsApiEnabled: z.boolean().register(z.globalRegistry, {
         description: 'Whether the tenants management API and UI are enabled.'
     }),
+    isWaitStatesEnabled: z.boolean().register(z.globalRegistry, {
+        description: 'Whether wait-state tracking is enabled.'
+    }),
     maxRequestSize: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
         description: 'The maximum HTTP request size in bytes.'
     })

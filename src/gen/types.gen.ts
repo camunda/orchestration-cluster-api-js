@@ -11450,6 +11450,10 @@ export type DeploymentConfigurationResponse = {
      */
     isTenantsApiEnabled: boolean;
     /**
+     * Whether wait-state tracking is enabled.
+     */
+    isWaitStatesEnabled: boolean;
+    /**
      * The maximum HTTP request size in bytes.
      */
     maxRequestSize: number;
@@ -24529,7 +24533,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:c9bd06bc250218434886e673d84635174c6fcbc9d94fb467ac254f69056c5d24
+// specHash=sha256:563b0c89df420cb7fdc1727e47ce10625ff5e3a6bc20f714ec7c18b40fc974f5
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
