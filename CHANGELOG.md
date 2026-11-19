@@ -1,3 +1,10 @@
+# [9.2.0](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.1.7...v9.2.0) (2026-11-19)
+
+
+### Features
+
+* send attributable user-agent on rest and oauth requests (backport ([#696](https://github.com/camunda/orchestration-cluster-api-js/issues/696)) ([c55e05d](https://github.com/camunda/orchestration-cluster-api-js/commit/c55e05d81b7e149f476f5ee06d0706339948f157)), closes [#694](https://github.com/camunda/orchestration-cluster-api-js/issues/694) [#694](https://github.com/camunda/orchestration-cluster-api-js/issues/694) [#platform](https://github.com/camunda/orchestration-cluster-api-js/issues/platform) [#694](https://github.com/camunda/orchestration-cluster-api-js/issues/694)
+
 ## [9.1.7](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.1.6...v9.1.7) (2026-11-19)
 
 
