@@ -331,11 +331,14 @@ export class CamundaCore {
   // Merge new overrides and re-hydrate.
   configure(next: CamundaOptions) {
     if (next.config) this._setOverrides({ ...this._getOverrides(), ...next.config });
+    // Re-hydrate BEFORE mutating fetch/config state: a hydration failure (e.g. an
+    // invalid CAMUNDA_USER_AGENT, issue #693) must leave the client fully on its
+    // previous configuration rather than half-switched.
+    const { config } = hydrateConfig({ overrides: this._getOverrides(), env: next.env });
+    this._config = deepFreeze(config) as Readonly<CamundaConfig>;
     if (next.fetch) this._baseFetch = next.fetch;
     // Always wrap from the base fetch to avoid accumulating closure layers on repeated configure() calls.
     this._fetch = withUserAgent(this._baseFetch, () => this._config.userAgent);
-    const { config } = hydrateConfig({ overrides: this._getOverrides(), env: next.env });
-    this._config = deepFreeze(config) as Readonly<CamundaConfig>;
     // Re-wrap fetch if telemetry present OR env auto telemetry toggled
     if (next.telemetry) {
       this._fetch = wrapFetch(this._fetch || (fetch as any), {

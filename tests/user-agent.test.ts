@@ -74,10 +74,92 @@ describe('User-Agent attribution (#693)', () => {
   it('uses a real semver version, not a placeholder', () => {
     expect(packageVersion).toMatch(/^\d+\.\d+\.\d+/);
   });
+
+  it('applies repeated configure() calls to agent and fetch on REST and fresh OAuth requests', async () => {
+    // Start with an environment-supplied agent, then change both CAMUNDA_USER_AGENT
+    // and the fetch implementation through configure(): subsequent REST requests and
+    // a fresh OAuth token fetch must use only the latest agent, with the SDK
+    // identifier exactly once.
+    const first = recordingFetch();
+    const client = createCamundaClient({
+      env: { CAMUNDA_USER_AGENT: 'env-app/0.1' },
+      config: {
+        CAMUNDA_REST_ADDRESS: 'https://example.com',
+        CAMUNDA_AUTH_STRATEGY: 'OAUTH',
+        CAMUNDA_OAUTH_URL: 'https://auth.example.com/oauth/token',
+        CAMUNDA_CLIENT_ID: 'id',
+        CAMUNDA_CLIENT_SECRET: 'secret',
+      } as any,
+      fetch: first.fn as any,
+    });
+    await client.getTopology();
+    expect(first.calls.find((c) => c.url.includes('/oauth/token'))?.headers.get('user-agent')).toBe(
+      `${SDK_UA} env-app/0.1`
+    );
+
+    const second = recordingFetch();
+    client.configure({
+      config: { CAMUNDA_USER_AGENT: 'cfg-app/1.0' },
+      fetch: second.fn as any,
+    });
+    await client.getTopology();
+
+    const rest = second.calls.find((c) => !c.url.includes('/oauth/token'));
+    expect(rest?.headers.get('user-agent')).toBe(`${SDK_UA} cfg-app/1.0`);
+    // The SDK identifier appears exactly once — no duplicated wrapping.
+    const restUa = rest?.headers.get('user-agent') ?? '';
+    expect(restUa.split(SDK_UA).length - 1).toBe(1);
+    // The replaced fetch implementation no longer receives traffic.
+    expect(second.calls.length).toBeGreaterThan(0);
+    const staleRest = first.calls.filter((c) => !c.url.includes('/oauth/token'));
+    expect(staleRest.length).toBe(1);
+
+    // Force a fresh OAuth token fetch: it must carry only the latest agent.
+    await client.forceAuthRefresh();
+    const token = second.calls.find((c) => c.url.includes('/oauth/token'));
+    expect(token?.headers.get('user-agent')).toBe(`${SDK_UA} cfg-app/1.0`);
+    const tokenUa = token?.headers.get('user-agent') ?? '';
+    expect(tokenUa.split(SDK_UA).length - 1).toBe(1);
+  });
+
+  it('a configure() with an invalid agent fails atomically, keeping the previous config', async () => {
+    const { fn, calls } = recordingFetch();
+    const client = createCamundaClient({
+      env: {},
+      config: {
+        CAMUNDA_REST_ADDRESS: 'https://example.com',
+        CAMUNDA_AUTH_STRATEGY: 'OAUTH',
+        CAMUNDA_OAUTH_URL: 'https://auth.example.com/oauth/token',
+        CAMUNDA_CLIENT_ID: 'id',
+        CAMUNDA_CLIENT_SECRET: 'secret',
+        CAMUNDA_USER_AGENT: 'good-app/1.0',
+      } as any,
+      fetch: fn as any,
+    });
+    // An invalid replacement agent must throw from configure() …
+    const replacement = recordingFetch();
+    expect(() =>
+      client.configure({
+        config: { CAMUNDA_USER_AGENT: 'bad\nagent' },
+        fetch: replacement.fn as any,
+      })
+    ).toThrowError(/CAMUNDA_USER_AGENT/);
+    // … and leave the client fully on its previous configuration and fetch.
+    expect(client.getConfig().userAgent).toBe('good-app/1.0');
+    await client.getTopology();
+    expect(calls.length).toBeGreaterThan(0);
+    expect(replacement.calls.length).toBe(0);
+    expect(calls.find((c) => !c.url.includes('/oauth/token'))?.headers.get('user-agent')).toBe(
+      `${SDK_UA} good-app/1.0`
+    );
+  });
 });
 
 describe('User-Agent header selection by platform (#693)', () => {
   it('omits any identifier header in browser builds (no forbidden User-Agent, no CORS preflight)', async () => {
+    // The default-selection browser case lives in user-agent.browser.test.ts: mocking
+    // the `#platform` seam is file-scoped in vitest, so it cannot share a file with
+    // tests that rely on the Node resolution.
     const { withUserAgent, userAgentHeaders } = await import('../src/runtime/userAgent');
     const seen: (RequestInit | undefined)[] = [];
     const f = withUserAgent(
