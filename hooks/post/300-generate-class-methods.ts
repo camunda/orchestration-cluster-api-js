@@ -362,7 +362,9 @@ export type ${o.opId}Consistency = {
         methods.push(
           '      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {'
         );
-        methods.push('        envelope.body.tenantId = this._config.defaultTenantId;');
+        methods.push(
+          '        envelope.body = { ...envelope.body, tenantId: this._config.defaultTenantId };'
+        );
         methods.push(
           "        this._log.trace(() => ['tenant.default.inject', { op: '" +
             o.originalOpId +
@@ -377,7 +379,9 @@ export type ${o.opId}Consistency = {
         methods.push(
           '      if (envelope.body && this._config.defaultTenantId !== undefined && this._config.defaultTenantId !== null && (!Array.isArray(envelope.body.tenantIds) || envelope.body.tenantIds.length === 0)) {'
         );
-        methods.push('        envelope.body.tenantIds = [this._config.defaultTenantId];');
+        methods.push(
+          '        envelope.body = { ...envelope.body, tenantIds: [this._config.defaultTenantId] };'
+        );
         methods.push(
           "        this._log.trace(() => ['tenant.default.inject', { op: '" +
             o.originalOpId +
