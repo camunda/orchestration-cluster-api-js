@@ -39,6 +39,7 @@ function recordingFetch() {
 async function run(extra: Record<string, string> = {}) {
   const { fn, calls } = recordingFetch();
   const client = createCamundaClient({
+    env: {},
     config: {
       CAMUNDA_REST_ADDRESS: 'https://example.com',
       CAMUNDA_AUTH_STRATEGY: 'OAUTH',
@@ -75,25 +76,37 @@ describe('User-Agent attribution (#693)', () => {
   });
 });
 
-describe('User-Agent in browsers (#693)', () => {
-  it('sends the identifier in X-Camunda-Client when User-Agent cannot be set', async () => {
-    const { withUserAgent } = await import('../src/runtime/userAgent');
+describe('User-Agent header selection by platform (#693)', () => {
+  it('omits any identifier header in browser builds (no forbidden User-Agent, no CORS preflight)', async () => {
+    const { withUserAgent, userAgentHeaders } = await import('../src/runtime/userAgent');
+    const seen: (RequestInit | undefined)[] = [];
+    const f = withUserAgent(
+      async (_i, init) => {
+        seen.push(init);
+        return new Response('{}');
+      },
+      () => 'my-app/1',
+      null
+    );
+    await f('https://example.com/x', { headers: { 'content-type': 'x' } });
+    const h = new Headers(seen[0]?.headers);
+    expect([...h.keys()]).toEqual(['content-type']);
+    expect(userAgentHeaders('my-app/1', null)).toEqual({});
+  });
+
+  it('selects User-Agent on Node even when browser-like globals exist', async () => {
+    const { userAgentHeaderName } = await import('../src/runtime/userAgent');
     vi.stubGlobal('window', {});
     vi.stubGlobal('document', {});
     try {
-      const seen: Headers[] = [];
-      const f = withUserAgent(
-        async (_i, init) => {
-          seen.push(new Headers(init?.headers));
-          return new Response('{}');
-        },
-        () => 'my-app/1'
-      );
-      await f('https://example.com/x');
-      expect(seen[0].get('x-camunda-client')).toBe(`${SDK_UA} my-app/1`);
-      expect(seen[0].get('user-agent')).toBeNull();
+      expect(userAgentHeaderName()).toBe('User-Agent');
     } finally {
       vi.unstubAllGlobals();
     }
+  });
+
+  it('browser platform module exposes no Node built-ins (drives header omission)', async () => {
+    const browser = await import('../src/runtime/platform/browser');
+    expect(browser.node).toBeUndefined();
   });
 });

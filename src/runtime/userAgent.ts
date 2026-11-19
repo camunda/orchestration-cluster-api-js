@@ -1,4 +1,5 @@
 import { packageVersion } from './version';
+import { node } from '#platform';
 
 /**
  * SDK product token sent as the first name in the `User-Agent` header (issue #693), so
@@ -7,10 +8,16 @@ import { packageVersion } from './version';
 export const SDK_USER_AGENT = `camunda-orchestration-sdk-js/${packageVersion}`;
 
 /**
- * Browsers forbid (or silently drop) a script-set `User-Agent`; there we send the same
- * value in `X-Camunda-Client` instead.
+ * Name of the header carrying the SDK identifier on this platform, or `null` when none
+ * is sent. Selection follows the `#platform` seam (not browser globals), so Node processes
+ * with DOM shims still send `User-Agent`, and browser bundles (including Web Workers) send
+ * nothing: browsers forbid a script-set `User-Agent`, and any custom header would turn
+ * simple cross-origin requests (e.g. the form-encoded OAuth POST) into CORS preflights the
+ * server may reject.
  */
-export const BROWSER_CLIENT_HEADER = 'X-Camunda-Client';
+export function userAgentHeaderName(): string | null {
+  return node ? 'User-Agent' : null;
+}
 
 /** Builds the header value: SDK identifier first, then any application-supplied agent. */
 export function buildUserAgent(appUserAgent?: string): string {
@@ -18,16 +25,12 @@ export function buildUserAgent(appUserAgent?: string): string {
   return extra ? `${SDK_USER_AGENT} ${extra}` : SDK_USER_AGENT;
 }
 
-function isBrowser(): boolean {
-  return (
-    typeof (globalThis as any).window !== 'undefined' &&
-    typeof (globalThis as any).document !== 'undefined'
-  );
-}
-
-/** Name of the header carrying the SDK identifier in the current runtime. */
-export function userAgentHeaderName(): string {
-  return isBrowser() ? BROWSER_CLIENT_HEADER : 'User-Agent';
+/** Header record to spread into a request (empty where no identifier header is sent). */
+export function userAgentHeaders(
+  appUserAgent?: string,
+  name: string | null = userAgentHeaderName()
+): Record<string, string> {
+  return name ? { [name]: buildUserAgent(appUserAgent) } : {};
 }
 
 type FetchLike = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
@@ -38,11 +41,12 @@ type FetchLike = (input: RequestInfo | URL, init?: RequestInit) => Promise<Respo
  */
 export function withUserAgent(
   base: FetchLike | undefined,
-  getAppUserAgent: () => string | undefined
+  getAppUserAgent: () => string | undefined,
+  name: string | null = userAgentHeaderName()
 ): FetchLike {
   return (input, init) => {
     const fetchImpl: FetchLike = base ?? ((i, n) => fetch(i, n));
-    const name = userAgentHeaderName();
+    if (!name) return fetchImpl(input, init);
     const value = buildUserAgent(getAppUserAgent());
     if (!init?.headers && typeof Request !== 'undefined' && input instanceof Request) {
       const headers = new Headers(input.headers);

@@ -8,7 +8,7 @@ import type {
   TelemetryHooks,
 } from './telemetry';
 import type { CamundaConfig } from './unifiedConfiguration';
-import { buildUserAgent, userAgentHeaderName } from './userAgent';
+import { userAgentHeaders } from './userAgent';
 import { node } from '#platform';
 
 /** Auth error codes */
@@ -235,7 +235,7 @@ class OAuthManager {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            [userAgentHeaderName()]: buildUserAgent(this.cfg.userAgent),
+            ...userAgentHeaders(this.cfg.userAgent),
           },
           body: body.toString(),
           signal: controller.signal,
