@@ -7476,11 +7476,14 @@ export const zTenantResult = /*#__PURE__*/ (() => z.object({
 }))();
 
 export const zCamundaUserResult = /*#__PURE__*/ (() => z.object({
-    username: zUsername,
+    isAnonymous: z.boolean().register(z.globalRegistry, {
+        description: 'Whether the caller has no identity. Only an unprotected API answers an anonymous caller; a protected API returns `401` instead. When `true`, `username`, `displayName` and `email` are `null` and the lists are empty.'
+    }),
+    username: zUsername.nullable(),
     displayName: z.string().nullable(),
     email: z.string().nullable(),
     authorizedComponents: z.array(z.string()).register(z.globalRegistry, {
-        description: 'The web components the user is authorized to use. When authorizations are disabled for the cluster, this always returns `["*"]`, regardless of the user\'s actual permissions, since access is not restricted in that case.'
+        description: 'The web components the user is authorized to use. When authorizations are disabled for the cluster, this always returns `["*"]`, regardless of the user\'s actual permissions, since access is not restricted in that case. An anonymous caller of an unprotected API also gets `["*"]`, for the same reason.'
     }),
     tenants: z.array(zTenantResult).register(z.globalRegistry, {
         description: 'The tenants the user is a member of.'
