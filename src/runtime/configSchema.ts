@@ -89,6 +89,10 @@ export const SCHEMA = {
     doc: 'Basic auth password (required when CAMUNDA_AUTH_STRATEGY=BASIC).',
     requiredWhen: { key: 'CAMUNDA_AUTH_STRATEGY', equals: 'BASIC' },
   },
+  CAMUNDA_USER_AGENT: {
+    type: 'string',
+    doc: 'Application user agent appended after the SDK identifier (camunda-orchestration-sdk-js/<version>) in the User-Agent header. Never replaces the SDK identifier.',
+  },
   CAMUNDA_SDK_VALIDATION: {
     type: 'string',
     default: 'req:none,res:none',

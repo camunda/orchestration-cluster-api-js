@@ -71,4 +71,31 @@ describe('unified configuration hydration', () => {
     });
     expect(config.auth.strategy).toBe('OAUTH');
   });
+
+  // Issue #693: an application user agent is placed into a `Headers` value at request
+  // time, so bytes outside the HTTP token grammar (or obs-text like 🚀) would throw
+  // from `Headers.set()` deep in the first REST/OAuth request. Hydration must reject
+  // such values with an actionable configuration error instead.
+  it('rejects a CAMUNDA_USER_AGENT that is not a valid header value', () => {
+    for (const bad of ['my-app/🚀', 'line1\nline2', 'cr\rinjection', 'null\0byte']) {
+      let thrown: any;
+      try {
+        hydrateConfig({ env: { CAMUNDA_USER_AGENT: bad } });
+      } catch (e: any) {
+        thrown = e;
+      }
+      expect(thrown, `expected rejection for ${JSON.stringify(bad)}`).toBeDefined();
+      expect(thrown instanceof CamundaConfigurationError).toBe(true);
+      expect(
+        thrown.errors.some(
+          (d: any) => d.code === 'CONFIG_INVALID_VALUE' && d.key === 'CAMUNDA_USER_AGENT'
+        )
+      ).toBe(true);
+    }
+  });
+
+  it('accepts a CAMUNDA_USER_AGENT that is a valid header value', () => {
+    const { config } = hydrateConfig({ env: { CAMUNDA_USER_AGENT: 'my-app/1.2.3 (comment)' } });
+    expect(config.userAgent).toBe('my-app/1.2.3 (comment)');
+  });
 });
