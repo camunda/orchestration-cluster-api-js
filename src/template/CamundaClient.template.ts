@@ -6,6 +6,7 @@ import { createAuthFacade } from '../runtime/auth';
 import type { CamundaConfig } from '../runtime/unifiedConfiguration';
 import type { EnvOverrides } from '../runtime/configSchema';
 import { hydrateConfig } from '../runtime/unifiedConfiguration';
+import { withUserAgent } from '../runtime/userAgent';
 import { ConsistencyOptions, eventualPoll } from '../runtime/eventual';
 import { installAuthInterceptor } from '../runtime/installAuthInterceptor';
 import { createLogger, type Logger, type LogLevel, type LogTransport } from '../runtime/logger';
@@ -186,7 +187,7 @@ export class CamundaClient {
     });
     const baseFetch = opts.fetch;
     this._baseFetch = baseFetch;
-    this._fetch = baseFetch;
+    this._fetch = withUserAgent(baseFetch, () => this._config.userAgent);
     // Telemetry wrap (after logger & config known). If user provided explicit telemetry, honor it.
     // Else if environment enabled auto telemetry logging, wrap with mirrorToLog + optional correlation.
     if (opts.telemetry) {
@@ -310,12 +311,20 @@ export class CamundaClient {
 
   // Merge new overrides and re-hydrate.
   configure(next: CamundaOptions) {
-    if (next.config) this._setOverrides({ ...this._getOverrides(), ...next.config });
+    // Re-hydrate the CANDIDATE override map BEFORE committing anything: a hydration
+    // failure (e.g. an invalid CAMUNDA_USER_AGENT, issue #693) must leave the client
+    // fully on its previous configuration — neither config/fetch state nor the stored
+    // overrides may change, or the rejected update would leak into later configure()
+    // calls.
+    const candidate = next.config
+      ? { ...this._getOverrides(), ...next.config }
+      : this._getOverrides();
+    const { config } = hydrateConfig({ overrides: candidate, env: next.env });
+    if (next.config) this._setOverrides(candidate);
+    this._config = deepFreeze(config) as Readonly<CamundaConfig>;
     if (next.fetch) this._baseFetch = next.fetch;
     // Always wrap from the base fetch to avoid accumulating closure layers on repeated configure() calls.
-    this._fetch = this._baseFetch;
-    const { config } = hydrateConfig({ overrides: this._getOverrides(), env: next.env });
-    this._config = deepFreeze(config) as Readonly<CamundaConfig>;
+    this._fetch = withUserAgent(this._baseFetch, () => this._config.userAgent);
     // Re-wrap fetch if telemetry present OR env auto telemetry toggled
     if (next.telemetry) {
       this._fetch = wrapFetch(this._fetch || (fetch as any), {

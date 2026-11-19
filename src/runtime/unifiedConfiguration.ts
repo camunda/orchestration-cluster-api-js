@@ -42,6 +42,7 @@ export enum ConfigErrorCode {
   CONFIG_INVALID_ENUM = 'CONFIG_INVALID_ENUM',
   CONFIG_INVALID_BOOLEAN = 'CONFIG_INVALID_BOOLEAN',
   CONFIG_INVALID_INTEGER = 'CONFIG_INVALID_INTEGER',
+  CONFIG_INVALID_VALUE = 'CONFIG_INVALID_VALUE',
   CONFIG_INVALID_VALIDATION_SYNTAX = 'CONFIG_INVALID_VALIDATION_SYNTAX',
 }
 
@@ -102,6 +103,8 @@ export interface CamundaConfig {
     raw: string; // normalized raw spec for reproducibility
   };
   logLevel: 'silent' | 'error' | 'warn' | 'info' | 'debug' | 'trace';
+  /** Application user agent appended after the SDK identifier (CAMUNDA_USER_AGENT). */
+  userAgent?: string;
   eventual?: { pollDefaultMs: number };
   // authVerbose removed (pre-release cleanup)
   mtls?: {
@@ -589,6 +592,22 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
     });
   }
 
+  // The application user agent is placed into a `User-Agent` header value at request
+  // time (issue #693). Values outside the HTTP field-value grammar (controls such as
+  // CR/LF/NUL, or non-Latin-1 bytes like 🚀) make `Headers.set()` throw deep inside the
+  // first REST or OAuth request — fail fast here with an actionable error instead.
+  // Matches the fetch spec's field-value definition: any number of HTAB/SP/VCHAR or
+  // obs-text (0x80–0xFF) bytes.
+  const userAgentRaw = rawMap.CAMUNDA_USER_AGENT?.trim();
+  if (userAgentRaw && !/^[\t\x20-\x7E\x80-\xFF]*$/.test(userAgentRaw)) {
+    errors.push({
+      code: ConfigErrorCode.CONFIG_INVALID_VALUE,
+      key: 'CAMUNDA_USER_AGENT',
+      message:
+        'CAMUNDA_USER_AGENT is not a valid HTTP header value: it must contain only printable Latin-1 characters (no control characters such as CR/LF, and no characters above U+00FF).',
+    });
+  }
+
   // Parse validation config after potential errors so we gather full set
   const validationRaw = rawMap.CAMUNDA_SDK_VALIDATION || 'req:none,res:none';
   const validation = parseValidation(validationRaw, errors);
@@ -783,6 +802,7 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
     },
     validation: { req: validation.req, res: validation.res, raw: validation.raw },
     logLevel: (rawMap.CAMUNDA_SDK_LOG_LEVEL as CamundaConfig['logLevel']) || 'error',
+    userAgent: rawMap.CAMUNDA_USER_AGENT?.trim() || undefined,
     eventual: {
       pollDefaultMs: parseInt(rawMap.CAMUNDA_SDK_EVENTUAL_POLL_DEFAULT_MS || '500', 10),
     },
