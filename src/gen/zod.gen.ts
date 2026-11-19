@@ -338,6 +338,7 @@ export const zAdvancedAuditLogEntityKeyFilter = /*#__PURE__*/ (() => z.object({
  */
 export const zPermissionTypeEnum = /*#__PURE__*/ (() => z.enum([
     'ACCESS',
+    'ANSWER',
     'CANCEL_PROCESS_INSTANCE',
     'CLAIM',
     'CLAIM_USER_TASK',
@@ -407,6 +408,7 @@ export const zResourceTypeEnum = /*#__PURE__*/ (() => z.enum([
     'GROUP',
     'MAPPING_RULE',
     'MESSAGE',
+    'PROBE',
     'PROCESS_DEFINITION',
     'RESOURCE',
     'ROLE',
