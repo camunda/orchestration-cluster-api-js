@@ -20,6 +20,7 @@
 | `CAMUNDA_AUTH_STRATEGY` | enum(NONE \| OAUTH \| BASIC) | `NONE` | Optional |  | Authentication strategy. |
 | `CAMUNDA_BASIC_AUTH_USERNAME` | string | — | When CAMUNDA_AUTH_STRATEGY=BASIC |  | Basic auth username (required when CAMUNDA_AUTH_STRATEGY=BASIC). |
 | `CAMUNDA_BASIC_AUTH_PASSWORD` | string | — | When CAMUNDA_AUTH_STRATEGY=BASIC | secret | Basic auth password (required when CAMUNDA_AUTH_STRATEGY=BASIC). |
+| `CAMUNDA_USER_AGENT` | string | — | No default |  | Application user agent appended after the SDK identifier (camunda-orchestration-sdk-js/<version>) in the User-Agent header. Never replaces the SDK identifier. |
 | `CAMUNDA_SDK_VALIDATION` | string | `req:none,res:none` | Optional |  | Validation mini-language controlling req/res modes. |
 | `CAMUNDA_SDK_LOG_LEVEL` | enum(silent \| error \| warn \| info \| debug \| trace \| silly) | `info` | Optional |  | SDK log level. "silly" adds unsafe deep diagnostics including HTTP request and response bodies. |
 | `CAMUNDA_SDK_TELEMETRY_LOG` | boolean | `false` | Optional |  | Emit telemetry (auth/http/retry) events to the SDK logger automatically (no code). |
