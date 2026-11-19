@@ -16,7 +16,7 @@ import { createCamundaClient } from '../src';
 const root = join(__dirname, '..');
 
 function injectingOps(): string[] {
-  const src = readFileSync(join(root, 'src', 'gen', 'operations.gen.ts'), 'utf8');
+  const src = readFileSync(join(root, 'src', 'gen', 'CamundaClient.ts'), 'utf8');
   const ops = new Set<string>();
   for (const m of src.matchAll(/'tenant\.default\.inject', \{ op: '([A-Za-z0-9]+)'/g)) {
     ops.add(m[1]);

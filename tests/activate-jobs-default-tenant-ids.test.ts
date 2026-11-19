@@ -108,13 +108,9 @@ describe('default tenantIds (plural) injection — issue #170', () => {
       // Use a generous slice (4 KB) and search within it.
       const slice = clientSrc.slice(start, start + 4096);
       const ok =
-<<<<<<< HEAD
-        /envelope\.body\.tenantIds\s*=/.test(slice) && /this\._config\.defaultTenantId/.test(slice);
-=======
-        /envelope\.body = \{ \.\.\.envelope\.body, tenantIds: \[rt\._config\.defaultTenantId\] \}/.test(
+        /envelope\.body = \{ \.\.\.envelope\.body, tenantIds: \[this\._config\.defaultTenantId\] \}/.test(
           slice
         );
->>>>>>> fd1b8b3e1f (fix: stop default-tenant injection from mutating the caller's request (#688))
       if (!ok) missing.push(opId);
     }
     expect(missing).toEqual([]);
