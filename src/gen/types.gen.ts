@@ -1671,9 +1671,13 @@ export type OwnAuthorizationSearchResult = AuthorizationSearchResult & {
 
 export type CamundaUserResult = {
     /**
-     * The username of the user.
+     * Whether the caller has no identity. Only an unprotected API answers an anonymous caller; a protected API returns `401` instead. When `true`, `username`, `displayName` and `email` are `null` and the lists are empty.
      */
-    username: Username;
+    isAnonymous: boolean;
+    /**
+     * The username of the user. `null` when `isAnonymous` is `true`.
+     */
+    username: Username | null;
     /**
      * The display name of the user.
      */
@@ -1683,7 +1687,7 @@ export type CamundaUserResult = {
      */
     email: string | null;
     /**
-     * The web components the user is authorized to use. When authorizations are disabled for the cluster, this always returns `["*"]`, regardless of the user's actual permissions, since access is not restricted in that case.
+     * The web components the user is authorized to use. When authorizations are disabled for the cluster, this always returns `["*"]`, regardless of the user's actual permissions, since access is not restricted in that case. An anonymous caller of an unprotected API also gets `["*"]`, for the same reason.
      */
     authorizedComponents: Array<string>;
     /**
@@ -23916,7 +23920,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:4f859bb25976a5cb65013e1576979c4f636052de039093f0c258de6752ccc10d
+// specHash=sha256:f1b5abf8965a948a5bd39e8dff1be0ec2a7843de7e32a4cf67976e4017f62d2b
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

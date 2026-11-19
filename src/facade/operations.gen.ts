@@ -3726,7 +3726,7 @@ export function getAuditLog(options: Parameters<typeof _getAuditLog>[0] | undefi
 /**
  * Get current user
  *
- * Retrieves the current authenticated user.
+ * Retrieves the current authenticated user. On an unprotected API (`camunda.security.authentication.unprotected-api=true`) a caller without an identity gets a result with `isAnonymous` set to `true` instead of a `401`, because no credentials can authenticate it there.
   *
  * @example Get authentication info
  * ```ts
@@ -7414,4 +7414,4 @@ export function updateUserTask(options?: Parameters<typeof _updateUserTask>[0]):
   return toCancelable(signal => _updateUserTask({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
-// SENTINEL_FACADE_PREWRITE hash=00ec55ba24c4dcd0 totalWrappers=244 elements=1508 physicalLines=3908
+// SENTINEL_FACADE_PREWRITE hash=40df1c8b261dbf79 totalWrappers=244 elements=1508 physicalLines=3908
