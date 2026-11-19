@@ -1,10 +1,11 @@
 name: API compatibility
 
 # Blocks PRs to stable branches whose public TypeScript API would stop existing customer
-# code from compiling, compared with the last release published from that branch (see
-# scripts/api-compat.ts). When a break is intended (e.g. a bug fix that must change the
-# API), apply the `api-break-approved` label: the check still runs and lists the breaks,
-# but passes. The release workflow repeats the check on the code it is about to publish.
+# code from compiling, compared with the PR's base branch (see scripts/api-compat.ts), so a
+# PR answers only for its own changes. When a break is intended (e.g. a bug fix that must
+# change the API), apply the `api-break-approved` label: the check still runs and lists the
+# breaks, but passes. The release workflow checks the code it is about to publish against
+# the last release of the branch.
 
 on:
   pull_request:
@@ -46,15 +47,30 @@ jobs:
       - name: Build type declarations
         run: npm run build:types
 
+      - name: Build the base branch's type declarations
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          mkdir "$RUNNER_TEMP/api-compat-base"
+          git archive "$BASE_SHA" | tar -x -C "$RUNNER_TEMP/api-compat-base"
+          cd "$RUNNER_TEMP/api-compat-base"
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run -s build:types
+
       - name: Check API compatibility
         env:
-          # stable/<N>: compared with the newest published N.x.y. A branch with no N.x
-          # release yet (just cut from main) has nothing to compare with and passes.
+          # stable/<N> with no N.x release yet (just cut from main) has no published API to
+          # protect and passes.
           MAJOR: ${{ github.base_ref }}
           APPROVED: ${{ contains(github.event.pull_request.labels.*.name, 'api-break-approved') }}
         run: |
+          released=$(npm run -s api-compat -- --print-baseline-major "${MAJOR#stable/}") || exit 2
+          if [ -z "$released" ]; then
+            echo "::notice::No ${MAJOR#stable/}.x release published yet; nothing to protect."
+            exit 0
+          fi
           set +e
-          npm run -s api-compat -- --baseline-major "${MAJOR#stable/}"
+          npm run -s api-compat -- --baseline "$RUNNER_TEMP/api-compat-base"
           rc=$?
           set -e
           if [ "$rc" -eq 1 ] && [ "$APPROVED" = "true" ]; then
