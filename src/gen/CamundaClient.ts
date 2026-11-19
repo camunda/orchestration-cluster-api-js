@@ -1728,7 +1728,7 @@ export class CamundaClient {
       let envelope: any = {};
       envelope.body = _body;
       if (envelope.body && this._config.defaultTenantId !== undefined && this._config.defaultTenantId !== null && (!Array.isArray(envelope.body.tenantIds) || envelope.body.tenantIds.length === 0)) {
-        envelope.body.tenantIds = [this._config.defaultTenantId];
+        envelope.body = { ...envelope.body, tenantIds: [this._config.defaultTenantId] };
         this._log.trace(() => ['tenant.default.inject', { op: 'activateJobs', tenantIds: [this._config.defaultTenantId] }]);
       }
       if (this._validation.settings.req !== 'none') {
@@ -2745,7 +2745,7 @@ export class CamundaClient {
       let envelope: any = {};
       envelope.body = _body;
       if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-        envelope.body.tenantId = this._config.defaultTenantId;
+        envelope.body = { ...envelope.body, tenantId: this._config.defaultTenantId };
         this._log.trace(() => ['tenant.default.inject', { op: 'broadcastSignal', tenant: this._config.defaultTenantId }]);
       }
       if (this._validation.settings.req !== 'none') {
@@ -3215,7 +3215,7 @@ export class CamundaClient {
       let envelope: any = {};
       envelope.body = _body;
       if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-        envelope.body.tenantId = this._config.defaultTenantId;
+        envelope.body = { ...envelope.body, tenantId: this._config.defaultTenantId };
         this._log.trace(() => ['tenant.default.inject', { op: 'correlateMessage', tenant: this._config.defaultTenantId }]);
       }
       if (this._validation.settings.req !== 'none') {
@@ -3444,7 +3444,7 @@ export class CamundaClient {
       let envelope: any = {};
       envelope.body = _body;
       if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-        envelope.body.tenantId = this._config.defaultTenantId;
+        envelope.body = { ...envelope.body, tenantId: this._config.defaultTenantId };
         this._log.trace(() => ['tenant.default.inject', { op: 'createDeployment', tenant: this._config.defaultTenantId }]);
       }
       if (this._validation.settings.req !== 'none') {
@@ -4194,7 +4194,7 @@ export class CamundaClient {
       let envelope: any = {};
       envelope.body = _body;
       if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-        envelope.body.tenantId = this._config.defaultTenantId;
+        envelope.body = { ...envelope.body, tenantId: this._config.defaultTenantId };
         this._log.trace(() => ['tenant.default.inject', { op: 'createProcessInstance', tenant: this._config.defaultTenantId }]);
       }
       if (this._validation.settings.req !== 'none') {
@@ -5653,7 +5653,7 @@ export class CamundaClient {
       let envelope: any = {};
       envelope.body = _body;
       if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-        envelope.body.tenantId = this._config.defaultTenantId;
+        envelope.body = { ...envelope.body, tenantId: this._config.defaultTenantId };
         this._log.trace(() => ['tenant.default.inject', { op: 'evaluateConditionals', tenant: this._config.defaultTenantId }]);
       }
       if (this._validation.settings.req !== 'none') {
@@ -5754,7 +5754,7 @@ export class CamundaClient {
       let envelope: any = {};
       envelope.body = _body;
       if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-        envelope.body.tenantId = this._config.defaultTenantId;
+        envelope.body = { ...envelope.body, tenantId: this._config.defaultTenantId };
         this._log.trace(() => ['tenant.default.inject', { op: 'evaluateDecision', tenant: this._config.defaultTenantId }]);
       }
       if (this._validation.settings.req !== 'none') {
@@ -5831,7 +5831,7 @@ export class CamundaClient {
       let envelope: any = {};
       envelope.body = _body;
       if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-        envelope.body.tenantId = this._config.defaultTenantId;
+        envelope.body = { ...envelope.body, tenantId: this._config.defaultTenantId };
         this._log.trace(() => ['tenant.default.inject', { op: 'evaluateExpression', tenant: this._config.defaultTenantId }]);
       }
       if (this._validation.settings.req !== 'none') {
@@ -10174,7 +10174,7 @@ export class CamundaClient {
       let envelope: any = {};
       envelope.body = _body;
       if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
-        envelope.body.tenantId = this._config.defaultTenantId;
+        envelope.body = { ...envelope.body, tenantId: this._config.defaultTenantId };
         this._log.trace(() => ['tenant.default.inject', { op: 'publishMessage', tenant: this._config.defaultTenantId }]);
       }
       if (this._validation.settings.req !== 'none') {
