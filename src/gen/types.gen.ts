@@ -9674,13 +9674,15 @@ export type ProcessDefinitionFilter = {
      * Filter by the process definition's state.
      * When not set, process definitions in any state are returned.
      * Set to `ACTIVE` to exclude draining and deleted definitions (recommended for most use cases).
+     * Set to `SUSPENDED` to return only definitions that are suspended, so that no new
+     * process instances can be created from them.
      * Set to `DRAINING` to return only definitions that are being deleted but still have
      * active process instances draining.
      * Set to `DELETED` to return only definitions that have been deleted but are still
      * retained in secondary storage.
      *
      */
-    state?: 'ACTIVE' | 'DRAINING' | 'DELETED';
+    state?: 'ACTIVE' | 'DRAINING' | 'DELETED' | 'SUSPENDED';
 };
 
 export type ProcessDefinitionSearchQueryResult = SearchQueryResponse & {
@@ -9727,9 +9729,10 @@ export type ProcessDefinitionResult = {
      * The state of this process definition.
      * `DRAINING` indicates the definition is being deleted but still has active process
      * instances draining before it is removed.
+     * `SUSPENDED` indicates no new process instances can be created from the definition.
      *
      */
-    state: 'ACTIVE' | 'DRAINING' | 'DELETED';
+    state: 'ACTIVE' | 'DRAINING' | 'DELETED' | 'SUSPENDED';
 };
 
 /**
@@ -24526,7 +24529,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:b3f76640cfd9a8771b984eeb0967bbcd60e2f81b262f82f8ffdf86999b38f4df
+// specHash=sha256:c9bd06bc250218434886e673d84635174c6fcbc9d94fb467ac254f69056c5d24
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

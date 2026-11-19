@@ -5534,9 +5534,10 @@ export const zProcessDefinitionFilter = /*#__PURE__*/ (() => z.object({
     state: z.enum([
         'ACTIVE',
         'DRAINING',
-        'DELETED'
+        'DELETED',
+        'SUSPENDED'
     ]).register(z.globalRegistry, {
-        description: 'Filter by the process definition\'s state.\nWhen not set, process definitions in any state are returned.\nSet to `ACTIVE` to exclude draining and deleted definitions (recommended for most use cases).\nSet to `DRAINING` to return only definitions that are being deleted but still have\nactive process instances draining.\nSet to `DELETED` to return only definitions that have been deleted but are still\nretained in secondary storage.\n'
+        description: 'Filter by the process definition\'s state.\nWhen not set, process definitions in any state are returned.\nSet to `ACTIVE` to exclude draining and deleted definitions (recommended for most use cases).\nSet to `SUSPENDED` to return only definitions that are suspended, so that no new\nprocess instances can be created from them.\nSet to `DRAINING` to return only definitions that are being deleted but still have\nactive process instances draining.\nSet to `DELETED` to return only definitions that have been deleted but are still\nretained in secondary storage.\n'
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Process definition search filter.'
@@ -5560,9 +5561,10 @@ export const zProcessDefinitionResult = /*#__PURE__*/ (() => z.object({
     state: z.enum([
         'ACTIVE',
         'DRAINING',
-        'DELETED'
+        'DELETED',
+        'SUSPENDED'
     ]).register(z.globalRegistry, {
-        description: 'The state of this process definition.\n`DRAINING` indicates the definition is being deleted but still has active process\ninstances draining before it is removed.\n'
+        description: 'The state of this process definition.\n`DRAINING` indicates the definition is being deleted but still has active process\ninstances draining before it is removed.\n`SUSPENDED` indicates no new process instances can be created from the definition.\n'
     })
 }))();
 
