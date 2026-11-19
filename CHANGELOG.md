@@ -1,3 +1,10 @@
+# [11.0.0-alpha.6](https://github.com/camunda/orchestration-cluster-api-js/compare/v11.0.0-alpha.5...v11.0.0-alpha.6) (2026-11-19)
+
+
+### Bug Fixes
+
+* stop default-tenant injection from mutating the caller's request ([#688](https://github.com/camunda/orchestration-cluster-api-js/issues/688)) ([fd1b8b3](https://github.com/camunda/orchestration-cluster-api-js/commit/fd1b8b3e1f8a29d5bdd36d3f42946fa57f428d55)), closes [#687](https://github.com/camunda/orchestration-cluster-api-js/issues/687)
+
 # [11.0.0-alpha.5](https://github.com/camunda/orchestration-cluster-api-js/compare/v11.0.0-alpha.4...v11.0.0-alpha.5) (2026-11-18)
 
 
