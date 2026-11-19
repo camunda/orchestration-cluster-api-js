@@ -1854,6 +1854,7 @@ export type AuthorizationCreateResult = {
  */
 export const PermissionTypeEnum = {
   ACCESS: 'ACCESS',
+  ANSWER: 'ANSWER',
   CANCEL_PROCESS_INSTANCE: 'CANCEL_PROCESS_INSTANCE',
   CLAIM: 'CLAIM',
   CLAIM_USER_TASK: 'CLAIM_USER_TASK',
@@ -1921,6 +1922,7 @@ export const ResourceTypeEnum = {
   GROUP: 'GROUP',
   MAPPING_RULE: 'MAPPING_RULE',
   MESSAGE: 'MESSAGE',
+  PROBE: 'PROBE',
   PROCESS_DEFINITION: 'PROCESS_DEFINITION',
   RESOURCE: 'RESOURCE',
   ROLE: 'ROLE',
@@ -23920,7 +23922,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:f1b5abf8965a948a5bd39e8dff1be0ec2a7843de7e32a4cf67976e4017f62d2b
+// specHash=sha256:5e576aaaf222a649dc8cc7fd18d3f494bec8e8a28d50c79de38ec11ada7389f3
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
