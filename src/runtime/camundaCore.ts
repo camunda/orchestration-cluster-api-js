@@ -27,6 +27,7 @@ import { createSupportLogger, type SupportLogger, writeSupportLogPreamble } from
 import { withCorrelation as _withCorrelation, getCorrelation, wrapFetch } from './telemetry';
 import type { CamundaConfig } from './unifiedConfiguration';
 import { hydrateConfig } from './unifiedConfiguration';
+import { withUserAgent } from './userAgent';
 import { ValidationManager } from './validationManager';
 
 // Internal deep-freeze to make exposed config immutable for consumers.
@@ -189,7 +190,7 @@ export class CamundaCore {
     });
     const baseFetch = opts.fetch;
     this._baseFetch = baseFetch;
-    this._fetch = baseFetch;
+    this._fetch = withUserAgent(baseFetch, () => this._config.userAgent);
     // Telemetry wrap (after logger & config known). If user provided explicit telemetry, honor it.
     // Else if environment enabled auto telemetry logging, wrap with mirrorToLog + optional correlation.
     if (opts.telemetry) {
@@ -332,7 +333,7 @@ export class CamundaCore {
     if (next.config) this._setOverrides({ ...this._getOverrides(), ...next.config });
     if (next.fetch) this._baseFetch = next.fetch;
     // Always wrap from the base fetch to avoid accumulating closure layers on repeated configure() calls.
-    this._fetch = this._baseFetch;
+    this._fetch = withUserAgent(this._baseFetch, () => this._config.userAgent);
     const { config } = hydrateConfig({ overrides: this._getOverrides(), env: next.env });
     this._config = deepFreeze(config) as Readonly<CamundaConfig>;
     // Re-wrap fetch if telemetry present OR env auto telemetry toggled

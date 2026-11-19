@@ -8,6 +8,7 @@ import type {
   TelemetryHooks,
 } from './telemetry';
 import type { CamundaConfig } from './unifiedConfiguration';
+import { buildUserAgent, userAgentHeaderName } from './userAgent';
 import { node } from '#platform';
 
 /** Auth error codes */
@@ -232,7 +233,10 @@ class OAuthManager {
         this.logger.debug(`OAuth token attempt ${attempt + 1}/${max}`);
         const res = await fetcher(this.cfg.oauth.oauthUrl, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            [userAgentHeaderName()]: buildUserAgent(this.cfg.userAgent),
+          },
           body: body.toString(),
           signal: controller.signal,
         });

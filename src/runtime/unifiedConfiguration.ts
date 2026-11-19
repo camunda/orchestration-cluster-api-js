@@ -107,6 +107,8 @@ export interface CamundaConfig {
     raw: string; // normalized raw spec for reproducibility
   };
   logLevel: 'silent' | 'error' | 'warn' | 'info' | 'debug' | 'trace';
+  /** Application user agent appended after the SDK identifier (CAMUNDA_USER_AGENT). */
+  userAgent?: string;
   eventual?: { pollDefaultMs: number };
   // authVerbose removed (pre-release cleanup)
   mtls?: {
@@ -801,6 +803,7 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
     },
     validation: { req: validation.req, res: validation.res, raw: validation.raw },
     logLevel: reqStr('CAMUNDA_SDK_LOG_LEVEL') as CamundaConfig['logLevel'],
+    userAgent: rawMap.CAMUNDA_USER_AGENT?.trim() || undefined,
     eventual: {
       pollDefaultMs: reqInt('CAMUNDA_SDK_EVENTUAL_POLL_DEFAULT_MS'),
     },
