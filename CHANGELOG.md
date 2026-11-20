@@ -1,3 +1,10 @@
+# [11.0.0-alpha.8](https://github.com/camunda/orchestration-cluster-api-js/compare/v11.0.0-alpha.7...v11.0.0-alpha.8) (2026-11-20)
+
+
+### Bug Fixes
+
+* send the default tenant on tenant-scoped commands ([#648](https://github.com/camunda/orchestration-cluster-api-js/issues/648)) ([ae666f4](https://github.com/camunda/orchestration-cluster-api-js/commit/ae666f4ba313e9716c534c9f444f6db5ab18a7c2)), closes [#647](https://github.com/camunda/orchestration-cluster-api-js/issues/647)
+
 # [11.0.0-alpha.7](https://github.com/camunda/orchestration-cluster-api-js/compare/v11.0.0-alpha.6...v11.0.0-alpha.7) (2026-11-19)
 
 
