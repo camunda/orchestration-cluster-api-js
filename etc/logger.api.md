@@ -10,6 +10,16 @@
 export function createLogger(opts?: CreateLoggerOptions): Logger;
 
 // @public (undocumented)
+interface CreateLoggerOptions {
+    // (undocumented)
+    level?: LogLevel;
+    // (undocumented)
+    scope?: string;
+    // (undocumented)
+    transport?: LogTransport;
+}
+
+// @public (undocumented)
 export interface LogEvent {
     // (undocumented)
     args: any[];

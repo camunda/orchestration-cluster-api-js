@@ -18,6 +18,25 @@ import * as node_worker_threads from 'node:worker_threads';
 // @public (undocumented)
 export const node: NodeBuiltins | undefined;
 
+// @public
+interface NodeBuiltins {
+    // (undocumented)
+    crypto: typeof node_crypto;
+    // (undocumented)
+    fs: typeof node_fs;
+    // (undocumented)
+    fsPromises: typeof node_fs_promises;
+    // (undocumented)
+    https: typeof node_https;
+    loadWorkerThreads(): Promise<typeof node_worker_threads>;
+    // (undocumented)
+    os: typeof node_os;
+    // (undocumented)
+    path: typeof node_path;
+    // (undocumented)
+    url: typeof node_url;
+}
+
 // (No @packageDocumentation comment for this package)
 
 ```

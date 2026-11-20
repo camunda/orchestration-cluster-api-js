@@ -8,6 +8,19 @@ import { z } from 'zod';
 import * as zod from 'zod';
 import { ZodTypeAny } from 'zod';
 
+// Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "RequestResult" needs to be exported by the entry point index.d.ts
+//
+// @public
+const activateAdHocSubProcessActivities$1: <ThrowOnError extends boolean = true>(options: Options<ActivateAdHocSubProcessActivitiesData, ThrowOnError>) => RequestResult<ActivateAdHocSubProcessActivitiesResponses, ActivateAdHocSubProcessActivitiesErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "activateAdHocSubProcessActivitiesOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type activateAdHocSubProcessActivitiesBody = (NonNullable<activateAdHocSubProcessActivitiesOptions> extends {
+    body?: infer B;
+} ? B : never);
+
 // @public (undocumented)
 export type ActivateAdHocSubProcessActivitiesData = {
     body: AdHocSubProcessActivateActivitiesInstruction;
@@ -37,6 +50,18 @@ export type ActivateAdHocSubProcessActivitiesErrors = {
 export type activateAdHocSubProcessActivitiesInput = activateAdHocSubProcessActivitiesBody & {
     adHocSubProcessInstanceKey: activateAdHocSubProcessActivitiesPathParam_adHocSubProcessInstanceKey;
 };
+
+// Warning: (ae-forgotten-export) The symbol "activateAdHocSubProcessActivities$1" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type activateAdHocSubProcessActivitiesOptions = Parameters<typeof activateAdHocSubProcessActivities$1>[0];
+
+// @public (undocumented)
+type activateAdHocSubProcessActivitiesPathParam_adHocSubProcessInstanceKey = (NonNullable<activateAdHocSubProcessActivitiesOptions> extends {
+    path: {
+        adHocSubProcessInstanceKey: infer P;
+    };
+} ? P : any);
 
 // @public (undocumented)
 export type ActivateAdHocSubProcessActivitiesResponse = ActivateAdHocSubProcessActivitiesResponses[keyof ActivateAdHocSubProcessActivitiesResponses];
@@ -77,6 +102,9 @@ export type ActivatedJobResult = {
     jobLeaseToken: JobLeaseToken | null;
 };
 
+// @public (undocumented)
+type ActivatedJobResult_2 = ActivateJobsResponses[200]['jobs'][number];
+
 // @public
 export type ActivatedJobResultWithJobLeaseToken = Omit<ActivatedJobResult, 'jobLeaseToken'> & {
     jobLeaseToken: NonNullable<ActivatedJobResult['jobLeaseToken']>;
@@ -86,6 +114,16 @@ export type ActivatedJobResultWithJobLeaseToken = Omit<ActivatedJobResult, 'jobL
 export type ActivatedJobResultWithoutJobLeaseToken = Omit<ActivatedJobResult, 'jobLeaseToken'> & {
     jobLeaseToken?: null;
 };
+
+// @public
+const activateJobs$1: <ThrowOnError extends boolean = true>(options: Options<ActivateJobsData, ThrowOnError>) => RequestResult<ActivateJobsResponses, ActivateJobsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "activateJobsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type activateJobsBody = (NonNullable<activateJobsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type ActivateJobsData = {
@@ -111,6 +149,11 @@ export type ActivateJobsErrors = {
 // @public (undocumented)
 export type activateJobsInput = activateJobsBody;
 
+// Warning: (ae-forgotten-export) The symbol "activateJobs$1" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type activateJobsOptions = Parameters<typeof activateJobs$1>[0];
+
 // @public (undocumented)
 export type ActivateJobsResponse = ActivateJobsResponses[keyof ActivateJobsResponses];
 
@@ -118,6 +161,16 @@ export type ActivateJobsResponse = ActivateJobsResponses[keyof ActivateJobsRespo
 export type ActivateJobsResponses = {
     200: JobActivationResult;
 };
+
+// @public
+const addClock$1: <ThrowOnError extends boolean = true>(options: Options<AddClockData, ThrowOnError>) => RequestResult<AddClockResponses, AddClockErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "addClockOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type addClockBody = (NonNullable<addClockOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type AddClockData = {
@@ -143,6 +196,11 @@ export type AddClockErrors = {
 //
 // @public (undocumented)
 export type addClockInput = addClockBody;
+
+// Warning: (ae-forgotten-export) The symbol "addClock$1" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type addClockOptions = Parameters<typeof addClock$1>[0];
 
 // @public (undocumented)
 export type AddClockResponse = AddClockResponses[keyof AddClockResponses];
@@ -1135,11 +1193,17 @@ export type AncestorScopeInstruction = ({
 export type AnyVariableSchema = z.ZodObject<any>;
 
 // @public (undocumented)
+type ArrayStyle = 'form' | 'spaceDelimited' | 'pipeDelimited';
+
+// @public (undocumented)
 export function assertConstraint(value: string, label: string, c: {
     pattern?: string;
     minLength?: number;
     maxLength?: number;
 }): void;
+
+// @public
+const assignClientToGroup$1: <ThrowOnError extends boolean = true>(options: Options<AssignClientToGroupData, ThrowOnError>) => RequestResult<AssignClientToGroupResponses, AssignClientToGroupErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type AssignClientToGroupData = {
@@ -1171,6 +1235,27 @@ export type assignClientToGroupInput = {
     clientId: assignClientToGroupPathParam_clientId;
 };
 
+// Warning: (ae-forgotten-export) The symbol "assignClientToGroup$1" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignClientToGroupOptions = Parameters<typeof assignClientToGroup$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "assignClientToGroupOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignClientToGroupPathParam_clientId = (NonNullable<assignClientToGroupOptions> extends {
+    path: {
+        clientId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type assignClientToGroupPathParam_groupId = (NonNullable<assignClientToGroupOptions> extends {
+    path: {
+        groupId: infer P;
+    };
+} ? P : any);
+
 // @public (undocumented)
 export type AssignClientToGroupResponse = AssignClientToGroupResponses[keyof AssignClientToGroupResponses];
 
@@ -1178,6 +1263,9 @@ export type AssignClientToGroupResponse = AssignClientToGroupResponses[keyof Ass
 export type AssignClientToGroupResponses = {
     204: void;
 };
+
+// @public
+const assignClientToTenant$1: <ThrowOnError extends boolean = true>(options: Options<AssignClientToTenantData, ThrowOnError>) => RequestResult<AssignClientToTenantResponses, AssignClientToTenantErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type AssignClientToTenantData = {
@@ -1208,6 +1296,27 @@ export type assignClientToTenantInput = {
     clientId: assignClientToTenantPathParam_clientId;
 };
 
+// Warning: (ae-forgotten-export) The symbol "assignClientToTenant$1" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignClientToTenantOptions = Parameters<typeof assignClientToTenant$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "assignClientToTenantOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignClientToTenantPathParam_clientId = (NonNullable<assignClientToTenantOptions> extends {
+    path: {
+        clientId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type assignClientToTenantPathParam_tenantId = (NonNullable<assignClientToTenantOptions> extends {
+    path: {
+        tenantId: infer P;
+    };
+} ? P : any);
+
 // @public (undocumented)
 export type AssignClientToTenantResponse = AssignClientToTenantResponses[keyof AssignClientToTenantResponses];
 
@@ -1215,6 +1324,9 @@ export type AssignClientToTenantResponse = AssignClientToTenantResponses[keyof A
 export type AssignClientToTenantResponses = {
     204: void;
 };
+
+// @public
+const assignGroupToTenant$1: <ThrowOnError extends boolean = true>(options: Options<AssignGroupToTenantData, ThrowOnError>) => RequestResult<AssignGroupToTenantResponses, AssignGroupToTenantErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type AssignGroupToTenantData = {
@@ -1245,6 +1357,27 @@ export type assignGroupToTenantInput = {
     groupId: assignGroupToTenantPathParam_groupId;
 };
 
+// Warning: (ae-forgotten-export) The symbol "assignGroupToTenant$1" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignGroupToTenantOptions = Parameters<typeof assignGroupToTenant$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "assignGroupToTenantOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignGroupToTenantPathParam_groupId = (NonNullable<assignGroupToTenantOptions> extends {
+    path: {
+        groupId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type assignGroupToTenantPathParam_tenantId = (NonNullable<assignGroupToTenantOptions> extends {
+    path: {
+        tenantId: infer P;
+    };
+} ? P : any);
+
 // @public (undocumented)
 export type AssignGroupToTenantResponse = AssignGroupToTenantResponses[keyof AssignGroupToTenantResponses];
 
@@ -1252,6 +1385,9 @@ export type AssignGroupToTenantResponse = AssignGroupToTenantResponses[keyof Ass
 export type AssignGroupToTenantResponses = {
     204: void;
 };
+
+// @public
+const assignMappingRuleToGroup$1: <ThrowOnError extends boolean = true>(options: Options<AssignMappingRuleToGroupData, ThrowOnError>) => RequestResult<AssignMappingRuleToGroupResponses, AssignMappingRuleToGroupErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type AssignMappingRuleToGroupData = {
@@ -1283,6 +1419,27 @@ export type assignMappingRuleToGroupInput = {
     mappingRuleId: assignMappingRuleToGroupPathParam_mappingRuleId;
 };
 
+// Warning: (ae-forgotten-export) The symbol "assignMappingRuleToGroup$1" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignMappingRuleToGroupOptions = Parameters<typeof assignMappingRuleToGroup$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "assignMappingRuleToGroupOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignMappingRuleToGroupPathParam_groupId = (NonNullable<assignMappingRuleToGroupOptions> extends {
+    path: {
+        groupId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type assignMappingRuleToGroupPathParam_mappingRuleId = (NonNullable<assignMappingRuleToGroupOptions> extends {
+    path: {
+        mappingRuleId: infer P;
+    };
+} ? P : any);
+
 // @public (undocumented)
 export type AssignMappingRuleToGroupResponse = AssignMappingRuleToGroupResponses[keyof AssignMappingRuleToGroupResponses];
 
@@ -1290,6 +1447,9 @@ export type AssignMappingRuleToGroupResponse = AssignMappingRuleToGroupResponses
 export type AssignMappingRuleToGroupResponses = {
     204: void;
 };
+
+// @public
+const assignMappingRuleToTenant$1: <ThrowOnError extends boolean = true>(options: Options<AssignMappingRuleToTenantData, ThrowOnError>) => RequestResult<AssignMappingRuleToTenantResponses, AssignMappingRuleToTenantErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type AssignMappingRuleToTenantData = {
@@ -1320,6 +1480,27 @@ export type assignMappingRuleToTenantInput = {
     mappingRuleId: assignMappingRuleToTenantPathParam_mappingRuleId;
 };
 
+// Warning: (ae-forgotten-export) The symbol "assignMappingRuleToTenant$1" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignMappingRuleToTenantOptions = Parameters<typeof assignMappingRuleToTenant$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "assignMappingRuleToTenantOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignMappingRuleToTenantPathParam_mappingRuleId = (NonNullable<assignMappingRuleToTenantOptions> extends {
+    path: {
+        mappingRuleId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type assignMappingRuleToTenantPathParam_tenantId = (NonNullable<assignMappingRuleToTenantOptions> extends {
+    path: {
+        tenantId: infer P;
+    };
+} ? P : any);
+
 // @public (undocumented)
 export type AssignMappingRuleToTenantResponse = AssignMappingRuleToTenantResponses[keyof AssignMappingRuleToTenantResponses];
 
@@ -1327,6 +1508,16 @@ export type AssignMappingRuleToTenantResponse = AssignMappingRuleToTenantRespons
 export type AssignMappingRuleToTenantResponses = {
     204: void;
 };
+
+// @public
+const assignProcessInstanceBusinessId$1: <ThrowOnError extends boolean = true>(options: Options<AssignProcessInstanceBusinessIdData, ThrowOnError>) => RequestResult<AssignProcessInstanceBusinessIdResponses, AssignProcessInstanceBusinessIdErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "assignProcessInstanceBusinessIdOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignProcessInstanceBusinessIdBody = (NonNullable<assignProcessInstanceBusinessIdOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type AssignProcessInstanceBusinessIdData = {
@@ -1357,6 +1548,18 @@ export type assignProcessInstanceBusinessIdInput = assignProcessInstanceBusiness
     processInstanceKey: assignProcessInstanceBusinessIdPathParam_processInstanceKey;
 };
 
+// Warning: (ae-forgotten-export) The symbol "assignProcessInstanceBusinessId$1" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignProcessInstanceBusinessIdOptions = Parameters<typeof assignProcessInstanceBusinessId$1>[0];
+
+// @public (undocumented)
+type assignProcessInstanceBusinessIdPathParam_processInstanceKey = (NonNullable<assignProcessInstanceBusinessIdOptions> extends {
+    path: {
+        processInstanceKey: infer P;
+    };
+} ? P : any);
+
 // @public (undocumented)
 export type AssignProcessInstanceBusinessIdResponse = AssignProcessInstanceBusinessIdResponses[keyof AssignProcessInstanceBusinessIdResponses];
 
@@ -1364,6 +1567,9 @@ export type AssignProcessInstanceBusinessIdResponse = AssignProcessInstanceBusin
 export type AssignProcessInstanceBusinessIdResponses = {
     204: void;
 };
+
+// @public
+const assignRoleToClient$1: <ThrowOnError extends boolean = true>(options: Options<AssignRoleToClientData, ThrowOnError>) => RequestResult<AssignRoleToClientResponses, AssignRoleToClientErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type AssignRoleToClientData = {
@@ -1395,6 +1601,27 @@ export type assignRoleToClientInput = {
     clientId: assignRoleToClientPathParam_clientId;
 };
 
+// Warning: (ae-forgotten-export) The symbol "assignRoleToClient$1" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignRoleToClientOptions = Parameters<typeof assignRoleToClient$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "assignRoleToClientOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignRoleToClientPathParam_clientId = (NonNullable<assignRoleToClientOptions> extends {
+    path: {
+        clientId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type assignRoleToClientPathParam_roleId = (NonNullable<assignRoleToClientOptions> extends {
+    path: {
+        roleId: infer P;
+    };
+} ? P : any);
+
 // @public (undocumented)
 export type AssignRoleToClientResponse = AssignRoleToClientResponses[keyof AssignRoleToClientResponses];
 
@@ -1402,6 +1629,9 @@ export type AssignRoleToClientResponse = AssignRoleToClientResponses[keyof Assig
 export type AssignRoleToClientResponses = {
     204: void;
 };
+
+// @public
+const assignRoleToGroup$1: <ThrowOnError extends boolean = true>(options: Options<AssignRoleToGroupData, ThrowOnError>) => RequestResult<AssignRoleToGroupResponses, AssignRoleToGroupErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type AssignRoleToGroupData = {
@@ -1433,6 +1663,27 @@ export type assignRoleToGroupInput = {
     groupId: assignRoleToGroupPathParam_groupId;
 };
 
+// Warning: (ae-forgotten-export) The symbol "assignRoleToGroup$1" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignRoleToGroupOptions = Parameters<typeof assignRoleToGroup$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "assignRoleToGroupOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignRoleToGroupPathParam_groupId = (NonNullable<assignRoleToGroupOptions> extends {
+    path: {
+        groupId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type assignRoleToGroupPathParam_roleId = (NonNullable<assignRoleToGroupOptions> extends {
+    path: {
+        roleId: infer P;
+    };
+} ? P : any);
+
 // @public (undocumented)
 export type AssignRoleToGroupResponse = AssignRoleToGroupResponses[keyof AssignRoleToGroupResponses];
 
@@ -1440,6 +1691,9 @@ export type AssignRoleToGroupResponse = AssignRoleToGroupResponses[keyof AssignR
 export type AssignRoleToGroupResponses = {
     204: void;
 };
+
+// @public
+const assignRoleToMappingRule$1: <ThrowOnError extends boolean = true>(options: Options<AssignRoleToMappingRuleData, ThrowOnError>) => RequestResult<AssignRoleToMappingRuleResponses, AssignRoleToMappingRuleErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type AssignRoleToMappingRuleData = {
@@ -1471,6 +1725,27 @@ export type assignRoleToMappingRuleInput = {
     mappingRuleId: assignRoleToMappingRulePathParam_mappingRuleId;
 };
 
+// Warning: (ae-forgotten-export) The symbol "assignRoleToMappingRule$1" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignRoleToMappingRuleOptions = Parameters<typeof assignRoleToMappingRule$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "assignRoleToMappingRuleOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignRoleToMappingRulePathParam_mappingRuleId = (NonNullable<assignRoleToMappingRuleOptions> extends {
+    path: {
+        mappingRuleId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type assignRoleToMappingRulePathParam_roleId = (NonNullable<assignRoleToMappingRuleOptions> extends {
+    path: {
+        roleId: infer P;
+    };
+} ? P : any);
+
 // @public (undocumented)
 export type AssignRoleToMappingRuleResponse = AssignRoleToMappingRuleResponses[keyof AssignRoleToMappingRuleResponses];
 
@@ -1478,6 +1753,9 @@ export type AssignRoleToMappingRuleResponse = AssignRoleToMappingRuleResponses[k
 export type AssignRoleToMappingRuleResponses = {
     204: void;
 };
+
+// @public
+const assignRoleToTenant$1: <ThrowOnError extends boolean = true>(options: Options<AssignRoleToTenantData, ThrowOnError>) => RequestResult<AssignRoleToTenantResponses, AssignRoleToTenantErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type AssignRoleToTenantData = {
@@ -1508,6 +1786,27 @@ export type assignRoleToTenantInput = {
     roleId: assignRoleToTenantPathParam_roleId;
 };
 
+// Warning: (ae-forgotten-export) The symbol "assignRoleToTenant$1" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignRoleToTenantOptions = Parameters<typeof assignRoleToTenant$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "assignRoleToTenantOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignRoleToTenantPathParam_roleId = (NonNullable<assignRoleToTenantOptions> extends {
+    path: {
+        roleId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type assignRoleToTenantPathParam_tenantId = (NonNullable<assignRoleToTenantOptions> extends {
+    path: {
+        tenantId: infer P;
+    };
+} ? P : any);
+
 // @public (undocumented)
 export type AssignRoleToTenantResponse = AssignRoleToTenantResponses[keyof AssignRoleToTenantResponses];
 
@@ -1515,6 +1814,9 @@ export type AssignRoleToTenantResponse = AssignRoleToTenantResponses[keyof Assig
 export type AssignRoleToTenantResponses = {
     204: void;
 };
+
+// @public
+const assignRoleToUser$1: <ThrowOnError extends boolean = true>(options: Options<AssignRoleToUserData, ThrowOnError>) => RequestResult<AssignRoleToUserResponses, AssignRoleToUserErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type AssignRoleToUserData = {
@@ -1546,6 +1848,27 @@ export type assignRoleToUserInput = {
     username: assignRoleToUserPathParam_username;
 };
 
+// Warning: (ae-forgotten-export) The symbol "assignRoleToUser$1" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignRoleToUserOptions = Parameters<typeof assignRoleToUser$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "assignRoleToUserOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignRoleToUserPathParam_roleId = (NonNullable<assignRoleToUserOptions> extends {
+    path: {
+        roleId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type assignRoleToUserPathParam_username = (NonNullable<assignRoleToUserOptions> extends {
+    path: {
+        username: infer P;
+    };
+} ? P : any);
+
 // @public (undocumented)
 export type AssignRoleToUserResponse = AssignRoleToUserResponses[keyof AssignRoleToUserResponses];
 
@@ -1553,6 +1876,16 @@ export type AssignRoleToUserResponse = AssignRoleToUserResponses[keyof AssignRol
 export type AssignRoleToUserResponses = {
     204: void;
 };
+
+// @public
+const assignUserTask$1: <ThrowOnError extends boolean = true>(options: Options<AssignUserTaskData, ThrowOnError>) => RequestResult<AssignUserTaskResponses, AssignUserTaskErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "assignUserTaskOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignUserTaskBody = (NonNullable<assignUserTaskOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type AssignUserTaskData = {
@@ -1584,6 +1917,18 @@ export type assignUserTaskInput = assignUserTaskBody & {
     userTaskKey: assignUserTaskPathParam_userTaskKey;
 };
 
+// Warning: (ae-forgotten-export) The symbol "assignUserTask$1" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignUserTaskOptions = Parameters<typeof assignUserTask$1>[0];
+
+// @public (undocumented)
+type assignUserTaskPathParam_userTaskKey = (NonNullable<assignUserTaskOptions> extends {
+    path: {
+        userTaskKey: infer P;
+    };
+} ? P : any);
+
 // @public (undocumented)
 export type AssignUserTaskResponse = AssignUserTaskResponses[keyof AssignUserTaskResponses];
 
@@ -1591,6 +1936,9 @@ export type AssignUserTaskResponse = AssignUserTaskResponses[keyof AssignUserTas
 export type AssignUserTaskResponses = {
     204: void;
 };
+
+// @public
+const assignUserToGroup$1: <ThrowOnError extends boolean = true>(options: Options<AssignUserToGroupData, ThrowOnError>) => RequestResult<AssignUserToGroupResponses, AssignUserToGroupErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type AssignUserToGroupData = {
@@ -1622,6 +1970,27 @@ export type assignUserToGroupInput = {
     username: assignUserToGroupPathParam_username;
 };
 
+// Warning: (ae-forgotten-export) The symbol "assignUserToGroup$1" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignUserToGroupOptions = Parameters<typeof assignUserToGroup$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "assignUserToGroupOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignUserToGroupPathParam_groupId = (NonNullable<assignUserToGroupOptions> extends {
+    path: {
+        groupId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type assignUserToGroupPathParam_username = (NonNullable<assignUserToGroupOptions> extends {
+    path: {
+        username: infer P;
+    };
+} ? P : any);
+
 // @public (undocumented)
 export type AssignUserToGroupResponse = AssignUserToGroupResponses[keyof AssignUserToGroupResponses];
 
@@ -1629,6 +1998,9 @@ export type AssignUserToGroupResponse = AssignUserToGroupResponses[keyof AssignU
 export type AssignUserToGroupResponses = {
     204: void;
 };
+
+// @public
+const assignUserToTenant$1: <ThrowOnError extends boolean = true>(options: Options<AssignUserToTenantData, ThrowOnError>) => RequestResult<AssignUserToTenantResponses, AssignUserToTenantErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type AssignUserToTenantData = {
@@ -1658,6 +2030,27 @@ export type assignUserToTenantInput = {
     tenantId: assignUserToTenantPathParam_tenantId;
     username: assignUserToTenantPathParam_username;
 };
+
+// Warning: (ae-forgotten-export) The symbol "assignUserToTenant$1" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignUserToTenantOptions = Parameters<typeof assignUserToTenant$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "assignUserToTenantOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type assignUserToTenantPathParam_tenantId = (NonNullable<assignUserToTenantOptions> extends {
+    path: {
+        tenantId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type assignUserToTenantPathParam_username = (NonNullable<assignUserToTenantOptions> extends {
+    path: {
+        username: infer P;
+    };
+} ? P : any);
 
 // @public (undocumented)
 export type AssignUserToTenantResponse = AssignUserToTenantResponses[keyof AssignUserToTenantResponses];
@@ -1888,6 +2281,17 @@ export type AuditLogSearchQuerySortRequest = {
     order?: SortOrderEnum;
 };
 
+// @public (undocumented)
+interface Auth {
+    in?: 'header' | 'query' | 'cookie';
+    key?: string;
+    name?: string;
+    // (undocumented)
+    scheme?: 'basic' | 'bearer';
+    // (undocumented)
+    type: 'apiKey' | 'http';
+}
+
 // @public
 export type AuthenticatedCamundaUserResult = CamundaUserResult & {
     isAnonymous?: false;
@@ -1900,6 +2304,24 @@ export type AuthenticationConfigurationResponse = {
     isLoginDelegated: boolean;
     isCamundaGroupsEnabled: boolean;
 };
+
+// @public (undocumented)
+interface AuthFacade {
+    // (undocumented)
+    clearCache(opts?: {
+        disk?: boolean;
+        memory?: boolean;
+    }): void;
+    debug__setTokenExpiry?(epochMs: number): void;
+    // (undocumented)
+    forceRefresh(): Promise<string | undefined>;
+    // (undocumented)
+    getAuthHeaders(): Promise<Record<string, string>>;
+    // Warning: (ae-forgotten-export) The symbol "HeadersHook" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    registerHeadersHook(h: HeadersHook): void;
+}
 
 // @public (undocumented)
 export type AuthorizationCreateResult = {
@@ -1978,7 +2400,97 @@ export type AuthorizationSearchResult = SearchQueryResponse & {
 };
 
 // @public (undocumented)
+interface AuthSdkError extends Error {
+    // (undocumented)
+    cause?: unknown;
+    // (undocumented)
+    name: 'AuthSdkError';
+    // (undocumented)
+    status?: number;
+}
+
+// @public (undocumented)
 export type AuthStrategy = 'NONE' | 'OAUTH' | 'BASIC';
+
+// @public (undocumented)
+type AuthToken = string | undefined;
+
+// @public (undocumented)
+interface BackpressureConfig {
+    // (undocumented)
+    backoffEscalate?: number;
+    // (undocumented)
+    backoffInitialMs?: number;
+    // (undocumented)
+    backoffMaxMs?: number;
+    // (undocumented)
+    decayQuietMs?: number;
+    // (undocumented)
+    enabled?: boolean;
+    // (undocumented)
+    floorConcurrency?: number;
+    // (undocumented)
+    healthyRecoveryMultiplier?: number;
+    // (undocumented)
+    initialMaxConcurrency?: number | null;
+    // (undocumented)
+    maxWaiters?: number;
+    // (undocumented)
+    observeOnly?: boolean;
+    // (undocumented)
+    recoveryIntervalMs?: number;
+    // (undocumented)
+    recoveryStep?: number;
+    // (undocumented)
+    reduceFactor?: number;
+    // (undocumented)
+    severeReduceFactor?: number;
+    // (undocumented)
+    severeThreshold?: number;
+    // (undocumented)
+    unlimitedAfterHealthyMs?: number;
+}
+
+// @public (undocumented)
+class BackpressureManager {
+    // Warning: (ae-forgotten-export) The symbol "BackpressureManagerOptions" needs to be exported by the entry point index.d.ts
+    constructor(opts?: BackpressureManagerOptions);
+    // (undocumented)
+    acquire(signal?: AbortSignal): Promise<void>;
+    // (undocumented)
+    getState(): {
+        severity: BackpressureSeverity;
+        consecutive: number;
+        permitsMax: number | null;
+        permitsCurrent: number;
+        waiters: number;
+        backoffMs: number;
+    };
+    // (undocumented)
+    isEnabled(): boolean;
+    // (undocumented)
+    recordBackpressure(): void;
+    // (undocumented)
+    recordHealthyHint(): void;
+    // (undocumented)
+    release(): void;
+}
+
+// @public (undocumented)
+interface BackpressureManagerOptions {
+    // Warning: (ae-forgotten-export) The symbol "BackpressureConfig" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    config?: BackpressureConfig;
+    // Warning: (ae-forgotten-export) The symbol "Logger" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    logger?: Logger;
+    // (undocumented)
+    now?: () => number;
+    // (undocumented)
+    sleep?: (ms: number) => Promise<void>;
+}
 
 // @public (undocumented)
 export type BackpressureSeverity = 'healthy' | 'soft' | 'severe';
@@ -2004,6 +2516,16 @@ export type BackupInfoWritable = {
 
 // @public
 export type BackupType = 'MANUAL_BACKUP' | 'SCHEDULED_BACKUP';
+
+// @public (undocumented)
+interface BaseEvt {
+    // (undocumented)
+    correlationId?: string;
+    // (undocumented)
+    requestId: string;
+    // (undocumented)
+    ts: number;
+}
 
 // @public
 export type BaseProcessInstanceFilterFields = {
@@ -2221,6 +2743,19 @@ export type BatchOperationTypeExactMatchWritable = BatchOperationTypeEnum;
 export type BatchOperationTypeFilterProperty = BatchOperationTypeExactMatch | AdvancedBatchOperationTypeFilter;
 
 // @public (undocumented)
+type BodySerializer = (body: unknown) => unknown;
+
+// @public
+const broadcastSignal$1: <ThrowOnError extends boolean = true>(options: Options<BroadcastSignalData, ThrowOnError>) => RequestResult<BroadcastSignalResponses, BroadcastSignalErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "broadcastSignalOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type broadcastSignalBody = (NonNullable<broadcastSignalOptions> extends {
+    body?: infer B;
+} ? B : never);
+
+// @public (undocumented)
 export type BroadcastSignalData = {
     body: SignalBroadcastRequest;
     path?: never;
@@ -2244,6 +2779,11 @@ export type BroadcastSignalErrors = {
 // @public (undocumented)
 export type broadcastSignalInput = broadcastSignalBody;
 
+// Warning: (ae-forgotten-export) The symbol "broadcastSignal$1" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type broadcastSignalOptions = Parameters<typeof broadcastSignal$1>[0];
+
 // @public (undocumented)
 export type BroadcastSignalResponse = BroadcastSignalResponses[keyof BroadcastSignalResponses];
 
@@ -2261,6 +2801,16 @@ export type BrokerInfo = {
     partitions: Array<Partition>;
     version: string;
 };
+
+// Warning: (ae-forgotten-export) The symbol "Options$1" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type BuildUrlFn = <TData extends {
+    body?: unknown;
+    path?: Record<string, unknown>;
+    query?: Record<string, unknown>;
+    url: string;
+}>(options: TData & Options$1<TData>) => string;
 
 // @public
 export type BusinessId = CamundaKey<'BusinessId'>;
@@ -2287,7 +2837,6 @@ export const CamundaClient: {
 export class CamundaClientBase extends CamundaCore {
     constructor(opts?: CamundaOptions);
     // Warning: (ae-forgotten-export) The symbol "_DataOf" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "activateAdHocSubProcessActivities$1" needs to be exported by the entry point index.d.ts
     activateAdHocSubProcessActivities(input: activateAdHocSubProcessActivitiesInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof activateAdHocSubProcessActivities$1>>;
     activateJobs(input: activateJobsInput & {
         withLease: true;
@@ -2304,37 +2853,21 @@ export class CamundaClientBase extends CamundaCore {
     activateJobs(input: activateJobsInput, options?: OperationOptions): CancelablePromise<{
         jobs: EnrichedActivatedJob[];
     }>;
-    // Warning: (ae-forgotten-export) The symbol "addClock$1" needs to be exported by the entry point index.d.ts
     addClock(input: addClockInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof addClock$1>>;
-    // Warning: (ae-forgotten-export) The symbol "assignClientToGroup$1" needs to be exported by the entry point index.d.ts
     assignClientToGroup(input: assignClientToGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof assignClientToGroup$1>>;
-    // Warning: (ae-forgotten-export) The symbol "assignClientToTenant$1" needs to be exported by the entry point index.d.ts
     assignClientToTenant(input: assignClientToTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof assignClientToTenant$1>>;
-    // Warning: (ae-forgotten-export) The symbol "assignGroupToTenant$1" needs to be exported by the entry point index.d.ts
     assignGroupToTenant(input: assignGroupToTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof assignGroupToTenant$1>>;
-    // Warning: (ae-forgotten-export) The symbol "assignMappingRuleToGroup$1" needs to be exported by the entry point index.d.ts
     assignMappingRuleToGroup(input: assignMappingRuleToGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof assignMappingRuleToGroup$1>>;
-    // Warning: (ae-forgotten-export) The symbol "assignMappingRuleToTenant$1" needs to be exported by the entry point index.d.ts
     assignMappingRuleToTenant(input: assignMappingRuleToTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof assignMappingRuleToTenant$1>>;
-    // Warning: (ae-forgotten-export) The symbol "assignProcessInstanceBusinessId$1" needs to be exported by the entry point index.d.ts
     assignProcessInstanceBusinessId(input: assignProcessInstanceBusinessIdInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof assignProcessInstanceBusinessId$1>>;
-    // Warning: (ae-forgotten-export) The symbol "assignRoleToClient$1" needs to be exported by the entry point index.d.ts
     assignRoleToClient(input: assignRoleToClientInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof assignRoleToClient$1>>;
-    // Warning: (ae-forgotten-export) The symbol "assignRoleToGroup$1" needs to be exported by the entry point index.d.ts
     assignRoleToGroup(input: assignRoleToGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof assignRoleToGroup$1>>;
-    // Warning: (ae-forgotten-export) The symbol "assignRoleToMappingRule$1" needs to be exported by the entry point index.d.ts
     assignRoleToMappingRule(input: assignRoleToMappingRuleInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof assignRoleToMappingRule$1>>;
-    // Warning: (ae-forgotten-export) The symbol "assignRoleToTenant$1" needs to be exported by the entry point index.d.ts
     assignRoleToTenant(input: assignRoleToTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof assignRoleToTenant$1>>;
-    // Warning: (ae-forgotten-export) The symbol "assignRoleToUser$1" needs to be exported by the entry point index.d.ts
     assignRoleToUser(input: assignRoleToUserInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof assignRoleToUser$1>>;
-    // Warning: (ae-forgotten-export) The symbol "assignUserTask$1" needs to be exported by the entry point index.d.ts
     assignUserTask(input: assignUserTaskInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof assignUserTask$1>>;
-    // Warning: (ae-forgotten-export) The symbol "assignUserToGroup$1" needs to be exported by the entry point index.d.ts
     assignUserToGroup(input: assignUserToGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof assignUserToGroup$1>>;
-    // Warning: (ae-forgotten-export) The symbol "assignUserToTenant$1" needs to be exported by the entry point index.d.ts
     assignUserToTenant(input: assignUserToTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof assignUserToTenant$1>>;
-    // Warning: (ae-forgotten-export) The symbol "broadcastSignal$1" needs to be exported by the entry point index.d.ts
     broadcastSignal(input: broadcastSignalInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof broadcastSignal$1>>;
     // Warning: (ae-forgotten-export) The symbol "cancelBatchOperation$1" needs to be exported by the entry point index.d.ts
     cancelBatchOperation(input: cancelBatchOperationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof cancelBatchOperation$1>>;
@@ -2921,6 +3454,95 @@ export interface CamundaConfig {
     };
 }
 
+// @public
+class CamundaCore {
+    constructor(opts?: CamundaOptions);
+    // Warning: (ae-forgotten-export) The symbol "createAuthFacade" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    protected _auth: ReturnType<typeof createAuthFacade>;
+    // (undocumented)
+    protected _baseFetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+    // Warning: (ae-forgotten-export) The symbol "BackpressureManager" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    protected _bp: BackpressureManager;
+    // (undocumented)
+    clearAuthCache(opts?: {
+        disk?: boolean;
+        memory?: boolean;
+    }): void;
+    // Warning: (ae-forgotten-export) The symbol "Client" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    protected _client: Client;
+    get clock(): Clock;
+    // (undocumented)
+    protected _clock: Clock;
+    // (undocumented)
+    get config(): Readonly<CamundaConfig>;
+    // (undocumented)
+    protected _config: Readonly<CamundaConfig>;
+    // (undocumented)
+    configure(next: CamundaOptions): void;
+    emitSupportLogPreamble(): void;
+    // (undocumented)
+    protected readonly _errorMode: 'throw' | 'result';
+    protected _evaluateResponse(raw: any, opId: string, buildBackpressureError: (resp: any) => Error | undefined): any;
+    // (undocumented)
+    protected _fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+    // (undocumented)
+    forceAuthRefresh(): Promise<string | undefined>;
+    // (undocumented)
+    getAuthHeaders(): Promise<Record<string, string>>;
+    getBackpressureState(): {
+        severity: BackpressureSeverity;
+        consecutive: number;
+        permitsMax: number | null;
+        permitsCurrent: number;
+        waiters: number;
+        backoffMs: number;
+    } | {
+        severity: string;
+        permitsMax: null;
+        permitsCurrent: number;
+        consecutive: number;
+        waiters: number;
+    };
+    getConfig(): Readonly<CamundaConfig>;
+    getErrorMode(): 'throw' | 'result';
+    // Warning: (ae-forgotten-export) The symbol "EnvOverrides" needs to be exported by the entry point index.d.ts
+    protected _getOverrides(): EnvOverrides;
+    _getSupportLogger(): SupportLogger;
+    _invokeWithRetry<T>(op: () => Promise<T>, opts: {
+        opId: string;
+        exempt?: boolean;
+        classify?: (e: any) => {
+            retryable: boolean;
+            reason: string;
+        };
+        retryOverride?: Partial<HttpRetryPolicy> | false;
+    }): Promise<T>;
+    // (undocumented)
+    protected _log: Logger;
+    logger(scope?: string): Logger;
+    // (undocumented)
+    onAuthHeaders(h: (headers: Record<string, string>) => Record<string, string> | Promise<Record<string, string>>): void;
+    get random(): RandomSource;
+    // (undocumented)
+    protected _random: RandomSource;
+    // (undocumented)
+    protected _setOverrides(value: EnvOverrides): void;
+    protected _supportLogger: SupportLogger;
+    protected readonly _supportLogSink: SupportLogger;
+    // Warning: (ae-forgotten-export) The symbol "ValidationManager" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    protected _validation: ValidationManager;
+    // (undocumented)
+    withCorrelation<T>(id: string, fn: () => Promise<T> | T): Promise<T>;
+}
+
 // @public (undocumented)
 export type CamundaKey<T extends string = string> = string & {
     readonly __brand: T;
@@ -2932,8 +3554,6 @@ export interface CamundaOptions {
     __camundaComponent?: 'CamundaCore' | 'CamundaClient';
     // (undocumented)
     clock?: Clock;
-    // Warning: (ae-forgotten-export) The symbol "EnvOverrides" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     config?: EnvOverrides;
     // (undocumented)
@@ -3008,6 +3628,16 @@ export interface CancelablePromise<T> extends Promise<T> {
     cancel(): void;
 }
 
+// @public
+const cancelBatchOperation$1: <ThrowOnError extends boolean = true>(options: Options<CancelBatchOperationData, ThrowOnError>) => RequestResult<CancelBatchOperationResponses, CancelBatchOperationErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "cancelBatchOperationOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type cancelBatchOperationBody = (NonNullable<cancelBatchOperationOptions> extends {
+    body?: infer B;
+} ? B : never);
+
 // @public (undocumented)
 export type CancelBatchOperationData = {
     body?: unknown;
@@ -3037,12 +3667,25 @@ export type cancelBatchOperationInput = cancelBatchOperationBody & {
 };
 
 // @public (undocumented)
+type cancelBatchOperationOptions = Parameters<typeof cancelBatchOperation$1>[0];
+
+// @public (undocumented)
+type cancelBatchOperationPathParam_batchOperationKey = (NonNullable<cancelBatchOperationOptions> extends {
+    path: {
+        batchOperationKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type CancelBatchOperationResponse = CancelBatchOperationResponses[keyof CancelBatchOperationResponses];
 
 // @public (undocumented)
 export type CancelBatchOperationResponses = {
     204: void;
 };
+
+// @public
+const cancelClusterRebalance$1: <ThrowOnError extends boolean = true>(options?: Options<CancelClusterRebalanceData, ThrowOnError>) => RequestResult<CancelClusterRebalanceResponses, CancelClusterRebalanceErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type CancelClusterRebalanceData = {
@@ -3080,6 +3723,16 @@ export class CancelError extends Error {
     constructor();
 }
 
+// @public
+const cancelProcessInstance$1: <ThrowOnError extends boolean = true>(options: Options<CancelProcessInstanceData, ThrowOnError>) => RequestResult<CancelProcessInstanceResponses, CancelProcessInstanceErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "cancelProcessInstanceOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type cancelProcessInstanceBody = (NonNullable<cancelProcessInstanceOptions> extends {
+    body?: infer B;
+} ? B : never);
+
 // @public (undocumented)
 export type CancelProcessInstanceData = {
     body?: CancelProcessInstanceRequest;
@@ -3111,6 +3764,16 @@ export type cancelProcessInstanceInput = cancelProcessInstanceBody & {
 };
 
 // @public (undocumented)
+type cancelProcessInstanceOptions = Parameters<typeof cancelProcessInstance$1>[0];
+
+// @public (undocumented)
+type cancelProcessInstancePathParam_processInstanceKey = (NonNullable<cancelProcessInstanceOptions> extends {
+    path: {
+        processInstanceKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type CancelProcessInstanceRequest = {
     operationReference?: OperationReference;
 } | null;
@@ -3122,6 +3785,16 @@ export type CancelProcessInstanceResponse = CancelProcessInstanceResponses[keyof
 export type CancelProcessInstanceResponses = {
     204: void;
 };
+
+// @public
+const cancelProcessInstancesBatchOperation$1: <ThrowOnError extends boolean = true>(options: Options<CancelProcessInstancesBatchOperationData, ThrowOnError>) => RequestResult<CancelProcessInstancesBatchOperationResponses, CancelProcessInstancesBatchOperationErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "cancelProcessInstancesBatchOperationOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type cancelProcessInstancesBatchOperationBody = (NonNullable<cancelProcessInstancesBatchOperationOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type CancelProcessInstancesBatchOperationData = {
@@ -3148,12 +3821,23 @@ export type CancelProcessInstancesBatchOperationErrors = {
 export type cancelProcessInstancesBatchOperationInput = cancelProcessInstancesBatchOperationBody;
 
 // @public (undocumented)
+type cancelProcessInstancesBatchOperationOptions = Parameters<typeof cancelProcessInstancesBatchOperation$1>[0];
+
+// @public (undocumented)
 export type CancelProcessInstancesBatchOperationResponse = CancelProcessInstancesBatchOperationResponses[keyof CancelProcessInstancesBatchOperationResponses];
 
 // @public (undocumented)
 export type CancelProcessInstancesBatchOperationResponses = {
     200: BatchOperationCreatedResult;
 };
+
+// @public (undocumented)
+interface CancelSdkError extends Error {
+    // (undocumented)
+    name: 'CancelSdkError';
+    // (undocumented)
+    operationId?: string;
+}
 
 // @public
 export type CategoryExactMatch = AuditLogCategoryEnum;
@@ -3163,6 +3847,12 @@ export type CategoryExactMatchWritable = AuditLogCategoryEnum;
 
 // @public
 export type CategoryFilterProperty = CategoryExactMatch | AdvancedCategoryFilter;
+
+// @public
+const changeClusterMode$1: <ThrowOnError extends boolean = true>(options: Options<ChangeClusterModeData, ThrowOnError>) => RequestResult<ChangeClusterModeResponses, ChangeClusterModeErrors, ThrowOnError>;
+
+// @public
+const changeClusterModeAsClusterAdmin$1: <ThrowOnError extends boolean = true>(options: Options<ChangeClusterModeAsClusterAdminData, ThrowOnError>) => RequestResult<ChangeClusterModeAsClusterAdminResponses, ChangeClusterModeAsClusterAdminErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type ChangeClusterModeAsClusterAdminData = {
@@ -3194,6 +3884,32 @@ export type changeClusterModeAsClusterAdminInput = {
     physicalTenantId?: changeClusterModeAsClusterAdminQueryParam_physicalTenantId;
     dryRun?: changeClusterModeAsClusterAdminQueryParam_dryRun;
 };
+
+// @public (undocumented)
+type changeClusterModeAsClusterAdminOptions = Parameters<typeof changeClusterModeAsClusterAdmin$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "changeClusterModeAsClusterAdminOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type changeClusterModeAsClusterAdminQueryParam_dryRun = (NonNullable<changeClusterModeAsClusterAdminOptions> extends {
+    query?: {
+        dryRun?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
+type changeClusterModeAsClusterAdminQueryParam_mode = (NonNullable<changeClusterModeAsClusterAdminOptions> extends {
+    query?: {
+        mode?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
+type changeClusterModeAsClusterAdminQueryParam_physicalTenantId = (NonNullable<changeClusterModeAsClusterAdminOptions> extends {
+    query?: {
+        physicalTenantId?: infer Q;
+    };
+} ? Q : any);
 
 // @public (undocumented)
 export type ChangeClusterModeAsClusterAdminResponse = ChangeClusterModeAsClusterAdminResponses[keyof ChangeClusterModeAsClusterAdminResponses];
@@ -3232,6 +3948,25 @@ export type changeClusterModeInput = {
 };
 
 // @public (undocumented)
+type changeClusterModeOptions = Parameters<typeof changeClusterMode$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "changeClusterModeOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type changeClusterModeQueryParam_dryRun = (NonNullable<changeClusterModeOptions> extends {
+    query?: {
+        dryRun?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
+type changeClusterModeQueryParam_mode = (NonNullable<changeClusterModeOptions> extends {
+    query?: {
+        mode?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
 export type ChangeClusterModeResponse = ChangeClusterModeResponses[keyof ChangeClusterModeResponses];
 
 // @public (undocumented)
@@ -3258,6 +3993,36 @@ export type CheckpointType = 'MARKER' | 'SCHEDULED_BACKUP' | 'MANUAL_BACKUP';
 // @public
 export type ClearableDateTime = string | null | string | null | null;
 
+// Warning: (ae-forgotten-export) The symbol "HttpMethod" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type Client$1<RequestFn = never, Config = unknown, MethodFn = never, BuildUrlFn = never, SseFn = never> = {
+    buildUrl: BuildUrlFn;
+    getConfig: () => Config;
+    request: RequestFn;
+    setConfig: (config: Config) => Config;
+} & {
+    [K in HttpMethod]: MethodFn;
+} & ([SseFn] extends [never] ? {
+    sse?: never;
+} : {
+    sse: {
+        [K in HttpMethod]: SseFn;
+    };
+});
+
+// Warning: (ae-forgotten-export) The symbol "Client$1" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "RequestFn" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "Config" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "MethodFn" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "BuildUrlFn" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "SseFn" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type Client = Client$1<RequestFn, Config, MethodFn, BuildUrlFn, SseFn> & {
+    interceptors: Middleware<Request, Response, unknown, ResolvedRequestOptions>;
+};
+
 // @public
 export type ClientId = CamundaKey<'ClientId'>;
 
@@ -3267,6 +4032,22 @@ export const ClientId: {
     getValue(key: ClientId): string;
     isValid(value: string): boolean;
 };
+
+// @public
+interface ClientMeta {
+}
+
+// @public (undocumented)
+interface ClientOptions$1 {
+    // (undocumented)
+    baseUrl?: string;
+    // Warning: (ae-forgotten-export) The symbol "ResponseStyle" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    responseStyle?: ResponseStyle;
+    // (undocumented)
+    throwOnError?: boolean;
+}
 
 // @public (undocumented)
 export type ClientOptions = {
@@ -3673,6 +4454,14 @@ export type ClusterVariableSearchResult = ClusterVariableResultBase & {
 };
 
 // @public
+interface CollectClock {
+    // (undocumented)
+    now: () => number;
+    // (undocumented)
+    sleep: (ms: number) => Promise<void>;
+}
+
+// @public
 export function collectTypedVariables<TSchema extends AnyVariableSchema>(params: {
     schema: TSchema;
     singleScope: boolean;
@@ -3680,6 +4469,16 @@ export function collectTypedVariables<TSchema extends AnyVariableSchema>(params:
     consistency?: VariableConsistencyOptions;
     clock?: CollectClock;
 }): Promise<VariableMap<TSchema>>;
+
+// @public
+const completeJob$1: <ThrowOnError extends boolean = true>(options: Options<CompleteJobData, ThrowOnError>) => RequestResult<CompleteJobResponses, CompleteJobErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "completeJobOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type completeJobBody = (NonNullable<completeJobOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type CompleteJobData = {
@@ -3711,12 +4510,32 @@ export type completeJobInput = completeJobBody & {
 };
 
 // @public (undocumented)
+type completeJobOptions = Parameters<typeof completeJob$1>[0];
+
+// @public (undocumented)
+type completeJobPathParam_jobKey = (NonNullable<completeJobOptions> extends {
+    path: {
+        jobKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type CompleteJobResponse = CompleteJobResponses[keyof CompleteJobResponses];
 
 // @public (undocumented)
 export type CompleteJobResponses = {
     204: void;
 };
+
+// @public
+const completeUserTask$1: <ThrowOnError extends boolean = true>(options: Options<CompleteUserTaskData, ThrowOnError>) => RequestResult<CompleteUserTaskResponses, CompleteUserTaskErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "completeUserTaskOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type completeUserTaskBody = (NonNullable<completeUserTaskOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type CompleteUserTaskData = {
@@ -3747,6 +4566,16 @@ export type CompleteUserTaskErrors = {
 export type completeUserTaskInput = completeUserTaskBody & {
     userTaskKey: completeUserTaskPathParam_userTaskKey;
 };
+
+// @public (undocumented)
+type completeUserTaskOptions = Parameters<typeof completeUserTask$1>[0];
+
+// @public (undocumented)
+type completeUserTaskPathParam_userTaskKey = (NonNullable<completeUserTaskOptions> extends {
+    path: {
+        userTaskKey: infer P;
+    };
+} ? P : any);
 
 // @public (undocumented)
 export type CompleteUserTaskResponse = CompleteUserTaskResponses[keyof CompleteUserTaskResponses];
@@ -3788,6 +4617,64 @@ export type ConditionWaitStateDetails = BaseWaitStateDetails & {
     expression: string;
     events: Array<'create' | 'update'>;
 };
+
+// @public (undocumented)
+interface Config$1 {
+    // Warning: (ae-forgotten-export) The symbol "Auth" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "AuthToken" needs to be exported by the entry point index.d.ts
+    auth?: ((auth: Auth) => Promise<AuthToken> | AuthToken) | AuthToken;
+    // Warning: (ae-forgotten-export) The symbol "BodySerializer" needs to be exported by the entry point index.d.ts
+    bodySerializer?: BodySerializer | null;
+    headers?: RequestInit['headers'] | Record<string, string | number | boolean | (string | number | boolean)[] | null | undefined | unknown>;
+    method?: Uppercase<HttpMethod>;
+    // Warning: (ae-forgotten-export) The symbol "QuerySerializer" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "QuerySerializerOptions" needs to be exported by the entry point index.d.ts
+    querySerializer?: QuerySerializer | QuerySerializerOptions;
+    requestValidator?: (data: unknown) => Promise<unknown>;
+    responseTransformer?: (data: unknown) => Promise<unknown>;
+    responseValidator?: (data: unknown) => Promise<unknown>;
+}
+
+// Warning: (ae-forgotten-export) The symbol "ClientOptions$1" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "Config$1" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+interface Config<T extends ClientOptions$1 = ClientOptions$1> extends Omit<RequestInit, 'body' | 'headers' | 'method'>, Config$1 {
+    baseUrl?: T['baseUrl'];
+    fetch?: typeof fetch;
+    next?: never;
+    // Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@camunda8/orchestration-cluster-api" does not have an export "Body"
+    parseAs?: 'arrayBuffer' | 'auto' | 'blob' | 'formData' | 'json' | 'stream' | 'text';
+    responseStyle?: ResponseStyle;
+    throwOnError?: T['throwOnError'];
+}
+
+// @public
+interface ConsistencyOptions<T> {
+    // (undocumented)
+    abortSignal?: AbortSignal;
+    // (undocumented)
+    onAttempt?: (info: {
+        attempt: number;
+        elapsedMs: number;
+        remainingMs: number;
+        status?: number;
+        predicateResult?: boolean;
+        nextDelayMs?: number;
+    }) => void;
+    // (undocumented)
+    onComplete?: (info: {
+        attempts: number;
+        elapsedMs: number;
+    }) => void;
+    // (undocumented)
+    pollIntervalMs?: number;
+    // (undocumented)
+    predicate?: (result: T) => boolean | Promise<boolean>;
+    trace?: boolean;
+    // (undocumented)
+    waitUpToMs: number;
+}
 
 // @public
 export type CorrelatedMessageSubscriptionFilter = {
@@ -3841,6 +4728,16 @@ export type CorrelatedMessageSubscriptionSearchQuerySortRequest = {
     order?: SortOrderEnum;
 };
 
+// @public
+const correlateMessage$1: <ThrowOnError extends boolean = true>(options: Options<CorrelateMessageData, ThrowOnError>) => RequestResult<CorrelateMessageResponses, CorrelateMessageErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "correlateMessageOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type correlateMessageBody = (NonNullable<correlateMessageOptions> extends {
+    body?: infer B;
+} ? B : never);
+
 // @public (undocumented)
 export type CorrelateMessageData = {
     body: MessageCorrelationRequest;
@@ -3867,12 +4764,25 @@ export type CorrelateMessageErrors = {
 export type correlateMessageInput = correlateMessageBody;
 
 // @public (undocumented)
+type correlateMessageOptions = Parameters<typeof correlateMessage$1>[0];
+
+// @public (undocumented)
 export type CorrelateMessageResponse = CorrelateMessageResponses[keyof CorrelateMessageResponses];
 
 // @public (undocumented)
 export type CorrelateMessageResponses = {
     200: MessageCorrelationResult;
 };
+
+// @public
+const createAdminUser$1: <ThrowOnError extends boolean = true>(options: Options<CreateAdminUserData, ThrowOnError>) => RequestResult<CreateAdminUserResponses, CreateAdminUserErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "createAdminUserOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type createAdminUserBody = (NonNullable<createAdminUserOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type CreateAdminUserData = {
@@ -3900,12 +4810,25 @@ export type CreateAdminUserErrors = {
 export type createAdminUserInput = createAdminUserBody;
 
 // @public (undocumented)
+type createAdminUserOptions = Parameters<typeof createAdminUser$1>[0];
+
+// @public (undocumented)
 export type CreateAdminUserResponse = CreateAdminUserResponses[keyof CreateAdminUserResponses];
 
 // @public (undocumented)
 export type CreateAdminUserResponses = {
     201: UserCreateResult;
 };
+
+// @public
+const createAgentInstance$1: <ThrowOnError extends boolean = true>(options: Options<CreateAgentInstanceData, ThrowOnError>) => RequestResult<CreateAgentInstanceResponses, CreateAgentInstanceErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "createAgentInstanceOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type createAgentInstanceBody = (NonNullable<createAgentInstanceOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type CreateAgentInstanceData = {
@@ -3935,12 +4858,37 @@ export type CreateAgentInstanceErrors = {
 export type createAgentInstanceInput = createAgentInstanceBody;
 
 // @public (undocumented)
+type createAgentInstanceOptions = Parameters<typeof createAgentInstance$1>[0];
+
+// @public (undocumented)
 export type CreateAgentInstanceResponse = CreateAgentInstanceResponses[keyof CreateAgentInstanceResponses];
 
 // @public (undocumented)
 export type CreateAgentInstanceResponses = {
     200: AgentInstanceCreationResult;
 };
+
+// Warning: (ae-forgotten-export) The symbol "AuthFacade" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+function createAuthFacade(config: CamundaConfig, opts?: {
+    fetch?: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
+    logger?: Logger;
+    telemetryHooks?: TelemetryHooks;
+    correlationProvider?: () => string | undefined;
+    clock?: Clock;
+    random?: RandomSource;
+}): AuthFacade;
+
+// @public
+const createAuthorization$1: <ThrowOnError extends boolean = true>(options: Options<CreateAuthorizationData, ThrowOnError>) => RequestResult<CreateAuthorizationResponses, CreateAuthorizationErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "createAuthorizationOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type createAuthorizationBody = (NonNullable<createAuthorizationOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type CreateAuthorizationData = {
@@ -3967,6 +4915,9 @@ export type CreateAuthorizationErrors = {
 //
 // @public (undocumented)
 export type createAuthorizationInput = createAuthorizationBody;
+
+// @public (undocumented)
+type createAuthorizationOptions = Parameters<typeof createAuthorization$1>[0];
 
 // @public (undocumented)
 export type CreateAuthorizationResponse = CreateAuthorizationResponses[keyof CreateAuthorizationResponses];
@@ -3997,6 +4948,16 @@ export type CreateClusterVariableRequest = {
     kind?: ClusterVariableKindEnum;
 };
 
+// @public
+const createDeployment$1: <ThrowOnError extends boolean = true>(options: Options<CreateDeploymentData, ThrowOnError>) => RequestResult<CreateDeploymentResponses, CreateDeploymentErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "createDeploymentOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type createDeploymentBody = (NonNullable<createDeploymentOptions> extends {
+    body?: infer B;
+} ? B : never);
+
 // @public (undocumented)
 export type CreateDeploymentData = {
     body: {
@@ -4024,6 +4985,11 @@ export type createDeploymentInput = Omit<createDeploymentBody, 'resources'> & {
     resources: File[];
 };
 
+// Warning: (ae-forgotten-export) The symbol "createDeployment$1" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type createDeploymentOptions = Parameters<typeof createDeployment$1>[0];
+
 // @public (undocumented)
 export type CreateDeploymentResponse = CreateDeploymentResponses[keyof CreateDeploymentResponses];
 
@@ -4031,6 +4997,16 @@ export type CreateDeploymentResponse = CreateDeploymentResponses[keyof CreateDep
 export type CreateDeploymentResponses = {
     200: DeploymentResult;
 };
+
+// @public
+const createDocument$1: <ThrowOnError extends boolean = true>(options: Options<CreateDocumentData, ThrowOnError>) => RequestResult<CreateDocumentResponses, CreateDocumentErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "createDocumentOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type createDocumentBody = (NonNullable<createDocumentOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type CreateDocumentData = {
@@ -4063,6 +5039,16 @@ export type createDocumentInput = createDocumentBody & {
     documentId?: createDocumentQueryParam_documentId;
 };
 
+// @public
+const createDocumentLink$1: <ThrowOnError extends boolean = true>(options: Options<CreateDocumentLinkData, ThrowOnError>) => RequestResult<CreateDocumentLinkResponses, CreateDocumentLinkErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "createDocumentLinkOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type createDocumentLinkBody = (NonNullable<createDocumentLinkOptions> extends {
+    body?: infer B;
+} ? B : never);
+
 // @public (undocumented)
 export type CreateDocumentLinkData = {
     body: DocumentLinkRequest;
@@ -4094,6 +5080,30 @@ export type createDocumentLinkInput = createDocumentLinkBody & {
 };
 
 // @public (undocumented)
+type createDocumentLinkOptions = Parameters<typeof createDocumentLink$1>[0];
+
+// @public (undocumented)
+type createDocumentLinkPathParam_documentId = (NonNullable<createDocumentLinkOptions> extends {
+    path: {
+        documentId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type createDocumentLinkQueryParam_contentHash = (NonNullable<createDocumentLinkOptions> extends {
+    query?: {
+        contentHash?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
+type createDocumentLinkQueryParam_storeId = (NonNullable<createDocumentLinkOptions> extends {
+    query?: {
+        storeId?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
 export type CreateDocumentLinkResponse = CreateDocumentLinkResponses[keyof CreateDocumentLinkResponses];
 
 // @public (undocumented)
@@ -4102,12 +5112,39 @@ export type CreateDocumentLinkResponses = {
 };
 
 // @public (undocumented)
+type createDocumentOptions = Parameters<typeof createDocument$1>[0];
+
+// @public (undocumented)
+type createDocumentQueryParam_documentId = (NonNullable<createDocumentOptions> extends {
+    query?: {
+        documentId?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
+type createDocumentQueryParam_storeId = (NonNullable<createDocumentOptions> extends {
+    query?: {
+        storeId?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
 export type CreateDocumentResponse = CreateDocumentResponses[keyof CreateDocumentResponses];
 
 // @public (undocumented)
 export type CreateDocumentResponses = {
     201: DocumentReference;
 };
+
+// @public
+const createDocuments$1: <ThrowOnError extends boolean = true>(options: Options<CreateDocumentsData, ThrowOnError>) => RequestResult<CreateDocumentsResponses, CreateDocumentsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "createDocumentsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type createDocumentsBody = (NonNullable<createDocumentsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type CreateDocumentsData = {
@@ -4139,6 +5176,16 @@ export type createDocumentsInput = createDocumentsBody & {
 };
 
 // @public (undocumented)
+type createDocumentsOptions = Parameters<typeof createDocuments$1>[0];
+
+// @public (undocumented)
+type createDocumentsQueryParam_storeId = (NonNullable<createDocumentsOptions> extends {
+    query?: {
+        storeId?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
 export type CreateDocumentsResponse = CreateDocumentsResponses[keyof CreateDocumentsResponses];
 
 // @public (undocumented)
@@ -4146,6 +5193,16 @@ export type CreateDocumentsResponses = {
     201: DocumentCreationBatchResponse;
     207: DocumentCreationBatchResponse;
 };
+
+// @public
+const createElementInstanceVariables$1: <ThrowOnError extends boolean = true>(options: Options<CreateElementInstanceVariablesData, ThrowOnError>) => RequestResult<CreateElementInstanceVariablesResponses, CreateElementInstanceVariablesErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "createElementInstanceVariablesOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type createElementInstanceVariablesBody = (NonNullable<createElementInstanceVariablesOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type CreateElementInstanceVariablesData = {
@@ -4176,6 +5233,16 @@ export type createElementInstanceVariablesInput = createElementInstanceVariables
 };
 
 // @public (undocumented)
+type createElementInstanceVariablesOptions = Parameters<typeof createElementInstanceVariables$1>[0];
+
+// @public (undocumented)
+type createElementInstanceVariablesPathParam_elementInstanceKey = (NonNullable<createElementInstanceVariablesOptions> extends {
+    path: {
+        elementInstanceKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type CreateElementInstanceVariablesResponse = CreateElementInstanceVariablesResponses[keyof CreateElementInstanceVariablesResponses];
 
 // @public (undocumented)
@@ -4187,6 +5254,16 @@ export type CreateElementInstanceVariablesResponses = {
 export function createEngineClock(target: EngineClockTarget, options?: {
     start?: number;
 }): EngineClock;
+
+// @public
+const createGlobalClusterVariable$1: <ThrowOnError extends boolean = true>(options: Options<CreateGlobalClusterVariableData, ThrowOnError>) => RequestResult<CreateGlobalClusterVariableResponses, CreateGlobalClusterVariableErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "createGlobalClusterVariableOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type createGlobalClusterVariableBody = (NonNullable<createGlobalClusterVariableOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type CreateGlobalClusterVariableData = {
@@ -4214,12 +5291,25 @@ export type CreateGlobalClusterVariableErrors = {
 export type createGlobalClusterVariableInput = createGlobalClusterVariableBody;
 
 // @public (undocumented)
+type createGlobalClusterVariableOptions = Parameters<typeof createGlobalClusterVariable$1>[0];
+
+// @public (undocumented)
 export type CreateGlobalClusterVariableResponse = CreateGlobalClusterVariableResponses[keyof CreateGlobalClusterVariableResponses];
 
 // @public (undocumented)
 export type CreateGlobalClusterVariableResponses = {
     200: ClusterVariableResult;
 };
+
+// @public
+const createGlobalTaskListener$1: <ThrowOnError extends boolean = true>(options: Options<CreateGlobalTaskListenerData, ThrowOnError>) => RequestResult<CreateGlobalTaskListenerResponses, CreateGlobalTaskListenerErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "createGlobalTaskListenerOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type createGlobalTaskListenerBody = (NonNullable<createGlobalTaskListenerOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type CreateGlobalTaskListenerData = {
@@ -4248,6 +5338,9 @@ export type CreateGlobalTaskListenerErrors = {
 export type createGlobalTaskListenerInput = createGlobalTaskListenerBody;
 
 // @public (undocumented)
+type createGlobalTaskListenerOptions = Parameters<typeof createGlobalTaskListener$1>[0];
+
+// @public (undocumented)
 export type CreateGlobalTaskListenerRequest = GlobalTaskListenerBase & {
     id: GlobalListenerId;
     eventTypes: GlobalTaskListenerEventTypes;
@@ -4260,6 +5353,16 @@ export type CreateGlobalTaskListenerResponse = CreateGlobalTaskListenerResponses
 export type CreateGlobalTaskListenerResponses = {
     201: GlobalTaskListenerResult;
 };
+
+// @public
+const createGroup$1: <ThrowOnError extends boolean = true>(options?: Options<CreateGroupData, ThrowOnError>) => RequestResult<CreateGroupResponses, CreateGroupErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "createGroupOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type createGroupBody = (NonNullable<createGroupOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type CreateGroupData = {
@@ -4288,6 +5391,9 @@ export type CreateGroupErrors = {
 export type createGroupInput = createGroupBody;
 
 // @public (undocumented)
+type createGroupOptions = Parameters<typeof createGroup$1>[0];
+
+// @public (undocumented)
 export type CreateGroupResponse = CreateGroupResponses[keyof CreateGroupResponses];
 
 // @public (undocumented)
@@ -4307,6 +5413,16 @@ export interface CreateLoggerOptions {
     // (undocumented)
     transport?: LogTransport;
 }
+
+// @public
+const createMappingRule$1: <ThrowOnError extends boolean = true>(options?: Options<CreateMappingRuleData, ThrowOnError>) => RequestResult<CreateMappingRuleResponses, CreateMappingRuleErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "createMappingRuleOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type createMappingRuleBody = (NonNullable<createMappingRuleOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type CreateMappingRuleData = {
@@ -4334,12 +5450,25 @@ export type CreateMappingRuleErrors = {
 export type createMappingRuleInput = createMappingRuleBody;
 
 // @public (undocumented)
+type createMappingRuleOptions = Parameters<typeof createMappingRule$1>[0];
+
+// @public (undocumented)
 export type CreateMappingRuleResponse = CreateMappingRuleResponses[keyof CreateMappingRuleResponses];
 
 // @public (undocumented)
 export type CreateMappingRuleResponses = {
     201: MappingRuleCreateResult;
 };
+
+// @public
+const createProcessInstance$1: <ThrowOnError extends boolean = true>(options: Options<CreateProcessInstanceData, ThrowOnError>) => RequestResult<CreateProcessInstanceResponses, CreateProcessInstanceErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "createProcessInstanceOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type createProcessInstanceBody = (NonNullable<createProcessInstanceOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type CreateProcessInstanceData = {
@@ -4367,6 +5496,9 @@ export type CreateProcessInstanceErrors = {
 export type createProcessInstanceInput = createProcessInstanceBody;
 
 // @public (undocumented)
+type createProcessInstanceOptions = Parameters<typeof createProcessInstance$1>[0];
+
+// @public (undocumented)
 export type CreateProcessInstanceResponse = CreateProcessInstanceResponses[keyof CreateProcessInstanceResponses];
 
 // @public (undocumented)
@@ -4387,6 +5519,16 @@ export type CreateProcessInstanceResult = {
     tags: TagSet;
     businessId: BusinessId | null;
 };
+
+// @public
+const createRole$1: <ThrowOnError extends boolean = true>(options?: Options<CreateRoleData, ThrowOnError>) => RequestResult<CreateRoleResponses, CreateRoleErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "createRoleOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type createRoleBody = (NonNullable<createRoleOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type CreateRoleData = {
@@ -4415,6 +5557,9 @@ export type CreateRoleErrors = {
 export type createRoleInput = createRoleBody;
 
 // @public (undocumented)
+type createRoleOptions = Parameters<typeof createRole$1>[0];
+
+// @public (undocumented)
 export type CreateRoleResponse = CreateRoleResponses[keyof CreateRoleResponses];
 
 // @public (undocumented)
@@ -4424,6 +5569,26 @@ export type CreateRoleResponses = {
 
 // @public
 export function createSeededRandom(seed: bigint | number): SeededRandom;
+
+// @public
+const createTenant$1: <ThrowOnError extends boolean = true>(options: Options<CreateTenantData, ThrowOnError>) => RequestResult<CreateTenantResponses, CreateTenantErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "createTenantOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type createTenantBody = (NonNullable<createTenantOptions> extends {
+    body?: infer B;
+} ? B : never);
+
+// @public
+const createTenantClusterVariable$1: <ThrowOnError extends boolean = true>(options: Options<CreateTenantClusterVariableData, ThrowOnError>) => RequestResult<CreateTenantClusterVariableResponses, CreateTenantClusterVariableErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "createTenantClusterVariableOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type createTenantClusterVariableBody = (NonNullable<createTenantClusterVariableOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type CreateTenantClusterVariableData = {
@@ -4454,6 +5619,16 @@ export type CreateTenantClusterVariableErrors = {
 export type createTenantClusterVariableInput = createTenantClusterVariableBody & {
     tenantId: createTenantClusterVariablePathParam_tenantId;
 };
+
+// @public (undocumented)
+type createTenantClusterVariableOptions = Parameters<typeof createTenantClusterVariable$1>[0];
+
+// @public (undocumented)
+type createTenantClusterVariablePathParam_tenantId = (NonNullable<createTenantClusterVariableOptions> extends {
+    path: {
+        tenantId: infer P;
+    };
+} ? P : any);
 
 // @public (undocumented)
 export type CreateTenantClusterVariableResponse = CreateTenantClusterVariableResponses[keyof CreateTenantClusterVariableResponses];
@@ -4490,6 +5665,9 @@ export type CreateTenantErrors = {
 export type createTenantInput = createTenantBody;
 
 // @public (undocumented)
+type createTenantOptions = Parameters<typeof createTenant$1>[0];
+
+// @public (undocumented)
 export type CreateTenantResponse = CreateTenantResponses[keyof CreateTenantResponses];
 
 // @public (undocumented)
@@ -4502,6 +5680,16 @@ export function createTestClock(options?: {
     start?: number;
     autoAdvance?: boolean;
 }): TestClock;
+
+// @public
+const createUser$1: <ThrowOnError extends boolean = true>(options: Options<CreateUserData, ThrowOnError>) => RequestResult<CreateUserResponses, CreateUserErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "createUserOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type createUserBody = (NonNullable<createUserOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type CreateUserData = {
@@ -4530,6 +5718,9 @@ export type CreateUserErrors = {
 export type createUserInput = createUserBody;
 
 // @public (undocumented)
+type createUserOptions = Parameters<typeof createUser$1>[0];
+
+// @public (undocumented)
 export type CreateUserResponse = CreateUserResponses[keyof CreateUserResponses];
 
 // @public (undocumented)
@@ -4548,6 +5739,20 @@ export type CursorForwardPagination = {
     after?: EndCursor;
     limit?: number;
 };
+
+// Warning: (ae-forgotten-export) The symbol "_RawReturn$1" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type _DataOf$1<F> = Exclude<_RawReturn$1<F> extends {
+    data: infer D;
+} ? D : _RawReturn$1<F>, undefined>;
+
+// Warning: (ae-forgotten-export) The symbol "_RawReturn" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type _DataOf<F> = Exclude<_RawReturn<F> extends {
+    data: infer D;
+} ? D : _RawReturn<F>, undefined>;
 
 // @public
 export type DateTimeFilterProperty = string | AdvancedDateTimeFilter;
@@ -4866,6 +6071,9 @@ export type DecisionRequirementsSearchQuerySortRequest = {
     order?: SortOrderEnum;
 };
 
+// @public
+const deleteAuthorization$1: <ThrowOnError extends boolean = true>(options: Options<DeleteAuthorizationData, ThrowOnError>) => RequestResult<DeleteAuthorizationResponses, DeleteAuthorizationErrors, ThrowOnError>;
+
 // @public (undocumented)
 export type DeleteAuthorizationData = {
     body?: never;
@@ -4893,12 +6101,34 @@ export type deleteAuthorizationInput = {
 };
 
 // @public (undocumented)
+type deleteAuthorizationOptions = Parameters<typeof deleteAuthorization$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "deleteAuthorizationOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type deleteAuthorizationPathParam_authorizationKey = (NonNullable<deleteAuthorizationOptions> extends {
+    path: {
+        authorizationKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type DeleteAuthorizationResponse = DeleteAuthorizationResponses[keyof DeleteAuthorizationResponses];
 
 // @public (undocumented)
 export type DeleteAuthorizationResponses = {
     204: void;
 };
+
+// @public
+const deleteDecisionInstance$1: <ThrowOnError extends boolean = true>(options: Options<DeleteDecisionInstanceData, ThrowOnError>) => RequestResult<DeleteDecisionInstanceResponses, DeleteDecisionInstanceErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "deleteDecisionInstanceOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type deleteDecisionInstanceBody = (NonNullable<deleteDecisionInstanceOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type DeleteDecisionInstanceData = {
@@ -4930,6 +6160,16 @@ export type deleteDecisionInstanceInput = deleteDecisionInstanceBody & {
 };
 
 // @public (undocumented)
+type deleteDecisionInstanceOptions = Parameters<typeof deleteDecisionInstance$1>[0];
+
+// @public (undocumented)
+type deleteDecisionInstancePathParam_decisionEvaluationKey = (NonNullable<deleteDecisionInstanceOptions> extends {
+    path: {
+        decisionEvaluationKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type DeleteDecisionInstanceRequest = {
     operationReference?: OperationReference;
 } | null;
@@ -4941,6 +6181,16 @@ export type DeleteDecisionInstanceResponse = DeleteDecisionInstanceResponses[key
 export type DeleteDecisionInstanceResponses = {
     204: void;
 };
+
+// @public
+const deleteDecisionInstancesBatchOperation$1: <ThrowOnError extends boolean = true>(options: Options<DeleteDecisionInstancesBatchOperationData, ThrowOnError>) => RequestResult<DeleteDecisionInstancesBatchOperationResponses, DeleteDecisionInstancesBatchOperationErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "deleteDecisionInstancesBatchOperationOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type deleteDecisionInstancesBatchOperationBody = (NonNullable<deleteDecisionInstancesBatchOperationOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type DeleteDecisionInstancesBatchOperationData = {
@@ -4967,12 +6217,18 @@ export type DeleteDecisionInstancesBatchOperationErrors = {
 export type deleteDecisionInstancesBatchOperationInput = deleteDecisionInstancesBatchOperationBody;
 
 // @public (undocumented)
+type deleteDecisionInstancesBatchOperationOptions = Parameters<typeof deleteDecisionInstancesBatchOperation$1>[0];
+
+// @public (undocumented)
 export type DeleteDecisionInstancesBatchOperationResponse = DeleteDecisionInstancesBatchOperationResponses[keyof DeleteDecisionInstancesBatchOperationResponses];
 
 // @public (undocumented)
 export type DeleteDecisionInstancesBatchOperationResponses = {
     200: BatchOperationCreatedResult;
 };
+
+// @public
+const deleteDocument$1: <ThrowOnError extends boolean = true>(options: Options<DeleteDocumentData, ThrowOnError>) => RequestResult<DeleteDocumentResponses, DeleteDocumentErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type DeleteDocumentData = {
@@ -5002,12 +6258,34 @@ export type deleteDocumentInput = {
 };
 
 // @public (undocumented)
+type deleteDocumentOptions = Parameters<typeof deleteDocument$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "deleteDocumentOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type deleteDocumentPathParam_documentId = (NonNullable<deleteDocumentOptions> extends {
+    path: {
+        documentId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type deleteDocumentQueryParam_storeId = (NonNullable<deleteDocumentOptions> extends {
+    query?: {
+        storeId?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
 export type DeleteDocumentResponse = DeleteDocumentResponses[keyof DeleteDocumentResponses];
 
 // @public (undocumented)
 export type DeleteDocumentResponses = {
     204: void;
 };
+
+// @public
+const deleteGlobalClusterVariable$1: <ThrowOnError extends boolean = true>(options: Options<DeleteGlobalClusterVariableData, ThrowOnError>) => RequestResult<DeleteGlobalClusterVariableResponses, DeleteGlobalClusterVariableErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type DeleteGlobalClusterVariableData = {
@@ -5037,12 +6315,27 @@ export type deleteGlobalClusterVariableInput = {
 };
 
 // @public (undocumented)
+type deleteGlobalClusterVariableOptions = Parameters<typeof deleteGlobalClusterVariable$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "deleteGlobalClusterVariableOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type deleteGlobalClusterVariablePathParam_name = (NonNullable<deleteGlobalClusterVariableOptions> extends {
+    path: {
+        name: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type DeleteGlobalClusterVariableResponse = DeleteGlobalClusterVariableResponses[keyof DeleteGlobalClusterVariableResponses];
 
 // @public (undocumented)
 export type DeleteGlobalClusterVariableResponses = {
     204: void;
 };
+
+// @public
+const deleteGlobalTaskListener$1: <ThrowOnError extends boolean = true>(options: Options<DeleteGlobalTaskListenerData, ThrowOnError>) => RequestResult<DeleteGlobalTaskListenerResponses, DeleteGlobalTaskListenerErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type DeleteGlobalTaskListenerData = {
@@ -5073,12 +6366,27 @@ export type deleteGlobalTaskListenerInput = {
 };
 
 // @public (undocumented)
+type deleteGlobalTaskListenerOptions = Parameters<typeof deleteGlobalTaskListener$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "deleteGlobalTaskListenerOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type deleteGlobalTaskListenerPathParam_id = (NonNullable<deleteGlobalTaskListenerOptions> extends {
+    path: {
+        id: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type DeleteGlobalTaskListenerResponse = DeleteGlobalTaskListenerResponses[keyof DeleteGlobalTaskListenerResponses];
 
 // @public (undocumented)
 export type DeleteGlobalTaskListenerResponses = {
     204: void;
 };
+
+// @public
+const deleteGroup$1: <ThrowOnError extends boolean = true>(options: Options<DeleteGroupData, ThrowOnError>) => RequestResult<DeleteGroupResponses, DeleteGroupErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type DeleteGroupData = {
@@ -5107,12 +6415,30 @@ export type deleteGroupInput = {
 };
 
 // @public (undocumented)
+type deleteGroupOptions = Parameters<typeof deleteGroup$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "deleteGroupOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type deleteGroupPathParam_groupId = (NonNullable<deleteGroupOptions> extends {
+    path: {
+        groupId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type DeleteGroupResponse = DeleteGroupResponses[keyof DeleteGroupResponses];
 
 // @public (undocumented)
 export type DeleteGroupResponses = {
     204: void;
 };
+
+// @public
+const deleteHistoryBackup$1: <ThrowOnError extends boolean = true>(options: Options<DeleteHistoryBackupData, ThrowOnError>) => RequestResult<DeleteHistoryBackupResponses, DeleteHistoryBackupErrors, ThrowOnError>;
+
+// @public
+const deleteHistoryBackupAsClusterAdmin$1: <ThrowOnError extends boolean = true>(options: Options<DeleteHistoryBackupAsClusterAdminData, ThrowOnError>) => RequestResult<DeleteHistoryBackupAsClusterAdminResponses, DeleteHistoryBackupAsClusterAdminErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type DeleteHistoryBackupAsClusterAdminData = {
@@ -5144,6 +6470,25 @@ export type deleteHistoryBackupAsClusterAdminInput = {
     backupId: deleteHistoryBackupAsClusterAdminPathParam_backupId;
     physicalTenantId?: deleteHistoryBackupAsClusterAdminQueryParam_physicalTenantId;
 };
+
+// @public (undocumented)
+type deleteHistoryBackupAsClusterAdminOptions = Parameters<typeof deleteHistoryBackupAsClusterAdmin$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "deleteHistoryBackupAsClusterAdminOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type deleteHistoryBackupAsClusterAdminPathParam_backupId = (NonNullable<deleteHistoryBackupAsClusterAdminOptions> extends {
+    path: {
+        backupId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type deleteHistoryBackupAsClusterAdminQueryParam_physicalTenantId = (NonNullable<deleteHistoryBackupAsClusterAdminOptions> extends {
+    query?: {
+        physicalTenantId?: infer Q;
+    };
+} ? Q : any);
 
 // @public (undocumented)
 export type DeleteHistoryBackupAsClusterAdminResponse = DeleteHistoryBackupAsClusterAdminResponses[keyof DeleteHistoryBackupAsClusterAdminResponses];
@@ -5181,12 +6526,27 @@ export type deleteHistoryBackupInput = {
 };
 
 // @public (undocumented)
+type deleteHistoryBackupOptions = Parameters<typeof deleteHistoryBackup$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "deleteHistoryBackupOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type deleteHistoryBackupPathParam_backupId = (NonNullable<deleteHistoryBackupOptions> extends {
+    path: {
+        backupId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type DeleteHistoryBackupResponse = DeleteHistoryBackupResponses[keyof DeleteHistoryBackupResponses];
 
 // @public (undocumented)
 export type DeleteHistoryBackupResponses = {
     204: void;
 };
+
+// @public
+const deleteMappingRule$1: <ThrowOnError extends boolean = true>(options: Options<DeleteMappingRuleData, ThrowOnError>) => RequestResult<DeleteMappingRuleResponses, DeleteMappingRuleErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type DeleteMappingRuleData = {
@@ -5215,12 +6575,34 @@ export type deleteMappingRuleInput = {
 };
 
 // @public (undocumented)
+type deleteMappingRuleOptions = Parameters<typeof deleteMappingRule$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "deleteMappingRuleOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type deleteMappingRulePathParam_mappingRuleId = (NonNullable<deleteMappingRuleOptions> extends {
+    path: {
+        mappingRuleId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type DeleteMappingRuleResponse = DeleteMappingRuleResponses[keyof DeleteMappingRuleResponses];
 
 // @public (undocumented)
 export type DeleteMappingRuleResponses = {
     204: void;
 };
+
+// @public
+const deleteProcessInstance$1: <ThrowOnError extends boolean = true>(options: Options<DeleteProcessInstanceData, ThrowOnError>) => RequestResult<DeleteProcessInstanceResponses, DeleteProcessInstanceErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "deleteProcessInstanceOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type deleteProcessInstanceBody = (NonNullable<deleteProcessInstanceOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type DeleteProcessInstanceData = {
@@ -5253,6 +6635,16 @@ export type deleteProcessInstanceInput = deleteProcessInstanceBody & {
 };
 
 // @public (undocumented)
+type deleteProcessInstanceOptions = Parameters<typeof deleteProcessInstance$1>[0];
+
+// @public (undocumented)
+type deleteProcessInstancePathParam_processInstanceKey = (NonNullable<deleteProcessInstanceOptions> extends {
+    path: {
+        processInstanceKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type DeleteProcessInstanceRequest = {
     operationReference?: OperationReference;
 } | null;
@@ -5264,6 +6656,16 @@ export type DeleteProcessInstanceResponse = DeleteProcessInstanceResponses[keyof
 export type DeleteProcessInstanceResponses = {
     204: void;
 };
+
+// @public
+const deleteProcessInstancesBatchOperation$1: <ThrowOnError extends boolean = true>(options: Options<DeleteProcessInstancesBatchOperationData, ThrowOnError>) => RequestResult<DeleteProcessInstancesBatchOperationResponses, DeleteProcessInstancesBatchOperationErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "deleteProcessInstancesBatchOperationOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type deleteProcessInstancesBatchOperationBody = (NonNullable<deleteProcessInstancesBatchOperationOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type DeleteProcessInstancesBatchOperationData = {
@@ -5290,12 +6692,25 @@ export type DeleteProcessInstancesBatchOperationErrors = {
 export type deleteProcessInstancesBatchOperationInput = deleteProcessInstancesBatchOperationBody;
 
 // @public (undocumented)
+type deleteProcessInstancesBatchOperationOptions = Parameters<typeof deleteProcessInstancesBatchOperation$1>[0];
+
+// @public (undocumented)
 export type DeleteProcessInstancesBatchOperationResponse = DeleteProcessInstancesBatchOperationResponses[keyof DeleteProcessInstancesBatchOperationResponses];
 
 // @public (undocumented)
 export type DeleteProcessInstancesBatchOperationResponses = {
     200: BatchOperationCreatedResult;
 };
+
+// @public
+const deleteResource$1: <ThrowOnError extends boolean = true>(options: Options<DeleteResourceData, ThrowOnError>) => RequestResult<DeleteResourceResponses, DeleteResourceErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "deleteResourceOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type deleteResourceBody = (NonNullable<deleteResourceOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type DeleteResourceData = {
@@ -5327,6 +6742,16 @@ export type deleteResourceInput = deleteResourceBody & {
 };
 
 // @public (undocumented)
+type deleteResourceOptions = Parameters<typeof deleteResource$1>[0];
+
+// @public (undocumented)
+type deleteResourcePathParam_resourceKey = (NonNullable<deleteResourceOptions> extends {
+    path: {
+        resourceKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type DeleteResourceRequest = {
     operationReference?: OperationReference;
     deleteHistory?: boolean;
@@ -5345,6 +6770,9 @@ export type DeleteResourceResponse2 = DeleteResourceResponses[keyof DeleteResour
 export type DeleteResourceResponses = {
     200: DeleteResourceResponse;
 };
+
+// @public
+const deleteRole$1: <ThrowOnError extends boolean = true>(options: Options<DeleteRoleData, ThrowOnError>) => RequestResult<DeleteRoleResponses, DeleteRoleErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type DeleteRoleData = {
@@ -5373,12 +6801,30 @@ export type deleteRoleInput = {
 };
 
 // @public (undocumented)
+type deleteRoleOptions = Parameters<typeof deleteRole$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "deleteRoleOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type deleteRolePathParam_roleId = (NonNullable<deleteRoleOptions> extends {
+    path: {
+        roleId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type DeleteRoleResponse = DeleteRoleResponses[keyof DeleteRoleResponses];
 
 // @public (undocumented)
 export type DeleteRoleResponses = {
     204: void;
 };
+
+// @public
+const deleteRuntimeBackup$1: <ThrowOnError extends boolean = true>(options: Options<DeleteRuntimeBackupData, ThrowOnError>) => RequestResult<DeleteRuntimeBackupResponses, DeleteRuntimeBackupErrors, ThrowOnError>;
+
+// @public
+const deleteRuntimeBackupAsClusterAdmin$1: <ThrowOnError extends boolean = true>(options: Options<DeleteRuntimeBackupAsClusterAdminData, ThrowOnError>) => RequestResult<DeleteRuntimeBackupAsClusterAdminResponses, DeleteRuntimeBackupAsClusterAdminErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type DeleteRuntimeBackupAsClusterAdminData = {
@@ -5409,6 +6855,25 @@ export type deleteRuntimeBackupAsClusterAdminInput = {
     backupId: deleteRuntimeBackupAsClusterAdminPathParam_backupId;
     physicalTenantId?: deleteRuntimeBackupAsClusterAdminQueryParam_physicalTenantId;
 };
+
+// @public (undocumented)
+type deleteRuntimeBackupAsClusterAdminOptions = Parameters<typeof deleteRuntimeBackupAsClusterAdmin$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "deleteRuntimeBackupAsClusterAdminOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type deleteRuntimeBackupAsClusterAdminPathParam_backupId = (NonNullable<deleteRuntimeBackupAsClusterAdminOptions> extends {
+    path: {
+        backupId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type deleteRuntimeBackupAsClusterAdminQueryParam_physicalTenantId = (NonNullable<deleteRuntimeBackupAsClusterAdminOptions> extends {
+    query?: {
+        physicalTenantId?: infer Q;
+    };
+} ? Q : any);
 
 // @public (undocumented)
 export type DeleteRuntimeBackupAsClusterAdminResponse = DeleteRuntimeBackupAsClusterAdminResponses[keyof DeleteRuntimeBackupAsClusterAdminResponses];
@@ -5445,12 +6910,30 @@ export type deleteRuntimeBackupInput = {
 };
 
 // @public (undocumented)
+type deleteRuntimeBackupOptions = Parameters<typeof deleteRuntimeBackup$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "deleteRuntimeBackupOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type deleteRuntimeBackupPathParam_backupId = (NonNullable<deleteRuntimeBackupOptions> extends {
+    path: {
+        backupId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type DeleteRuntimeBackupResponse = DeleteRuntimeBackupResponses[keyof DeleteRuntimeBackupResponses];
 
 // @public (undocumented)
 export type DeleteRuntimeBackupResponses = {
     204: void;
 };
+
+// @public
+const deleteRuntimeBackupState$1: <ThrowOnError extends boolean = true>(options?: Options<DeleteRuntimeBackupStateData, ThrowOnError>) => RequestResult<DeleteRuntimeBackupStateResponses, DeleteRuntimeBackupStateErrors, ThrowOnError>;
+
+// @public
+const deleteRuntimeBackupStateAsClusterAdmin$1: <ThrowOnError extends boolean = true>(options?: Options<DeleteRuntimeBackupStateAsClusterAdminData, ThrowOnError>) => RequestResult<DeleteRuntimeBackupStateAsClusterAdminResponses, DeleteRuntimeBackupStateAsClusterAdminErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type DeleteRuntimeBackupStateAsClusterAdminData = {
@@ -5477,6 +6960,18 @@ export type DeleteRuntimeBackupStateAsClusterAdminErrors = {
 export type deleteRuntimeBackupStateAsClusterAdminInput = {
     physicalTenantId?: deleteRuntimeBackupStateAsClusterAdminQueryParam_physicalTenantId;
 };
+
+// @public (undocumented)
+type deleteRuntimeBackupStateAsClusterAdminOptions = Parameters<typeof deleteRuntimeBackupStateAsClusterAdmin$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "deleteRuntimeBackupStateAsClusterAdminOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type deleteRuntimeBackupStateAsClusterAdminQueryParam_physicalTenantId = (NonNullable<deleteRuntimeBackupStateAsClusterAdminOptions> extends {
+    query?: {
+        physicalTenantId?: infer Q;
+    };
+} ? Q : any);
 
 // @public (undocumented)
 export type DeleteRuntimeBackupStateAsClusterAdminResponse = DeleteRuntimeBackupStateAsClusterAdminResponses[keyof DeleteRuntimeBackupStateAsClusterAdminResponses];
@@ -5516,6 +7011,12 @@ export type DeleteRuntimeBackupStateResponses = {
     204: void;
 };
 
+// @public
+const deleteTenant$1: <ThrowOnError extends boolean = true>(options: Options<DeleteTenantData, ThrowOnError>) => RequestResult<DeleteTenantResponses, DeleteTenantErrors, ThrowOnError>;
+
+// @public
+const deleteTenantClusterVariable$1: <ThrowOnError extends boolean = true>(options: Options<DeleteTenantClusterVariableData, ThrowOnError>) => RequestResult<DeleteTenantClusterVariableResponses, DeleteTenantClusterVariableErrors, ThrowOnError>;
+
 // @public (undocumented)
 export type DeleteTenantClusterVariableData = {
     body?: never;
@@ -5544,6 +7045,25 @@ export type deleteTenantClusterVariableInput = {
     tenantId: deleteTenantClusterVariablePathParam_tenantId;
     name: deleteTenantClusterVariablePathParam_name;
 };
+
+// @public (undocumented)
+type deleteTenantClusterVariableOptions = Parameters<typeof deleteTenantClusterVariable$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "deleteTenantClusterVariableOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type deleteTenantClusterVariablePathParam_name = (NonNullable<deleteTenantClusterVariableOptions> extends {
+    path: {
+        name: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type deleteTenantClusterVariablePathParam_tenantId = (NonNullable<deleteTenantClusterVariableOptions> extends {
+    path: {
+        tenantId: infer P;
+    };
+} ? P : any);
 
 // @public (undocumented)
 export type DeleteTenantClusterVariableResponse = DeleteTenantClusterVariableResponses[keyof DeleteTenantClusterVariableResponses];
@@ -5581,12 +7101,27 @@ export type deleteTenantInput = {
 };
 
 // @public (undocumented)
+type deleteTenantOptions = Parameters<typeof deleteTenant$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "deleteTenantOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type deleteTenantPathParam_tenantId = (NonNullable<deleteTenantOptions> extends {
+    path: {
+        tenantId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type DeleteTenantResponse = DeleteTenantResponses[keyof DeleteTenantResponses];
 
 // @public (undocumented)
 export type DeleteTenantResponses = {
     204: void;
 };
+
+// @public
+const deleteUser$1: <ThrowOnError extends boolean = true>(options: Options<DeleteUserData, ThrowOnError>) => RequestResult<DeleteUserResponses, DeleteUserErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type DeleteUserData = {
@@ -5613,6 +7148,18 @@ export type DeleteUserErrors = {
 export type deleteUserInput = {
     username: deleteUserPathParam_username;
 };
+
+// @public (undocumented)
+type deleteUserOptions = Parameters<typeof deleteUser$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "deleteUserOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type deleteUserPathParam_username = (NonNullable<deleteUserOptions> extends {
+    path: {
+        username: infer P;
+    };
+} ? P : any);
 
 // @public (undocumented)
 export type DeleteUserResponse = DeleteUserResponses[keyof DeleteUserResponses];
@@ -5988,6 +7535,35 @@ export interface EnrichedActivatedJob extends EnrichedActivatedJobActions {
 export interface EnrichedActivatedJob extends ActivatedJobResult_2 {
 }
 
+// @public
+interface EnrichedActivatedJobActions {
+    acknowledged?: boolean;
+    // (undocumented)
+    cancelWorkflow(): Promise<JobActionReceipt>;
+    clock: HandlerClock;
+    // (undocumented)
+    complete(variables?: {
+        [k: string]: any;
+    }, result?: JobResult): Promise<JobActionReceipt>;
+    // Warning: (ae-forgotten-export) The symbol "JobErrorRequest_2" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    error(error: JobErrorRequest_2): Promise<JobActionReceipt>;
+    // (undocumented)
+    fail(body: any): Promise<JobActionReceipt>;
+    // (undocumented)
+    ignore(): Promise<JobActionReceipt>;
+    // (undocumented)
+    log: ReturnType<CamundaClient['logger']>;
+    modifyJobTimeout: (input: {
+        newTimeoutMs: number;
+    }) => Promise<void>;
+    // (undocumented)
+    modifyRetries: (input: {
+        retries: number;
+    }) => Promise<void>;
+}
+
 // Warning: (ae-unresolved-link) The @link reference could not be resolved: The reference is ambiguous because "EnrichedActivatedJob" has more than one declaration; you need to add a TSDoc member reference selector
 // Warning: (ae-unresolved-link) The @link reference could not be resolved: The reference is ambiguous because "EnrichedActivatedJob" has more than one declaration; you need to add a TSDoc member reference selector
 //
@@ -6003,12 +7579,45 @@ export type EntityTypeExactMatchWritable = AuditLogEntityTypeEnum;
 // @public
 export type EntityTypeFilterProperty = EntityTypeExactMatch | AdvancedEntityTypeFilter;
 
+// Warning: (ae-forgotten-export) The symbol "EnvVarKey" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "EnvVarValue" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type EnvOverrides = Partial<{
+    [K in EnvVarKey]: EnvVarValue<K>;
+}>;
+
+// Warning: (ae-forgotten-export) The symbol "SCHEMA" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type EnvVarKey = keyof typeof SCHEMA;
+
+// Warning: (ae-forgotten-export) The symbol "PrimitiveType" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type EnvVarValue<K extends EnvVarKey> = PrimitiveType<(typeof SCHEMA)[K]>;
+
+// @public (undocumented)
+type ErrInterceptor<Err, Res, Req, Options> = (error: Err,
+response: Res | undefined,
+request: Req | undefined, options: Options) => Err | Promise<Err>;
+
 // @public (undocumented)
 export type EvaluateConditionalResult = {
     conditionalEvaluationKey: ConditionalEvaluationKey;
     tenantId: TenantId;
     processInstances: Array<ProcessInstanceReference>;
 };
+
+// @public
+const evaluateConditionals$1: <ThrowOnError extends boolean = true>(options: Options<EvaluateConditionalsData, ThrowOnError>) => RequestResult<EvaluateConditionalsResponses, EvaluateConditionalsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "evaluateConditionalsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type evaluateConditionalsBody = (NonNullable<evaluateConditionalsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type EvaluateConditionalsData = {
@@ -6034,6 +7643,9 @@ export type EvaluateConditionalsErrors = {
 //
 // @public (undocumented)
 export type evaluateConditionalsInput = evaluateConditionalsBody;
+
+// @public (undocumented)
+type evaluateConditionalsOptions = Parameters<typeof evaluateConditionals$1>[0];
 
 // @public (undocumented)
 export type EvaluateConditionalsResponse = EvaluateConditionalsResponses[keyof EvaluateConditionalsResponses];
@@ -6073,6 +7685,16 @@ export type EvaluatedDecisionResult = {
     decisionEvaluationInstanceKey: DecisionEvaluationInstanceKey;
 };
 
+// @public
+const evaluateDecision$1: <ThrowOnError extends boolean = true>(options: Options<EvaluateDecisionData, ThrowOnError>) => RequestResult<EvaluateDecisionResponses, EvaluateDecisionErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "evaluateDecisionOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type evaluateDecisionBody = (NonNullable<evaluateDecisionOptions> extends {
+    body?: infer B;
+} ? B : never);
+
 // @public (undocumented)
 export type EvaluateDecisionData = {
     body: DecisionEvaluationInstruction;
@@ -6096,6 +7718,9 @@ export type EvaluateDecisionErrors = {
 //
 // @public (undocumented)
 export type evaluateDecisionInput = evaluateDecisionBody;
+
+// @public (undocumented)
+type evaluateDecisionOptions = Parameters<typeof evaluateDecision$1>[0];
 
 // @public (undocumented)
 export type EvaluateDecisionResponse = EvaluateDecisionResponses[keyof EvaluateDecisionResponses];
@@ -6122,6 +7747,16 @@ export type EvaluateDecisionResult = {
     tenantId: TenantId;
 };
 
+// @public
+const evaluateExpression$1: <ThrowOnError extends boolean = true>(options: Options<EvaluateExpressionData, ThrowOnError>) => RequestResult<EvaluateExpressionResponses, EvaluateExpressionErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "evaluateExpressionOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type evaluateExpressionBody = (NonNullable<evaluateExpressionOptions> extends {
+    body?: infer B;
+} ? B : never);
+
 // @public (undocumented)
 export type EvaluateExpressionData = {
     body: ExpressionEvaluationRequest;
@@ -6145,6 +7780,9 @@ export type EvaluateExpressionErrors = {
 //
 // @public (undocumented)
 export type evaluateExpressionInput = evaluateExpressionBody;
+
+// @public (undocumented)
+type evaluateExpressionOptions = Parameters<typeof evaluateExpression$1>[0];
 
 // @public (undocumented)
 export type EvaluateExpressionResponse = EvaluateExpressionResponses[keyof EvaluateExpressionResponses];
@@ -6216,7 +7854,6 @@ export type ExpressionSecretReferenceItem = {
 };
 
 // Warning: (ae-forgotten-export) The symbol "_DataOf$1" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "createDeployment$1" needs to be exported by the entry point index.d.ts
 //
 // @public
 export interface ExtendedDeploymentResult extends _DataOf$1<typeof createDeployment$1> {
@@ -6231,6 +7868,16 @@ export interface ExtendedDeploymentResult extends _DataOf$1<typeof createDeploym
     // (undocumented)
     resources: Array<NonNullable<_DataOf$1<typeof createDeployment$1>["deployments"][number]["resource"]>>;
 }
+
+// @public
+const failJob$1: <ThrowOnError extends boolean = true>(options: Options<FailJobData, ThrowOnError>) => RequestResult<FailJobResponses, FailJobErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "failJobOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type failJobBody = (NonNullable<failJobOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type FailJobData = {
@@ -6260,6 +7907,16 @@ export type FailJobErrors = {
 export type failJobInput = failJobBody & {
     jobKey: failJobPathParam_jobKey;
 };
+
+// @public (undocumented)
+type failJobOptions = Parameters<typeof failJob$1>[0];
+
+// @public (undocumented)
+type failJobPathParam_jobKey = (NonNullable<failJobOptions> extends {
+    path: {
+        jobKey: infer P;
+    };
+} ? P : any);
 
 // @public (undocumented)
 export type FailJobResponse = FailJobResponses[keyof FailJobResponses];
@@ -6314,6 +7971,9 @@ export type FormResult = {
 };
 
 // @public
+const getAgentDefinition$1: <ThrowOnError extends boolean = true>(options: Options<GetAgentDefinitionData, ThrowOnError>) => RequestResult<GetAgentDefinitionResponses, GetAgentDefinitionErrors, ThrowOnError>;
+
+// @public
 export type getAgentDefinitionConsistency = {
     consistency: ConsistencyOptions<_DataOf$1<typeof getAgentDefinition$1>>;
 };
@@ -6346,12 +8006,27 @@ export type getAgentDefinitionInput = {
 };
 
 // @public (undocumented)
+type getAgentDefinitionOptions = Parameters<typeof getAgentDefinition$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getAgentDefinitionOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getAgentDefinitionPathParam_agentDefinitionKey = (NonNullable<getAgentDefinitionOptions> extends {
+    path: {
+        agentDefinitionKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetAgentDefinitionResponse = GetAgentDefinitionResponses[keyof GetAgentDefinitionResponses];
 
 // @public (undocumented)
 export type GetAgentDefinitionResponses = {
     200: AgentDefinitionResult;
 };
+
+// @public
+const getAgentInstance$1: <ThrowOnError extends boolean = true>(options: Options<GetAgentInstanceData, ThrowOnError>) => RequestResult<GetAgentInstanceResponses, GetAgentInstanceErrors, ThrowOnError>;
 
 // @public
 export type getAgentInstanceConsistency = {
@@ -6387,12 +8062,27 @@ export type getAgentInstanceInput = {
 };
 
 // @public (undocumented)
+type getAgentInstanceOptions = Parameters<typeof getAgentInstance$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getAgentInstanceOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getAgentInstancePathParam_agentInstanceKey = (NonNullable<getAgentInstanceOptions> extends {
+    path: {
+        agentInstanceKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetAgentInstanceResponse = GetAgentInstanceResponses[keyof GetAgentInstanceResponses];
 
 // @public (undocumented)
 export type GetAgentInstanceResponses = {
     200: AgentInstanceResult;
 };
+
+// @public
+const getAuditLog$1: <ThrowOnError extends boolean = true>(options: Options<GetAuditLogData, ThrowOnError>) => RequestResult<GetAuditLogResponses, GetAuditLogErrors, ThrowOnError>;
 
 // @public
 export type getAuditLogConsistency = {
@@ -6426,12 +8116,27 @@ export type getAuditLogInput = {
 };
 
 // @public (undocumented)
+type getAuditLogOptions = Parameters<typeof getAuditLog$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getAuditLogOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getAuditLogPathParam_auditLogKey = (NonNullable<getAuditLogOptions> extends {
+    path: {
+        auditLogKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetAuditLogResponse = GetAuditLogResponses[keyof GetAuditLogResponses];
 
 // @public (undocumented)
 export type GetAuditLogResponses = {
     200: AuditLogResult;
 };
+
+// @public
+const getAuthentication$1: <ThrowOnError extends boolean = true>(options?: Options<GetAuthenticationData, ThrowOnError>) => RequestResult<GetAuthenticationResponses, GetAuthenticationErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type GetAuthenticationData = {
@@ -6461,6 +8166,9 @@ export type GetAuthenticationResponse = GetAuthenticationResponses[keyof GetAuth
 export type GetAuthenticationResponses = {
     200: CamundaUserResult;
 };
+
+// @public
+const getAuthorization$1: <ThrowOnError extends boolean = true>(options: Options<GetAuthorizationData, ThrowOnError>) => RequestResult<GetAuthorizationResponses, GetAuthorizationErrors, ThrowOnError>;
 
 // @public
 export type getAuthorizationConsistency = {
@@ -6494,12 +8202,27 @@ export type getAuthorizationInput = {
 };
 
 // @public (undocumented)
+type getAuthorizationOptions = Parameters<typeof getAuthorization$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getAuthorizationOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getAuthorizationPathParam_authorizationKey = (NonNullable<getAuthorizationOptions> extends {
+    path: {
+        authorizationKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetAuthorizationResponse = GetAuthorizationResponses[keyof GetAuthorizationResponses];
 
 // @public (undocumented)
 export type GetAuthorizationResponses = {
     200: AuthorizationResult;
 };
+
+// @public
+const getBatchOperation$1: <ThrowOnError extends boolean = true>(options: Options<GetBatchOperationData, ThrowOnError>) => RequestResult<GetBatchOperationResponses, GetBatchOperationErrors, ThrowOnError>;
 
 // @public
 export type getBatchOperationConsistency = {
@@ -6532,12 +8255,27 @@ export type getBatchOperationInput = {
 };
 
 // @public (undocumented)
+type getBatchOperationOptions = Parameters<typeof getBatchOperation$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getBatchOperationOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getBatchOperationPathParam_batchOperationKey = (NonNullable<getBatchOperationOptions> extends {
+    path: {
+        batchOperationKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetBatchOperationResponse = GetBatchOperationResponses[keyof GetBatchOperationResponses];
 
 // @public (undocumented)
 export type GetBatchOperationResponses = {
     200: BatchOperationResponse;
 };
+
+// @public
+const getClock$1: <ThrowOnError extends boolean = true>(options?: Options<GetClockData, ThrowOnError>) => RequestResult<GetClockResponses, GetClockErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type GetClockData = {
@@ -6569,6 +8307,9 @@ export type GetClockResponses = {
     200: ClockResult;
 };
 
+// @public
+const getClusterExportingStatus$1: <ThrowOnError extends boolean = true>(options?: Options<GetClusterExportingStatusData, ThrowOnError>) => RequestResult<GetClusterExportingStatusResponses, GetClusterExportingStatusErrors, ThrowOnError>;
+
 // @public (undocumented)
 export type GetClusterExportingStatusData = {
     body?: never;
@@ -6598,6 +8339,9 @@ export type GetClusterExportingStatusResponse = GetClusterExportingStatusRespons
 export type GetClusterExportingStatusResponses = {
     200: ExportingStatusResponse;
 };
+
+// @public
+const getClusterRebalance$1: <ThrowOnError extends boolean = true>(options?: Options<GetClusterRebalanceData, ThrowOnError>) => RequestResult<GetClusterRebalanceResponses, GetClusterRebalanceErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type GetClusterRebalanceData = {
@@ -6630,6 +8374,9 @@ export type GetClusterRebalanceResponses = {
     200: ClusterBalanceResponse;
 };
 
+// @public
+const getClusterStatus$1: <ThrowOnError extends boolean = true>(options?: Options<GetClusterStatusData, ThrowOnError>) => RequestResult<GetClusterStatusResponses, GetClusterStatusErrors, ThrowOnError>;
+
 // @public (undocumented)
 export type GetClusterStatusData = {
     body?: never;
@@ -6656,6 +8403,9 @@ export type GetClusterStatusResponse = GetClusterStatusResponses[keyof GetCluste
 export type GetClusterStatusResponses = {
     200: ClusterStatusResponse;
 };
+
+// @public
+const getClusterTopology$1: <ThrowOnError extends boolean = true>(options?: Options<GetClusterTopologyData, ThrowOnError>) => RequestResult<GetClusterTopologyResponses, GetClusterTopologyErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type GetClusterTopologyData = {
@@ -6686,6 +8436,9 @@ export type GetClusterTopologyResponses = {
     200: ClusterTopologyResponse;
 };
 
+// @public
+const getClusterUpgradeStatus$1: <ThrowOnError extends boolean = true>(options?: Options<GetClusterUpgradeStatusData, ThrowOnError>) => RequestResult<GetClusterUpgradeStatusResponses, unknown, ThrowOnError>;
+
 // @public (undocumented)
 export type GetClusterUpgradeStatusData = {
     body?: never;
@@ -6704,6 +8457,9 @@ export type GetClusterUpgradeStatusResponse = GetClusterUpgradeStatusResponses[k
 export type GetClusterUpgradeStatusResponses = {
     200: ClusterUpgradeStatusResponse;
 };
+
+// @public
+const getDecisionDefinition$1: <ThrowOnError extends boolean = true>(options: Options<GetDecisionDefinitionData, ThrowOnError>) => RequestResult<GetDecisionDefinitionResponses, GetDecisionDefinitionErrors, ThrowOnError>;
 
 // @public
 export type getDecisionDefinitionConsistency = {
@@ -6738,12 +8494,27 @@ export type getDecisionDefinitionInput = {
 };
 
 // @public (undocumented)
+type getDecisionDefinitionOptions = Parameters<typeof getDecisionDefinition$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getDecisionDefinitionOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getDecisionDefinitionPathParam_decisionDefinitionKey = (NonNullable<getDecisionDefinitionOptions> extends {
+    path: {
+        decisionDefinitionKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetDecisionDefinitionResponse = GetDecisionDefinitionResponses[keyof GetDecisionDefinitionResponses];
 
 // @public (undocumented)
 export type GetDecisionDefinitionResponses = {
     200: DecisionDefinitionResult;
 };
+
+// @public
+const getDecisionDefinitionXml$1: <ThrowOnError extends boolean = true>(options: Options<GetDecisionDefinitionXmlData, ThrowOnError>) => RequestResult<GetDecisionDefinitionXmlResponses, GetDecisionDefinitionXmlErrors, ThrowOnError>;
 
 // @public
 export type getDecisionDefinitionXmlConsistency = {
@@ -6778,12 +8549,27 @@ export type getDecisionDefinitionXmlInput = {
 };
 
 // @public (undocumented)
+type getDecisionDefinitionXmlOptions = Parameters<typeof getDecisionDefinitionXml$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getDecisionDefinitionXmlOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getDecisionDefinitionXmlPathParam_decisionDefinitionKey = (NonNullable<getDecisionDefinitionXmlOptions> extends {
+    path: {
+        decisionDefinitionKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetDecisionDefinitionXmlResponse = GetDecisionDefinitionXmlResponses[keyof GetDecisionDefinitionXmlResponses];
 
 // @public (undocumented)
 export type GetDecisionDefinitionXmlResponses = {
     200: string;
 };
+
+// @public
+const getDecisionInstance$1: <ThrowOnError extends boolean = true>(options: Options<GetDecisionInstanceData, ThrowOnError>) => RequestResult<GetDecisionInstanceResponses, GetDecisionInstanceErrors, ThrowOnError>;
 
 // @public
 export type getDecisionInstanceConsistency = {
@@ -6818,12 +8604,27 @@ export type getDecisionInstanceInput = {
 };
 
 // @public (undocumented)
+type getDecisionInstanceOptions = Parameters<typeof getDecisionInstance$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getDecisionInstanceOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getDecisionInstancePathParam_decisionEvaluationInstanceKey = (NonNullable<getDecisionInstanceOptions> extends {
+    path: {
+        decisionEvaluationInstanceKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetDecisionInstanceResponse = GetDecisionInstanceResponses[keyof GetDecisionInstanceResponses];
 
 // @public (undocumented)
 export type GetDecisionInstanceResponses = {
     200: DecisionInstanceGetQueryResult;
 };
+
+// @public
+const getDecisionRequirements$1: <ThrowOnError extends boolean = true>(options: Options<GetDecisionRequirementsData, ThrowOnError>) => RequestResult<GetDecisionRequirementsResponses, GetDecisionRequirementsErrors, ThrowOnError>;
 
 // @public
 export type getDecisionRequirementsConsistency = {
@@ -6858,12 +8659,27 @@ export type getDecisionRequirementsInput = {
 };
 
 // @public (undocumented)
+type getDecisionRequirementsOptions = Parameters<typeof getDecisionRequirements$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getDecisionRequirementsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getDecisionRequirementsPathParam_decisionRequirementsKey = (NonNullable<getDecisionRequirementsOptions> extends {
+    path: {
+        decisionRequirementsKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetDecisionRequirementsResponse = GetDecisionRequirementsResponses[keyof GetDecisionRequirementsResponses];
 
 // @public (undocumented)
 export type GetDecisionRequirementsResponses = {
     200: DecisionRequirementsResult;
 };
+
+// @public
+const getDecisionRequirementsXml$1: <ThrowOnError extends boolean = true>(options: Options<GetDecisionRequirementsXmlData, ThrowOnError>) => RequestResult<GetDecisionRequirementsXmlResponses, GetDecisionRequirementsXmlErrors, ThrowOnError>;
 
 // @public
 export type getDecisionRequirementsXmlConsistency = {
@@ -6898,12 +8714,27 @@ export type getDecisionRequirementsXmlInput = {
 };
 
 // @public (undocumented)
+type getDecisionRequirementsXmlOptions = Parameters<typeof getDecisionRequirementsXml$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getDecisionRequirementsXmlOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getDecisionRequirementsXmlPathParam_decisionRequirementsKey = (NonNullable<getDecisionRequirementsXmlOptions> extends {
+    path: {
+        decisionRequirementsKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetDecisionRequirementsXmlResponse = GetDecisionRequirementsXmlResponses[keyof GetDecisionRequirementsXmlResponses];
 
 // @public (undocumented)
 export type GetDecisionRequirementsXmlResponses = {
     200: string;
 };
+
+// @public
+const getDocument$1: <ThrowOnError extends boolean = true>(options: Options<GetDocumentData, ThrowOnError>) => RequestResult<GetDocumentResponses, GetDocumentErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type GetDocumentData = {
@@ -6935,12 +8766,41 @@ export type getDocumentInput = {
 };
 
 // @public (undocumented)
+type getDocumentOptions = Parameters<typeof getDocument$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getDocumentOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getDocumentPathParam_documentId = (NonNullable<getDocumentOptions> extends {
+    path: {
+        documentId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type getDocumentQueryParam_contentHash = (NonNullable<getDocumentOptions> extends {
+    query?: {
+        contentHash?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
+type getDocumentQueryParam_storeId = (NonNullable<getDocumentOptions> extends {
+    query?: {
+        storeId?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
 export type GetDocumentResponse = GetDocumentResponses[keyof GetDocumentResponses];
 
 // @public (undocumented)
 export type GetDocumentResponses = {
     200: Blob | File;
 };
+
+// @public
+const getElementInstance$1: <ThrowOnError extends boolean = true>(options: Options<GetElementInstanceData, ThrowOnError>) => RequestResult<GetElementInstanceResponses, GetElementInstanceErrors, ThrowOnError>;
 
 // @public
 export type getElementInstanceConsistency = {
@@ -6975,12 +8835,27 @@ export type getElementInstanceInput = {
 };
 
 // @public (undocumented)
+type getElementInstanceOptions = Parameters<typeof getElementInstance$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getElementInstanceOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getElementInstancePathParam_elementInstanceKey = (NonNullable<getElementInstanceOptions> extends {
+    path: {
+        elementInstanceKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetElementInstanceResponse = GetElementInstanceResponses[keyof GetElementInstanceResponses];
 
 // @public (undocumented)
 export type GetElementInstanceResponses = {
     200: ElementInstanceResult;
 };
+
+// @public
+const getExportingStatus$1: <ThrowOnError extends boolean = true>(options?: Options<GetExportingStatusData, ThrowOnError>) => RequestResult<GetExportingStatusResponses, GetExportingStatusErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type GetExportingStatusData = {
@@ -7011,6 +8886,9 @@ export type GetExportingStatusResponse = GetExportingStatusResponses[keyof GetEx
 export type GetExportingStatusResponses = {
     200: ExportingStatusResponse;
 };
+
+// @public
+const getFormByKey$1: <ThrowOnError extends boolean = true>(options: Options<GetFormByKeyData, ThrowOnError>) => RequestResult<GetFormByKeyResponses, GetFormByKeyErrors, ThrowOnError>;
 
 // @public
 export type getFormByKeyConsistency = {
@@ -7045,12 +8923,27 @@ export type getFormByKeyInput = {
 };
 
 // @public (undocumented)
+type getFormByKeyOptions = Parameters<typeof getFormByKey$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getFormByKeyOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getFormByKeyPathParam_formKey = (NonNullable<getFormByKeyOptions> extends {
+    path: {
+        formKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetFormByKeyResponse = GetFormByKeyResponses[keyof GetFormByKeyResponses];
 
 // @public (undocumented)
 export type GetFormByKeyResponses = {
     200: FormResult;
 };
+
+// @public
+const getGlobalClusterVariable$1: <ThrowOnError extends boolean = true>(options: Options<GetGlobalClusterVariableData, ThrowOnError>) => RequestResult<GetGlobalClusterVariableResponses, GetGlobalClusterVariableErrors, ThrowOnError>;
 
 // @public
 export type getGlobalClusterVariableConsistency = {
@@ -7085,12 +8978,27 @@ export type getGlobalClusterVariableInput = {
 };
 
 // @public (undocumented)
+type getGlobalClusterVariableOptions = Parameters<typeof getGlobalClusterVariable$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getGlobalClusterVariableOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getGlobalClusterVariablePathParam_name = (NonNullable<getGlobalClusterVariableOptions> extends {
+    path: {
+        name: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetGlobalClusterVariableResponse = GetGlobalClusterVariableResponses[keyof GetGlobalClusterVariableResponses];
 
 // @public (undocumented)
 export type GetGlobalClusterVariableResponses = {
     200: ClusterVariableResult;
 };
+
+// @public
+const getGlobalJobStatistics$1: <ThrowOnError extends boolean = true>(options: Options<GetGlobalJobStatisticsData, ThrowOnError>) => RequestResult<GetGlobalJobStatisticsResponses, GetGlobalJobStatisticsErrors, ThrowOnError>;
 
 // @public
 export type getGlobalJobStatisticsConsistency = {
@@ -7128,12 +9036,41 @@ export type getGlobalJobStatisticsInput = {
 };
 
 // @public (undocumented)
+type getGlobalJobStatisticsOptions = Parameters<typeof getGlobalJobStatistics$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getGlobalJobStatisticsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getGlobalJobStatisticsQueryParam_from = (NonNullable<getGlobalJobStatisticsOptions> extends {
+    query?: {
+        from?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
+type getGlobalJobStatisticsQueryParam_jobType = (NonNullable<getGlobalJobStatisticsOptions> extends {
+    query?: {
+        jobType?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
+type getGlobalJobStatisticsQueryParam_to = (NonNullable<getGlobalJobStatisticsOptions> extends {
+    query?: {
+        to?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
 export type GetGlobalJobStatisticsResponse = GetGlobalJobStatisticsResponses[keyof GetGlobalJobStatisticsResponses];
 
 // @public (undocumented)
 export type GetGlobalJobStatisticsResponses = {
     200: GlobalJobStatisticsQueryResult;
 };
+
+// @public
+const getGlobalTaskListener$1: <ThrowOnError extends boolean = true>(options: Options<GetGlobalTaskListenerData, ThrowOnError>) => RequestResult<GetGlobalTaskListenerResponses, GetGlobalTaskListenerErrors, ThrowOnError>;
 
 // @public
 export type getGlobalTaskListenerConsistency = {
@@ -7167,12 +9104,27 @@ export type getGlobalTaskListenerInput = {
 };
 
 // @public (undocumented)
+type getGlobalTaskListenerOptions = Parameters<typeof getGlobalTaskListener$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getGlobalTaskListenerOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getGlobalTaskListenerPathParam_id = (NonNullable<getGlobalTaskListenerOptions> extends {
+    path: {
+        id: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetGlobalTaskListenerResponse = GetGlobalTaskListenerResponses[keyof GetGlobalTaskListenerResponses];
 
 // @public (undocumented)
 export type GetGlobalTaskListenerResponses = {
     200: GlobalTaskListenerResult;
 };
+
+// @public
+const getGroup$1: <ThrowOnError extends boolean = true>(options: Options<GetGroupData, ThrowOnError>) => RequestResult<GetGroupResponses, GetGroupErrors, ThrowOnError>;
 
 // @public
 export type getGroupConsistency = {
@@ -7206,12 +9158,30 @@ export type getGroupInput = {
 };
 
 // @public (undocumented)
+type getGroupOptions = Parameters<typeof getGroup$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getGroupOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getGroupPathParam_groupId = (NonNullable<getGroupOptions> extends {
+    path: {
+        groupId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetGroupResponse = GetGroupResponses[keyof GetGroupResponses];
 
 // @public (undocumented)
 export type GetGroupResponses = {
     200: GroupResult;
 };
+
+// @public
+const getHistoryBackup$1: <ThrowOnError extends boolean = true>(options: Options<GetHistoryBackupData, ThrowOnError>) => RequestResult<GetHistoryBackupResponses, GetHistoryBackupErrors, ThrowOnError>;
+
+// @public
+const getHistoryBackupAsClusterAdmin$1: <ThrowOnError extends boolean = true>(options: Options<GetHistoryBackupAsClusterAdminData, ThrowOnError>) => RequestResult<GetHistoryBackupAsClusterAdminResponses, GetHistoryBackupAsClusterAdminErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type GetHistoryBackupAsClusterAdminData = {
@@ -7243,6 +9213,25 @@ export type getHistoryBackupAsClusterAdminInput = {
     backupId: getHistoryBackupAsClusterAdminPathParam_backupId;
     physicalTenantId?: getHistoryBackupAsClusterAdminQueryParam_physicalTenantId;
 };
+
+// @public (undocumented)
+type getHistoryBackupAsClusterAdminOptions = Parameters<typeof getHistoryBackupAsClusterAdmin$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getHistoryBackupAsClusterAdminOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getHistoryBackupAsClusterAdminPathParam_backupId = (NonNullable<getHistoryBackupAsClusterAdminOptions> extends {
+    path: {
+        backupId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type getHistoryBackupAsClusterAdminQueryParam_physicalTenantId = (NonNullable<getHistoryBackupAsClusterAdminOptions> extends {
+    query?: {
+        physicalTenantId?: infer Q;
+    };
+} ? Q : any);
 
 // @public (undocumented)
 export type GetHistoryBackupAsClusterAdminResponse = GetHistoryBackupAsClusterAdminResponses[keyof GetHistoryBackupAsClusterAdminResponses];
@@ -7280,12 +9269,27 @@ export type getHistoryBackupInput = {
 };
 
 // @public (undocumented)
+type getHistoryBackupOptions = Parameters<typeof getHistoryBackup$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getHistoryBackupOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getHistoryBackupPathParam_backupId = (NonNullable<getHistoryBackupOptions> extends {
+    path: {
+        backupId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetHistoryBackupResponse = GetHistoryBackupResponses[keyof GetHistoryBackupResponses];
 
 // @public (undocumented)
 export type GetHistoryBackupResponses = {
     200: HistoryBackupInfo;
 };
+
+// @public
+const getIncident$1: <ThrowOnError extends boolean = true>(options: Options<GetIncidentData, ThrowOnError>) => RequestResult<GetIncidentResponses, GetIncidentErrors, ThrowOnError>;
 
 // @public
 export type getIncidentConsistency = {
@@ -7320,12 +9324,34 @@ export type getIncidentInput = {
 };
 
 // @public (undocumented)
+type getIncidentOptions = Parameters<typeof getIncident$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getIncidentOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getIncidentPathParam_incidentKey = (NonNullable<getIncidentOptions> extends {
+    path: {
+        incidentKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetIncidentResponse = GetIncidentResponses[keyof GetIncidentResponses];
 
 // @public (undocumented)
 export type GetIncidentResponses = {
     200: IncidentResult;
 };
+
+// @public
+const getJobErrorStatistics$1: <ThrowOnError extends boolean = true>(options: Options<GetJobErrorStatisticsData, ThrowOnError>) => RequestResult<GetJobErrorStatisticsResponses, GetJobErrorStatisticsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "getJobErrorStatisticsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getJobErrorStatisticsBody = (NonNullable<getJobErrorStatisticsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type getJobErrorStatisticsConsistency = {
@@ -7357,12 +9383,25 @@ export type GetJobErrorStatisticsErrors = {
 export type getJobErrorStatisticsInput = getJobErrorStatisticsBody;
 
 // @public (undocumented)
+type getJobErrorStatisticsOptions = Parameters<typeof getJobErrorStatistics$1>[0];
+
+// @public (undocumented)
 export type GetJobErrorStatisticsResponse = GetJobErrorStatisticsResponses[keyof GetJobErrorStatisticsResponses];
 
 // @public (undocumented)
 export type GetJobErrorStatisticsResponses = {
     200: JobErrorStatisticsQueryResult;
 };
+
+// @public
+const getJobTimeSeriesStatistics$1: <ThrowOnError extends boolean = true>(options: Options<GetJobTimeSeriesStatisticsData, ThrowOnError>) => RequestResult<GetJobTimeSeriesStatisticsResponses, GetJobTimeSeriesStatisticsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "getJobTimeSeriesStatisticsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getJobTimeSeriesStatisticsBody = (NonNullable<getJobTimeSeriesStatisticsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type getJobTimeSeriesStatisticsConsistency = {
@@ -7394,12 +9433,25 @@ export type GetJobTimeSeriesStatisticsErrors = {
 export type getJobTimeSeriesStatisticsInput = getJobTimeSeriesStatisticsBody;
 
 // @public (undocumented)
+type getJobTimeSeriesStatisticsOptions = Parameters<typeof getJobTimeSeriesStatistics$1>[0];
+
+// @public (undocumented)
 export type GetJobTimeSeriesStatisticsResponse = GetJobTimeSeriesStatisticsResponses[keyof GetJobTimeSeriesStatisticsResponses];
 
 // @public (undocumented)
 export type GetJobTimeSeriesStatisticsResponses = {
     200: JobTimeSeriesStatisticsQueryResult;
 };
+
+// @public
+const getJobTypeStatistics$1: <ThrowOnError extends boolean = true>(options: Options<GetJobTypeStatisticsData, ThrowOnError>) => RequestResult<GetJobTypeStatisticsResponses, GetJobTypeStatisticsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "getJobTypeStatisticsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getJobTypeStatisticsBody = (NonNullable<getJobTypeStatisticsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type getJobTypeStatisticsConsistency = {
@@ -7431,12 +9483,25 @@ export type GetJobTypeStatisticsErrors = {
 export type getJobTypeStatisticsInput = getJobTypeStatisticsBody;
 
 // @public (undocumented)
+type getJobTypeStatisticsOptions = Parameters<typeof getJobTypeStatistics$1>[0];
+
+// @public (undocumented)
 export type GetJobTypeStatisticsResponse = GetJobTypeStatisticsResponses[keyof GetJobTypeStatisticsResponses];
 
 // @public (undocumented)
 export type GetJobTypeStatisticsResponses = {
     200: JobTypeStatisticsQueryResult;
 };
+
+// @public
+const getJobWorkerStatistics$1: <ThrowOnError extends boolean = true>(options: Options<GetJobWorkerStatisticsData, ThrowOnError>) => RequestResult<GetJobWorkerStatisticsResponses, GetJobWorkerStatisticsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "getJobWorkerStatisticsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getJobWorkerStatisticsBody = (NonNullable<getJobWorkerStatisticsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type getJobWorkerStatisticsConsistency = {
@@ -7468,12 +9533,18 @@ export type GetJobWorkerStatisticsErrors = {
 export type getJobWorkerStatisticsInput = getJobWorkerStatisticsBody;
 
 // @public (undocumented)
+type getJobWorkerStatisticsOptions = Parameters<typeof getJobWorkerStatistics$1>[0];
+
+// @public (undocumented)
 export type GetJobWorkerStatisticsResponse = GetJobWorkerStatisticsResponses[keyof GetJobWorkerStatisticsResponses];
 
 // @public (undocumented)
 export type GetJobWorkerStatisticsResponses = {
     200: JobWorkerStatisticsQueryResult;
 };
+
+// @public
+const getLicense$1: <ThrowOnError extends boolean = true>(options?: Options<GetLicenseData, ThrowOnError>) => RequestResult<GetLicenseResponses, GetLicenseErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type GetLicenseData = {
@@ -7501,6 +9572,9 @@ export type GetLicenseResponse = GetLicenseResponses[keyof GetLicenseResponses];
 export type GetLicenseResponses = {
     200: LicenseResponse;
 };
+
+// @public
+const getMappingRule$1: <ThrowOnError extends boolean = true>(options: Options<GetMappingRuleData, ThrowOnError>) => RequestResult<GetMappingRuleResponses, GetMappingRuleErrors, ThrowOnError>;
 
 // @public
 export type getMappingRuleConsistency = {
@@ -7533,12 +9607,27 @@ export type getMappingRuleInput = {
 };
 
 // @public (undocumented)
+type getMappingRuleOptions = Parameters<typeof getMappingRule$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getMappingRuleOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getMappingRulePathParam_mappingRuleId = (NonNullable<getMappingRuleOptions> extends {
+    path: {
+        mappingRuleId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetMappingRuleResponse = GetMappingRuleResponses[keyof GetMappingRuleResponses];
 
 // @public (undocumented)
 export type GetMappingRuleResponses = {
     200: MappingRuleResult;
 };
+
+// @public
+const getProcessDefinition$1: <ThrowOnError extends boolean = true>(options: Options<GetProcessDefinitionData, ThrowOnError>) => RequestResult<GetProcessDefinitionResponses, GetProcessDefinitionErrors, ThrowOnError>;
 
 // @public
 export type getProcessDefinitionConsistency = {
@@ -7573,6 +9662,16 @@ export type getProcessDefinitionInput = {
 };
 
 // @public
+const getProcessDefinitionInstanceStatistics$1: <ThrowOnError extends boolean = true>(options?: Options<GetProcessDefinitionInstanceStatisticsData, ThrowOnError>) => RequestResult<GetProcessDefinitionInstanceStatisticsResponses, GetProcessDefinitionInstanceStatisticsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "getProcessDefinitionInstanceStatisticsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getProcessDefinitionInstanceStatisticsBody = (NonNullable<getProcessDefinitionInstanceStatisticsOptions> extends {
+    body?: infer B;
+} ? B : never);
+
+// @public
 export type getProcessDefinitionInstanceStatisticsConsistency = {
     consistency: ConsistencyOptions<_DataOf$1<typeof getProcessDefinitionInstanceStatistics$1>>;
 };
@@ -7602,12 +9701,25 @@ export type GetProcessDefinitionInstanceStatisticsErrors = {
 export type getProcessDefinitionInstanceStatisticsInput = getProcessDefinitionInstanceStatisticsBody;
 
 // @public (undocumented)
+type getProcessDefinitionInstanceStatisticsOptions = Parameters<typeof getProcessDefinitionInstanceStatistics$1>[0];
+
+// @public (undocumented)
 export type GetProcessDefinitionInstanceStatisticsResponse = GetProcessDefinitionInstanceStatisticsResponses[keyof GetProcessDefinitionInstanceStatisticsResponses];
 
 // @public (undocumented)
 export type GetProcessDefinitionInstanceStatisticsResponses = {
     200: ProcessDefinitionInstanceStatisticsQueryResult;
 };
+
+// @public
+const getProcessDefinitionInstanceVersionStatistics$1: <ThrowOnError extends boolean = true>(options: Options<GetProcessDefinitionInstanceVersionStatisticsData, ThrowOnError>) => RequestResult<GetProcessDefinitionInstanceVersionStatisticsResponses, GetProcessDefinitionInstanceVersionStatisticsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "getProcessDefinitionInstanceVersionStatisticsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getProcessDefinitionInstanceVersionStatisticsBody = (NonNullable<getProcessDefinitionInstanceVersionStatisticsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type getProcessDefinitionInstanceVersionStatisticsConsistency = {
@@ -7639,12 +9751,25 @@ export type GetProcessDefinitionInstanceVersionStatisticsErrors = {
 export type getProcessDefinitionInstanceVersionStatisticsInput = getProcessDefinitionInstanceVersionStatisticsBody;
 
 // @public (undocumented)
+type getProcessDefinitionInstanceVersionStatisticsOptions = Parameters<typeof getProcessDefinitionInstanceVersionStatistics$1>[0];
+
+// @public (undocumented)
 export type GetProcessDefinitionInstanceVersionStatisticsResponse = GetProcessDefinitionInstanceVersionStatisticsResponses[keyof GetProcessDefinitionInstanceVersionStatisticsResponses];
 
 // @public (undocumented)
 export type GetProcessDefinitionInstanceVersionStatisticsResponses = {
     200: ProcessDefinitionInstanceVersionStatisticsQueryResult;
 };
+
+// @public
+const getProcessDefinitionMessageSubscriptionStatistics$1: <ThrowOnError extends boolean = true>(options?: Options<GetProcessDefinitionMessageSubscriptionStatisticsData, ThrowOnError>) => RequestResult<GetProcessDefinitionMessageSubscriptionStatisticsResponses, GetProcessDefinitionMessageSubscriptionStatisticsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "getProcessDefinitionMessageSubscriptionStatisticsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getProcessDefinitionMessageSubscriptionStatisticsBody = (NonNullable<getProcessDefinitionMessageSubscriptionStatisticsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type getProcessDefinitionMessageSubscriptionStatisticsConsistency = {
@@ -7676,6 +9801,9 @@ export type GetProcessDefinitionMessageSubscriptionStatisticsErrors = {
 export type getProcessDefinitionMessageSubscriptionStatisticsInput = getProcessDefinitionMessageSubscriptionStatisticsBody;
 
 // @public (undocumented)
+type getProcessDefinitionMessageSubscriptionStatisticsOptions = Parameters<typeof getProcessDefinitionMessageSubscriptionStatistics$1>[0];
+
+// @public (undocumented)
 export type GetProcessDefinitionMessageSubscriptionStatisticsResponse = GetProcessDefinitionMessageSubscriptionStatisticsResponses[keyof GetProcessDefinitionMessageSubscriptionStatisticsResponses];
 
 // @public (undocumented)
@@ -7684,12 +9812,34 @@ export type GetProcessDefinitionMessageSubscriptionStatisticsResponses = {
 };
 
 // @public (undocumented)
+type getProcessDefinitionOptions = Parameters<typeof getProcessDefinition$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getProcessDefinitionOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getProcessDefinitionPathParam_processDefinitionKey = (NonNullable<getProcessDefinitionOptions> extends {
+    path: {
+        processDefinitionKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetProcessDefinitionResponse = GetProcessDefinitionResponses[keyof GetProcessDefinitionResponses];
 
 // @public (undocumented)
 export type GetProcessDefinitionResponses = {
     200: ProcessDefinitionResult;
 };
+
+// @public
+const getProcessDefinitionStatistics$1: <ThrowOnError extends boolean = true>(options: Options<GetProcessDefinitionStatisticsData, ThrowOnError>) => RequestResult<GetProcessDefinitionStatisticsResponses, GetProcessDefinitionStatisticsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "getProcessDefinitionStatisticsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getProcessDefinitionStatisticsBody = (NonNullable<getProcessDefinitionStatisticsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type getProcessDefinitionStatisticsConsistency = {
@@ -7725,12 +9875,25 @@ export type getProcessDefinitionStatisticsInput = getProcessDefinitionStatistics
 };
 
 // @public (undocumented)
+type getProcessDefinitionStatisticsOptions = Parameters<typeof getProcessDefinitionStatistics$1>[0];
+
+// @public (undocumented)
+type getProcessDefinitionStatisticsPathParam_processDefinitionKey = (NonNullable<getProcessDefinitionStatisticsOptions> extends {
+    path: {
+        processDefinitionKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetProcessDefinitionStatisticsResponse = GetProcessDefinitionStatisticsResponses[keyof GetProcessDefinitionStatisticsResponses];
 
 // @public (undocumented)
 export type GetProcessDefinitionStatisticsResponses = {
     200: ProcessDefinitionElementStatisticsQueryResult;
 };
+
+// @public
+const getProcessDefinitionXml$1: <ThrowOnError extends boolean = true>(options: Options<GetProcessDefinitionXmlData, ThrowOnError>) => RequestResult<GetProcessDefinitionXmlResponses, GetProcessDefinitionXmlErrors, ThrowOnError>;
 
 // @public
 export type getProcessDefinitionXmlConsistency = {
@@ -7765,6 +9928,18 @@ export type getProcessDefinitionXmlInput = {
 };
 
 // @public (undocumented)
+type getProcessDefinitionXmlOptions = Parameters<typeof getProcessDefinitionXml$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getProcessDefinitionXmlOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getProcessDefinitionXmlPathParam_processDefinitionKey = (NonNullable<getProcessDefinitionXmlOptions> extends {
+    path: {
+        processDefinitionKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetProcessDefinitionXmlResponse = GetProcessDefinitionXmlResponses[keyof GetProcessDefinitionXmlResponses];
 
 // @public (undocumented)
@@ -7772,6 +9947,12 @@ export type GetProcessDefinitionXmlResponses = {
     200: string;
     204: string;
 };
+
+// @public
+const getProcessInstance$1: <ThrowOnError extends boolean = true>(options: Options<GetProcessInstanceData, ThrowOnError>) => RequestResult<GetProcessInstanceResponses, GetProcessInstanceErrors, ThrowOnError>;
+
+// @public
+const getProcessInstanceCallHierarchy$1: <ThrowOnError extends boolean = true>(options: Options<GetProcessInstanceCallHierarchyData, ThrowOnError>) => RequestResult<GetProcessInstanceCallHierarchyResponses, GetProcessInstanceCallHierarchyErrors, ThrowOnError>;
 
 // @public
 export type getProcessInstanceCallHierarchyConsistency = {
@@ -7804,6 +9985,18 @@ export type GetProcessInstanceCallHierarchyErrors = {
 export type getProcessInstanceCallHierarchyInput = {
     processInstanceKey: getProcessInstanceCallHierarchyPathParam_processInstanceKey;
 };
+
+// @public (undocumented)
+type getProcessInstanceCallHierarchyOptions = Parameters<typeof getProcessInstanceCallHierarchy$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getProcessInstanceCallHierarchyOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getProcessInstanceCallHierarchyPathParam_processInstanceKey = (NonNullable<getProcessInstanceCallHierarchyOptions> extends {
+    path: {
+        processInstanceKey: infer P;
+    };
+} ? P : any);
 
 // @public (undocumented)
 export type GetProcessInstanceCallHierarchyResponse = GetProcessInstanceCallHierarchyResponses[keyof GetProcessInstanceCallHierarchyResponses];
@@ -7846,12 +10039,27 @@ export type getProcessInstanceInput = {
 };
 
 // @public (undocumented)
+type getProcessInstanceOptions = Parameters<typeof getProcessInstance$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getProcessInstanceOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getProcessInstancePathParam_processInstanceKey = (NonNullable<getProcessInstanceOptions> extends {
+    path: {
+        processInstanceKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetProcessInstanceResponse = GetProcessInstanceResponses[keyof GetProcessInstanceResponses];
 
 // @public (undocumented)
 export type GetProcessInstanceResponses = {
     200: ProcessInstanceResult;
 };
+
+// @public
+const getProcessInstanceSequenceFlows$1: <ThrowOnError extends boolean = true>(options: Options<GetProcessInstanceSequenceFlowsData, ThrowOnError>) => RequestResult<GetProcessInstanceSequenceFlowsResponses, GetProcessInstanceSequenceFlowsErrors, ThrowOnError>;
 
 // @public
 export type getProcessInstanceSequenceFlowsConsistency = {
@@ -7885,12 +10093,37 @@ export type getProcessInstanceSequenceFlowsInput = {
 };
 
 // @public (undocumented)
+type getProcessInstanceSequenceFlowsOptions = Parameters<typeof getProcessInstanceSequenceFlows$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getProcessInstanceSequenceFlowsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getProcessInstanceSequenceFlowsPathParam_processInstanceKey = (NonNullable<getProcessInstanceSequenceFlowsOptions> extends {
+    path: {
+        processInstanceKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetProcessInstanceSequenceFlowsResponse = GetProcessInstanceSequenceFlowsResponses[keyof GetProcessInstanceSequenceFlowsResponses];
 
 // @public (undocumented)
 export type GetProcessInstanceSequenceFlowsResponses = {
     200: ProcessInstanceSequenceFlowsQueryResult;
 };
+
+// @public
+const getProcessInstanceStatistics$1: <ThrowOnError extends boolean = true>(options: Options<GetProcessInstanceStatisticsData, ThrowOnError>) => RequestResult<GetProcessInstanceStatisticsResponses, GetProcessInstanceStatisticsErrors, ThrowOnError>;
+
+// @public
+const getProcessInstanceStatisticsByDefinition$1: <ThrowOnError extends boolean = true>(options: Options<GetProcessInstanceStatisticsByDefinitionData, ThrowOnError>) => RequestResult<GetProcessInstanceStatisticsByDefinitionResponses, GetProcessInstanceStatisticsByDefinitionErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "getProcessInstanceStatisticsByDefinitionOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getProcessInstanceStatisticsByDefinitionBody = (NonNullable<getProcessInstanceStatisticsByDefinitionOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type getProcessInstanceStatisticsByDefinitionConsistency = {
@@ -7922,12 +10155,25 @@ export type GetProcessInstanceStatisticsByDefinitionErrors = {
 export type getProcessInstanceStatisticsByDefinitionInput = getProcessInstanceStatisticsByDefinitionBody;
 
 // @public (undocumented)
+type getProcessInstanceStatisticsByDefinitionOptions = Parameters<typeof getProcessInstanceStatisticsByDefinition$1>[0];
+
+// @public (undocumented)
 export type GetProcessInstanceStatisticsByDefinitionResponse = GetProcessInstanceStatisticsByDefinitionResponses[keyof GetProcessInstanceStatisticsByDefinitionResponses];
 
 // @public (undocumented)
 export type GetProcessInstanceStatisticsByDefinitionResponses = {
     200: IncidentProcessInstanceStatisticsByDefinitionQueryResult;
 };
+
+// @public
+const getProcessInstanceStatisticsByError$1: <ThrowOnError extends boolean = true>(options?: Options<GetProcessInstanceStatisticsByErrorData, ThrowOnError>) => RequestResult<GetProcessInstanceStatisticsByErrorResponses, GetProcessInstanceStatisticsByErrorErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "getProcessInstanceStatisticsByErrorOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getProcessInstanceStatisticsByErrorBody = (NonNullable<getProcessInstanceStatisticsByErrorOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type getProcessInstanceStatisticsByErrorConsistency = {
@@ -7957,6 +10203,9 @@ export type GetProcessInstanceStatisticsByErrorErrors = {
 //
 // @public (undocumented)
 export type getProcessInstanceStatisticsByErrorInput = getProcessInstanceStatisticsByErrorBody;
+
+// @public (undocumented)
+type getProcessInstanceStatisticsByErrorOptions = Parameters<typeof getProcessInstanceStatisticsByError$1>[0];
 
 // @public (undocumented)
 export type GetProcessInstanceStatisticsByErrorResponse = GetProcessInstanceStatisticsByErrorResponses[keyof GetProcessInstanceStatisticsByErrorResponses];
@@ -7998,12 +10247,27 @@ export type getProcessInstanceStatisticsInput = {
 };
 
 // @public (undocumented)
+type getProcessInstanceStatisticsOptions = Parameters<typeof getProcessInstanceStatistics$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getProcessInstanceStatisticsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getProcessInstanceStatisticsPathParam_processInstanceKey = (NonNullable<getProcessInstanceStatisticsOptions> extends {
+    path: {
+        processInstanceKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetProcessInstanceStatisticsResponse = GetProcessInstanceStatisticsResponses[keyof GetProcessInstanceStatisticsResponses];
 
 // @public (undocumented)
 export type GetProcessInstanceStatisticsResponses = {
     200: ProcessInstanceElementStatisticsQueryResult;
 };
+
+// @public
+const getProcessInstanceWaitStateStatistics$1: <ThrowOnError extends boolean = true>(options: Options<GetProcessInstanceWaitStateStatisticsData, ThrowOnError>) => RequestResult<GetProcessInstanceWaitStateStatisticsResponses, GetProcessInstanceWaitStateStatisticsErrors, ThrowOnError>;
 
 // @public
 export type getProcessInstanceWaitStateStatisticsConsistency = {
@@ -8037,6 +10301,18 @@ export type getProcessInstanceWaitStateStatisticsInput = {
 };
 
 // @public (undocumented)
+type getProcessInstanceWaitStateStatisticsOptions = Parameters<typeof getProcessInstanceWaitStateStatistics$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getProcessInstanceWaitStateStatisticsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getProcessInstanceWaitStateStatisticsPathParam_processInstanceKey = (NonNullable<getProcessInstanceWaitStateStatisticsOptions> extends {
+    path: {
+        processInstanceKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetProcessInstanceWaitStateStatisticsResponse = GetProcessInstanceWaitStateStatisticsResponses[keyof GetProcessInstanceWaitStateStatisticsResponses];
 
 // @public (undocumented)
@@ -8045,9 +10321,18 @@ export type GetProcessInstanceWaitStateStatisticsResponses = {
 };
 
 // @public
+const getResource$1: <ThrowOnError extends boolean = true>(options: Options<GetResourceData, ThrowOnError>) => RequestResult<GetResourceResponses, GetResourceErrors, ThrowOnError>;
+
+// @public
 export type getResourceConsistency = {
     consistency: ConsistencyOptions<_DataOf$1<typeof getResource$1>>;
 };
+
+// @public @deprecated
+const getResourceContent$1: <ThrowOnError extends boolean = true>(options: Options<GetResourceContentData, ThrowOnError>) => RequestResult<GetResourceContentResponses, GetResourceContentErrors, ThrowOnError>;
+
+// @public
+const getResourceContentBinary$1: <ThrowOnError extends boolean = true>(options: Options<GetResourceContentBinaryData, ThrowOnError>) => RequestResult<GetResourceContentBinaryResponses, GetResourceContentBinaryErrors, ThrowOnError>;
 
 // @public
 export type getResourceContentBinaryConsistency = {
@@ -8077,6 +10362,18 @@ export type GetResourceContentBinaryErrors = {
 export type getResourceContentBinaryInput = {
     resourceKey: getResourceContentBinaryPathParam_resourceKey;
 };
+
+// @public (undocumented)
+type getResourceContentBinaryOptions = Parameters<typeof getResourceContentBinary$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getResourceContentBinaryOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getResourceContentBinaryPathParam_resourceKey = (NonNullable<getResourceContentBinaryOptions> extends {
+    path: {
+        resourceKey: infer P;
+    };
+} ? P : any);
 
 // @public (undocumented)
 export type GetResourceContentBinaryResponse = GetResourceContentBinaryResponses[keyof GetResourceContentBinaryResponses];
@@ -8117,6 +10414,18 @@ export type getResourceContentInput = {
 };
 
 // @public (undocumented)
+type getResourceContentOptions = Parameters<typeof getResourceContent$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getResourceContentOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getResourceContentPathParam_resourceKey = (NonNullable<getResourceContentOptions> extends {
+    path: {
+        resourceKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetResourceContentResponse = GetResourceContentResponses[keyof GetResourceContentResponses];
 
 // @public (undocumented)
@@ -8151,12 +10460,27 @@ export type getResourceInput = {
 };
 
 // @public (undocumented)
+type getResourceOptions = Parameters<typeof getResource$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getResourceOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getResourcePathParam_resourceKey = (NonNullable<getResourceOptions> extends {
+    path: {
+        resourceKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetResourceResponse = GetResourceResponses[keyof GetResourceResponses];
 
 // @public (undocumented)
 export type GetResourceResponses = {
     200: ResourceResult;
 };
+
+// @public
+const getRestoreStatus$1: <ThrowOnError extends boolean = true>(options?: Options<GetRestoreStatusData, ThrowOnError>) => RequestResult<GetRestoreStatusResponses, GetRestoreStatusErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type GetRestoreStatusData = {
@@ -8187,6 +10511,9 @@ export type GetRestoreStatusResponse = GetRestoreStatusResponses[keyof GetRestor
 export type GetRestoreStatusResponses = {
     200: RestoreStatusResponse;
 };
+
+// @public
+const getRole$1: <ThrowOnError extends boolean = true>(options: Options<GetRoleData, ThrowOnError>) => RequestResult<GetRoleResponses, GetRoleErrors, ThrowOnError>;
 
 // @public
 export type getRoleConsistency = {
@@ -8220,12 +10547,30 @@ export type getRoleInput = {
 };
 
 // @public (undocumented)
+type getRoleOptions = Parameters<typeof getRole$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getRoleOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getRolePathParam_roleId = (NonNullable<getRoleOptions> extends {
+    path: {
+        roleId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetRoleResponse = GetRoleResponses[keyof GetRoleResponses];
 
 // @public (undocumented)
 export type GetRoleResponses = {
     200: RoleResult;
 };
+
+// @public
+const getRuntimeBackup$1: <ThrowOnError extends boolean = true>(options: Options<GetRuntimeBackupData, ThrowOnError>) => RequestResult<GetRuntimeBackupResponses, GetRuntimeBackupErrors, ThrowOnError>;
+
+// @public
+const getRuntimeBackupAsClusterAdmin$1: <ThrowOnError extends boolean = true>(options: Options<GetRuntimeBackupAsClusterAdminData, ThrowOnError>) => RequestResult<GetRuntimeBackupAsClusterAdminResponses, GetRuntimeBackupAsClusterAdminErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type GetRuntimeBackupAsClusterAdminData = {
@@ -8256,6 +10601,25 @@ export type getRuntimeBackupAsClusterAdminInput = {
     backupId: getRuntimeBackupAsClusterAdminPathParam_backupId;
     physicalTenantId?: getRuntimeBackupAsClusterAdminQueryParam_physicalTenantId;
 };
+
+// @public (undocumented)
+type getRuntimeBackupAsClusterAdminOptions = Parameters<typeof getRuntimeBackupAsClusterAdmin$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getRuntimeBackupAsClusterAdminOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getRuntimeBackupAsClusterAdminPathParam_backupId = (NonNullable<getRuntimeBackupAsClusterAdminOptions> extends {
+    path: {
+        backupId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type getRuntimeBackupAsClusterAdminQueryParam_physicalTenantId = (NonNullable<getRuntimeBackupAsClusterAdminOptions> extends {
+    query?: {
+        physicalTenantId?: infer Q;
+    };
+} ? Q : any);
 
 // @public (undocumented)
 export type GetRuntimeBackupAsClusterAdminResponse = GetRuntimeBackupAsClusterAdminResponses[keyof GetRuntimeBackupAsClusterAdminResponses];
@@ -8293,12 +10657,30 @@ export type getRuntimeBackupInput = {
 };
 
 // @public (undocumented)
+type getRuntimeBackupOptions = Parameters<typeof getRuntimeBackup$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getRuntimeBackupOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getRuntimeBackupPathParam_backupId = (NonNullable<getRuntimeBackupOptions> extends {
+    path: {
+        backupId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetRuntimeBackupResponse = GetRuntimeBackupResponses[keyof GetRuntimeBackupResponses];
 
 // @public (undocumented)
 export type GetRuntimeBackupResponses = {
     200: BackupInfo;
 };
+
+// @public
+const getRuntimeBackupState$1: <ThrowOnError extends boolean = true>(options?: Options<GetRuntimeBackupStateData, ThrowOnError>) => RequestResult<GetRuntimeBackupStateResponses, GetRuntimeBackupStateErrors, ThrowOnError>;
+
+// @public
+const getRuntimeBackupStateAsClusterAdmin$1: <ThrowOnError extends boolean = true>(options?: Options<GetRuntimeBackupStateAsClusterAdminData, ThrowOnError>) => RequestResult<GetRuntimeBackupStateAsClusterAdminResponses, GetRuntimeBackupStateAsClusterAdminErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type GetRuntimeBackupStateAsClusterAdminData = {
@@ -8325,6 +10707,18 @@ export type GetRuntimeBackupStateAsClusterAdminErrors = {
 export type getRuntimeBackupStateAsClusterAdminInput = {
     physicalTenantId?: getRuntimeBackupStateAsClusterAdminQueryParam_physicalTenantId;
 };
+
+// @public (undocumented)
+type getRuntimeBackupStateAsClusterAdminOptions = Parameters<typeof getRuntimeBackupStateAsClusterAdmin$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getRuntimeBackupStateAsClusterAdminOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getRuntimeBackupStateAsClusterAdminQueryParam_physicalTenantId = (NonNullable<getRuntimeBackupStateAsClusterAdminOptions> extends {
+    query?: {
+        physicalTenantId?: infer Q;
+    };
+} ? Q : any);
 
 // @public (undocumented)
 export type GetRuntimeBackupStateAsClusterAdminResponse = GetRuntimeBackupStateAsClusterAdminResponses[keyof GetRuntimeBackupStateAsClusterAdminResponses];
@@ -8365,6 +10759,9 @@ export type GetRuntimeBackupStateResponses = {
 };
 
 // @public
+const getStartProcessForm$1: <ThrowOnError extends boolean = true>(options: Options<GetStartProcessFormData, ThrowOnError>) => RequestResult<GetStartProcessFormResponses, GetStartProcessFormErrors, ThrowOnError>;
+
+// @public
 export type getStartProcessFormConsistency = {
     consistency: ConsistencyOptions<_DataOf$1<typeof getStartProcessForm$1>>;
 };
@@ -8397,6 +10794,18 @@ export type getStartProcessFormInput = {
 };
 
 // @public (undocumented)
+type getStartProcessFormOptions = Parameters<typeof getStartProcessForm$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getStartProcessFormOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getStartProcessFormPathParam_processDefinitionKey = (NonNullable<getStartProcessFormOptions> extends {
+    path: {
+        processDefinitionKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetStartProcessFormResponse = GetStartProcessFormResponses[keyof GetStartProcessFormResponses];
 
 // @public (undocumented)
@@ -8404,6 +10813,9 @@ export type GetStartProcessFormResponses = {
     200: FormResult;
     204: void;
 };
+
+// @public
+const getStatus$1: <ThrowOnError extends boolean = true>(options?: Options<GetStatusData, ThrowOnError>) => RequestResult<GetStatusResponses, GetStatusErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type GetStatusData = {
@@ -8428,6 +10840,9 @@ export type GetStatusResponse = GetStatusResponses[keyof GetStatusResponses];
 export type GetStatusResponses = {
     204: void;
 };
+
+// @public
+const getSystemConfiguration$1: <ThrowOnError extends boolean = true>(options?: Options<GetSystemConfigurationData, ThrowOnError>) => RequestResult<GetSystemConfigurationResponses, GetSystemConfigurationErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type GetSystemConfigurationData = {
@@ -8456,6 +10871,12 @@ export type GetSystemConfigurationResponse = GetSystemConfigurationResponses[key
 export type GetSystemConfigurationResponses = {
     200: SystemConfigurationResponse;
 };
+
+// @public
+const getTenant$1: <ThrowOnError extends boolean = true>(options: Options<GetTenantData, ThrowOnError>) => RequestResult<GetTenantResponses, GetTenantErrors, ThrowOnError>;
+
+// @public
+const getTenantClusterVariable$1: <ThrowOnError extends boolean = true>(options: Options<GetTenantClusterVariableData, ThrowOnError>) => RequestResult<GetTenantClusterVariableResponses, GetTenantClusterVariableErrors, ThrowOnError>;
 
 // @public
 export type getTenantClusterVariableConsistency = {
@@ -8490,6 +10911,25 @@ export type getTenantClusterVariableInput = {
     tenantId: getTenantClusterVariablePathParam_tenantId;
     name: getTenantClusterVariablePathParam_name;
 };
+
+// @public (undocumented)
+type getTenantClusterVariableOptions = Parameters<typeof getTenantClusterVariable$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getTenantClusterVariableOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getTenantClusterVariablePathParam_name = (NonNullable<getTenantClusterVariableOptions> extends {
+    path: {
+        name: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type getTenantClusterVariablePathParam_tenantId = (NonNullable<getTenantClusterVariableOptions> extends {
+    path: {
+        tenantId: infer P;
+    };
+} ? P : any);
 
 // @public (undocumented)
 export type GetTenantClusterVariableResponse = GetTenantClusterVariableResponses[keyof GetTenantClusterVariableResponses];
@@ -8532,12 +10972,27 @@ export type getTenantInput = {
 };
 
 // @public (undocumented)
+type getTenantOptions = Parameters<typeof getTenant$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getTenantOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getTenantPathParam_tenantId = (NonNullable<getTenantOptions> extends {
+    path: {
+        tenantId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetTenantResponse = GetTenantResponses[keyof GetTenantResponses];
 
 // @public (undocumented)
 export type GetTenantResponses = {
     200: TenantResult;
 };
+
+// @public
+const getTopology$1: <ThrowOnError extends boolean = true>(options?: Options<GetTopologyData, ThrowOnError>) => RequestResult<GetTopologyResponses, GetTopologyErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type GetTopologyData = {
@@ -8566,6 +11021,9 @@ export type GetTopologyResponse = GetTopologyResponses[keyof GetTopologyResponse
 export type GetTopologyResponses = {
     200: TopologyResponse;
 };
+
+// @public
+const getUsageMetrics$1: <ThrowOnError extends boolean = true>(options: Options<GetUsageMetricsData, ThrowOnError>) => RequestResult<GetUsageMetricsResponses, GetUsageMetricsErrors, ThrowOnError>;
 
 // @public
 export type getUsageMetricsConsistency = {
@@ -8605,12 +11063,48 @@ export type getUsageMetricsInput = {
 };
 
 // @public (undocumented)
+type getUsageMetricsOptions = Parameters<typeof getUsageMetrics$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getUsageMetricsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getUsageMetricsQueryParam_endTime = (NonNullable<getUsageMetricsOptions> extends {
+    query?: {
+        endTime?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
+type getUsageMetricsQueryParam_startTime = (NonNullable<getUsageMetricsOptions> extends {
+    query?: {
+        startTime?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
+type getUsageMetricsQueryParam_tenantId = (NonNullable<getUsageMetricsOptions> extends {
+    query?: {
+        tenantId?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
+type getUsageMetricsQueryParam_withTenants = (NonNullable<getUsageMetricsOptions> extends {
+    query?: {
+        withTenants?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
 export type GetUsageMetricsResponse = GetUsageMetricsResponses[keyof GetUsageMetricsResponses];
 
 // @public (undocumented)
 export type GetUsageMetricsResponses = {
     200: UsageMetricsResponse;
 };
+
+// @public
+const getUser$1: <ThrowOnError extends boolean = true>(options: Options<GetUserData, ThrowOnError>) => RequestResult<GetUserResponses, GetUserErrors, ThrowOnError>;
 
 // @public
 export type getUserConsistency = {
@@ -8644,12 +11138,27 @@ export type getUserInput = {
 };
 
 // @public (undocumented)
+type getUserOptions = Parameters<typeof getUser$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getUserOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getUserPathParam_username = (NonNullable<getUserOptions> extends {
+    path: {
+        username: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetUserResponse = GetUserResponses[keyof GetUserResponses];
 
 // @public (undocumented)
 export type GetUserResponses = {
     200: UserResult;
 };
+
+// @public
+const getUserTask$1: <ThrowOnError extends boolean = true>(options: Options<GetUserTaskData, ThrowOnError>) => RequestResult<GetUserTaskResponses, GetUserTaskErrors, ThrowOnError>;
 
 // @public
 export type getUserTaskConsistency = {
@@ -8677,6 +11186,9 @@ export type GetUserTaskErrors = {
     404: ProblemDetail;
     500: ProblemDetail;
 };
+
+// @public
+const getUserTaskForm$1: <ThrowOnError extends boolean = true>(options: Options<GetUserTaskFormData, ThrowOnError>) => RequestResult<GetUserTaskFormResponses, GetUserTaskFormErrors, ThrowOnError>;
 
 // @public
 export type getUserTaskFormConsistency = {
@@ -8711,6 +11223,18 @@ export type getUserTaskFormInput = {
 };
 
 // @public (undocumented)
+type getUserTaskFormOptions = Parameters<typeof getUserTaskForm$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getUserTaskFormOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getUserTaskFormPathParam_userTaskKey = (NonNullable<getUserTaskFormOptions> extends {
+    path: {
+        userTaskKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetUserTaskFormResponse = GetUserTaskFormResponses[keyof GetUserTaskFormResponses];
 
 // @public (undocumented)
@@ -8725,12 +11249,27 @@ export type getUserTaskInput = {
 };
 
 // @public (undocumented)
+type getUserTaskOptions = Parameters<typeof getUserTask$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getUserTaskOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getUserTaskPathParam_userTaskKey = (NonNullable<getUserTaskOptions> extends {
+    path: {
+        userTaskKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type GetUserTaskResponse = GetUserTaskResponses[keyof GetUserTaskResponses];
 
 // @public (undocumented)
 export type GetUserTaskResponses = {
     200: UserTaskResult;
 };
+
+// @public
+const getVariable$1: <ThrowOnError extends boolean = true>(options: Options<GetVariableData, ThrowOnError>) => RequestResult<GetVariableResponses, GetVariableErrors, ThrowOnError>;
 
 // @public
 export type getVariableConsistency = {
@@ -8763,6 +11302,18 @@ export type GetVariableErrors = {
 export type getVariableInput = {
     variableKey: getVariablePathParam_variableKey;
 };
+
+// @public (undocumented)
+type getVariableOptions = Parameters<typeof getVariable$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "getVariableOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type getVariablePathParam_variableKey = (NonNullable<getVariableOptions> extends {
+    path: {
+        variableKey: infer P;
+    };
+} ? P : any);
 
 // @public (undocumented)
 export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponses];
@@ -8883,6 +11434,14 @@ export type GlobalTaskListenerSearchQuerySortRequest = {
     field: 'id' | 'type' | 'afterNonGlobal' | 'priority' | 'source';
     order?: SortOrderEnum;
 };
+
+// @public (undocumented)
+interface GracefulStopResult {
+    // (undocumented)
+    remainingJobs: number;
+    // (undocumented)
+    timedOut: boolean;
+}
 
 // @public (undocumented)
 export type GroupClientResult = {
@@ -9011,6 +11570,9 @@ export type GroupUserSearchResult = SearchQueryResponse & {
 // @public
 export type HandlerClock = Pick<Clock, 'now' | 'sleep'>;
 
+// @public (undocumented)
+type HeadersHook = (headers: Record<string, string>) => Promise<Record<string, string>> | Record<string, string>;
+
 // @public
 export type HistoryBackupInfo = {
     backupId: BackupId;
@@ -9046,6 +11608,9 @@ export const HistoryItemId: {
 };
 
 // @public (undocumented)
+type HttpMethod = 'connect' | 'delete' | 'get' | 'head' | 'options' | 'patch' | 'post' | 'put' | 'trace';
+
+// @public (undocumented)
 export interface HttpRetryPolicy {
     // (undocumented)
     baseDelayMs: number;
@@ -9053,6 +11618,31 @@ export interface HttpRetryPolicy {
     maxAttempts: number;
     // (undocumented)
     maxDelayMs: number;
+}
+
+// @public (undocumented)
+interface HttpSdkError extends Error {
+    // (undocumented)
+    cause?: unknown;
+    // (undocumented)
+    detail?: string;
+    // (undocumented)
+    instance?: string;
+    // (undocumented)
+    name: 'HttpSdkError';
+    // (undocumented)
+    operationId?: string;
+    // (undocumented)
+    retries?: {
+        attempt: number;
+        max: number;
+    };
+    // (undocumented)
+    status: number;
+    // (undocumented)
+    title?: string;
+    // (undocumented)
+    type?: string;
 }
 
 // @public
@@ -9235,6 +11825,9 @@ export type IncidentStateExactMatchWritable = IncidentStateEnum;
 // @public
 export type IncidentStateFilterProperty = IncidentStateExactMatch | AdvancedIncidentStateFilter;
 
+// @public (undocumented)
+type InferOrUnknown<T extends z.ZodTypeAny | undefined> = T extends z.ZodTypeAny ? z.infer<T> : Record<string, unknown>;
+
 // @public
 export type InferredAncestorKeyInstruction = {
     ancestorScopeType: string;
@@ -9242,6 +11835,29 @@ export type InferredAncestorKeyInstruction = {
 
 // @public
 export type IntegerFilterProperty = number | AdvancedIntegerFilter;
+
+// @public (undocumented)
+class Interceptors<Interceptor> {
+    // (undocumented)
+    clear(): void;
+    // (undocumented)
+    eject(id: number | Interceptor): void;
+    // (undocumented)
+    exists(id: number | Interceptor): boolean;
+    // (undocumented)
+    fns: Array<Interceptor | null>;
+    // (undocumented)
+    getInterceptorIndex(id: number | Interceptor): number;
+    // (undocumented)
+    update(id: number | Interceptor, fn: Interceptor): number | Interceptor | false;
+    // (undocumented)
+    use(fn: Interceptor): number;
+}
+
+// @public (undocumented)
+type IsBrandedKey<T> = T extends string & {
+    readonly __brand: infer _B;
+} ? true : false;
 
 // @public (undocumented)
 export const isErr: <T, E>(r: Result<T, E>) => r is {
@@ -9260,6 +11876,11 @@ export function isPresentWhenUnsupportedError(e: unknown): e is PresentWhenUnsup
 
 // @public (undocumented)
 export function isSdkError(e: unknown): e is SdkError;
+
+// @public
+type ItemsOf<TData> = TData extends {
+    items?: Array<infer I>;
+} ? I : never;
 
 // @public (undocumented)
 export type Job<In extends z.ZodTypeAny | undefined, Headers extends z.ZodTypeAny | undefined> = EnrichedActivatedJob & {
@@ -9326,6 +11947,9 @@ export type JobErrorRequest = {
     } | null;
     jobLeaseToken?: JobLeaseToken | null;
 };
+
+// @public (undocumented)
+type JobErrorRequest_2 = ThrowJobErrorData['body'];
 
 // @public
 export type JobErrorStatisticsFilter = {
@@ -9755,6 +12379,12 @@ export type LimitPagination = {
     limit?: number;
 };
 
+// @public
+const listHistoryBackups$1: <ThrowOnError extends boolean = true>(options?: Options<ListHistoryBackupsData, ThrowOnError>) => RequestResult<ListHistoryBackupsResponses, ListHistoryBackupsErrors, ThrowOnError>;
+
+// @public
+const listHistoryBackupsAsClusterAdmin$1: <ThrowOnError extends boolean = true>(options?: Options<ListHistoryBackupsAsClusterAdminData, ThrowOnError>) => RequestResult<ListHistoryBackupsAsClusterAdminResponses, ListHistoryBackupsAsClusterAdminErrors, ThrowOnError>;
+
 // @public (undocumented)
 export type ListHistoryBackupsAsClusterAdminData = {
     body?: never;
@@ -9786,6 +12416,32 @@ export type listHistoryBackupsAsClusterAdminInput = {
     prefix?: listHistoryBackupsAsClusterAdminQueryParam_prefix;
     verbose?: listHistoryBackupsAsClusterAdminQueryParam_verbose;
 };
+
+// @public (undocumented)
+type listHistoryBackupsAsClusterAdminOptions = Parameters<typeof listHistoryBackupsAsClusterAdmin$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "listHistoryBackupsAsClusterAdminOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type listHistoryBackupsAsClusterAdminQueryParam_physicalTenantId = (NonNullable<listHistoryBackupsAsClusterAdminOptions> extends {
+    query?: {
+        physicalTenantId?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
+type listHistoryBackupsAsClusterAdminQueryParam_prefix = (NonNullable<listHistoryBackupsAsClusterAdminOptions> extends {
+    query?: {
+        prefix?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
+type listHistoryBackupsAsClusterAdminQueryParam_verbose = (NonNullable<listHistoryBackupsAsClusterAdminOptions> extends {
+    query?: {
+        verbose?: infer Q;
+    };
+} ? Q : any);
 
 // @public (undocumented)
 export type ListHistoryBackupsAsClusterAdminResponse = ListHistoryBackupsAsClusterAdminResponses[keyof ListHistoryBackupsAsClusterAdminResponses];
@@ -9825,12 +12481,37 @@ export type listHistoryBackupsInput = {
 };
 
 // @public (undocumented)
+type listHistoryBackupsOptions = Parameters<typeof listHistoryBackups$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "listHistoryBackupsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type listHistoryBackupsQueryParam_prefix = (NonNullable<listHistoryBackupsOptions> extends {
+    query?: {
+        prefix?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
+type listHistoryBackupsQueryParam_verbose = (NonNullable<listHistoryBackupsOptions> extends {
+    query?: {
+        verbose?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
 export type ListHistoryBackupsResponse = ListHistoryBackupsResponses[keyof ListHistoryBackupsResponses];
 
 // @public (undocumented)
 export type ListHistoryBackupsResponses = {
     200: Array<HistoryBackupInfo>;
 };
+
+// @public
+const listRuntimeBackups$1: <ThrowOnError extends boolean = true>(options?: Options<ListRuntimeBackupsData, ThrowOnError>) => RequestResult<ListRuntimeBackupsResponses, ListRuntimeBackupsErrors, ThrowOnError>;
+
+// @public
+const listRuntimeBackupsAsClusterAdmin$1: <ThrowOnError extends boolean = true>(options?: Options<ListRuntimeBackupsAsClusterAdminData, ThrowOnError>) => RequestResult<ListRuntimeBackupsAsClusterAdminResponses, ListRuntimeBackupsAsClusterAdminErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type ListRuntimeBackupsAsClusterAdminData = {
@@ -9860,6 +12541,25 @@ export type listRuntimeBackupsAsClusterAdminInput = {
     physicalTenantId?: listRuntimeBackupsAsClusterAdminQueryParam_physicalTenantId;
     prefix?: listRuntimeBackupsAsClusterAdminQueryParam_prefix;
 };
+
+// @public (undocumented)
+type listRuntimeBackupsAsClusterAdminOptions = Parameters<typeof listRuntimeBackupsAsClusterAdmin$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "listRuntimeBackupsAsClusterAdminOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type listRuntimeBackupsAsClusterAdminQueryParam_physicalTenantId = (NonNullable<listRuntimeBackupsAsClusterAdminOptions> extends {
+    query?: {
+        physicalTenantId?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
+type listRuntimeBackupsAsClusterAdminQueryParam_prefix = (NonNullable<listRuntimeBackupsAsClusterAdminOptions> extends {
+    query?: {
+        prefix?: infer Q;
+    };
+} ? Q : any);
 
 // @public (undocumented)
 export type ListRuntimeBackupsAsClusterAdminResponse = ListRuntimeBackupsAsClusterAdminResponses[keyof ListRuntimeBackupsAsClusterAdminResponses];
@@ -9897,12 +12597,34 @@ export type listRuntimeBackupsInput = {
 };
 
 // @public (undocumented)
+type listRuntimeBackupsOptions = Parameters<typeof listRuntimeBackups$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "listRuntimeBackupsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type listRuntimeBackupsQueryParam_prefix = (NonNullable<listRuntimeBackupsOptions> extends {
+    query?: {
+        prefix?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
 export type ListRuntimeBackupsResponse = ListRuntimeBackupsResponses[keyof ListRuntimeBackupsResponses];
 
 // @public (undocumented)
 export type ListRuntimeBackupsResponses = {
     200: Array<BackupInfo>;
 };
+
+// @public
+const listSecrets$1: <ThrowOnError extends boolean = true>(options?: Options<ListSecretsData, ThrowOnError>) => RequestResult<ListSecretsResponses, ListSecretsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "listSecretsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type listSecretsBody = (NonNullable<listSecretsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type ListSecretsData = {
@@ -9929,6 +12651,9 @@ export type ListSecretsErrors = {
 export type listSecretsInput = listSecretsBody;
 
 // @public (undocumented)
+type listSecretsOptions = Parameters<typeof listSecrets$1>[0];
+
+// @public (undocumented)
 export type ListSecretsResponse = ListSecretsResponses[keyof ListSecretsResponses];
 
 // @public (undocumented)
@@ -9942,8 +12667,68 @@ export const liveClock: Clock;
 // @public
 export const liveRandom: RandomSource;
 
+// @public (undocumented)
+interface LogEvent {
+    // (undocumented)
+    args: any[];
+    // (undocumented)
+    code?: string;
+    // (undocumented)
+    data?: any;
+    // (undocumented)
+    level: LogLevel;
+    // (undocumented)
+    scope: string;
+    // (undocumented)
+    ts: number;
+}
+
+// @public (undocumented)
+interface Logger {
+    // (undocumented)
+    code(level: LogLevel, code: string, msg: string, data?: any): void;
+    // (undocumented)
+    debug(...a: any[]): void;
+    // (undocumented)
+    error(...a: any[]): void;
+    // (undocumented)
+    info(...a: any[]): void;
+    // (undocumented)
+    level(): LogLevel;
+    // (undocumented)
+    scope(child: string): Logger;
+    // (undocumented)
+    setLevel(level: LogLevel): void;
+    // (undocumented)
+    setTransport(t?: LogTransport): void;
+    // (undocumented)
+    silly(...a: any[]): void;
+    // (undocumented)
+    trace(...a: any[]): void;
+    // (undocumented)
+    warn(...a: any[]): void;
+}
+
+// @public (undocumented)
+type LogLevel = 'silent' | 'error' | 'warn' | 'info' | 'debug' | 'trace' | 'silly';
+
+// Warning: (ae-forgotten-export) The symbol "LogEvent" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type LogTransport = (e: LogEvent) => void;
+
 // @public
 export type LongKey = string;
+
+// @public
+const lookupUserTask$1: <ThrowOnError extends boolean = true>(options: Options<LookupUserTaskData, ThrowOnError>) => RequestResult<LookupUserTaskResponses, LookupUserTaskErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "lookupUserTaskOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type lookupUserTaskBody = (NonNullable<lookupUserTaskOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type LookupUserTaskData = {
@@ -9975,6 +12760,16 @@ export type LookupUserTaskErrors = {
 export type lookupUserTaskInput = lookupUserTaskBody & {
     userTaskKey: lookupUserTaskPathParam_userTaskKey;
 };
+
+// @public (undocumented)
+type lookupUserTaskOptions = Parameters<typeof lookupUserTask$1>[0];
+
+// @public (undocumented)
+type lookupUserTaskPathParam_userTaskKey = (NonNullable<lookupUserTaskOptions> extends {
+    path: {
+        userTaskKey: infer P;
+    };
+} ? P : any);
 
 // @public (undocumented)
 export type LookupUserTaskResponse = LookupUserTaskResponses[keyof LookupUserTaskResponses];
@@ -10259,6 +13054,38 @@ export type MessageWaitStateDetails = BaseWaitStateDetails & {
     correlationKey: string | null;
 };
 
+// Warning: (ae-forgotten-export) The symbol "RequestOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type MethodFn = <TData = unknown, TError = unknown, ThrowOnError extends boolean = false, TResponseStyle extends ResponseStyle = 'fields'>(options: Omit<RequestOptions<TData, TResponseStyle, ThrowOnError>, 'method'>) => RequestResult<TData, TError, ThrowOnError, TResponseStyle>;
+
+// @public (undocumented)
+interface Middleware<Req, Res, Err, Options> {
+    // Warning: (ae-forgotten-export) The symbol "Interceptors" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "ErrInterceptor" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    error: Interceptors<ErrInterceptor<Err, Res, Req, Options>>;
+    // Warning: (ae-forgotten-export) The symbol "ReqInterceptor" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    request: Interceptors<ReqInterceptor<Req, Options>>;
+    // Warning: (ae-forgotten-export) The symbol "ResInterceptor" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    response: Interceptors<ResInterceptor<Res, Req, Options>>;
+}
+
+// @public
+const migrateProcessInstance$1: <ThrowOnError extends boolean = true>(options: Options<MigrateProcessInstanceData, ThrowOnError>) => RequestResult<MigrateProcessInstanceResponses, MigrateProcessInstanceErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "migrateProcessInstanceOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type migrateProcessInstanceBody = (NonNullable<migrateProcessInstanceOptions> extends {
+    body?: infer B;
+} ? B : never);
+
 // @public (undocumented)
 export type MigrateProcessInstanceData = {
     body: ProcessInstanceMigrationInstruction;
@@ -10295,12 +13122,32 @@ export type MigrateProcessInstanceMappingInstruction = {
 };
 
 // @public (undocumented)
+type migrateProcessInstanceOptions = Parameters<typeof migrateProcessInstance$1>[0];
+
+// @public (undocumented)
+type migrateProcessInstancePathParam_processInstanceKey = (NonNullable<migrateProcessInstanceOptions> extends {
+    path: {
+        processInstanceKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type MigrateProcessInstanceResponse = MigrateProcessInstanceResponses[keyof MigrateProcessInstanceResponses];
 
 // @public (undocumented)
 export type MigrateProcessInstanceResponses = {
     204: void;
 };
+
+// @public
+const migrateProcessInstancesBatchOperation$1: <ThrowOnError extends boolean = true>(options: Options<MigrateProcessInstancesBatchOperationData, ThrowOnError>) => RequestResult<MigrateProcessInstancesBatchOperationResponses, MigrateProcessInstancesBatchOperationErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "migrateProcessInstancesBatchOperationOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type migrateProcessInstancesBatchOperationBody = (NonNullable<migrateProcessInstancesBatchOperationOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type MigrateProcessInstancesBatchOperationData = {
@@ -10327,6 +13174,9 @@ export type MigrateProcessInstancesBatchOperationErrors = {
 export type migrateProcessInstancesBatchOperationInput = migrateProcessInstancesBatchOperationBody;
 
 // @public (undocumented)
+type migrateProcessInstancesBatchOperationOptions = Parameters<typeof migrateProcessInstancesBatchOperation$1>[0];
+
+// @public (undocumented)
 export type MigrateProcessInstancesBatchOperationResponse = MigrateProcessInstancesBatchOperationResponses[keyof MigrateProcessInstancesBatchOperationResponses];
 
 // @public (undocumented)
@@ -10336,6 +13186,16 @@ export type MigrateProcessInstancesBatchOperationResponses = {
 
 // @public
 export type Mode = 'PROCESSING' | 'RECOVERING';
+
+// @public
+const modifyProcessInstance$1: <ThrowOnError extends boolean = true>(options: Options<ModifyProcessInstanceData, ThrowOnError>) => RequestResult<ModifyProcessInstanceResponses, ModifyProcessInstanceErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "modifyProcessInstanceOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type modifyProcessInstanceBody = (NonNullable<modifyProcessInstanceOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type ModifyProcessInstanceData = {
@@ -10366,12 +13226,32 @@ export type modifyProcessInstanceInput = modifyProcessInstanceBody & {
 };
 
 // @public (undocumented)
+type modifyProcessInstanceOptions = Parameters<typeof modifyProcessInstance$1>[0];
+
+// @public (undocumented)
+type modifyProcessInstancePathParam_processInstanceKey = (NonNullable<modifyProcessInstanceOptions> extends {
+    path: {
+        processInstanceKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type ModifyProcessInstanceResponse = ModifyProcessInstanceResponses[keyof ModifyProcessInstanceResponses];
 
 // @public (undocumented)
 export type ModifyProcessInstanceResponses = {
     204: void;
 };
+
+// @public
+const modifyProcessInstancesBatchOperation$1: <ThrowOnError extends boolean = true>(options: Options<ModifyProcessInstancesBatchOperationData, ThrowOnError>) => RequestResult<ModifyProcessInstancesBatchOperationResponses, ModifyProcessInstancesBatchOperationErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "modifyProcessInstancesBatchOperationOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type modifyProcessInstancesBatchOperationBody = (NonNullable<modifyProcessInstancesBatchOperationOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type ModifyProcessInstancesBatchOperationData = {
@@ -10398,6 +13278,9 @@ export type ModifyProcessInstancesBatchOperationErrors = {
 export type modifyProcessInstancesBatchOperationInput = modifyProcessInstancesBatchOperationBody;
 
 // @public (undocumented)
+type modifyProcessInstancesBatchOperationOptions = Parameters<typeof modifyProcessInstancesBatchOperation$1>[0];
+
+// @public (undocumented)
 export type ModifyProcessInstancesBatchOperationResponse = ModifyProcessInstancesBatchOperationResponses[keyof ModifyProcessInstancesBatchOperationResponses];
 
 // @public (undocumented)
@@ -10413,14 +13296,28 @@ export type ModifyProcessInstanceVariableInstruction = {
     scopeId?: string;
 };
 
+// @public (undocumented)
+interface NetworkSdkError extends Error {
+    // (undocumented)
+    cause?: unknown;
+    // (undocumented)
+    name: 'NetworkSdkError';
+}
+
 // @public
 export function nextPageRequest<TItem, TBody extends SearchBody>(body: TBody, response: SearchResponse<TItem>, mode?: PaginationMode): TBody | null;
+
+// @public (undocumented)
+type ObjectStyle = 'form' | 'deepObject';
 
 // @public
 export type OffsetPagination = {
     from?: number;
     limit?: number;
 };
+
+// @public (undocumented)
+type OmitKeys<T, K> = Pick<T, Exclude<keyof T, K>>;
 
 // @public
 export interface OperationOptions {
@@ -10438,6 +13335,18 @@ export type OperationTypeExactMatchWritable = AuditLogOperationTypeEnum;
 
 // @public
 export type OperationTypeFilterProperty = OperationTypeExactMatch | AdvancedOperationTypeFilter;
+
+// Warning: (ae-forgotten-export) The symbol "TDataShape" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "OmitKeys" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type Options$1<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown, TResponseStyle extends ResponseStyle = 'fields'> = OmitKeys<RequestOptions<TResponse, TResponseStyle, ThrowOnError>, 'body' | 'path' | 'query' | 'url'> & ([TData] extends [never] ? unknown : Omit<TData, 'url'>);
+
+// @public (undocumented)
+type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options$1<TData, ThrowOnError, TResponse> & {
+    client?: Client;
+    meta?: keyof ClientMeta extends never ? Record<string, unknown> : ClientMeta;
+};
 
 // @public (undocumented)
 export type OwnAuthorizationSearchResult = AuthorizationSearchResult & {
@@ -10533,6 +13442,9 @@ export type PartitionCheckpointState = {
 // @public
 export type PartitionId = number;
 
+// @public
+const pauseClusterExporting$1: <ThrowOnError extends boolean = true>(options?: Options<PauseClusterExportingData, ThrowOnError>) => RequestResult<PauseClusterExportingResponses, PauseClusterExportingErrors, ThrowOnError>;
+
 // @public (undocumented)
 export type PauseClusterExportingData = {
     body?: never;
@@ -10560,12 +13472,27 @@ export type pauseClusterExportingInput = {
 };
 
 // @public (undocumented)
+type pauseClusterExportingOptions = Parameters<typeof pauseClusterExporting$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "pauseClusterExportingOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type pauseClusterExportingQueryParam_soft = (NonNullable<pauseClusterExportingOptions> extends {
+    query?: {
+        soft?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
 export type PauseClusterExportingResponse = PauseClusterExportingResponses[keyof PauseClusterExportingResponses];
 
 // @public (undocumented)
 export type PauseClusterExportingResponses = {
     204: void;
 };
+
+// @public
+const pauseExporting$1: <ThrowOnError extends boolean = true>(options?: Options<PauseExportingData, ThrowOnError>) => RequestResult<PauseExportingResponses, PauseExportingErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type PauseExportingData = {
@@ -10592,6 +13519,18 @@ export type PauseExportingErrors = {
 export type pauseExportingInput = {
     soft?: pauseExportingQueryParam_soft;
 };
+
+// @public (undocumented)
+type pauseExportingOptions = Parameters<typeof pauseExporting$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "pauseExportingOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type pauseExportingQueryParam_soft = (NonNullable<pauseExportingOptions> extends {
+    query?: {
+        soft?: infer Q;
+    };
+} ? Q : any);
 
 // @public (undocumented)
 export type PauseExportingResponse = PauseExportingResponses[keyof PauseExportingResponses];
@@ -10672,6 +13611,16 @@ export type PhysicalTenantTopology = {
     brokers: Array<PhysicalTenantBrokerTopology>;
 };
 
+// @public
+const pinClock$1: <ThrowOnError extends boolean = true>(options: Options<PinClockData, ThrowOnError>) => RequestResult<PinClockResponses, PinClockErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "pinClockOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type pinClockBody = (NonNullable<pinClockOptions> extends {
+    body?: infer B;
+} ? B : never);
+
 // @public (undocumented)
 export type PinClockData = {
     body: ClockPinRequest;
@@ -10696,12 +13645,28 @@ export type PinClockErrors = {
 export type pinClockInput = pinClockBody;
 
 // @public (undocumented)
+type pinClockOptions = Parameters<typeof pinClock$1>[0];
+
+// @public (undocumented)
 export type PinClockResponse = PinClockResponses[keyof PinClockResponses];
 
 // @public (undocumented)
 export type PinClockResponses = {
     204: void;
 };
+
+// @public (undocumented)
+interface PoolWorker {
+    // (undocumented)
+    busy: boolean;
+    currentTaskId?: string;
+    // (undocumented)
+    ready: boolean;
+    // Warning: (ae-forgotten-export) The symbol "WorkerHandle" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    worker: WorkerHandle;
+}
 
 // @public
 export interface PresentWhenUnsupportedError extends Error {
@@ -10713,6 +13678,18 @@ export interface PresentWhenUnsupportedError extends Error {
     // (undocumented)
     operationId?: string;
 }
+
+// @public (undocumented)
+type PrimitiveType<T> = T extends {
+    type: 'string';
+} ? string : T extends {
+    type: 'boolean';
+} ? boolean : T extends {
+    type: 'int' | 'signedInt';
+} ? number : T extends {
+    type: 'enum';
+    choices: readonly (infer C)[];
+} ? C : never;
 
 // @public
 export type ProblemDetail = {
@@ -11291,6 +14268,16 @@ export type ProcessInstanceWaitStateStatisticsResult = {
     waitingCount: number;
 };
 
+// @public
+const publishMessage$1: <ThrowOnError extends boolean = true>(options: Options<PublishMessageData, ThrowOnError>) => RequestResult<PublishMessageResponses, PublishMessageErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "publishMessageOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type publishMessageBody = (NonNullable<publishMessageOptions> extends {
+    body?: infer B;
+} ? B : never);
+
 // @public (undocumented)
 export type PublishMessageData = {
     body: MessagePublicationRequest;
@@ -11315,6 +14302,9 @@ export type PublishMessageErrors = {
 export type publishMessageInput = publishMessageBody;
 
 // @public (undocumented)
+type publishMessageOptions = Parameters<typeof publishMessage$1>[0];
+
+// @public (undocumented)
 export type PublishMessageResponse = PublishMessageResponses[keyof PublishMessageResponses];
 
 // @public (undocumented)
@@ -11322,15 +14312,80 @@ export type PublishMessageResponses = {
     200: MessagePublicationResult;
 };
 
+// @public (undocumented)
+type QuerySerializer = (query: Record<string, unknown>) => string;
+
+// Warning: (ae-forgotten-export) The symbol "QuerySerializerOptionsObject" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type QuerySerializerOptions = QuerySerializerOptionsObject & {
+    parameters?: Record<string, QuerySerializerOptionsObject>;
+};
+
+// @public (undocumented)
+type QuerySerializerOptionsObject = {
+    allowReserved?: boolean;
+    array?: Partial<SerializerOptions<ArrayStyle>>;
+    object?: Partial<SerializerOptions<ObjectStyle>>;
+};
+
 // @public
 export interface RandomSource {
     next(): number;
 }
 
+// @public (undocumented)
+type _RawReturn$1<F> = F extends (...a: any) => Promise<infer R> ? R : never;
+
+// @public (undocumented)
+type _RawReturn<F> = F extends (...a: any) => Promise<infer R> ? R : never;
+
 // @public
 export type RebalanceCancellationResponse = {
     wasRunning: boolean;
 };
+
+// @public (undocumented)
+type ReqInterceptor<Req, Options> = (request: Req, options: Options) => Req | Promise<Req>;
+
+// @public (undocumented)
+type RequestFn = <TData = unknown, TError = unknown, ThrowOnError extends boolean = false, TResponseStyle extends ResponseStyle = 'fields'>(options: Omit<RequestOptions<TData, TResponseStyle, ThrowOnError>, 'method'> & Pick<Required<RequestOptions<TData, TResponseStyle, ThrowOnError>>, 'method'>) => RequestResult<TData, TError, ThrowOnError, TResponseStyle>;
+
+// Warning: (ae-forgotten-export) The symbol "ServerSentEventsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+interface RequestOptions<TData = unknown, TResponseStyle extends ResponseStyle = 'fields', ThrowOnError extends boolean = boolean, Url extends string = string> extends Config<{
+    responseStyle: TResponseStyle;
+    throwOnError: ThrowOnError;
+}>, Pick<ServerSentEventsOptions<TData>, 'onRequest' | 'onSseError' | 'onSseEvent' | 'sseDefaultRetryDelay' | 'sseMaxRetryAttempts' | 'sseMaxRetryDelay'> {
+    body?: unknown;
+    // (undocumented)
+    path?: Record<string, unknown>;
+    // (undocumented)
+    query?: Record<string, unknown>;
+    security?: ReadonlyArray<Auth>;
+    // (undocumented)
+    url: Url;
+}
+
+// @public (undocumented)
+type RequestResult<TData = unknown, TError = unknown, ThrowOnError extends boolean = boolean, TResponseStyle extends ResponseStyle = 'fields'> = ThrowOnError extends true ? Promise<TResponseStyle extends 'data' ? TData extends Record<string, unknown> ? TData[keyof TData] : TData : {
+    data: TData extends Record<string, unknown> ? TData[keyof TData] : TData;
+    request: Request;
+    response: Response;
+}> : Promise<TResponseStyle extends 'data' ? (TData extends Record<string, unknown> ? TData[keyof TData] : TData) | undefined : ({
+    data: TData extends Record<string, unknown> ? TData[keyof TData] : TData;
+    error: undefined;
+} | {
+    data: undefined;
+    error: TError extends Record<string, unknown> ? TError[keyof TError] : TError;
+}) & {
+    request?: Request;
+    response?: Response;
+}>;
+
+// @public
+const resetClock$1: <ThrowOnError extends boolean = true>(options?: Options<ResetClockData, ThrowOnError>) => RequestResult<ResetClockResponses, ResetClockErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type ResetClockData = {
@@ -11361,10 +14416,31 @@ export type ResetClockResponses = {
 };
 
 // @public (undocumented)
+type ResInterceptor<Res, Req, Options> = (response: Res, request: Req, options: Options) => Res | Promise<Res>;
+
+// @public (undocumented)
+interface ResolvedRequestOptions<TResponseStyle extends ResponseStyle = 'fields', ThrowOnError extends boolean = boolean, Url extends string = string> extends RequestOptions<unknown, TResponseStyle, ThrowOnError, Url> {
+    // (undocumented)
+    headers: Headers;
+    // (undocumented)
+    serializedBody?: string;
+}
+
+// @public (undocumented)
 export type ResolvedSecret = {
     reference: string;
     value: string;
 };
+
+// @public
+const resolveIncident$1: <ThrowOnError extends boolean = true>(options: Options<ResolveIncidentData, ThrowOnError>) => RequestResult<ResolveIncidentResponses, ResolveIncidentErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "resolveIncidentOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type resolveIncidentBody = (NonNullable<resolveIncidentOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type ResolveIncidentData = {
@@ -11396,12 +14472,32 @@ export type resolveIncidentInput = resolveIncidentBody & {
 };
 
 // @public (undocumented)
+type resolveIncidentOptions = Parameters<typeof resolveIncident$1>[0];
+
+// @public (undocumented)
+type resolveIncidentPathParam_incidentKey = (NonNullable<resolveIncidentOptions> extends {
+    path: {
+        incidentKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type ResolveIncidentResponse = ResolveIncidentResponses[keyof ResolveIncidentResponses];
 
 // @public (undocumented)
 export type ResolveIncidentResponses = {
     204: void;
 };
+
+// @public
+const resolveIncidentsBatchOperation$1: <ThrowOnError extends boolean = true>(options: Options<ResolveIncidentsBatchOperationData, ThrowOnError>) => RequestResult<ResolveIncidentsBatchOperationResponses, ResolveIncidentsBatchOperationErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "resolveIncidentsBatchOperationOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type resolveIncidentsBatchOperationBody = (NonNullable<resolveIncidentsBatchOperationOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type ResolveIncidentsBatchOperationData = {
@@ -11428,12 +14524,18 @@ export type ResolveIncidentsBatchOperationErrors = {
 export type resolveIncidentsBatchOperationInput = resolveIncidentsBatchOperationBody;
 
 // @public (undocumented)
+type resolveIncidentsBatchOperationOptions = Parameters<typeof resolveIncidentsBatchOperation$1>[0];
+
+// @public (undocumented)
 export type ResolveIncidentsBatchOperationResponse = ResolveIncidentsBatchOperationResponses[keyof ResolveIncidentsBatchOperationResponses];
 
 // @public (undocumented)
 export type ResolveIncidentsBatchOperationResponses = {
     200: BatchOperationCreatedResult;
 };
+
+// @public
+const resolveProcessInstanceIncidents$1: <ThrowOnError extends boolean = true>(options: Options<ResolveProcessInstanceIncidentsData, ThrowOnError>) => RequestResult<ResolveProcessInstanceIncidentsResponses, ResolveProcessInstanceIncidentsErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type ResolveProcessInstanceIncidentsData = {
@@ -11463,12 +14565,34 @@ export type resolveProcessInstanceIncidentsInput = {
 };
 
 // @public (undocumented)
+type resolveProcessInstanceIncidentsOptions = Parameters<typeof resolveProcessInstanceIncidents$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "resolveProcessInstanceIncidentsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type resolveProcessInstanceIncidentsPathParam_processInstanceKey = (NonNullable<resolveProcessInstanceIncidentsOptions> extends {
+    path: {
+        processInstanceKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type ResolveProcessInstanceIncidentsResponse = ResolveProcessInstanceIncidentsResponses[keyof ResolveProcessInstanceIncidentsResponses];
 
 // @public (undocumented)
 export type ResolveProcessInstanceIncidentsResponses = {
     200: BatchOperationCreatedResult;
 };
+
+// @public
+const resolveSecrets$1: <ThrowOnError extends boolean = true>(options: Options<ResolveSecretsData, ThrowOnError>) => RequestResult<ResolveSecretsResponses, ResolveSecretsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "resolveSecretsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type resolveSecretsBody = (NonNullable<resolveSecretsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type ResolveSecretsData = {
@@ -11493,6 +14617,9 @@ export type ResolveSecretsErrors = {
 //
 // @public (undocumented)
 export type resolveSecretsInput = resolveSecretsBody;
+
+// @public (undocumented)
+type resolveSecretsOptions = Parameters<typeof resolveSecrets$1>[0];
 
 // @public (undocumented)
 export type ResolveSecretsResponse = ResolveSecretsResponses[keyof ResolveSecretsResponses];
@@ -11587,6 +14714,22 @@ export const ResourceTypeEnum: {
 export type ResourceTypeEnum = (typeof ResourceTypeEnum)[keyof typeof ResourceTypeEnum];
 
 // @public (undocumented)
+type ResponseStyle = 'data' | 'fields';
+
+// @public
+const restore$1: <ThrowOnError extends boolean = true>(options: Options<RestoreData, ThrowOnError>) => RequestResult<RestoreResponses, RestoreErrors, ThrowOnError>;
+
+// @public
+const restoreAsClusterAdmin$1: <ThrowOnError extends boolean = true>(options: Options<RestoreAsClusterAdminData, ThrowOnError>) => RequestResult<RestoreAsClusterAdminResponses, RestoreAsClusterAdminErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "restoreAsClusterAdminOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type restoreAsClusterAdminBody = (NonNullable<restoreAsClusterAdminOptions> extends {
+    body?: infer B;
+} ? B : never);
+
+// @public (undocumented)
 export type RestoreAsClusterAdminData = {
     body: ClusterRestoreRequest;
     path?: never;
@@ -11618,12 +14761,36 @@ export type restoreAsClusterAdminInput = restoreAsClusterAdminBody & {
 };
 
 // @public (undocumented)
+type restoreAsClusterAdminOptions = Parameters<typeof restoreAsClusterAdmin$1>[0];
+
+// @public (undocumented)
+type restoreAsClusterAdminQueryParam_dryRun = (NonNullable<restoreAsClusterAdminOptions> extends {
+    query?: {
+        dryRun?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
+type restoreAsClusterAdminQueryParam_physicalTenantId = (NonNullable<restoreAsClusterAdminOptions> extends {
+    query?: {
+        physicalTenantId?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
 export type RestoreAsClusterAdminResponse = RestoreAsClusterAdminResponses[keyof RestoreAsClusterAdminResponses];
 
 // @public (undocumented)
 export type RestoreAsClusterAdminResponses = {
     202: ClusterRestoreResponse;
 };
+
+// Warning: (ae-forgotten-export) The symbol "restoreOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type restoreBody = (NonNullable<restoreOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type RestoreBrokerStatus = {
@@ -11663,6 +14830,9 @@ export type restoreInput = restoreBody & {
     dryRun?: restoreQueryParam_dryRun;
 };
 
+// @public (undocumented)
+type restoreOptions = Parameters<typeof restore$1>[0];
+
 // @public
 export type RestorePartitionStatus = {
     partitionId: number;
@@ -11670,6 +14840,13 @@ export type RestorePartitionStatus = {
     backupIds: Array<number>;
     completedAt: string | null;
 };
+
+// @public (undocumented)
+type restoreQueryParam_dryRun = (NonNullable<restoreOptions> extends {
+    query?: {
+        dryRun?: infer Q;
+    };
+} ? Q : any);
 
 // @public
 export type RestoreRequest = {
@@ -11703,6 +14880,16 @@ export type Result<T, E = unknown> = {
     error: E;
 };
 
+// @public
+const resumeBatchOperation$1: <ThrowOnError extends boolean = true>(options: Options<ResumeBatchOperationData, ThrowOnError>) => RequestResult<ResumeBatchOperationResponses, ResumeBatchOperationErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "resumeBatchOperationOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type resumeBatchOperationBody = (NonNullable<resumeBatchOperationOptions> extends {
+    body?: infer B;
+} ? B : never);
+
 // @public (undocumented)
 export type ResumeBatchOperationData = {
     body?: unknown;
@@ -11733,12 +14920,25 @@ export type resumeBatchOperationInput = resumeBatchOperationBody & {
 };
 
 // @public (undocumented)
+type resumeBatchOperationOptions = Parameters<typeof resumeBatchOperation$1>[0];
+
+// @public (undocumented)
+type resumeBatchOperationPathParam_batchOperationKey = (NonNullable<resumeBatchOperationOptions> extends {
+    path: {
+        batchOperationKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type ResumeBatchOperationResponse = ResumeBatchOperationResponses[keyof ResumeBatchOperationResponses];
 
 // @public (undocumented)
 export type ResumeBatchOperationResponses = {
     204: void;
 };
+
+// @public
+const resumeClusterExporting$1: <ThrowOnError extends boolean = true>(options?: Options<ResumeClusterExportingData, ThrowOnError>) => RequestResult<ResumeClusterExportingResponses, ResumeClusterExportingErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type ResumeClusterExportingData = {
@@ -11770,6 +14970,9 @@ export type ResumeClusterExportingResponses = {
     204: void;
 };
 
+// @public
+const resumeExporting$1: <ThrowOnError extends boolean = true>(options?: Options<ResumeExportingData, ThrowOnError>) => RequestResult<ResumeExportingResponses, ResumeExportingErrors, ThrowOnError>;
+
 // @public (undocumented)
 export type ResumeExportingData = {
     body?: never;
@@ -11800,6 +15003,16 @@ export type ResumeExportingResponses = {
     204: void;
 };
 
+// @public
+const resumeProcessDefinitions$1: <ThrowOnError extends boolean = true>(options: Options<ResumeProcessDefinitionsData, ThrowOnError>) => RequestResult<ResumeProcessDefinitionsResponses, ResumeProcessDefinitionsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "resumeProcessDefinitionsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type resumeProcessDefinitionsBody = (NonNullable<resumeProcessDefinitionsOptions> extends {
+    body?: infer B;
+} ? B : never);
+
 // @public (undocumented)
 export type ResumeProcessDefinitionsData = {
     body: ProcessDefinitionResumptionInstruction;
@@ -11828,12 +15041,25 @@ export type ResumeProcessDefinitionsErrors = {
 export type resumeProcessDefinitionsInput = resumeProcessDefinitionsBody;
 
 // @public (undocumented)
+type resumeProcessDefinitionsOptions = Parameters<typeof resumeProcessDefinitions$1>[0];
+
+// @public (undocumented)
 export type ResumeProcessDefinitionsResponse = ResumeProcessDefinitionsResponses[keyof ResumeProcessDefinitionsResponses];
 
 // @public (undocumented)
 export type ResumeProcessDefinitionsResponses = {
     200: ProcessDefinitionResumptionResult;
 };
+
+// @public
+const resumeProcessInstance$1: <ThrowOnError extends boolean = true>(options: Options<ResumeProcessInstanceData, ThrowOnError>) => RequestResult<ResumeProcessInstanceResponses, ResumeProcessInstanceErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "resumeProcessInstanceOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type resumeProcessInstanceBody = (NonNullable<resumeProcessInstanceOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type ResumeProcessInstanceData = {
@@ -11865,6 +15091,16 @@ export type resumeProcessInstanceInput = resumeProcessInstanceBody & {
 };
 
 // @public (undocumented)
+type resumeProcessInstanceOptions = Parameters<typeof resumeProcessInstance$1>[0];
+
+// @public (undocumented)
+type resumeProcessInstancePathParam_processInstanceKey = (NonNullable<resumeProcessInstanceOptions> extends {
+    path: {
+        processInstanceKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type ResumeProcessInstanceRequest = {
     operationReference?: OperationReference;
 } | null;
@@ -11876,6 +15112,16 @@ export type ResumeProcessInstanceResponse = ResumeProcessInstanceResponses[keyof
 export type ResumeProcessInstanceResponses = {
     204: void;
 };
+
+// @public
+const resumeProcessInstancesBatchOperation$1: <ThrowOnError extends boolean = true>(options: Options<ResumeProcessInstancesBatchOperationData, ThrowOnError>) => RequestResult<ResumeProcessInstancesBatchOperationResponses, ResumeProcessInstancesBatchOperationErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "resumeProcessInstancesBatchOperationOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type resumeProcessInstancesBatchOperationBody = (NonNullable<resumeProcessInstancesBatchOperationOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type ResumeProcessInstancesBatchOperationData = {
@@ -11900,6 +15146,9 @@ export type ResumeProcessInstancesBatchOperationErrors = {
 //
 // @public (undocumented)
 export type resumeProcessInstancesBatchOperationInput = resumeProcessInstancesBatchOperationBody;
+
+// @public (undocumented)
+type resumeProcessInstancesBatchOperationOptions = Parameters<typeof resumeProcessInstancesBatchOperation$1>[0];
 
 // @public (undocumented)
 export type ResumeProcessInstancesBatchOperationResponse = ResumeProcessInstancesBatchOperationResponses[keyof ResumeProcessInstancesBatchOperationResponses];
@@ -12062,6 +15311,274 @@ export type RuntimeBackupState = {
     ranges: Array<PartitionBackupRange>;
 };
 
+// @public (undocumented)
+const SCHEMA: {
+    readonly CAMUNDA_REST_ADDRESS: {
+        readonly type: "string";
+        readonly default: "http://localhost:8080/v2";
+        readonly aliases: readonly ["ZEEBE_REST_ADDRESS"];
+        readonly doc: "Base REST endpoint address. Legacy alias: ZEEBE_REST_ADDRESS (used only when CAMUNDA_REST_ADDRESS is unset).";
+    };
+    readonly CAMUNDA_REST_ADDRESS_EXACT: {
+        readonly type: "boolean";
+        readonly default: false;
+        readonly doc: "Disable the automatic /v2 suffix so CAMUNDA_REST_ADDRESS is used as the base path. The value is still normalized (surrounding whitespace and trailing slashes are trimmed) — this option only suppresses the /v2 append, it does not preserve the address byte-for-byte. Useful for gateway/reverse-proxy deployments whose base path does not follow the /v2 convention.";
+    };
+    readonly CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS: {
+        readonly desc: "Maximum total HTTP attempts (including the initial attempt) for transient failures (429,503, network).";
+        readonly type: "int";
+        readonly default: 3;
+    };
+    readonly CAMUNDA_SDK_HTTP_RETRY_BASE_DELAY_MS: {
+        readonly desc: "Base delay in milliseconds for exponential backoff (full jitter) for HTTP retries.";
+        readonly type: "int";
+        readonly default: 100;
+    };
+    readonly CAMUNDA_SDK_HTTP_RETRY_MAX_DELAY_MS: {
+        readonly desc: "Maximum delay cap in milliseconds for HTTP retry backoff.";
+        readonly type: "int";
+        readonly default: 2000;
+    };
+    readonly CAMUNDA_TOKEN_AUDIENCE: {
+        readonly type: "string";
+        readonly default: "zeebe.camunda.io";
+        readonly doc: "Token audience for OAuth flows.";
+    };
+    readonly CAMUNDA_CLIENT_ID: {
+        readonly type: "string";
+        readonly doc: "OAuth client id (required when CAMUNDA_AUTH_STRATEGY=OAUTH).";
+        readonly requiredWhen: {
+            readonly key: "CAMUNDA_AUTH_STRATEGY";
+            readonly equals: "OAUTH";
+        };
+    };
+    readonly CAMUNDA_CLIENT_SECRET: {
+        readonly type: "string";
+        readonly secret: true;
+        readonly doc: "OAuth client secret (required when CAMUNDA_AUTH_STRATEGY=OAUTH).";
+        readonly requiredWhen: {
+            readonly key: "CAMUNDA_AUTH_STRATEGY";
+            readonly equals: "OAUTH";
+        };
+    };
+    readonly CAMUNDA_OAUTH_URL: {
+        readonly type: "string";
+        readonly default: "https://login.cloud.camunda.io/oauth/token";
+        readonly doc: "OAuth token URL.";
+    };
+    readonly CAMUNDA_OAUTH_GRANT_TYPE: {
+        readonly type: "string";
+        readonly default: "client_credentials";
+        readonly doc: "OAuth grant type.";
+    };
+    readonly CAMUNDA_OAUTH_SCOPE: {
+        readonly type: "string";
+        readonly doc: "Optional OAuth scope (space-separated).";
+    };
+    readonly CAMUNDA_OAUTH_TIMEOUT_MS: {
+        readonly type: "int";
+        readonly default: 5000;
+        readonly doc: "Timeout in ms for OAuth token fetch.";
+    };
+    readonly CAMUNDA_OAUTH_RETRY_MAX: {
+        readonly type: "int";
+        readonly default: 5;
+        readonly doc: "Maximum OAuth token fetch attempts (including initial).";
+    };
+    readonly CAMUNDA_OAUTH_RETRY_BASE_DELAY_MS: {
+        readonly type: "int";
+        readonly default: 1000;
+        readonly doc: "Base delay (ms) for first retry (exponential backoff).";
+    };
+    readonly CAMUNDA_OAUTH_CACHE_DIR: {
+        readonly type: "string";
+        readonly doc: "Directory for disk caching OAuth tokens (Node only).";
+    };
+    readonly CAMUNDA_AUTH_STRATEGY: {
+        readonly type: "enum";
+        readonly choices: readonly ["NONE", "OAUTH", "BASIC"];
+        readonly default: "NONE";
+        readonly doc: "Authentication strategy.";
+    };
+    readonly CAMUNDA_BASIC_AUTH_USERNAME: {
+        readonly type: "string";
+        readonly doc: "Basic auth username (required when CAMUNDA_AUTH_STRATEGY=BASIC).";
+        readonly requiredWhen: {
+            readonly key: "CAMUNDA_AUTH_STRATEGY";
+            readonly equals: "BASIC";
+        };
+    };
+    readonly CAMUNDA_BASIC_AUTH_PASSWORD: {
+        readonly type: "string";
+        readonly secret: true;
+        readonly doc: "Basic auth password (required when CAMUNDA_AUTH_STRATEGY=BASIC).";
+        readonly requiredWhen: {
+            readonly key: "CAMUNDA_AUTH_STRATEGY";
+            readonly equals: "BASIC";
+        };
+    };
+    readonly CAMUNDA_USER_AGENT: {
+        readonly type: "string";
+        readonly doc: "Application user agent appended after the SDK identifier (camunda-orchestration-sdk-js/<version>) in the User-Agent header. Never replaces the SDK identifier.";
+    };
+    readonly CAMUNDA_SDK_VALIDATION: {
+        readonly type: "string";
+        readonly default: "req:none,res:none";
+        readonly doc: "Validation mini-language controlling req/res modes.";
+    };
+    readonly CAMUNDA_SDK_LOG_LEVEL: {
+        readonly type: "enum";
+        readonly choices: readonly ["silent", "error", "warn", "info", "debug", "trace", "silly"];
+        readonly default: "info";
+        readonly doc: "SDK log level. \"silly\" adds unsafe deep diagnostics including HTTP request and response bodies.";
+    };
+    readonly CAMUNDA_SDK_TELEMETRY_LOG: {
+        readonly type: "boolean";
+        readonly default: false;
+        readonly doc: "Emit telemetry (auth/http/retry) events to the SDK logger automatically (no code).";
+    };
+    readonly CAMUNDA_SDK_TELEMETRY_CORRELATION: {
+        readonly type: "boolean";
+        readonly default: false;
+        readonly doc: "Enable correlation context (withCorrelation helper) when auto telemetry logging is on.";
+    };
+    readonly CAMUNDA_MTLS_CERT_PATH: {
+        readonly type: "string";
+        readonly doc: "Path to client certificate (PEM) for mTLS.";
+    };
+    readonly CAMUNDA_MTLS_KEY_PATH: {
+        readonly type: "string";
+        readonly doc: "Path to client private key (PEM) for mTLS.";
+    };
+    readonly CAMUNDA_MTLS_CA_PATH: {
+        readonly type: "string";
+        readonly doc: "Path to CA certificate bundle (PEM) for mTLS.";
+    };
+    readonly CAMUNDA_MTLS_KEY_PASSPHRASE: {
+        readonly type: "string";
+        readonly secret: true;
+        readonly doc: "Optional passphrase for encrypted private key.";
+    };
+    readonly CAMUNDA_MTLS_CERT: {
+        readonly type: "string";
+        readonly doc: "Inline PEM client certificate.";
+    };
+    readonly CAMUNDA_MTLS_KEY: {
+        readonly type: "string";
+        readonly secret: true;
+        readonly doc: "Inline PEM client private key.";
+    };
+    readonly CAMUNDA_MTLS_CA: {
+        readonly type: "string";
+        readonly doc: "Inline PEM CA bundle.";
+    };
+    readonly CAMUNDA_SDK_EVENTUAL_POLL_DEFAULT_MS: {
+        readonly type: "int";
+        readonly default: 500;
+        readonly doc: "Default poll interval (ms) for eventually consistent endpoint polling.";
+    };
+    readonly CAMUNDA_DEFAULT_TENANT_ID: {
+        readonly type: "string";
+        readonly default: "<default>";
+        readonly doc: "Default tenant id applied to operations when an explicit tenantId is not provided (branded TenantId).";
+    };
+    readonly CAMUNDA_SDK_BACKPRESSURE_INITIAL_MAX: {
+        readonly type: "int";
+        readonly default: 16;
+        readonly doc: "Initial bootstrap concurrency cap once first backpressure signal occurs.";
+    };
+    readonly CAMUNDA_SDK_BACKPRESSURE_SOFT_FACTOR: {
+        readonly type: "int";
+        readonly default: 70;
+        readonly doc: "Percentage (integer) multiplier applied to permits on soft backpressure event (e.g. 70 => 0.7x).";
+    };
+    readonly CAMUNDA_SDK_BACKPRESSURE_SEVERE_FACTOR: {
+        readonly type: "int";
+        readonly default: 50;
+        readonly doc: "Percentage multiplier applied when escalating to severe (e.g. 50 => 0.5x).";
+    };
+    readonly CAMUNDA_SDK_BACKPRESSURE_RECOVERY_INTERVAL_MS: {
+        readonly type: "int";
+        readonly default: 1000;
+        readonly doc: "Interval in ms between passive recovery checks while healthy hints observed.";
+    };
+    readonly CAMUNDA_SDK_BACKPRESSURE_RECOVERY_STEP: {
+        readonly type: "int";
+        readonly default: 1;
+        readonly doc: "Permits regained per recovery interval until reaching bootstrap cap.";
+    };
+    readonly CAMUNDA_SDK_BACKPRESSURE_DECAY_QUIET_MS: {
+        readonly type: "int";
+        readonly default: 2000;
+        readonly doc: "Quiet period (ms) without backpressure signals required to downgrade severity.";
+    };
+    readonly CAMUNDA_SDK_BACKPRESSURE_FLOOR: {
+        readonly type: "int";
+        readonly default: 1;
+        readonly doc: "Minimum floor concurrency when degraded.";
+    };
+    readonly CAMUNDA_SDK_BACKPRESSURE_SEVERE_THRESHOLD: {
+        readonly type: "int";
+        readonly default: 3;
+        readonly doc: "Consecutive backpressure events required to enter severe state.";
+    };
+    readonly CAMUNDA_SDK_BACKPRESSURE_MAX_WAITERS: {
+        readonly type: "int";
+        readonly default: 1000;
+        readonly doc: "Maximum number of queued waiters before fail-fast rejection to prevent unbounded memory growth.";
+    };
+    readonly CAMUNDA_SDK_BACKPRESSURE_HEALTHY_RECOVERY_MULTIPLIER: {
+        readonly type: "int";
+        readonly default: 150;
+        readonly doc: "Percentage (integer) multiplicative growth factor for permits during healthy recovery (e.g. 150 => 1.5x). Applied each recovery interval once severity is healthy.";
+    };
+    readonly CAMUNDA_SDK_BACKPRESSURE_UNLIMITED_AFTER_HEALTHY_MS: {
+        readonly type: "int";
+        readonly default: 30000;
+        readonly doc: "Sustained healthy period (ms) after which permits return to unlimited (no cap).";
+    };
+    readonly CAMUNDA_SDK_BACKPRESSURE_PROFILE: {
+        readonly type: "enum";
+        readonly choices: readonly ["BALANCED", "CONSERVATIVE", "AGGRESSIVE", "LEGACY"];
+        readonly default: "BALANCED";
+        readonly doc: "Preset profile for backpressure tuning (LEGACY = observe-only, no gating; other profiles enable adaptive global concurrency control).";
+    };
+    readonly CAMUNDA_SUPPORT_LOG_ENABLED: {
+        readonly type: "boolean";
+        readonly default: false;
+        readonly doc: "Enable creation of a support log file with environment & configuration diagnostics (Node-only).";
+    };
+    readonly CAMUNDA_SUPPORT_LOG_FILE_PATH: {
+        readonly type: "string";
+        readonly doc: "Override support log output file path (default: ./camunda-support.log in current working directory).";
+    };
+    readonly CAMUNDA_SUPPORT_LOGGER: {
+        readonly type: "boolean";
+        readonly default: false;
+        readonly doc: "Alias for CAMUNDA_SUPPORT_LOG_ENABLED (deprecated).";
+    };
+    readonly CAMUNDA_WORKER_TIMEOUT: {
+        readonly type: "int";
+        readonly doc: "Default job timeout in ms for all workers. Individual JobWorkerConfig.jobTimeoutMs overrides this.";
+    };
+    readonly CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: {
+        readonly type: "int";
+        readonly doc: "Default max parallel jobs for all workers. Individual JobWorkerConfig.maxParallelJobs overrides this.";
+    };
+    readonly CAMUNDA_WORKER_REQUEST_TIMEOUT: {
+        readonly type: "signedInt";
+        readonly doc: "Default long-poll timeout in ms for all workers. Negative values cause activation to complete immediately when no jobs are available. Individual JobWorkerConfig.pollTimeoutMs overrides this.";
+    };
+    readonly CAMUNDA_WORKER_NAME: {
+        readonly type: "string";
+        readonly doc: "Default worker name for all workers. Individual JobWorkerConfig.workerName overrides this.";
+    };
+    readonly CAMUNDA_WORKER_STARTUP_JITTER_MAX_SECONDS: {
+        readonly type: "int";
+        readonly doc: "Default startup jitter in seconds for all workers. Individual JobWorkerConfig.startupJitterMaxSeconds overrides this.";
+    };
+};
+
 // @public
 export type ScopeKey = ProcessInstanceKey | ElementInstanceKey;
 
@@ -12085,6 +15602,16 @@ export type ScopeKeyWritable = ProcessInstanceKeyWritable | ElementInstanceKeyWr
 //
 // @public (undocumented)
 export type SdkError = HttpSdkError | ValidationSdkError | AuthSdkError | NetworkSdkError | CancelSdkError | PresentWhenUnsupportedError;
+
+// @public
+const searchAgentDefinitions$1: <ThrowOnError extends boolean = true>(options?: Options<SearchAgentDefinitionsData, ThrowOnError>) => RequestResult<SearchAgentDefinitionsResponses, SearchAgentDefinitionsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchAgentDefinitionsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchAgentDefinitionsBody = (NonNullable<searchAgentDefinitionsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchAgentDefinitionsConsistency = {
@@ -12116,12 +15643,25 @@ export type SearchAgentDefinitionsErrors = {
 export type searchAgentDefinitionsInput = searchAgentDefinitionsBody;
 
 // @public (undocumented)
+type searchAgentDefinitionsOptions = Parameters<typeof searchAgentDefinitions$1>[0];
+
+// @public (undocumented)
 export type SearchAgentDefinitionsResponse = SearchAgentDefinitionsResponses[keyof SearchAgentDefinitionsResponses];
 
 // @public (undocumented)
 export type SearchAgentDefinitionsResponses = {
     200: AgentDefinitionSearchQueryResult;
 };
+
+// @public
+const searchAgentInstanceHistory$1: <ThrowOnError extends boolean = true>(options: Options<SearchAgentInstanceHistoryData, ThrowOnError>) => RequestResult<SearchAgentInstanceHistoryResponses, SearchAgentInstanceHistoryErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchAgentInstanceHistoryOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchAgentInstanceHistoryBody = (NonNullable<searchAgentInstanceHistoryOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchAgentInstanceHistoryConsistency = {
@@ -12158,12 +15698,32 @@ export type searchAgentInstanceHistoryInput = searchAgentInstanceHistoryBody & {
 };
 
 // @public (undocumented)
+type searchAgentInstanceHistoryOptions = Parameters<typeof searchAgentInstanceHistory$1>[0];
+
+// @public (undocumented)
+type searchAgentInstanceHistoryPathParam_agentInstanceKey = (NonNullable<searchAgentInstanceHistoryOptions> extends {
+    path: {
+        agentInstanceKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type SearchAgentInstanceHistoryResponse = SearchAgentInstanceHistoryResponses[keyof SearchAgentInstanceHistoryResponses];
 
 // @public (undocumented)
 export type SearchAgentInstanceHistoryResponses = {
     200: AgentInstanceHistorySearchQueryResult;
 };
+
+// @public
+const searchAgentInstances$1: <ThrowOnError extends boolean = true>(options?: Options<SearchAgentInstancesData, ThrowOnError>) => RequestResult<SearchAgentInstancesResponses, SearchAgentInstancesErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchAgentInstancesOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchAgentInstancesBody = (NonNullable<searchAgentInstancesOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchAgentInstancesConsistency = {
@@ -12195,12 +15755,25 @@ export type SearchAgentInstancesErrors = {
 export type searchAgentInstancesInput = searchAgentInstancesBody;
 
 // @public (undocumented)
+type searchAgentInstancesOptions = Parameters<typeof searchAgentInstances$1>[0];
+
+// @public (undocumented)
 export type SearchAgentInstancesResponse = SearchAgentInstancesResponses[keyof SearchAgentInstancesResponses];
 
 // @public (undocumented)
 export type SearchAgentInstancesResponses = {
     200: AgentInstanceSearchQueryResult;
 };
+
+// @public
+const searchAuditLogs$1: <ThrowOnError extends boolean = true>(options?: Options<SearchAuditLogsData, ThrowOnError>) => RequestResult<SearchAuditLogsResponses, SearchAuditLogsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchAuditLogsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchAuditLogsBody = (NonNullable<searchAuditLogsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchAuditLogsConsistency = {
@@ -12232,12 +15805,25 @@ export type SearchAuditLogsErrors = {
 export type searchAuditLogsInput = searchAuditLogsBody;
 
 // @public (undocumented)
+type searchAuditLogsOptions = Parameters<typeof searchAuditLogs$1>[0];
+
+// @public (undocumented)
 export type SearchAuditLogsResponse = SearchAuditLogsResponses[keyof SearchAuditLogsResponses];
 
 // @public (undocumented)
 export type SearchAuditLogsResponses = {
     200: AuditLogSearchQueryResult;
 };
+
+// @public
+const searchAuthorizations$1: <ThrowOnError extends boolean = true>(options?: Options<SearchAuthorizationsData, ThrowOnError>) => RequestResult<SearchAuthorizationsResponses, SearchAuthorizationsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchAuthorizationsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchAuthorizationsBody = (NonNullable<searchAuthorizationsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchAuthorizationsConsistency = {
@@ -12269,12 +15855,25 @@ export type SearchAuthorizationsErrors = {
 export type searchAuthorizationsInput = searchAuthorizationsBody;
 
 // @public (undocumented)
+type searchAuthorizationsOptions = Parameters<typeof searchAuthorizations$1>[0];
+
+// @public (undocumented)
 export type SearchAuthorizationsResponse = SearchAuthorizationsResponses[keyof SearchAuthorizationsResponses];
 
 // @public (undocumented)
 export type SearchAuthorizationsResponses = {
     200: AuthorizationSearchResult;
 };
+
+// @public
+const searchBatchOperationItems$1: <ThrowOnError extends boolean = true>(options?: Options<SearchBatchOperationItemsData, ThrowOnError>) => RequestResult<SearchBatchOperationItemsResponses, SearchBatchOperationItemsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchBatchOperationItemsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchBatchOperationItemsBody = (NonNullable<searchBatchOperationItemsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchBatchOperationItemsConsistency = {
@@ -12304,12 +15903,25 @@ export type SearchBatchOperationItemsErrors = {
 export type searchBatchOperationItemsInput = searchBatchOperationItemsBody;
 
 // @public (undocumented)
+type searchBatchOperationItemsOptions = Parameters<typeof searchBatchOperationItems$1>[0];
+
+// @public (undocumented)
 export type SearchBatchOperationItemsResponse = SearchBatchOperationItemsResponses[keyof SearchBatchOperationItemsResponses];
 
 // @public (undocumented)
 export type SearchBatchOperationItemsResponses = {
     200: BatchOperationItemSearchQueryResult;
 };
+
+// @public
+const searchBatchOperations$1: <ThrowOnError extends boolean = true>(options?: Options<SearchBatchOperationsData, ThrowOnError>) => RequestResult<SearchBatchOperationsResponses, SearchBatchOperationsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchBatchOperationsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchBatchOperationsBody = (NonNullable<searchBatchOperationsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchBatchOperationsConsistency = {
@@ -12339,6 +15951,9 @@ export type SearchBatchOperationsErrors = {
 export type searchBatchOperationsInput = searchBatchOperationsBody;
 
 // @public (undocumented)
+type searchBatchOperationsOptions = Parameters<typeof searchBatchOperations$1>[0];
+
+// @public (undocumented)
 export type SearchBatchOperationsResponse = SearchBatchOperationsResponses[keyof SearchBatchOperationsResponses];
 
 // @public (undocumented)
@@ -12350,6 +15965,16 @@ export type SearchBatchOperationsResponses = {
 export type SearchBody = {
     page?: SearchPageRequest;
 } & Record<string, unknown>;
+
+// @public
+const searchClientsForGroup$1: <ThrowOnError extends boolean = true>(options: Options<SearchClientsForGroupData, ThrowOnError>) => RequestResult<SearchClientsForGroupResponses, SearchClientsForGroupErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchClientsForGroupOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchClientsForGroupBody = (NonNullable<searchClientsForGroupOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchClientsForGroupConsistency = {
@@ -12386,12 +16011,32 @@ export type searchClientsForGroupInput = searchClientsForGroupBody & {
 };
 
 // @public (undocumented)
+type searchClientsForGroupOptions = Parameters<typeof searchClientsForGroup$1>[0];
+
+// @public (undocumented)
+type searchClientsForGroupPathParam_groupId = (NonNullable<searchClientsForGroupOptions> extends {
+    path: {
+        groupId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type SearchClientsForGroupResponse = SearchClientsForGroupResponses[keyof SearchClientsForGroupResponses];
 
 // @public (undocumented)
 export type SearchClientsForGroupResponses = {
     200: GroupClientSearchResult;
 };
+
+// @public
+const searchClientsForRole$1: <ThrowOnError extends boolean = true>(options: Options<SearchClientsForRoleData, ThrowOnError>) => RequestResult<SearchClientsForRoleResponses, SearchClientsForRoleErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchClientsForRoleOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchClientsForRoleBody = (NonNullable<searchClientsForRoleOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchClientsForRoleConsistency = {
@@ -12428,12 +16073,32 @@ export type searchClientsForRoleInput = searchClientsForRoleBody & {
 };
 
 // @public (undocumented)
+type searchClientsForRoleOptions = Parameters<typeof searchClientsForRole$1>[0];
+
+// @public (undocumented)
+type searchClientsForRolePathParam_roleId = (NonNullable<searchClientsForRoleOptions> extends {
+    path: {
+        roleId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type SearchClientsForRoleResponse = SearchClientsForRoleResponses[keyof SearchClientsForRoleResponses];
 
 // @public (undocumented)
 export type SearchClientsForRoleResponses = {
     200: RoleClientSearchResult;
 };
+
+// @public
+const searchClientsForTenant$1: <ThrowOnError extends boolean = true>(options: Options<SearchClientsForTenantData, ThrowOnError>) => RequestResult<SearchClientsForTenantResponses, unknown, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchClientsForTenantOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchClientsForTenantBody = (NonNullable<searchClientsForTenantOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchClientsForTenantConsistency = {
@@ -12458,12 +16123,32 @@ export type searchClientsForTenantInput = searchClientsForTenantBody & {
 };
 
 // @public (undocumented)
+type searchClientsForTenantOptions = Parameters<typeof searchClientsForTenant$1>[0];
+
+// @public (undocumented)
+type searchClientsForTenantPathParam_tenantId = (NonNullable<searchClientsForTenantOptions> extends {
+    path: {
+        tenantId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type SearchClientsForTenantResponse = SearchClientsForTenantResponses[keyof SearchClientsForTenantResponses];
 
 // @public (undocumented)
 export type SearchClientsForTenantResponses = {
     200: TenantClientSearchResult;
 };
+
+// @public
+const searchClusterVariables$1: <ThrowOnError extends boolean = true>(options?: Options<SearchClusterVariablesData, ThrowOnError>) => RequestResult<SearchClusterVariablesResponses, SearchClusterVariablesErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchClusterVariablesOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchClusterVariablesBody = (NonNullable<searchClusterVariablesOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchClusterVariablesConsistency = {
@@ -12499,12 +16184,32 @@ export type searchClusterVariablesInput = searchClusterVariablesBody & {
 };
 
 // @public (undocumented)
+type searchClusterVariablesOptions = Parameters<typeof searchClusterVariables$1>[0];
+
+// @public (undocumented)
+type searchClusterVariablesQueryParam_truncateValues = (NonNullable<searchClusterVariablesOptions> extends {
+    query?: {
+        truncateValues?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
 export type SearchClusterVariablesResponse = SearchClusterVariablesResponses[keyof SearchClusterVariablesResponses];
 
 // @public (undocumented)
 export type SearchClusterVariablesResponses = {
     200: ClusterVariableSearchQueryResult;
 };
+
+// @public
+const searchCorrelatedMessageSubscriptions$1: <ThrowOnError extends boolean = true>(options?: Options<SearchCorrelatedMessageSubscriptionsData, ThrowOnError>) => RequestResult<SearchCorrelatedMessageSubscriptionsResponses, SearchCorrelatedMessageSubscriptionsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchCorrelatedMessageSubscriptionsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchCorrelatedMessageSubscriptionsBody = (NonNullable<searchCorrelatedMessageSubscriptionsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchCorrelatedMessageSubscriptionsConsistency = {
@@ -12536,12 +16241,25 @@ export type SearchCorrelatedMessageSubscriptionsErrors = {
 export type searchCorrelatedMessageSubscriptionsInput = searchCorrelatedMessageSubscriptionsBody;
 
 // @public (undocumented)
+type searchCorrelatedMessageSubscriptionsOptions = Parameters<typeof searchCorrelatedMessageSubscriptions$1>[0];
+
+// @public (undocumented)
 export type SearchCorrelatedMessageSubscriptionsResponse = SearchCorrelatedMessageSubscriptionsResponses[keyof SearchCorrelatedMessageSubscriptionsResponses];
 
 // @public (undocumented)
 export type SearchCorrelatedMessageSubscriptionsResponses = {
     200: CorrelatedMessageSubscriptionSearchQueryResult;
 };
+
+// @public
+const searchDecisionDefinitions$1: <ThrowOnError extends boolean = true>(options?: Options<SearchDecisionDefinitionsData, ThrowOnError>) => RequestResult<SearchDecisionDefinitionsResponses, SearchDecisionDefinitionsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchDecisionDefinitionsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchDecisionDefinitionsBody = (NonNullable<searchDecisionDefinitionsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchDecisionDefinitionsConsistency = {
@@ -12573,12 +16291,25 @@ export type SearchDecisionDefinitionsErrors = {
 export type searchDecisionDefinitionsInput = searchDecisionDefinitionsBody;
 
 // @public (undocumented)
+type searchDecisionDefinitionsOptions = Parameters<typeof searchDecisionDefinitions$1>[0];
+
+// @public (undocumented)
 export type SearchDecisionDefinitionsResponse = SearchDecisionDefinitionsResponses[keyof SearchDecisionDefinitionsResponses];
 
 // @public (undocumented)
 export type SearchDecisionDefinitionsResponses = {
     200: DecisionDefinitionSearchQueryResult;
 };
+
+// @public
+const searchDecisionInstances$1: <ThrowOnError extends boolean = true>(options?: Options<SearchDecisionInstancesData, ThrowOnError>) => RequestResult<SearchDecisionInstancesResponses, SearchDecisionInstancesErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchDecisionInstancesOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchDecisionInstancesBody = (NonNullable<searchDecisionInstancesOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchDecisionInstancesConsistency = {
@@ -12610,12 +16341,25 @@ export type SearchDecisionInstancesErrors = {
 export type searchDecisionInstancesInput = searchDecisionInstancesBody;
 
 // @public (undocumented)
+type searchDecisionInstancesOptions = Parameters<typeof searchDecisionInstances$1>[0];
+
+// @public (undocumented)
 export type SearchDecisionInstancesResponse = SearchDecisionInstancesResponses[keyof SearchDecisionInstancesResponses];
 
 // @public (undocumented)
 export type SearchDecisionInstancesResponses = {
     200: DecisionInstanceSearchQueryResult;
 };
+
+// @public
+const searchDecisionRequirements$1: <ThrowOnError extends boolean = true>(options?: Options<SearchDecisionRequirementsData, ThrowOnError>) => RequestResult<SearchDecisionRequirementsResponses, SearchDecisionRequirementsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchDecisionRequirementsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchDecisionRequirementsBody = (NonNullable<searchDecisionRequirementsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchDecisionRequirementsConsistency = {
@@ -12647,12 +16391,25 @@ export type SearchDecisionRequirementsErrors = {
 export type searchDecisionRequirementsInput = searchDecisionRequirementsBody;
 
 // @public (undocumented)
+type searchDecisionRequirementsOptions = Parameters<typeof searchDecisionRequirements$1>[0];
+
+// @public (undocumented)
 export type SearchDecisionRequirementsResponse = SearchDecisionRequirementsResponses[keyof SearchDecisionRequirementsResponses];
 
 // @public (undocumented)
 export type SearchDecisionRequirementsResponses = {
     200: DecisionRequirementsSearchQueryResult;
 };
+
+// @public
+const searchElementInstanceIncidents$1: <ThrowOnError extends boolean = true>(options: Options<SearchElementInstanceIncidentsData, ThrowOnError>) => RequestResult<SearchElementInstanceIncidentsResponses, SearchElementInstanceIncidentsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchElementInstanceIncidentsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchElementInstanceIncidentsBody = (NonNullable<searchElementInstanceIncidentsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchElementInstanceIncidentsConsistency = {
@@ -12689,12 +16446,32 @@ export type searchElementInstanceIncidentsInput = searchElementInstanceIncidents
 };
 
 // @public (undocumented)
+type searchElementInstanceIncidentsOptions = Parameters<typeof searchElementInstanceIncidents$1>[0];
+
+// @public (undocumented)
+type searchElementInstanceIncidentsPathParam_elementInstanceKey = (NonNullable<searchElementInstanceIncidentsOptions> extends {
+    path: {
+        elementInstanceKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type SearchElementInstanceIncidentsResponse = SearchElementInstanceIncidentsResponses[keyof SearchElementInstanceIncidentsResponses];
 
 // @public (undocumented)
 export type SearchElementInstanceIncidentsResponses = {
     200: IncidentSearchQueryResult;
 };
+
+// @public
+const searchElementInstances$1: <ThrowOnError extends boolean = true>(options?: Options<SearchElementInstancesData, ThrowOnError>) => RequestResult<SearchElementInstancesResponses, SearchElementInstancesErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchElementInstancesOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchElementInstancesBody = (NonNullable<searchElementInstancesOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchElementInstancesConsistency = {
@@ -12726,12 +16503,25 @@ export type SearchElementInstancesErrors = {
 export type searchElementInstancesInput = searchElementInstancesBody;
 
 // @public (undocumented)
+type searchElementInstancesOptions = Parameters<typeof searchElementInstances$1>[0];
+
+// @public (undocumented)
 export type SearchElementInstancesResponse = SearchElementInstancesResponses[keyof SearchElementInstancesResponses];
 
 // @public (undocumented)
 export type SearchElementInstancesResponses = {
     200: ElementInstanceSearchQueryResult;
 };
+
+// @public
+const searchElementInstanceWaitStates$1: <ThrowOnError extends boolean = true>(options?: Options<SearchElementInstanceWaitStatesData, ThrowOnError>) => RequestResult<SearchElementInstanceWaitStatesResponses, SearchElementInstanceWaitStatesErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchElementInstanceWaitStatesOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchElementInstanceWaitStatesBody = (NonNullable<searchElementInstanceWaitStatesOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchElementInstanceWaitStatesConsistency = {
@@ -12763,12 +16553,25 @@ export type SearchElementInstanceWaitStatesErrors = {
 export type searchElementInstanceWaitStatesInput = searchElementInstanceWaitStatesBody;
 
 // @public (undocumented)
+type searchElementInstanceWaitStatesOptions = Parameters<typeof searchElementInstanceWaitStates$1>[0];
+
+// @public (undocumented)
 export type SearchElementInstanceWaitStatesResponse = SearchElementInstanceWaitStatesResponses[keyof SearchElementInstanceWaitStatesResponses];
 
 // @public (undocumented)
 export type SearchElementInstanceWaitStatesResponses = {
     200: ElementInstanceWaitStateQueryResult;
 };
+
+// @public
+const searchGlobalTaskListeners$1: <ThrowOnError extends boolean = true>(options?: Options<SearchGlobalTaskListenersData, ThrowOnError>) => RequestResult<SearchGlobalTaskListenersResponses, SearchGlobalTaskListenersErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchGlobalTaskListenersOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchGlobalTaskListenersBody = (NonNullable<searchGlobalTaskListenersOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchGlobalTaskListenersConsistency = {
@@ -12800,12 +16603,25 @@ export type SearchGlobalTaskListenersErrors = {
 export type searchGlobalTaskListenersInput = searchGlobalTaskListenersBody;
 
 // @public (undocumented)
+type searchGlobalTaskListenersOptions = Parameters<typeof searchGlobalTaskListeners$1>[0];
+
+// @public (undocumented)
 export type SearchGlobalTaskListenersResponse = SearchGlobalTaskListenersResponses[keyof SearchGlobalTaskListenersResponses];
 
 // @public (undocumented)
 export type SearchGlobalTaskListenersResponses = {
     200: GlobalTaskListenerSearchQueryResult;
 };
+
+// @public
+const searchGroupIdsForTenant$1: <ThrowOnError extends boolean = true>(options: Options<SearchGroupIdsForTenantData, ThrowOnError>) => RequestResult<SearchGroupIdsForTenantResponses, unknown, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchGroupIdsForTenantOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchGroupIdsForTenantBody = (NonNullable<searchGroupIdsForTenantOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchGroupIdsForTenantConsistency = {
@@ -12830,12 +16646,32 @@ export type searchGroupIdsForTenantInput = searchGroupIdsForTenantBody & {
 };
 
 // @public (undocumented)
+type searchGroupIdsForTenantOptions = Parameters<typeof searchGroupIdsForTenant$1>[0];
+
+// @public (undocumented)
+type searchGroupIdsForTenantPathParam_tenantId = (NonNullable<searchGroupIdsForTenantOptions> extends {
+    path: {
+        tenantId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type SearchGroupIdsForTenantResponse = SearchGroupIdsForTenantResponses[keyof SearchGroupIdsForTenantResponses];
 
 // @public (undocumented)
 export type SearchGroupIdsForTenantResponses = {
     200: TenantGroupSearchResult;
 };
+
+// @public
+const searchGroups$1: <ThrowOnError extends boolean = true>(options?: Options<SearchGroupsData, ThrowOnError>) => RequestResult<SearchGroupsResponses, SearchGroupsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchGroupsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchGroupsBody = (NonNullable<searchGroupsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchGroupsConsistency = {
@@ -12860,6 +16696,16 @@ export type SearchGroupsErrors = {
     403: ProblemDetail;
     500: ProblemDetail;
 };
+
+// @public
+const searchGroupsForRole$1: <ThrowOnError extends boolean = true>(options: Options<SearchGroupsForRoleData, ThrowOnError>) => RequestResult<SearchGroupsForRoleResponses, SearchGroupsForRoleErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchGroupsForRoleOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchGroupsForRoleBody = (NonNullable<searchGroupsForRoleOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchGroupsForRoleConsistency = {
@@ -12896,6 +16742,16 @@ export type searchGroupsForRoleInput = searchGroupsForRoleBody & {
 };
 
 // @public (undocumented)
+type searchGroupsForRoleOptions = Parameters<typeof searchGroupsForRole$1>[0];
+
+// @public (undocumented)
+type searchGroupsForRolePathParam_roleId = (NonNullable<searchGroupsForRoleOptions> extends {
+    path: {
+        roleId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type SearchGroupsForRoleResponse = SearchGroupsForRoleResponses[keyof SearchGroupsForRoleResponses];
 
 // @public (undocumented)
@@ -12909,12 +16765,25 @@ export type SearchGroupsForRoleResponses = {
 export type searchGroupsInput = searchGroupsBody;
 
 // @public (undocumented)
+type searchGroupsOptions = Parameters<typeof searchGroups$1>[0];
+
+// @public (undocumented)
 export type SearchGroupsResponse = SearchGroupsResponses[keyof SearchGroupsResponses];
 
 // @public (undocumented)
 export type SearchGroupsResponses = {
     200: GroupSearchQueryResult;
 };
+
+// @public
+const searchIncidents$1: <ThrowOnError extends boolean = true>(options?: Options<SearchIncidentsData, ThrowOnError>) => RequestResult<SearchIncidentsResponses, SearchIncidentsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchIncidentsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchIncidentsBody = (NonNullable<searchIncidentsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchIncidentsConsistency = {
@@ -12946,12 +16815,25 @@ export type SearchIncidentsErrors = {
 export type searchIncidentsInput = searchIncidentsBody;
 
 // @public (undocumented)
+type searchIncidentsOptions = Parameters<typeof searchIncidents$1>[0];
+
+// @public (undocumented)
 export type SearchIncidentsResponse = SearchIncidentsResponses[keyof SearchIncidentsResponses];
 
 // @public (undocumented)
 export type SearchIncidentsResponses = {
     200: IncidentSearchQueryResult;
 };
+
+// @public
+const searchJobs$1: <ThrowOnError extends boolean = true>(options?: Options<SearchJobsData, ThrowOnError>) => RequestResult<SearchJobsResponses, SearchJobsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchJobsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchJobsBody = (NonNullable<searchJobsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchJobsConsistency = {
@@ -12983,12 +16865,25 @@ export type SearchJobsErrors = {
 export type searchJobsInput = searchJobsBody;
 
 // @public (undocumented)
+type searchJobsOptions = Parameters<typeof searchJobs$1>[0];
+
+// @public (undocumented)
 export type SearchJobsResponse = SearchJobsResponses[keyof SearchJobsResponses];
 
 // @public (undocumented)
 export type SearchJobsResponses = {
     200: JobSearchQueryResult;
 };
+
+// @public
+const searchMappingRule$1: <ThrowOnError extends boolean = true>(options?: Options<SearchMappingRuleData, ThrowOnError>) => RequestResult<SearchMappingRuleResponses, SearchMappingRuleErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchMappingRuleOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchMappingRuleBody = (NonNullable<searchMappingRuleOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchMappingRuleConsistency = {
@@ -13020,12 +16915,25 @@ export type SearchMappingRuleErrors = {
 export type searchMappingRuleInput = searchMappingRuleBody;
 
 // @public (undocumented)
+type searchMappingRuleOptions = Parameters<typeof searchMappingRule$1>[0];
+
+// @public (undocumented)
 export type SearchMappingRuleResponse = SearchMappingRuleResponses[keyof SearchMappingRuleResponses];
 
 // @public (undocumented)
 export type SearchMappingRuleResponses = {
     200: MappingRuleSearchQueryResult;
 };
+
+// @public
+const searchMappingRulesForGroup$1: <ThrowOnError extends boolean = true>(options: Options<SearchMappingRulesForGroupData, ThrowOnError>) => RequestResult<SearchMappingRulesForGroupResponses, SearchMappingRulesForGroupErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchMappingRulesForGroupOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchMappingRulesForGroupBody = (NonNullable<searchMappingRulesForGroupOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchMappingRulesForGroupConsistency = {
@@ -13062,12 +16970,32 @@ export type searchMappingRulesForGroupInput = searchMappingRulesForGroupBody & {
 };
 
 // @public (undocumented)
+type searchMappingRulesForGroupOptions = Parameters<typeof searchMappingRulesForGroup$1>[0];
+
+// @public (undocumented)
+type searchMappingRulesForGroupPathParam_groupId = (NonNullable<searchMappingRulesForGroupOptions> extends {
+    path: {
+        groupId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type SearchMappingRulesForGroupResponse = SearchMappingRulesForGroupResponses[keyof SearchMappingRulesForGroupResponses];
 
 // @public (undocumented)
 export type SearchMappingRulesForGroupResponses = {
     200: GroupMappingRuleSearchResult;
 };
+
+// @public
+const searchMappingRulesForRole$1: <ThrowOnError extends boolean = true>(options: Options<SearchMappingRulesForRoleData, ThrowOnError>) => RequestResult<SearchMappingRulesForRoleResponses, SearchMappingRulesForRoleErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchMappingRulesForRoleOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchMappingRulesForRoleBody = (NonNullable<searchMappingRulesForRoleOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchMappingRulesForRoleConsistency = {
@@ -13104,12 +17032,32 @@ export type searchMappingRulesForRoleInput = searchMappingRulesForRoleBody & {
 };
 
 // @public (undocumented)
+type searchMappingRulesForRoleOptions = Parameters<typeof searchMappingRulesForRole$1>[0];
+
+// @public (undocumented)
+type searchMappingRulesForRolePathParam_roleId = (NonNullable<searchMappingRulesForRoleOptions> extends {
+    path: {
+        roleId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type SearchMappingRulesForRoleResponse = SearchMappingRulesForRoleResponses[keyof SearchMappingRulesForRoleResponses];
 
 // @public (undocumented)
 export type SearchMappingRulesForRoleResponses = {
     200: RoleMappingRuleSearchResult;
 };
+
+// @public
+const searchMappingRulesForTenant$1: <ThrowOnError extends boolean = true>(options: Options<SearchMappingRulesForTenantData, ThrowOnError>) => RequestResult<SearchMappingRulesForTenantResponses, unknown, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchMappingRulesForTenantOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchMappingRulesForTenantBody = (NonNullable<searchMappingRulesForTenantOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchMappingRulesForTenantConsistency = {
@@ -13134,12 +17082,32 @@ export type searchMappingRulesForTenantInput = searchMappingRulesForTenantBody &
 };
 
 // @public (undocumented)
+type searchMappingRulesForTenantOptions = Parameters<typeof searchMappingRulesForTenant$1>[0];
+
+// @public (undocumented)
+type searchMappingRulesForTenantPathParam_tenantId = (NonNullable<searchMappingRulesForTenantOptions> extends {
+    path: {
+        tenantId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type SearchMappingRulesForTenantResponse = SearchMappingRulesForTenantResponses[keyof SearchMappingRulesForTenantResponses];
 
 // @public (undocumented)
 export type SearchMappingRulesForTenantResponses = {
     200: TenantMappingRuleSearchResult;
 };
+
+// @public
+const searchMessageSubscriptions$1: <ThrowOnError extends boolean = true>(options?: Options<SearchMessageSubscriptionsData, ThrowOnError>) => RequestResult<SearchMessageSubscriptionsResponses, SearchMessageSubscriptionsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchMessageSubscriptionsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchMessageSubscriptionsBody = (NonNullable<searchMessageSubscriptionsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchMessageSubscriptionsConsistency = {
@@ -13171,12 +17139,25 @@ export type SearchMessageSubscriptionsErrors = {
 export type searchMessageSubscriptionsInput = searchMessageSubscriptionsBody;
 
 // @public (undocumented)
+type searchMessageSubscriptionsOptions = Parameters<typeof searchMessageSubscriptions$1>[0];
+
+// @public (undocumented)
 export type SearchMessageSubscriptionsResponse = SearchMessageSubscriptionsResponses[keyof SearchMessageSubscriptionsResponses];
 
 // @public (undocumented)
 export type SearchMessageSubscriptionsResponses = {
     200: MessageSubscriptionSearchQueryResult;
 };
+
+// @public
+const searchOwnAuthorizations$1: <ThrowOnError extends boolean = true>(options?: Options<SearchOwnAuthorizationsData, ThrowOnError>) => RequestResult<SearchOwnAuthorizationsResponses, SearchOwnAuthorizationsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchOwnAuthorizationsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchOwnAuthorizationsBody = (NonNullable<searchOwnAuthorizationsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchOwnAuthorizationsConsistency = {
@@ -13205,6 +17186,9 @@ export type SearchOwnAuthorizationsErrors = {
 //
 // @public (undocumented)
 export type searchOwnAuthorizationsInput = searchOwnAuthorizationsBody;
+
+// @public (undocumented)
+type searchOwnAuthorizationsOptions = Parameters<typeof searchOwnAuthorizations$1>[0];
 
 // @public (undocumented)
 export type SearchOwnAuthorizationsResponse = SearchOwnAuthorizationsResponses[keyof SearchOwnAuthorizationsResponses];
@@ -13258,6 +17242,16 @@ export type SearchPaginationApi<C> = {
 };
 
 // @public
+const searchProcessDefinitions$1: <ThrowOnError extends boolean = true>(options?: Options<SearchProcessDefinitionsData, ThrowOnError>) => RequestResult<SearchProcessDefinitionsResponses, SearchProcessDefinitionsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchProcessDefinitionsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchProcessDefinitionsBody = (NonNullable<searchProcessDefinitionsOptions> extends {
+    body?: infer B;
+} ? B : never);
+
+// @public
 export type searchProcessDefinitionsConsistency = {
     consistency: ConsistencyOptions<_DataOf$1<typeof searchProcessDefinitions$1>>;
 };
@@ -13287,12 +17281,25 @@ export type SearchProcessDefinitionsErrors = {
 export type searchProcessDefinitionsInput = searchProcessDefinitionsBody;
 
 // @public (undocumented)
+type searchProcessDefinitionsOptions = Parameters<typeof searchProcessDefinitions$1>[0];
+
+// @public (undocumented)
 export type SearchProcessDefinitionsResponse = SearchProcessDefinitionsResponses[keyof SearchProcessDefinitionsResponses];
 
 // @public (undocumented)
 export type SearchProcessDefinitionsResponses = {
     200: ProcessDefinitionSearchQueryResult;
 };
+
+// @public
+const searchProcessDefinitionVariableNames$1: <ThrowOnError extends boolean = true>(options: Options<SearchProcessDefinitionVariableNamesData, ThrowOnError>) => RequestResult<SearchProcessDefinitionVariableNamesResponses, SearchProcessDefinitionVariableNamesErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchProcessDefinitionVariableNamesOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchProcessDefinitionVariableNamesBody = (NonNullable<searchProcessDefinitionVariableNamesOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchProcessDefinitionVariableNamesConsistency = {
@@ -13328,12 +17335,32 @@ export type searchProcessDefinitionVariableNamesInput = searchProcessDefinitionV
 };
 
 // @public (undocumented)
+type searchProcessDefinitionVariableNamesOptions = Parameters<typeof searchProcessDefinitionVariableNames$1>[0];
+
+// @public (undocumented)
+type searchProcessDefinitionVariableNamesPathParam_processDefinitionKey = (NonNullable<searchProcessDefinitionVariableNamesOptions> extends {
+    path: {
+        processDefinitionKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type SearchProcessDefinitionVariableNamesResponse = SearchProcessDefinitionVariableNamesResponses[keyof SearchProcessDefinitionVariableNamesResponses];
 
 // @public (undocumented)
 export type SearchProcessDefinitionVariableNamesResponses = {
     200: ProcessDefinitionVariableNameSearchQueryResult;
 };
+
+// @public
+const searchProcessInstanceIncidents$1: <ThrowOnError extends boolean = true>(options: Options<SearchProcessInstanceIncidentsData, ThrowOnError>) => RequestResult<SearchProcessInstanceIncidentsResponses, SearchProcessInstanceIncidentsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchProcessInstanceIncidentsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchProcessInstanceIncidentsBody = (NonNullable<searchProcessInstanceIncidentsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchProcessInstanceIncidentsConsistency = {
@@ -13370,12 +17397,32 @@ export type searchProcessInstanceIncidentsInput = searchProcessInstanceIncidents
 };
 
 // @public (undocumented)
+type searchProcessInstanceIncidentsOptions = Parameters<typeof searchProcessInstanceIncidents$1>[0];
+
+// @public (undocumented)
+type searchProcessInstanceIncidentsPathParam_processInstanceKey = (NonNullable<searchProcessInstanceIncidentsOptions> extends {
+    path: {
+        processInstanceKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type SearchProcessInstanceIncidentsResponse = SearchProcessInstanceIncidentsResponses[keyof SearchProcessInstanceIncidentsResponses];
 
 // @public (undocumented)
 export type SearchProcessInstanceIncidentsResponses = {
     200: IncidentSearchQueryResult;
 };
+
+// @public
+const searchProcessInstances$1: <ThrowOnError extends boolean = true>(options?: Options<SearchProcessInstancesData, ThrowOnError>) => RequestResult<SearchProcessInstancesResponses, SearchProcessInstancesErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchProcessInstancesOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchProcessInstancesBody = (NonNullable<searchProcessInstancesOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchProcessInstancesConsistency = {
@@ -13407,6 +17454,9 @@ export type SearchProcessInstancesErrors = {
 export type searchProcessInstancesInput = searchProcessInstancesBody;
 
 // @public (undocumented)
+type searchProcessInstancesOptions = Parameters<typeof searchProcessInstances$1>[0];
+
+// @public (undocumented)
 export type SearchProcessInstancesResponse = SearchProcessInstancesResponses[keyof SearchProcessInstancesResponses];
 
 // @public (undocumented)
@@ -13434,6 +17484,16 @@ export type SearchQueryRequest = {
 export type SearchQueryResponse = {
     page: SearchQueryPageResponse;
 };
+
+// @public
+const searchResources$1: <ThrowOnError extends boolean = true>(options?: Options<SearchResourcesData, ThrowOnError>) => RequestResult<SearchResourcesResponses, SearchResourcesErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchResourcesOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchResourcesBody = (NonNullable<searchResourcesOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchResourcesConsistency = {
@@ -13465,6 +17525,9 @@ export type SearchResourcesErrors = {
 export type searchResourcesInput = searchResourcesBody;
 
 // @public (undocumented)
+type searchResourcesOptions = Parameters<typeof searchResources$1>[0];
+
+// @public (undocumented)
 export type SearchResourcesResponse = SearchResourcesResponses[keyof SearchResourcesResponses];
 
 // @public (undocumented)
@@ -13479,6 +17542,16 @@ export interface SearchResponse<TItem> {
     // (undocumented)
     page: SearchPageResponse;
 }
+
+// @public
+const searchRoles$1: <ThrowOnError extends boolean = true>(options?: Options<SearchRolesData, ThrowOnError>) => RequestResult<SearchRolesResponses, SearchRolesErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchRolesOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchRolesBody = (NonNullable<searchRolesOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchRolesConsistency = {
@@ -13503,6 +17576,16 @@ export type SearchRolesErrors = {
     403: ProblemDetail;
     500: ProblemDetail;
 };
+
+// @public
+const searchRolesForGroup$1: <ThrowOnError extends boolean = true>(options: Options<SearchRolesForGroupData, ThrowOnError>) => RequestResult<SearchRolesForGroupResponses, SearchRolesForGroupErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchRolesForGroupOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchRolesForGroupBody = (NonNullable<searchRolesForGroupOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchRolesForGroupConsistency = {
@@ -13539,12 +17622,32 @@ export type searchRolesForGroupInput = searchRolesForGroupBody & {
 };
 
 // @public (undocumented)
+type searchRolesForGroupOptions = Parameters<typeof searchRolesForGroup$1>[0];
+
+// @public (undocumented)
+type searchRolesForGroupPathParam_groupId = (NonNullable<searchRolesForGroupOptions> extends {
+    path: {
+        groupId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type SearchRolesForGroupResponse = SearchRolesForGroupResponses[keyof SearchRolesForGroupResponses];
 
 // @public (undocumented)
 export type SearchRolesForGroupResponses = {
     200: GroupRoleSearchResult;
 };
+
+// @public
+const searchRolesForTenant$1: <ThrowOnError extends boolean = true>(options: Options<SearchRolesForTenantData, ThrowOnError>) => RequestResult<SearchRolesForTenantResponses, unknown, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchRolesForTenantOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchRolesForTenantBody = (NonNullable<searchRolesForTenantOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchRolesForTenantConsistency = {
@@ -13569,6 +17672,16 @@ export type searchRolesForTenantInput = searchRolesForTenantBody & {
 };
 
 // @public (undocumented)
+type searchRolesForTenantOptions = Parameters<typeof searchRolesForTenant$1>[0];
+
+// @public (undocumented)
+type searchRolesForTenantPathParam_tenantId = (NonNullable<searchRolesForTenantOptions> extends {
+    path: {
+        tenantId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type SearchRolesForTenantResponse = SearchRolesForTenantResponses[keyof SearchRolesForTenantResponses];
 
 // @public (undocumented)
@@ -13582,12 +17695,37 @@ export type SearchRolesForTenantResponses = {
 export type searchRolesInput = searchRolesBody;
 
 // @public (undocumented)
+type searchRolesOptions = Parameters<typeof searchRoles$1>[0];
+
+// @public (undocumented)
 export type SearchRolesResponse = SearchRolesResponses[keyof SearchRolesResponses];
 
 // @public (undocumented)
 export type SearchRolesResponses = {
     200: RoleSearchQueryResult;
 };
+
+// @public
+type SearchSignature<F> = F extends {
+    (body: infer B, consistency: infer _C, options?: infer _O): infer R;
+    (body: infer _B2, consistency: infer _C2, options?: infer _O2): infer _R2;
+} ? {
+    body: B;
+    result: Awaited<R>;
+} : F extends (body: infer B, consistency: infer _C, options?: infer _O) => infer R ? {
+    body: B;
+    result: Awaited<R>;
+} : never;
+
+// @public
+const searchTenants$1: <ThrowOnError extends boolean = true>(options?: Options<SearchTenantsData, ThrowOnError>) => RequestResult<SearchTenantsResponses, SearchTenantsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchTenantsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchTenantsBody = (NonNullable<searchTenantsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchTenantsConsistency = {
@@ -13620,12 +17758,25 @@ export type SearchTenantsErrors = {
 export type searchTenantsInput = searchTenantsBody;
 
 // @public (undocumented)
+type searchTenantsOptions = Parameters<typeof searchTenants$1>[0];
+
+// @public (undocumented)
 export type SearchTenantsResponse = SearchTenantsResponses[keyof SearchTenantsResponses];
 
 // @public (undocumented)
 export type SearchTenantsResponses = {
     200: TenantSearchQueryResult;
 };
+
+// @public
+const searchUsers$1: <ThrowOnError extends boolean = true>(options?: Options<SearchUsersData, ThrowOnError>) => RequestResult<SearchUsersResponses, SearchUsersErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchUsersOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchUsersBody = (NonNullable<searchUsersOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchUsersConsistency = {
@@ -13650,6 +17801,16 @@ export type SearchUsersErrors = {
     403: ProblemDetail;
     500: ProblemDetail;
 };
+
+// @public
+const searchUsersForGroup$1: <ThrowOnError extends boolean = true>(options: Options<SearchUsersForGroupData, ThrowOnError>) => RequestResult<SearchUsersForGroupResponses, SearchUsersForGroupErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchUsersForGroupOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchUsersForGroupBody = (NonNullable<searchUsersForGroupOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchUsersForGroupConsistency = {
@@ -13686,12 +17847,32 @@ export type searchUsersForGroupInput = searchUsersForGroupBody & {
 };
 
 // @public (undocumented)
+type searchUsersForGroupOptions = Parameters<typeof searchUsersForGroup$1>[0];
+
+// @public (undocumented)
+type searchUsersForGroupPathParam_groupId = (NonNullable<searchUsersForGroupOptions> extends {
+    path: {
+        groupId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type SearchUsersForGroupResponse = SearchUsersForGroupResponses[keyof SearchUsersForGroupResponses];
 
 // @public (undocumented)
 export type SearchUsersForGroupResponses = {
     200: GroupUserSearchResult;
 };
+
+// @public
+const searchUsersForRole$1: <ThrowOnError extends boolean = true>(options: Options<SearchUsersForRoleData, ThrowOnError>) => RequestResult<SearchUsersForRoleResponses, SearchUsersForRoleErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchUsersForRoleOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchUsersForRoleBody = (NonNullable<searchUsersForRoleOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchUsersForRoleConsistency = {
@@ -13728,12 +17909,32 @@ export type searchUsersForRoleInput = searchUsersForRoleBody & {
 };
 
 // @public (undocumented)
+type searchUsersForRoleOptions = Parameters<typeof searchUsersForRole$1>[0];
+
+// @public (undocumented)
+type searchUsersForRolePathParam_roleId = (NonNullable<searchUsersForRoleOptions> extends {
+    path: {
+        roleId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type SearchUsersForRoleResponse = SearchUsersForRoleResponses[keyof SearchUsersForRoleResponses];
 
 // @public (undocumented)
 export type SearchUsersForRoleResponses = {
     200: RoleUserSearchResult;
 };
+
+// @public
+const searchUsersForTenant$1: <ThrowOnError extends boolean = true>(options: Options<SearchUsersForTenantData, ThrowOnError>) => RequestResult<SearchUsersForTenantResponses, unknown, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchUsersForTenantOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchUsersForTenantBody = (NonNullable<searchUsersForTenantOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchUsersForTenantConsistency = {
@@ -13758,6 +17959,16 @@ export type searchUsersForTenantInput = searchUsersForTenantBody & {
 };
 
 // @public (undocumented)
+type searchUsersForTenantOptions = Parameters<typeof searchUsersForTenant$1>[0];
+
+// @public (undocumented)
+type searchUsersForTenantPathParam_tenantId = (NonNullable<searchUsersForTenantOptions> extends {
+    path: {
+        tenantId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type SearchUsersForTenantResponse = SearchUsersForTenantResponses[keyof SearchUsersForTenantResponses];
 
 // @public (undocumented)
@@ -13771,12 +17982,25 @@ export type SearchUsersForTenantResponses = {
 export type searchUsersInput = searchUsersBody;
 
 // @public (undocumented)
+type searchUsersOptions = Parameters<typeof searchUsers$1>[0];
+
+// @public (undocumented)
 export type SearchUsersResponse = SearchUsersResponses[keyof SearchUsersResponses];
 
 // @public (undocumented)
 export type SearchUsersResponses = {
     200: UserSearchResult;
 };
+
+// @public
+const searchUserTaskAuditLogs$1: <ThrowOnError extends boolean = true>(options: Options<SearchUserTaskAuditLogsData, ThrowOnError>) => RequestResult<SearchUserTaskAuditLogsResponses, SearchUserTaskAuditLogsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchUserTaskAuditLogsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchUserTaskAuditLogsBody = (NonNullable<searchUserTaskAuditLogsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchUserTaskAuditLogsConsistency = {
@@ -13810,12 +18034,32 @@ export type searchUserTaskAuditLogsInput = searchUserTaskAuditLogsBody & {
 };
 
 // @public (undocumented)
+type searchUserTaskAuditLogsOptions = Parameters<typeof searchUserTaskAuditLogs$1>[0];
+
+// @public (undocumented)
+type searchUserTaskAuditLogsPathParam_userTaskKey = (NonNullable<searchUserTaskAuditLogsOptions> extends {
+    path: {
+        userTaskKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type SearchUserTaskAuditLogsResponse = SearchUserTaskAuditLogsResponses[keyof SearchUserTaskAuditLogsResponses];
 
 // @public (undocumented)
 export type SearchUserTaskAuditLogsResponses = {
     200: AuditLogSearchQueryResult;
 };
+
+// @public
+const searchUserTaskEffectiveVariables$1: <ThrowOnError extends boolean = true>(options: Options<SearchUserTaskEffectiveVariablesData, ThrowOnError>) => RequestResult<SearchUserTaskEffectiveVariablesResponses, SearchUserTaskEffectiveVariablesErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchUserTaskEffectiveVariablesOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchUserTaskEffectiveVariablesBody = (NonNullable<searchUserTaskEffectiveVariablesOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchUserTaskEffectiveVariablesConsistency = {
@@ -13852,12 +18096,39 @@ export type searchUserTaskEffectiveVariablesInput = searchUserTaskEffectiveVaria
 };
 
 // @public (undocumented)
+type searchUserTaskEffectiveVariablesOptions = Parameters<typeof searchUserTaskEffectiveVariables$1>[0];
+
+// @public (undocumented)
+type searchUserTaskEffectiveVariablesPathParam_userTaskKey = (NonNullable<searchUserTaskEffectiveVariablesOptions> extends {
+    path: {
+        userTaskKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type searchUserTaskEffectiveVariablesQueryParam_truncateValues = (NonNullable<searchUserTaskEffectiveVariablesOptions> extends {
+    query?: {
+        truncateValues?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
 export type SearchUserTaskEffectiveVariablesResponse = SearchUserTaskEffectiveVariablesResponses[keyof SearchUserTaskEffectiveVariablesResponses];
 
 // @public (undocumented)
 export type SearchUserTaskEffectiveVariablesResponses = {
     200: VariableSearchQueryResult;
 };
+
+// @public
+const searchUserTasks$1: <ThrowOnError extends boolean = true>(options?: Options<SearchUserTasksData, ThrowOnError>) => RequestResult<SearchUserTasksResponses, SearchUserTasksErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchUserTasksOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchUserTasksBody = (NonNullable<searchUserTasksOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchUserTasksConsistency = {
@@ -13889,12 +18160,25 @@ export type SearchUserTasksErrors = {
 export type searchUserTasksInput = searchUserTasksBody;
 
 // @public (undocumented)
+type searchUserTasksOptions = Parameters<typeof searchUserTasks$1>[0];
+
+// @public (undocumented)
 export type SearchUserTasksResponse = SearchUserTasksResponses[keyof SearchUserTasksResponses];
 
 // @public (undocumented)
 export type SearchUserTasksResponses = {
     200: UserTaskSearchQueryResult;
 };
+
+// @public
+const searchUserTaskVariables$1: <ThrowOnError extends boolean = true>(options: Options<SearchUserTaskVariablesData, ThrowOnError>) => RequestResult<SearchUserTaskVariablesResponses, SearchUserTaskVariablesErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchUserTaskVariablesOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchUserTaskVariablesBody = (NonNullable<searchUserTaskVariablesOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchUserTaskVariablesConsistency = {
@@ -13931,12 +18215,39 @@ export type searchUserTaskVariablesInput = searchUserTaskVariablesBody & {
 };
 
 // @public (undocumented)
+type searchUserTaskVariablesOptions = Parameters<typeof searchUserTaskVariables$1>[0];
+
+// @public (undocumented)
+type searchUserTaskVariablesPathParam_userTaskKey = (NonNullable<searchUserTaskVariablesOptions> extends {
+    path: {
+        userTaskKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type searchUserTaskVariablesQueryParam_truncateValues = (NonNullable<searchUserTaskVariablesOptions> extends {
+    query?: {
+        truncateValues?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
 export type SearchUserTaskVariablesResponse = SearchUserTaskVariablesResponses[keyof SearchUserTaskVariablesResponses];
 
 // @public (undocumented)
 export type SearchUserTaskVariablesResponses = {
     200: VariableSearchQueryResult;
 };
+
+// @public
+const searchVariables$1: <ThrowOnError extends boolean = true>(options?: Options<SearchVariablesData, ThrowOnError>) => RequestResult<SearchVariablesResponses, SearchVariablesErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchVariablesOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchVariablesBody = (NonNullable<searchVariablesOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public
 export type searchVariablesConsistency = {
@@ -13970,6 +18281,16 @@ export type SearchVariablesErrors = {
 export type searchVariablesInput = searchVariablesBody & {
     truncateValues?: searchVariablesQueryParam_truncateValues;
 };
+
+// @public (undocumented)
+type searchVariablesOptions = Parameters<typeof searchVariables$1>[0];
+
+// @public (undocumented)
+type searchVariablesQueryParam_truncateValues = (NonNullable<searchVariablesOptions> extends {
+    query?: {
+        truncateValues?: infer Q;
+    };
+} ? Q : any);
 
 // @public (undocumented)
 export type SearchVariablesResponse = SearchVariablesResponses[keyof SearchVariablesResponses];
@@ -14022,6 +18343,32 @@ export interface SeededRandom extends RandomSource {
 
 // @public
 export function seededRandomFromEnv(env?: Record<string, string | undefined>): SeededRandom;
+
+// @public (undocumented)
+interface SerializerOptions<T> {
+    explode: boolean;
+    // (undocumented)
+    style: T;
+}
+
+// @public (undocumented)
+type ServerSentEventsOptions<TData = unknown> = Omit<RequestInit, 'method'> & Pick<Config$1, 'method' | 'responseTransformer' | 'responseValidator'> & {
+    fetch?: typeof fetch;
+    onRequest?: (url: string, init: RequestInit) => Promise<Request>;
+    onSseError?: (error: unknown) => void;
+    onSseEvent?: (event: StreamEvent<TData>) => void;
+    serializedBody?: RequestInit['body'];
+    sseDefaultRetryDelay?: number;
+    sseMaxRetryAttempts?: number;
+    sseMaxRetryDelay?: number;
+    sseSleepFn?: (ms: number) => Promise<void>;
+    url: string;
+};
+
+// @public (undocumented)
+type ServerSentEventsResult<TData = unknown, TReturn = void, TNext = unknown> = {
+    stream: AsyncGenerator<TData extends Record<string, unknown> ? TData[keyof TData] : TData, TReturn, TNext>;
+};
 
 // @public (undocumented)
 export type SetVariableRequest = {
@@ -14096,6 +18443,11 @@ export type SourceElementInstruction = ({
 // @public (undocumented)
 export const SPEC_HASH: "sha256:563b0c89df420cb7fdc1727e47ce10625ff5e3a6bc20f714ec7c18b40fc974f5";
 
+// Warning: (ae-forgotten-export) The symbol "ServerSentEventsResult" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type SseFn = <TData = unknown, _TError = unknown, ThrowOnError extends boolean = false, TResponseStyle extends ResponseStyle = 'fields'>(options: Omit<RequestOptions<never, TResponseStyle, ThrowOnError>, 'method'>) => Promise<ServerSentEventsResult<TData>>;
+
 // @public
 export type StartCursor = CamundaKey<'StartCursor'>;
 
@@ -14115,6 +18467,18 @@ export type StatusMetric = {
     lastUpdatedAt: string | null;
 };
 
+// @public (undocumented)
+interface StreamEvent<TData = unknown> {
+    // (undocumented)
+    data: TData;
+    // (undocumented)
+    event?: string;
+    // (undocumented)
+    id?: string;
+    // (undocumented)
+    retry?: number;
+}
+
 // @public
 export type StringFilterProperty = string | AdvancedStringFilter;
 
@@ -14123,6 +18487,16 @@ export interface SupportLogger {
     // (undocumented)
     log(message: string | number | boolean | object, addTimestamp?: boolean): void;
 }
+
+// @public
+const suspendBatchOperation$1: <ThrowOnError extends boolean = true>(options: Options<SuspendBatchOperationData, ThrowOnError>) => RequestResult<SuspendBatchOperationResponses, SuspendBatchOperationErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "suspendBatchOperationOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type suspendBatchOperationBody = (NonNullable<suspendBatchOperationOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type SuspendBatchOperationData = {
@@ -14154,12 +18528,32 @@ export type suspendBatchOperationInput = suspendBatchOperationBody & {
 };
 
 // @public (undocumented)
+type suspendBatchOperationOptions = Parameters<typeof suspendBatchOperation$1>[0];
+
+// @public (undocumented)
+type suspendBatchOperationPathParam_batchOperationKey = (NonNullable<suspendBatchOperationOptions> extends {
+    path: {
+        batchOperationKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type SuspendBatchOperationResponse = SuspendBatchOperationResponses[keyof SuspendBatchOperationResponses];
 
 // @public (undocumented)
 export type SuspendBatchOperationResponses = {
     204: void;
 };
+
+// @public
+const suspendProcessDefinitions$1: <ThrowOnError extends boolean = true>(options: Options<SuspendProcessDefinitionsData, ThrowOnError>) => RequestResult<SuspendProcessDefinitionsResponses, SuspendProcessDefinitionsErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "suspendProcessDefinitionsOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type suspendProcessDefinitionsBody = (NonNullable<suspendProcessDefinitionsOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type SuspendProcessDefinitionsData = {
@@ -14189,12 +18583,25 @@ export type SuspendProcessDefinitionsErrors = {
 export type suspendProcessDefinitionsInput = suspendProcessDefinitionsBody;
 
 // @public (undocumented)
+type suspendProcessDefinitionsOptions = Parameters<typeof suspendProcessDefinitions$1>[0];
+
+// @public (undocumented)
 export type SuspendProcessDefinitionsResponse = SuspendProcessDefinitionsResponses[keyof SuspendProcessDefinitionsResponses];
 
 // @public (undocumented)
 export type SuspendProcessDefinitionsResponses = {
     200: ProcessDefinitionSuspensionResult;
 };
+
+// @public
+const suspendProcessInstance$1: <ThrowOnError extends boolean = true>(options: Options<SuspendProcessInstanceData, ThrowOnError>) => RequestResult<SuspendProcessInstanceResponses, SuspendProcessInstanceErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "suspendProcessInstanceOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type suspendProcessInstanceBody = (NonNullable<suspendProcessInstanceOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type SuspendProcessInstanceData = {
@@ -14226,6 +18633,16 @@ export type suspendProcessInstanceInput = suspendProcessInstanceBody & {
 };
 
 // @public (undocumented)
+type suspendProcessInstanceOptions = Parameters<typeof suspendProcessInstance$1>[0];
+
+// @public (undocumented)
+type suspendProcessInstancePathParam_processInstanceKey = (NonNullable<suspendProcessInstanceOptions> extends {
+    path: {
+        processInstanceKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type SuspendProcessInstanceRequest = {
     operationReference?: OperationReference;
 } | null;
@@ -14237,6 +18654,16 @@ export type SuspendProcessInstanceResponse = SuspendProcessInstanceResponses[key
 export type SuspendProcessInstanceResponses = {
     204: void;
 };
+
+// @public
+const suspendProcessInstancesBatchOperation$1: <ThrowOnError extends boolean = true>(options: Options<SuspendProcessInstancesBatchOperationData, ThrowOnError>) => RequestResult<SuspendProcessInstancesBatchOperationResponses, SuspendProcessInstancesBatchOperationErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "suspendProcessInstancesBatchOperationOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type suspendProcessInstancesBatchOperationBody = (NonNullable<suspendProcessInstancesBatchOperationOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type SuspendProcessInstancesBatchOperationData = {
@@ -14263,12 +18690,21 @@ export type SuspendProcessInstancesBatchOperationErrors = {
 export type suspendProcessInstancesBatchOperationInput = suspendProcessInstancesBatchOperationBody;
 
 // @public (undocumented)
+type suspendProcessInstancesBatchOperationOptions = Parameters<typeof suspendProcessInstancesBatchOperation$1>[0];
+
+// @public (undocumented)
 export type SuspendProcessInstancesBatchOperationResponse = SuspendProcessInstancesBatchOperationResponses[keyof SuspendProcessInstancesBatchOperationResponses];
 
 // @public (undocumented)
 export type SuspendProcessInstancesBatchOperationResponses = {
     200: BatchOperationCreatedResult;
 };
+
+// @public
+const syncRuntimeBackupState$1: <ThrowOnError extends boolean = true>(options?: Options<SyncRuntimeBackupStateData, ThrowOnError>) => RequestResult<SyncRuntimeBackupStateResponses, SyncRuntimeBackupStateErrors, ThrowOnError>;
+
+// @public
+const syncRuntimeBackupStateAsClusterAdmin$1: <ThrowOnError extends boolean = true>(options?: Options<SyncRuntimeBackupStateAsClusterAdminData, ThrowOnError>) => RequestResult<SyncRuntimeBackupStateAsClusterAdminResponses, SyncRuntimeBackupStateAsClusterAdminErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type SyncRuntimeBackupStateAsClusterAdminData = {
@@ -14296,6 +18732,18 @@ export type SyncRuntimeBackupStateAsClusterAdminErrors = {
 export type syncRuntimeBackupStateAsClusterAdminInput = {
     physicalTenantId?: syncRuntimeBackupStateAsClusterAdminQueryParam_physicalTenantId;
 };
+
+// @public (undocumented)
+type syncRuntimeBackupStateAsClusterAdminOptions = Parameters<typeof syncRuntimeBackupStateAsClusterAdmin$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "syncRuntimeBackupStateAsClusterAdminOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type syncRuntimeBackupStateAsClusterAdminQueryParam_physicalTenantId = (NonNullable<syncRuntimeBackupStateAsClusterAdminOptions> extends {
+    query?: {
+        physicalTenantId?: infer Q;
+    };
+} ? Q : any);
 
 // @public (undocumented)
 export type SyncRuntimeBackupStateAsClusterAdminResponse = SyncRuntimeBackupStateAsClusterAdminResponses[keyof SyncRuntimeBackupStateAsClusterAdminResponses];
@@ -14363,6 +18811,19 @@ export type TagSet = Array<Tag> & {
 // @public
 export type TagSetWritable = Array<Tag>;
 
+// @public
+const takeHistoryBackup$1: <ThrowOnError extends boolean = true>(options: Options<TakeHistoryBackupData, ThrowOnError>) => RequestResult<TakeHistoryBackupResponses, TakeHistoryBackupErrors, ThrowOnError>;
+
+// @public
+const takeHistoryBackupAsClusterAdmin$1: <ThrowOnError extends boolean = true>(options: Options<TakeHistoryBackupAsClusterAdminData, ThrowOnError>) => RequestResult<TakeHistoryBackupAsClusterAdminResponses, TakeHistoryBackupAsClusterAdminErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "takeHistoryBackupAsClusterAdminOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type takeHistoryBackupAsClusterAdminBody = (NonNullable<takeHistoryBackupAsClusterAdminOptions> extends {
+    body?: infer B;
+} ? B : never);
+
 // @public (undocumented)
 export type TakeHistoryBackupAsClusterAdminData = {
     body: TakeHistoryBackupRequest;
@@ -14395,12 +18856,29 @@ export type takeHistoryBackupAsClusterAdminInput = takeHistoryBackupAsClusterAdm
 };
 
 // @public (undocumented)
+type takeHistoryBackupAsClusterAdminOptions = Parameters<typeof takeHistoryBackupAsClusterAdmin$1>[0];
+
+// @public (undocumented)
+type takeHistoryBackupAsClusterAdminQueryParam_physicalTenantId = (NonNullable<takeHistoryBackupAsClusterAdminOptions> extends {
+    query?: {
+        physicalTenantId?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
 export type TakeHistoryBackupAsClusterAdminResponse = TakeHistoryBackupAsClusterAdminResponses[keyof TakeHistoryBackupAsClusterAdminResponses];
 
 // @public (undocumented)
 export type TakeHistoryBackupAsClusterAdminResponses = {
     202: ClusterTakeHistoryBackupResponse;
 };
+
+// Warning: (ae-forgotten-export) The symbol "takeHistoryBackupOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type takeHistoryBackupBody = (NonNullable<takeHistoryBackupOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type TakeHistoryBackupData = {
@@ -14428,6 +18906,9 @@ export type TakeHistoryBackupErrors = {
 // @public (undocumented)
 export type takeHistoryBackupInput = takeHistoryBackupBody;
 
+// @public (undocumented)
+type takeHistoryBackupOptions = Parameters<typeof takeHistoryBackup$1>[0];
+
 // @public
 export type TakeHistoryBackupRequest = {
     backupId: BackupId;
@@ -14446,6 +18927,19 @@ export type TakeHistoryBackupResponse2 = TakeHistoryBackupResponses[keyof TakeHi
 export type TakeHistoryBackupResponses = {
     202: TakeHistoryBackupResponse;
 };
+
+// @public
+const takeRuntimeBackup$1: <ThrowOnError extends boolean = true>(options?: Options<TakeRuntimeBackupData, ThrowOnError>) => RequestResult<TakeRuntimeBackupResponses, TakeRuntimeBackupErrors, ThrowOnError>;
+
+// @public
+const takeRuntimeBackupAsClusterAdmin$1: <ThrowOnError extends boolean = true>(options?: Options<TakeRuntimeBackupAsClusterAdminData, ThrowOnError>) => RequestResult<TakeRuntimeBackupAsClusterAdminResponses, TakeRuntimeBackupAsClusterAdminErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "takeRuntimeBackupAsClusterAdminOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type takeRuntimeBackupAsClusterAdminBody = (NonNullable<takeRuntimeBackupAsClusterAdminOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type TakeRuntimeBackupAsClusterAdminData = {
@@ -14480,12 +18974,29 @@ export type takeRuntimeBackupAsClusterAdminInput = takeRuntimeBackupAsClusterAdm
 };
 
 // @public (undocumented)
+type takeRuntimeBackupAsClusterAdminOptions = Parameters<typeof takeRuntimeBackupAsClusterAdmin$1>[0];
+
+// @public (undocumented)
+type takeRuntimeBackupAsClusterAdminQueryParam_physicalTenantId = (NonNullable<takeRuntimeBackupAsClusterAdminOptions> extends {
+    query?: {
+        physicalTenantId?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
 export type TakeRuntimeBackupAsClusterAdminResponse = TakeRuntimeBackupAsClusterAdminResponses[keyof TakeRuntimeBackupAsClusterAdminResponses];
 
 // @public (undocumented)
 export type TakeRuntimeBackupAsClusterAdminResponses = {
     202: ClusterTakeRuntimeBackupResponse;
 };
+
+// Warning: (ae-forgotten-export) The symbol "takeRuntimeBackupOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type takeRuntimeBackupBody = (NonNullable<takeRuntimeBackupOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type TakeRuntimeBackupData = {
@@ -14514,6 +19025,9 @@ export type TakeRuntimeBackupErrors = {
 // @public (undocumented)
 export type takeRuntimeBackupInput = takeRuntimeBackupBody;
 
+// @public (undocumented)
+type takeRuntimeBackupOptions = Parameters<typeof takeRuntimeBackup$1>[0];
+
 // @public
 export type TakeRuntimeBackupRequest = {
     backupId?: BackupId | null;
@@ -14531,6 +19045,78 @@ export type TakeRuntimeBackupResponse2 = TakeRuntimeBackupResponses[keyof TakeRu
 export type TakeRuntimeBackupResponses = {
     202: TakeRuntimeBackupResponse;
 };
+
+// @public (undocumented)
+interface TDataShape {
+    // (undocumented)
+    body?: unknown;
+    // (undocumented)
+    headers?: unknown;
+    // (undocumented)
+    path?: unknown;
+    // (undocumented)
+    query?: unknown;
+    // (undocumented)
+    url: string;
+}
+
+// @public (undocumented)
+interface TelemetryAuthErrorEvent {
+    // (undocumented)
+    audience: string;
+    // (undocumented)
+    correlationId?: string;
+    // (undocumented)
+    durationMs: number;
+    // (undocumented)
+    endpoint: string;
+    // (undocumented)
+    message: string;
+    // (undocumented)
+    status?: number;
+    // (undocumented)
+    ts: number;
+    // (undocumented)
+    type: 'auth.error';
+}
+
+// @public (undocumented)
+interface TelemetryAuthStartEvent {
+    // (undocumented)
+    audience: string;
+    // (undocumented)
+    cache: boolean;
+    // (undocumented)
+    correlationId?: string;
+    // (undocumented)
+    endpoint: string;
+    // (undocumented)
+    ts: number;
+    // (undocumented)
+    type: 'auth.start';
+}
+
+// @public (undocumented)
+interface TelemetryAuthSuccessEvent {
+    // (undocumented)
+    audience: string;
+    // (undocumented)
+    cached: boolean;
+    // (undocumented)
+    correlationId?: string;
+    // (undocumented)
+    durationMs: number;
+    // (undocumented)
+    endpoint: string;
+    // (undocumented)
+    expiresInSec: number;
+    // (undocumented)
+    scopes?: string[];
+    // (undocumented)
+    ts: number;
+    // (undocumented)
+    type: 'auth.success';
+}
 
 // @public (undocumented)
 export interface TelemetryHooks {
@@ -14562,6 +19148,72 @@ export interface TelemetryHooks {
     //
     // (undocumented)
     retry?(e: TelemetryRetryEvent): void;
+}
+
+// Warning: (ae-forgotten-export) The symbol "BaseEvt" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+interface TelemetryHttpEndEvent extends BaseEvt {
+    // (undocumented)
+    attempt: number;
+    // (undocumented)
+    durationMs: number;
+    // (undocumented)
+    method: string;
+    // (undocumented)
+    status: number;
+    // (undocumented)
+    type: 'http.end';
+    // (undocumented)
+    url: string;
+}
+
+// @public (undocumented)
+interface TelemetryHttpErrorEvent extends BaseEvt {
+    // (undocumented)
+    attempt: number;
+    // (undocumented)
+    durationMs: number;
+    // (undocumented)
+    errorKind: 'network' | 'abort';
+    // (undocumented)
+    message: string;
+    // (undocumented)
+    method: string;
+    // (undocumented)
+    type: 'http.error';
+    // (undocumented)
+    url: string;
+}
+
+// @public (undocumented)
+interface TelemetryHttpStartEvent extends BaseEvt {
+    // (undocumented)
+    attempt: number;
+    // (undocumented)
+    method: string;
+    // (undocumented)
+    type: 'http.start';
+    // (undocumented)
+    url: string;
+}
+
+// @public (undocumented)
+interface TelemetryRetryEvent {
+    // (undocumented)
+    attempt: number;
+    // (undocumented)
+    correlationId?: string;
+    // (undocumented)
+    domain: 'auth';
+    // (undocumented)
+    nextDelayMs: number;
+    // (undocumented)
+    reason: string;
+    // (undocumented)
+    ts: number;
+    // (undocumented)
+    type: 'retry';
 }
 
 // @public (undocumented)
@@ -14794,6 +19446,16 @@ export class ThreadPool {
     terminate(): void;
 }
 
+// @public
+const throwJobError$1: <ThrowOnError extends boolean = true>(options: Options<ThrowJobErrorData, ThrowOnError>) => RequestResult<ThrowJobErrorResponses, ThrowJobErrorErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "throwJobErrorOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type throwJobErrorBody = (NonNullable<throwJobErrorOptions> extends {
+    body?: infer B;
+} ? B : never);
+
 // @public (undocumented)
 export type ThrowJobErrorData = {
     body: JobErrorRequest;
@@ -14824,6 +19486,16 @@ export type throwJobErrorInput = throwJobErrorBody & {
 };
 
 // @public (undocumented)
+type throwJobErrorOptions = Parameters<typeof throwJobError$1>[0];
+
+// @public (undocumented)
+type throwJobErrorPathParam_jobKey = (NonNullable<throwJobErrorOptions> extends {
+    path: {
+        jobKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type ThrowJobErrorResponse = ThrowJobErrorResponses[keyof ThrowJobErrorResponses];
 
 // @public (undocumented)
@@ -14847,6 +19519,16 @@ export type TopologyResponse = {
     gatewayVersion: string;
     lastCompletedChangeId: string;
 };
+
+// @public
+const triggerClusterRebalance$1: <ThrowOnError extends boolean = true>(options?: Options<TriggerClusterRebalanceData, ThrowOnError>) => RequestResult<TriggerClusterRebalanceResponses, TriggerClusterRebalanceErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "triggerClusterRebalanceOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type triggerClusterRebalanceBody = (NonNullable<triggerClusterRebalanceOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type TriggerClusterRebalanceData = {
@@ -14880,6 +19562,16 @@ export type triggerClusterRebalanceInput = triggerClusterRebalanceBody & {
 };
 
 // @public (undocumented)
+type triggerClusterRebalanceOptions = Parameters<typeof triggerClusterRebalance$1>[0];
+
+// @public (undocumented)
+type triggerClusterRebalanceQueryParam_dryRun = (NonNullable<triggerClusterRebalanceOptions> extends {
+    query?: {
+        dryRun?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
 export type TriggerClusterRebalanceResponse = TriggerClusterRebalanceResponses[keyof TriggerClusterRebalanceResponses];
 
 // @public (undocumented)
@@ -14908,6 +19600,9 @@ export class TypedVariablesError extends Error {
         cause?: unknown;
     });
 }
+
+// @public
+const unassignClientFromGroup$1: <ThrowOnError extends boolean = true>(options: Options<UnassignClientFromGroupData, ThrowOnError>) => RequestResult<UnassignClientFromGroupResponses, UnassignClientFromGroupErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type UnassignClientFromGroupData = {
@@ -14939,12 +19634,34 @@ export type unassignClientFromGroupInput = {
 };
 
 // @public (undocumented)
+type unassignClientFromGroupOptions = Parameters<typeof unassignClientFromGroup$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "unassignClientFromGroupOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type unassignClientFromGroupPathParam_clientId = (NonNullable<unassignClientFromGroupOptions> extends {
+    path: {
+        clientId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type unassignClientFromGroupPathParam_groupId = (NonNullable<unassignClientFromGroupOptions> extends {
+    path: {
+        groupId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type UnassignClientFromGroupResponse = UnassignClientFromGroupResponses[keyof UnassignClientFromGroupResponses];
 
 // @public (undocumented)
 export type UnassignClientFromGroupResponses = {
     204: void;
 };
+
+// @public
+const unassignClientFromTenant$1: <ThrowOnError extends boolean = true>(options: Options<UnassignClientFromTenantData, ThrowOnError>) => RequestResult<UnassignClientFromTenantResponses, UnassignClientFromTenantErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type UnassignClientFromTenantData = {
@@ -14976,12 +19693,34 @@ export type unassignClientFromTenantInput = {
 };
 
 // @public (undocumented)
+type unassignClientFromTenantOptions = Parameters<typeof unassignClientFromTenant$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "unassignClientFromTenantOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type unassignClientFromTenantPathParam_clientId = (NonNullable<unassignClientFromTenantOptions> extends {
+    path: {
+        clientId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type unassignClientFromTenantPathParam_tenantId = (NonNullable<unassignClientFromTenantOptions> extends {
+    path: {
+        tenantId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type UnassignClientFromTenantResponse = UnassignClientFromTenantResponses[keyof UnassignClientFromTenantResponses];
 
 // @public (undocumented)
 export type UnassignClientFromTenantResponses = {
     204: void;
 };
+
+// @public
+const unassignGroupFromTenant$1: <ThrowOnError extends boolean = true>(options: Options<UnassignGroupFromTenantData, ThrowOnError>) => RequestResult<UnassignGroupFromTenantResponses, UnassignGroupFromTenantErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type UnassignGroupFromTenantData = {
@@ -15013,12 +19752,34 @@ export type unassignGroupFromTenantInput = {
 };
 
 // @public (undocumented)
+type unassignGroupFromTenantOptions = Parameters<typeof unassignGroupFromTenant$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "unassignGroupFromTenantOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type unassignGroupFromTenantPathParam_groupId = (NonNullable<unassignGroupFromTenantOptions> extends {
+    path: {
+        groupId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type unassignGroupFromTenantPathParam_tenantId = (NonNullable<unassignGroupFromTenantOptions> extends {
+    path: {
+        tenantId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type UnassignGroupFromTenantResponse = UnassignGroupFromTenantResponses[keyof UnassignGroupFromTenantResponses];
 
 // @public (undocumented)
 export type UnassignGroupFromTenantResponses = {
     204: void;
 };
+
+// @public
+const unassignMappingRuleFromGroup$1: <ThrowOnError extends boolean = true>(options: Options<UnassignMappingRuleFromGroupData, ThrowOnError>) => RequestResult<UnassignMappingRuleFromGroupResponses, UnassignMappingRuleFromGroupErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type UnassignMappingRuleFromGroupData = {
@@ -15050,12 +19811,34 @@ export type unassignMappingRuleFromGroupInput = {
 };
 
 // @public (undocumented)
+type unassignMappingRuleFromGroupOptions = Parameters<typeof unassignMappingRuleFromGroup$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "unassignMappingRuleFromGroupOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type unassignMappingRuleFromGroupPathParam_groupId = (NonNullable<unassignMappingRuleFromGroupOptions> extends {
+    path: {
+        groupId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type unassignMappingRuleFromGroupPathParam_mappingRuleId = (NonNullable<unassignMappingRuleFromGroupOptions> extends {
+    path: {
+        mappingRuleId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type UnassignMappingRuleFromGroupResponse = UnassignMappingRuleFromGroupResponses[keyof UnassignMappingRuleFromGroupResponses];
 
 // @public (undocumented)
 export type UnassignMappingRuleFromGroupResponses = {
     204: void;
 };
+
+// @public
+const unassignMappingRuleFromTenant$1: <ThrowOnError extends boolean = true>(options: Options<UnassignMappingRuleFromTenantData, ThrowOnError>) => RequestResult<UnassignMappingRuleFromTenantResponses, UnassignMappingRuleFromTenantErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type UnassignMappingRuleFromTenantData = {
@@ -15087,12 +19870,34 @@ export type unassignMappingRuleFromTenantInput = {
 };
 
 // @public (undocumented)
+type unassignMappingRuleFromTenantOptions = Parameters<typeof unassignMappingRuleFromTenant$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "unassignMappingRuleFromTenantOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type unassignMappingRuleFromTenantPathParam_mappingRuleId = (NonNullable<unassignMappingRuleFromTenantOptions> extends {
+    path: {
+        mappingRuleId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type unassignMappingRuleFromTenantPathParam_tenantId = (NonNullable<unassignMappingRuleFromTenantOptions> extends {
+    path: {
+        tenantId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type UnassignMappingRuleFromTenantResponse = UnassignMappingRuleFromTenantResponses[keyof UnassignMappingRuleFromTenantResponses];
 
 // @public (undocumented)
 export type UnassignMappingRuleFromTenantResponses = {
     204: void;
 };
+
+// @public
+const unassignRoleFromClient$1: <ThrowOnError extends boolean = true>(options: Options<UnassignRoleFromClientData, ThrowOnError>) => RequestResult<UnassignRoleFromClientResponses, UnassignRoleFromClientErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type UnassignRoleFromClientData = {
@@ -15124,12 +19929,34 @@ export type unassignRoleFromClientInput = {
 };
 
 // @public (undocumented)
+type unassignRoleFromClientOptions = Parameters<typeof unassignRoleFromClient$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "unassignRoleFromClientOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type unassignRoleFromClientPathParam_clientId = (NonNullable<unassignRoleFromClientOptions> extends {
+    path: {
+        clientId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type unassignRoleFromClientPathParam_roleId = (NonNullable<unassignRoleFromClientOptions> extends {
+    path: {
+        roleId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type UnassignRoleFromClientResponse = UnassignRoleFromClientResponses[keyof UnassignRoleFromClientResponses];
 
 // @public (undocumented)
 export type UnassignRoleFromClientResponses = {
     204: void;
 };
+
+// @public
+const unassignRoleFromGroup$1: <ThrowOnError extends boolean = true>(options: Options<UnassignRoleFromGroupData, ThrowOnError>) => RequestResult<UnassignRoleFromGroupResponses, UnassignRoleFromGroupErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type UnassignRoleFromGroupData = {
@@ -15161,12 +19988,34 @@ export type unassignRoleFromGroupInput = {
 };
 
 // @public (undocumented)
+type unassignRoleFromGroupOptions = Parameters<typeof unassignRoleFromGroup$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "unassignRoleFromGroupOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type unassignRoleFromGroupPathParam_groupId = (NonNullable<unassignRoleFromGroupOptions> extends {
+    path: {
+        groupId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type unassignRoleFromGroupPathParam_roleId = (NonNullable<unassignRoleFromGroupOptions> extends {
+    path: {
+        roleId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type UnassignRoleFromGroupResponse = UnassignRoleFromGroupResponses[keyof UnassignRoleFromGroupResponses];
 
 // @public (undocumented)
 export type UnassignRoleFromGroupResponses = {
     204: void;
 };
+
+// @public
+const unassignRoleFromMappingRule$1: <ThrowOnError extends boolean = true>(options: Options<UnassignRoleFromMappingRuleData, ThrowOnError>) => RequestResult<UnassignRoleFromMappingRuleResponses, UnassignRoleFromMappingRuleErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type UnassignRoleFromMappingRuleData = {
@@ -15198,12 +20047,34 @@ export type unassignRoleFromMappingRuleInput = {
 };
 
 // @public (undocumented)
+type unassignRoleFromMappingRuleOptions = Parameters<typeof unassignRoleFromMappingRule$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "unassignRoleFromMappingRuleOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type unassignRoleFromMappingRulePathParam_mappingRuleId = (NonNullable<unassignRoleFromMappingRuleOptions> extends {
+    path: {
+        mappingRuleId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type unassignRoleFromMappingRulePathParam_roleId = (NonNullable<unassignRoleFromMappingRuleOptions> extends {
+    path: {
+        roleId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type UnassignRoleFromMappingRuleResponse = UnassignRoleFromMappingRuleResponses[keyof UnassignRoleFromMappingRuleResponses];
 
 // @public (undocumented)
 export type UnassignRoleFromMappingRuleResponses = {
     204: void;
 };
+
+// @public
+const unassignRoleFromTenant$1: <ThrowOnError extends boolean = true>(options: Options<UnassignRoleFromTenantData, ThrowOnError>) => RequestResult<UnassignRoleFromTenantResponses, UnassignRoleFromTenantErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type UnassignRoleFromTenantData = {
@@ -15235,12 +20106,34 @@ export type unassignRoleFromTenantInput = {
 };
 
 // @public (undocumented)
+type unassignRoleFromTenantOptions = Parameters<typeof unassignRoleFromTenant$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "unassignRoleFromTenantOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type unassignRoleFromTenantPathParam_roleId = (NonNullable<unassignRoleFromTenantOptions> extends {
+    path: {
+        roleId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type unassignRoleFromTenantPathParam_tenantId = (NonNullable<unassignRoleFromTenantOptions> extends {
+    path: {
+        tenantId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type UnassignRoleFromTenantResponse = UnassignRoleFromTenantResponses[keyof UnassignRoleFromTenantResponses];
 
 // @public (undocumented)
 export type UnassignRoleFromTenantResponses = {
     204: void;
 };
+
+// @public
+const unassignRoleFromUser$1: <ThrowOnError extends boolean = true>(options: Options<UnassignRoleFromUserData, ThrowOnError>) => RequestResult<UnassignRoleFromUserResponses, UnassignRoleFromUserErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type UnassignRoleFromUserData = {
@@ -15272,12 +20165,34 @@ export type unassignRoleFromUserInput = {
 };
 
 // @public (undocumented)
+type unassignRoleFromUserOptions = Parameters<typeof unassignRoleFromUser$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "unassignRoleFromUserOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type unassignRoleFromUserPathParam_roleId = (NonNullable<unassignRoleFromUserOptions> extends {
+    path: {
+        roleId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type unassignRoleFromUserPathParam_username = (NonNullable<unassignRoleFromUserOptions> extends {
+    path: {
+        username: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type UnassignRoleFromUserResponse = UnassignRoleFromUserResponses[keyof UnassignRoleFromUserResponses];
 
 // @public (undocumented)
 export type UnassignRoleFromUserResponses = {
     204: void;
 };
+
+// @public
+const unassignUserFromGroup$1: <ThrowOnError extends boolean = true>(options: Options<UnassignUserFromGroupData, ThrowOnError>) => RequestResult<UnassignUserFromGroupResponses, UnassignUserFromGroupErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type UnassignUserFromGroupData = {
@@ -15309,12 +20224,34 @@ export type unassignUserFromGroupInput = {
 };
 
 // @public (undocumented)
+type unassignUserFromGroupOptions = Parameters<typeof unassignUserFromGroup$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "unassignUserFromGroupOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type unassignUserFromGroupPathParam_groupId = (NonNullable<unassignUserFromGroupOptions> extends {
+    path: {
+        groupId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type unassignUserFromGroupPathParam_username = (NonNullable<unassignUserFromGroupOptions> extends {
+    path: {
+        username: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type UnassignUserFromGroupResponse = UnassignUserFromGroupResponses[keyof UnassignUserFromGroupResponses];
 
 // @public (undocumented)
 export type UnassignUserFromGroupResponses = {
     204: void;
 };
+
+// @public
+const unassignUserFromTenant$1: <ThrowOnError extends boolean = true>(options: Options<UnassignUserFromTenantData, ThrowOnError>) => RequestResult<UnassignUserFromTenantResponses, UnassignUserFromTenantErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type UnassignUserFromTenantData = {
@@ -15346,12 +20283,34 @@ export type unassignUserFromTenantInput = {
 };
 
 // @public (undocumented)
+type unassignUserFromTenantOptions = Parameters<typeof unassignUserFromTenant$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "unassignUserFromTenantOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type unassignUserFromTenantPathParam_tenantId = (NonNullable<unassignUserFromTenantOptions> extends {
+    path: {
+        tenantId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type unassignUserFromTenantPathParam_username = (NonNullable<unassignUserFromTenantOptions> extends {
+    path: {
+        username: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type UnassignUserFromTenantResponse = UnassignUserFromTenantResponses[keyof UnassignUserFromTenantResponses];
 
 // @public (undocumented)
 export type UnassignUserFromTenantResponses = {
     204: void;
 };
+
+// @public
+const unassignUserTask$1: <ThrowOnError extends boolean = true>(options: Options<UnassignUserTaskData, ThrowOnError>) => RequestResult<UnassignUserTaskResponses, UnassignUserTaskErrors, ThrowOnError>;
 
 // @public (undocumented)
 export type UnassignUserTaskData = {
@@ -15382,12 +20341,34 @@ export type unassignUserTaskInput = {
 };
 
 // @public (undocumented)
+type unassignUserTaskOptions = Parameters<typeof unassignUserTask$1>[0];
+
+// Warning: (ae-forgotten-export) The symbol "unassignUserTaskOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type unassignUserTaskPathParam_userTaskKey = (NonNullable<unassignUserTaskOptions> extends {
+    path: {
+        userTaskKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type UnassignUserTaskResponse = UnassignUserTaskResponses[keyof UnassignUserTaskResponses];
 
 // @public (undocumented)
 export type UnassignUserTaskResponses = {
     204: void;
 };
+
+// @public
+const updateAgentInstance$1: <ThrowOnError extends boolean = true>(options: Options<UpdateAgentInstanceData, ThrowOnError>) => RequestResult<UpdateAgentInstanceResponses, UpdateAgentInstanceErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "updateAgentInstanceOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type updateAgentInstanceBody = (NonNullable<updateAgentInstanceOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type UpdateAgentInstanceData = {
@@ -15419,12 +20400,32 @@ export type updateAgentInstanceInput = updateAgentInstanceBody & {
 };
 
 // @public (undocumented)
+type updateAgentInstanceOptions = Parameters<typeof updateAgentInstance$1>[0];
+
+// @public (undocumented)
+type updateAgentInstancePathParam_agentInstanceKey = (NonNullable<updateAgentInstanceOptions> extends {
+    path: {
+        agentInstanceKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type UpdateAgentInstanceResponse = UpdateAgentInstanceResponses[keyof UpdateAgentInstanceResponses];
 
 // @public (undocumented)
 export type UpdateAgentInstanceResponses = {
     200: AgentInstanceUpdateResult;
 };
+
+// @public
+const updateAuthorization$1: <ThrowOnError extends boolean = true>(options: Options<UpdateAuthorizationData, ThrowOnError>) => RequestResult<UpdateAuthorizationResponses, UpdateAuthorizationErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "updateAuthorizationOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type updateAuthorizationBody = (NonNullable<updateAuthorizationOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type UpdateAuthorizationData = {
@@ -15455,6 +20456,16 @@ export type updateAuthorizationInput = updateAuthorizationBody & {
 };
 
 // @public (undocumented)
+type updateAuthorizationOptions = Parameters<typeof updateAuthorization$1>[0];
+
+// @public (undocumented)
+type updateAuthorizationPathParam_authorizationKey = (NonNullable<updateAuthorizationOptions> extends {
+    path: {
+        authorizationKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type UpdateAuthorizationResponse = UpdateAuthorizationResponses[keyof UpdateAuthorizationResponses];
 
 // @public (undocumented)
@@ -15469,6 +20480,16 @@ export type UpdateClusterVariableRequest = {
         [key: string]: string | number;
     };
 };
+
+// @public
+const updateGlobalClusterVariable$1: <ThrowOnError extends boolean = true>(options: Options<UpdateGlobalClusterVariableData, ThrowOnError>) => RequestResult<UpdateGlobalClusterVariableResponses, UpdateGlobalClusterVariableErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "updateGlobalClusterVariableOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type updateGlobalClusterVariableBody = (NonNullable<updateGlobalClusterVariableOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type UpdateGlobalClusterVariableData = {
@@ -15500,12 +20521,32 @@ export type updateGlobalClusterVariableInput = updateGlobalClusterVariableBody &
 };
 
 // @public (undocumented)
+type updateGlobalClusterVariableOptions = Parameters<typeof updateGlobalClusterVariable$1>[0];
+
+// @public (undocumented)
+type updateGlobalClusterVariablePathParam_name = (NonNullable<updateGlobalClusterVariableOptions> extends {
+    path: {
+        name: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type UpdateGlobalClusterVariableResponse = UpdateGlobalClusterVariableResponses[keyof UpdateGlobalClusterVariableResponses];
 
 // @public (undocumented)
 export type UpdateGlobalClusterVariableResponses = {
     200: ClusterVariableResult;
 };
+
+// @public
+const updateGlobalTaskListener$1: <ThrowOnError extends boolean = true>(options: Options<UpdateGlobalTaskListenerData, ThrowOnError>) => RequestResult<UpdateGlobalTaskListenerResponses, UpdateGlobalTaskListenerErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "updateGlobalTaskListenerOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type updateGlobalTaskListenerBody = (NonNullable<updateGlobalTaskListenerOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type UpdateGlobalTaskListenerData = {
@@ -15538,6 +20579,16 @@ export type updateGlobalTaskListenerInput = updateGlobalTaskListenerBody & {
 };
 
 // @public (undocumented)
+type updateGlobalTaskListenerOptions = Parameters<typeof updateGlobalTaskListener$1>[0];
+
+// @public (undocumented)
+type updateGlobalTaskListenerPathParam_id = (NonNullable<updateGlobalTaskListenerOptions> extends {
+    path: {
+        id: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type UpdateGlobalTaskListenerRequest = GlobalTaskListenerBase;
 
 // @public (undocumented)
@@ -15547,6 +20598,16 @@ export type UpdateGlobalTaskListenerResponse = UpdateGlobalTaskListenerResponses
 export type UpdateGlobalTaskListenerResponses = {
     200: GlobalTaskListenerResult;
 };
+
+// @public
+const updateGroup$1: <ThrowOnError extends boolean = true>(options: Options<UpdateGroupData, ThrowOnError>) => RequestResult<UpdateGroupResponses, UpdateGroupErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "updateGroupOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type updateGroupBody = (NonNullable<updateGroupOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type UpdateGroupData = {
@@ -15578,12 +20639,32 @@ export type updateGroupInput = updateGroupBody & {
 };
 
 // @public (undocumented)
+type updateGroupOptions = Parameters<typeof updateGroup$1>[0];
+
+// @public (undocumented)
+type updateGroupPathParam_groupId = (NonNullable<updateGroupOptions> extends {
+    path: {
+        groupId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type UpdateGroupResponse = UpdateGroupResponses[keyof UpdateGroupResponses];
 
 // @public (undocumented)
 export type UpdateGroupResponses = {
     200: GroupUpdateResult;
 };
+
+// @public
+const updateJob$1: <ThrowOnError extends boolean = true>(options: Options<UpdateJobData, ThrowOnError>) => RequestResult<UpdateJobResponses, UpdateJobErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "updateJobOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type updateJobBody = (NonNullable<updateJobOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type UpdateJobData = {
@@ -15615,12 +20696,32 @@ export type updateJobInput = updateJobBody & {
 };
 
 // @public (undocumented)
+type updateJobOptions = Parameters<typeof updateJob$1>[0];
+
+// @public (undocumented)
+type updateJobPathParam_jobKey = (NonNullable<updateJobOptions> extends {
+    path: {
+        jobKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type UpdateJobResponse = UpdateJobResponses[keyof UpdateJobResponses];
 
 // @public (undocumented)
 export type UpdateJobResponses = {
     204: void;
 };
+
+// @public
+const updateJobsBatchOperation$1: <ThrowOnError extends boolean = true>(options: Options<UpdateJobsBatchOperationData, ThrowOnError>) => RequestResult<UpdateJobsBatchOperationResponses, UpdateJobsBatchOperationErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "updateJobsBatchOperationOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type updateJobsBatchOperationBody = (NonNullable<updateJobsBatchOperationOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type UpdateJobsBatchOperationData = {
@@ -15647,12 +20748,25 @@ export type UpdateJobsBatchOperationErrors = {
 export type updateJobsBatchOperationInput = updateJobsBatchOperationBody;
 
 // @public (undocumented)
+type updateJobsBatchOperationOptions = Parameters<typeof updateJobsBatchOperation$1>[0];
+
+// @public (undocumented)
 export type UpdateJobsBatchOperationResponse = UpdateJobsBatchOperationResponses[keyof UpdateJobsBatchOperationResponses];
 
 // @public (undocumented)
 export type UpdateJobsBatchOperationResponses = {
     200: BatchOperationCreatedResult;
 };
+
+// @public
+const updateMappingRule$1: <ThrowOnError extends boolean = true>(options: Options<UpdateMappingRuleData, ThrowOnError>) => RequestResult<UpdateMappingRuleResponses, UpdateMappingRuleErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "updateMappingRuleOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type updateMappingRuleBody = (NonNullable<updateMappingRuleOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type UpdateMappingRuleData = {
@@ -15684,12 +20798,32 @@ export type updateMappingRuleInput = updateMappingRuleBody & {
 };
 
 // @public (undocumented)
+type updateMappingRuleOptions = Parameters<typeof updateMappingRule$1>[0];
+
+// @public (undocumented)
+type updateMappingRulePathParam_mappingRuleId = (NonNullable<updateMappingRuleOptions> extends {
+    path: {
+        mappingRuleId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type UpdateMappingRuleResponse = UpdateMappingRuleResponses[keyof UpdateMappingRuleResponses];
 
 // @public (undocumented)
 export type UpdateMappingRuleResponses = {
     200: MappingRuleUpdateResult;
 };
+
+// @public
+const updateRole$1: <ThrowOnError extends boolean = true>(options: Options<UpdateRoleData, ThrowOnError>) => RequestResult<UpdateRoleResponses, UpdateRoleErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "updateRoleOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type updateRoleBody = (NonNullable<updateRoleOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type UpdateRoleData = {
@@ -15721,12 +20855,42 @@ export type updateRoleInput = updateRoleBody & {
 };
 
 // @public (undocumented)
+type updateRoleOptions = Parameters<typeof updateRole$1>[0];
+
+// @public (undocumented)
+type updateRolePathParam_roleId = (NonNullable<updateRoleOptions> extends {
+    path: {
+        roleId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type UpdateRoleResponse = UpdateRoleResponses[keyof UpdateRoleResponses];
 
 // @public (undocumented)
 export type UpdateRoleResponses = {
     200: RoleUpdateResult;
 };
+
+// @public
+const updateTenant$1: <ThrowOnError extends boolean = true>(options: Options<UpdateTenantData, ThrowOnError>) => RequestResult<UpdateTenantResponses, UpdateTenantErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "updateTenantOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type updateTenantBody = (NonNullable<updateTenantOptions> extends {
+    body?: infer B;
+} ? B : never);
+
+// @public
+const updateTenantClusterVariable$1: <ThrowOnError extends boolean = true>(options: Options<UpdateTenantClusterVariableData, ThrowOnError>) => RequestResult<UpdateTenantClusterVariableResponses, UpdateTenantClusterVariableErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "updateTenantClusterVariableOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type updateTenantClusterVariableBody = (NonNullable<updateTenantClusterVariableOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type UpdateTenantClusterVariableData = {
@@ -15758,6 +20922,23 @@ export type updateTenantClusterVariableInput = updateTenantClusterVariableBody &
     tenantId: updateTenantClusterVariablePathParam_tenantId;
     name: updateTenantClusterVariablePathParam_name;
 };
+
+// @public (undocumented)
+type updateTenantClusterVariableOptions = Parameters<typeof updateTenantClusterVariable$1>[0];
+
+// @public (undocumented)
+type updateTenantClusterVariablePathParam_name = (NonNullable<updateTenantClusterVariableOptions> extends {
+    path: {
+        name: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type updateTenantClusterVariablePathParam_tenantId = (NonNullable<updateTenantClusterVariableOptions> extends {
+    path: {
+        tenantId: infer P;
+    };
+} ? P : any);
 
 // @public (undocumented)
 export type UpdateTenantClusterVariableResponse = UpdateTenantClusterVariableResponses[keyof UpdateTenantClusterVariableResponses];
@@ -15797,12 +20978,32 @@ export type updateTenantInput = updateTenantBody & {
 };
 
 // @public (undocumented)
+type updateTenantOptions = Parameters<typeof updateTenant$1>[0];
+
+// @public (undocumented)
+type updateTenantPathParam_tenantId = (NonNullable<updateTenantOptions> extends {
+    path: {
+        tenantId: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type UpdateTenantResponse = UpdateTenantResponses[keyof UpdateTenantResponses];
 
 // @public (undocumented)
 export type UpdateTenantResponses = {
     200: TenantUpdateResult;
 };
+
+// @public
+const updateUser$1: <ThrowOnError extends boolean = true>(options: Options<UpdateUserData, ThrowOnError>) => RequestResult<UpdateUserResponses, UpdateUserErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "updateUserOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type updateUserBody = (NonNullable<updateUserOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type UpdateUserData = {
@@ -15834,12 +21035,32 @@ export type updateUserInput = updateUserBody & {
 };
 
 // @public (undocumented)
+type updateUserOptions = Parameters<typeof updateUser$1>[0];
+
+// @public (undocumented)
+type updateUserPathParam_username = (NonNullable<updateUserOptions> extends {
+    path: {
+        username: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
 export type UpdateUserResponse = UpdateUserResponses[keyof UpdateUserResponses];
 
 // @public (undocumented)
 export type UpdateUserResponses = {
     200: UserUpdateResult;
 };
+
+// @public
+const updateUserTask$1: <ThrowOnError extends boolean = true>(options: Options<UpdateUserTaskData, ThrowOnError>) => RequestResult<UpdateUserTaskResponses, UpdateUserTaskErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "updateUserTaskOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type updateUserTaskBody = (NonNullable<updateUserTaskOptions> extends {
+    body?: infer B;
+} ? B : never);
 
 // @public (undocumented)
 export type UpdateUserTaskData = {
@@ -15870,6 +21091,16 @@ export type UpdateUserTaskErrors = {
 export type updateUserTaskInput = updateUserTaskBody & {
     userTaskKey: updateUserTaskPathParam_userTaskKey;
 };
+
+// @public (undocumented)
+type updateUserTaskOptions = Parameters<typeof updateUserTask$1>[0];
+
+// @public (undocumented)
+type updateUserTaskPathParam_userTaskKey = (NonNullable<updateUserTaskOptions> extends {
+    path: {
+        userTaskKey: infer P;
+    };
+} ? P : any);
 
 // @public (undocumented)
 export type UpdateUserTaskResponse = UpdateUserTaskResponses[keyof UpdateUserTaskResponses];
@@ -16222,13 +21453,64 @@ export type UseSourceParentKeyInstruction = {
 };
 
 // @public (undocumented)
+class ValidationManager {
+    // Warning: (ae-forgotten-export) The symbol "ValidationSettings" needs to be exported by the entry point index.d.ts
+    constructor(settings: ValidationSettings, _logger?: Logger | undefined);
+    // (undocumented)
+    attachLogger(logger: Logger): void;
+    // (undocumented)
+    gateRequest(opId: string, schema: ZodTypeAny | undefined, data: any): Promise<any>;
+    // (undocumented)
+    gateResponse(opId: string, schema: ZodTypeAny | undefined, data: any): Promise<any>;
+    // Warning: (ae-forgotten-export) The symbol "ValidationMode_2" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    requestMode(): ValidationMode_2;
+    // (undocumented)
+    responseMode(): ValidationMode_2;
+    // (undocumented)
+    get settings(): ValidationSettings;
+    // (undocumented)
+    update(settings: ValidationSettings): void;
+}
+
+// @public (undocumented)
 export type ValidationMode = 'none' | 'warn' | 'strict' | 'fanatical';
+
+// @public (undocumented)
+type ValidationMode_2 = 'strict' | 'warn' | 'none' | 'fanatical';
+
+// @public (undocumented)
+interface ValidationSdkError extends Error {
+    // (undocumented)
+    issues?: unknown;
+    // (undocumented)
+    name: 'ValidationSdkError';
+    // (undocumented)
+    operationId: string;
+    // (undocumented)
+    side: 'request' | 'response';
+}
+
+// @public (undocumented)
+interface ValidationSettings {
+    // (undocumented)
+    req: ValidationMode_2;
+    // (undocumented)
+    res: ValidationMode_2;
+}
 
 // @public
 export class VariableCollector {
     constructor(queryNames: Iterable<string>);
     build(): Record<string, unknown>;
     ingest(items: Iterable<TypedVariableItem>): void;
+}
+
+// @public
+interface VariableConsistencyOptions {
+    pollIntervalMs?: number;
+    waitUpToMs: number;
 }
 
 // @public
@@ -16430,224 +21712,245 @@ export type WebappComponent = 'operate' | 'tasklist' | 'admin';
 // @public
 export type WithSearchPagination<C> = C & SearchPaginationApi<C>;
 
+// @public
+interface WorkerHandle {
+    // (undocumented)
+    on(event: 'message', listener: (msg: any) => void): this;
+    // (undocumented)
+    on(event: 'error', listener: (err: Error) => void): this;
+    // (undocumented)
+    on(event: 'exit', listener: (code: number) => void): this;
+    // (undocumented)
+    postMessage(value: unknown, transferList?: readonly unknown[]): void;
+    // (undocumented)
+    terminate(): Promise<number>;
+}
+
 // Warnings were encountered during analysis:
 //
-// dist/index-CiaP2VC7.d.ts:25871:9 - (ae-forgotten-export) The symbol "LogLevel" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:25872:9 - (ae-forgotten-export) The symbol "LogTransport" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26181:5 - (ae-forgotten-export) The symbol "InferOrUnknown" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26773:5 - (ae-forgotten-export) The symbol "VariableConsistencyOptions" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26775:5 - (ae-forgotten-export) The symbol "CollectClock" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26792:5 - (ae-forgotten-export) The symbol "activateAdHocSubProcessActivitiesPathParam_adHocSubProcessInstanceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26816:5 - (ae-forgotten-export) The symbol "assignClientToGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26817:5 - (ae-forgotten-export) The symbol "assignClientToGroupPathParam_clientId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26831:5 - (ae-forgotten-export) The symbol "assignClientToTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26832:5 - (ae-forgotten-export) The symbol "assignClientToTenantPathParam_clientId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26846:5 - (ae-forgotten-export) The symbol "assignGroupToTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26847:5 - (ae-forgotten-export) The symbol "assignGroupToTenantPathParam_groupId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26861:5 - (ae-forgotten-export) The symbol "assignMappingRuleToGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26862:5 - (ae-forgotten-export) The symbol "assignMappingRuleToGroupPathParam_mappingRuleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26876:5 - (ae-forgotten-export) The symbol "assignMappingRuleToTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26877:5 - (ae-forgotten-export) The symbol "assignMappingRuleToTenantPathParam_mappingRuleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26889:5 - (ae-forgotten-export) The symbol "assignProcessInstanceBusinessIdPathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26903:5 - (ae-forgotten-export) The symbol "assignRoleToClientPathParam_roleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26904:5 - (ae-forgotten-export) The symbol "assignRoleToClientPathParam_clientId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26918:5 - (ae-forgotten-export) The symbol "assignRoleToGroupPathParam_roleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26919:5 - (ae-forgotten-export) The symbol "assignRoleToGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26933:5 - (ae-forgotten-export) The symbol "assignRoleToMappingRulePathParam_roleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26934:5 - (ae-forgotten-export) The symbol "assignRoleToMappingRulePathParam_mappingRuleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26948:5 - (ae-forgotten-export) The symbol "assignRoleToTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26949:5 - (ae-forgotten-export) The symbol "assignRoleToTenantPathParam_roleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26963:5 - (ae-forgotten-export) The symbol "assignRoleToUserPathParam_roleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26964:5 - (ae-forgotten-export) The symbol "assignRoleToUserPathParam_username" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26976:5 - (ae-forgotten-export) The symbol "assignUserTaskPathParam_userTaskKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26990:5 - (ae-forgotten-export) The symbol "assignUserToGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:26991:5 - (ae-forgotten-export) The symbol "assignUserToGroupPathParam_username" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27005:5 - (ae-forgotten-export) The symbol "assignUserToTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27006:5 - (ae-forgotten-export) The symbol "assignUserToTenantPathParam_username" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27023:5 - (ae-forgotten-export) The symbol "cancelBatchOperationPathParam_batchOperationKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27036:5 - (ae-forgotten-export) The symbol "cancelProcessInstancePathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27055:5 - (ae-forgotten-export) The symbol "changeClusterModeQueryParam_mode" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27056:5 - (ae-forgotten-export) The symbol "changeClusterModeQueryParam_dryRun" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27075:5 - (ae-forgotten-export) The symbol "changeClusterModeAsClusterAdminQueryParam_mode" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27076:5 - (ae-forgotten-export) The symbol "changeClusterModeAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27077:5 - (ae-forgotten-export) The symbol "changeClusterModeAsClusterAdminQueryParam_dryRun" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27089:5 - (ae-forgotten-export) The symbol "completeJobPathParam_jobKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27101:5 - (ae-forgotten-export) The symbol "completeUserTaskPathParam_userTaskKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27145:5 - (ae-forgotten-export) The symbol "createDocumentQueryParam_storeId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27146:5 - (ae-forgotten-export) The symbol "createDocumentQueryParam_documentId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27168:5 - (ae-forgotten-export) The symbol "createDocumentLinkPathParam_documentId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27169:5 - (ae-forgotten-export) The symbol "createDocumentLinkQueryParam_storeId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27170:5 - (ae-forgotten-export) The symbol "createDocumentLinkQueryParam_contentHash" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27182:5 - (ae-forgotten-export) The symbol "createDocumentsQueryParam_storeId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27194:5 - (ae-forgotten-export) The symbol "createElementInstanceVariablesPathParam_elementInstanceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27241:5 - (ae-forgotten-export) The symbol "createTenantClusterVariablePathParam_tenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27255:5 - (ae-forgotten-export) The symbol "deleteAuthorizationPathParam_authorizationKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27267:5 - (ae-forgotten-export) The symbol "deleteDecisionInstancePathParam_decisionEvaluationKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27286:5 - (ae-forgotten-export) The symbol "deleteDocumentPathParam_documentId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27287:5 - (ae-forgotten-export) The symbol "deleteDocumentQueryParam_storeId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27296:5 - (ae-forgotten-export) The symbol "deleteGlobalClusterVariablePathParam_name" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27305:5 - (ae-forgotten-export) The symbol "deleteGlobalTaskListenerPathParam_id" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27314:5 - (ae-forgotten-export) The symbol "deleteGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27323:5 - (ae-forgotten-export) The symbol "deleteHistoryBackupPathParam_backupId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27337:5 - (ae-forgotten-export) The symbol "deleteHistoryBackupAsClusterAdminPathParam_backupId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27338:5 - (ae-forgotten-export) The symbol "deleteHistoryBackupAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27347:5 - (ae-forgotten-export) The symbol "deleteMappingRulePathParam_mappingRuleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27359:5 - (ae-forgotten-export) The symbol "deleteProcessInstancePathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27376:5 - (ae-forgotten-export) The symbol "deleteResourcePathParam_resourceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27385:5 - (ae-forgotten-export) The symbol "deleteRolePathParam_roleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27394:5 - (ae-forgotten-export) The symbol "deleteRuntimeBackupPathParam_backupId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27408:5 - (ae-forgotten-export) The symbol "deleteRuntimeBackupAsClusterAdminPathParam_backupId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27409:5 - (ae-forgotten-export) The symbol "deleteRuntimeBackupAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27419:5 - (ae-forgotten-export) The symbol "deleteRuntimeBackupStateAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27428:5 - (ae-forgotten-export) The symbol "deleteTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27442:5 - (ae-forgotten-export) The symbol "deleteTenantClusterVariablePathParam_tenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27443:5 - (ae-forgotten-export) The symbol "deleteTenantClusterVariablePathParam_name" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27452:5 - (ae-forgotten-export) The symbol "deleteUserPathParam_username" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27479:5 - (ae-forgotten-export) The symbol "failJobPathParam_jobKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27488:5 - (ae-forgotten-export) The symbol "getAgentDefinitionPathParam_agentDefinitionKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27493:5 - (ae-forgotten-export) The symbol "ConsistencyOptions" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27502:5 - (ae-forgotten-export) The symbol "getAgentInstancePathParam_agentInstanceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27516:5 - (ae-forgotten-export) The symbol "getAuditLogPathParam_auditLogKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27531:5 - (ae-forgotten-export) The symbol "getAuthorizationPathParam_authorizationKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27545:5 - (ae-forgotten-export) The symbol "getBatchOperationPathParam_batchOperationKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27565:5 - (ae-forgotten-export) The symbol "getDecisionDefinitionPathParam_decisionDefinitionKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27579:5 - (ae-forgotten-export) The symbol "getDecisionDefinitionXmlPathParam_decisionDefinitionKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27593:5 - (ae-forgotten-export) The symbol "getDecisionInstancePathParam_decisionEvaluationInstanceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27607:5 - (ae-forgotten-export) The symbol "getDecisionRequirementsPathParam_decisionRequirementsKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27621:5 - (ae-forgotten-export) The symbol "getDecisionRequirementsXmlPathParam_decisionRequirementsKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27645:5 - (ae-forgotten-export) The symbol "getDocumentPathParam_documentId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27646:5 - (ae-forgotten-export) The symbol "getDocumentQueryParam_storeId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27647:5 - (ae-forgotten-export) The symbol "getDocumentQueryParam_contentHash" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27656:5 - (ae-forgotten-export) The symbol "getElementInstancePathParam_elementInstanceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27671:5 - (ae-forgotten-export) The symbol "getFormByKeyPathParam_formKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27685:5 - (ae-forgotten-export) The symbol "getGlobalClusterVariablePathParam_name" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27709:5 - (ae-forgotten-export) The symbol "getGlobalJobStatisticsQueryParam_from" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27710:5 - (ae-forgotten-export) The symbol "getGlobalJobStatisticsQueryParam_to" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27711:5 - (ae-forgotten-export) The symbol "getGlobalJobStatisticsQueryParam_jobType" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27725:5 - (ae-forgotten-export) The symbol "getGlobalTaskListenerPathParam_id" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27739:5 - (ae-forgotten-export) The symbol "getGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27753:5 - (ae-forgotten-export) The symbol "getHistoryBackupPathParam_backupId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27767:5 - (ae-forgotten-export) The symbol "getHistoryBackupAsClusterAdminPathParam_backupId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27768:5 - (ae-forgotten-export) The symbol "getHistoryBackupAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27777:5 - (ae-forgotten-export) The symbol "getIncidentPathParam_incidentKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27832:5 - (ae-forgotten-export) The symbol "getMappingRulePathParam_mappingRuleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27846:5 - (ae-forgotten-export) The symbol "getProcessDefinitionPathParam_processDefinitionKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27893:5 - (ae-forgotten-export) The symbol "getProcessDefinitionStatisticsPathParam_processDefinitionKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27907:5 - (ae-forgotten-export) The symbol "getProcessDefinitionXmlPathParam_processDefinitionKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27921:5 - (ae-forgotten-export) The symbol "getProcessInstancePathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27935:5 - (ae-forgotten-export) The symbol "getProcessInstanceCallHierarchyPathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27949:5 - (ae-forgotten-export) The symbol "getProcessInstanceSequenceFlowsPathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27963:5 - (ae-forgotten-export) The symbol "getProcessInstanceStatisticsPathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:27997:5 - (ae-forgotten-export) The symbol "getProcessInstanceWaitStateStatisticsPathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28011:5 - (ae-forgotten-export) The symbol "getResourcePathParam_resourceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28025:5 - (ae-forgotten-export) The symbol "getResourceContentPathParam_resourceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28039:5 - (ae-forgotten-export) The symbol "getResourceContentBinaryPathParam_resourceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28054:5 - (ae-forgotten-export) The symbol "getRolePathParam_roleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28068:5 - (ae-forgotten-export) The symbol "getRuntimeBackupPathParam_backupId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28082:5 - (ae-forgotten-export) The symbol "getRuntimeBackupAsClusterAdminPathParam_backupId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28083:5 - (ae-forgotten-export) The symbol "getRuntimeBackupAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28093:5 - (ae-forgotten-export) The symbol "getRuntimeBackupStateAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28102:5 - (ae-forgotten-export) The symbol "getStartProcessFormPathParam_processDefinitionKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28118:5 - (ae-forgotten-export) The symbol "getTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28137:5 - (ae-forgotten-export) The symbol "getTenantClusterVariablePathParam_tenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28138:5 - (ae-forgotten-export) The symbol "getTenantClusterVariablePathParam_name" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28168:5 - (ae-forgotten-export) The symbol "getUsageMetricsQueryParam_startTime" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28169:5 - (ae-forgotten-export) The symbol "getUsageMetricsQueryParam_endTime" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28170:5 - (ae-forgotten-export) The symbol "getUsageMetricsQueryParam_tenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28171:5 - (ae-forgotten-export) The symbol "getUsageMetricsQueryParam_withTenants" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28185:5 - (ae-forgotten-export) The symbol "getUserPathParam_username" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28199:5 - (ae-forgotten-export) The symbol "getUserTaskPathParam_userTaskKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28213:5 - (ae-forgotten-export) The symbol "getUserTaskFormPathParam_userTaskKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28227:5 - (ae-forgotten-export) The symbol "getVariablePathParam_variableKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28246:5 - (ae-forgotten-export) The symbol "listHistoryBackupsQueryParam_prefix" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28247:5 - (ae-forgotten-export) The symbol "listHistoryBackupsQueryParam_verbose" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28266:5 - (ae-forgotten-export) The symbol "listHistoryBackupsAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28267:5 - (ae-forgotten-export) The symbol "listHistoryBackupsAsClusterAdminQueryParam_prefix" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28268:5 - (ae-forgotten-export) The symbol "listHistoryBackupsAsClusterAdminQueryParam_verbose" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28277:5 - (ae-forgotten-export) The symbol "listRuntimeBackupsQueryParam_prefix" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28291:5 - (ae-forgotten-export) The symbol "listRuntimeBackupsAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28292:5 - (ae-forgotten-export) The symbol "listRuntimeBackupsAsClusterAdminQueryParam_prefix" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28309:5 - (ae-forgotten-export) The symbol "lookupUserTaskPathParam_userTaskKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28321:5 - (ae-forgotten-export) The symbol "migrateProcessInstancePathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28338:5 - (ae-forgotten-export) The symbol "modifyProcessInstancePathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28352:5 - (ae-forgotten-export) The symbol "pauseClusterExportingQueryParam_soft" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28361:5 - (ae-forgotten-export) The symbol "pauseExportingQueryParam_soft" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28384:5 - (ae-forgotten-export) The symbol "resolveIncidentPathParam_incidentKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28398:5 - (ae-forgotten-export) The symbol "resolveProcessInstanceIncidentsPathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28415:5 - (ae-forgotten-export) The symbol "restoreQueryParam_dryRun" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28432:5 - (ae-forgotten-export) The symbol "restoreAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28433:5 - (ae-forgotten-export) The symbol "restoreAsClusterAdminQueryParam_dryRun" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28445:5 - (ae-forgotten-export) The symbol "resumeBatchOperationPathParam_batchOperationKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28464:5 - (ae-forgotten-export) The symbol "resumeProcessInstancePathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28491:5 - (ae-forgotten-export) The symbol "searchAgentInstanceHistoryPathParam_agentInstanceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28558:5 - (ae-forgotten-export) The symbol "searchClientsForGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28575:5 - (ae-forgotten-export) The symbol "searchClientsForRolePathParam_roleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28592:5 - (ae-forgotten-export) The symbol "searchClientsForTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28609:5 - (ae-forgotten-export) The symbol "searchClusterVariablesQueryParam_truncateValues" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28666:5 - (ae-forgotten-export) The symbol "searchElementInstanceIncidentsPathParam_elementInstanceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28713:5 - (ae-forgotten-export) The symbol "searchGroupIdsForTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28740:5 - (ae-forgotten-export) The symbol "searchGroupsForRolePathParam_roleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28787:5 - (ae-forgotten-export) The symbol "searchMappingRulesForGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28804:5 - (ae-forgotten-export) The symbol "searchMappingRulesForRolePathParam_roleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28821:5 - (ae-forgotten-export) The symbol "searchMappingRulesForTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28868:5 - (ae-forgotten-export) The symbol "searchProcessDefinitionVariableNamesPathParam_processDefinitionKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28885:5 - (ae-forgotten-export) The symbol "searchProcessInstanceIncidentsPathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28932:5 - (ae-forgotten-export) The symbol "searchRolesForGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28949:5 - (ae-forgotten-export) The symbol "searchRolesForTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:28986:5 - (ae-forgotten-export) The symbol "searchUsersForGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29003:5 - (ae-forgotten-export) The symbol "searchUsersForRolePathParam_roleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29020:5 - (ae-forgotten-export) The symbol "searchUsersForTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29037:5 - (ae-forgotten-export) The symbol "searchUserTaskAuditLogsPathParam_userTaskKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29059:5 - (ae-forgotten-export) The symbol "searchUserTaskEffectiveVariablesPathParam_userTaskKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29060:5 - (ae-forgotten-export) The symbol "searchUserTaskEffectiveVariablesQueryParam_truncateValues" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29092:5 - (ae-forgotten-export) The symbol "searchUserTaskVariablesPathParam_userTaskKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29093:5 - (ae-forgotten-export) The symbol "searchUserTaskVariablesQueryParam_truncateValues" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29110:5 - (ae-forgotten-export) The symbol "searchVariablesQueryParam_truncateValues" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29127:5 - (ae-forgotten-export) The symbol "suspendBatchOperationPathParam_batchOperationKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29144:5 - (ae-forgotten-export) The symbol "suspendProcessInstancePathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29159:5 - (ae-forgotten-export) The symbol "syncRuntimeBackupStateAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29176:5 - (ae-forgotten-export) The symbol "takeHistoryBackupAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29193:5 - (ae-forgotten-export) The symbol "takeRuntimeBackupAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29205:5 - (ae-forgotten-export) The symbol "throwJobErrorPathParam_jobKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29217:5 - (ae-forgotten-export) The symbol "triggerClusterRebalanceQueryParam_dryRun" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29231:5 - (ae-forgotten-export) The symbol "unassignClientFromGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29232:5 - (ae-forgotten-export) The symbol "unassignClientFromGroupPathParam_clientId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29246:5 - (ae-forgotten-export) The symbol "unassignClientFromTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29247:5 - (ae-forgotten-export) The symbol "unassignClientFromTenantPathParam_clientId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29261:5 - (ae-forgotten-export) The symbol "unassignGroupFromTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29262:5 - (ae-forgotten-export) The symbol "unassignGroupFromTenantPathParam_groupId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29276:5 - (ae-forgotten-export) The symbol "unassignMappingRuleFromGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29277:5 - (ae-forgotten-export) The symbol "unassignMappingRuleFromGroupPathParam_mappingRuleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29291:5 - (ae-forgotten-export) The symbol "unassignMappingRuleFromTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29292:5 - (ae-forgotten-export) The symbol "unassignMappingRuleFromTenantPathParam_mappingRuleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29306:5 - (ae-forgotten-export) The symbol "unassignRoleFromClientPathParam_roleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29307:5 - (ae-forgotten-export) The symbol "unassignRoleFromClientPathParam_clientId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29321:5 - (ae-forgotten-export) The symbol "unassignRoleFromGroupPathParam_roleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29322:5 - (ae-forgotten-export) The symbol "unassignRoleFromGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29336:5 - (ae-forgotten-export) The symbol "unassignRoleFromMappingRulePathParam_roleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29337:5 - (ae-forgotten-export) The symbol "unassignRoleFromMappingRulePathParam_mappingRuleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29351:5 - (ae-forgotten-export) The symbol "unassignRoleFromTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29352:5 - (ae-forgotten-export) The symbol "unassignRoleFromTenantPathParam_roleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29366:5 - (ae-forgotten-export) The symbol "unassignRoleFromUserPathParam_roleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29367:5 - (ae-forgotten-export) The symbol "unassignRoleFromUserPathParam_username" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29381:5 - (ae-forgotten-export) The symbol "unassignUserFromGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29382:5 - (ae-forgotten-export) The symbol "unassignUserFromGroupPathParam_username" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29396:5 - (ae-forgotten-export) The symbol "unassignUserFromTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29397:5 - (ae-forgotten-export) The symbol "unassignUserFromTenantPathParam_username" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29406:5 - (ae-forgotten-export) The symbol "unassignUserTaskPathParam_userTaskKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29418:5 - (ae-forgotten-export) The symbol "updateAgentInstancePathParam_agentInstanceKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29430:5 - (ae-forgotten-export) The symbol "updateAuthorizationPathParam_authorizationKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29442:5 - (ae-forgotten-export) The symbol "updateGlobalClusterVariablePathParam_name" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29454:5 - (ae-forgotten-export) The symbol "updateGlobalTaskListenerPathParam_id" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29466:5 - (ae-forgotten-export) The symbol "updateGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29478:5 - (ae-forgotten-export) The symbol "updateJobPathParam_jobKey" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29495:5 - (ae-forgotten-export) The symbol "updateMappingRulePathParam_mappingRuleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29507:5 - (ae-forgotten-export) The symbol "updateRolePathParam_roleId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29519:5 - (ae-forgotten-export) The symbol "updateTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29536:5 - (ae-forgotten-export) The symbol "updateTenantClusterVariablePathParam_tenantId" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29537:5 - (ae-forgotten-export) The symbol "updateTenantClusterVariablePathParam_name" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29549:5 - (ae-forgotten-export) The symbol "updateUserPathParam_username" needs to be exported by the entry point index.d.ts
-// dist/index-CiaP2VC7.d.ts:29561:5 - (ae-forgotten-export) The symbol "updateUserTaskPathParam_userTaskKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "SerializerOptions" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "ArrayStyle" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "ObjectStyle" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "StreamEvent" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "Middleware" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "ResolvedRequestOptions" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "ClientMeta" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "LogLevel" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "LogTransport" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "InferOrUnknown" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "VariableConsistencyOptions" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "CollectClock" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "activateAdHocSubProcessActivitiesPathParam_adHocSubProcessInstanceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignClientToGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignClientToGroupPathParam_clientId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignClientToTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignClientToTenantPathParam_clientId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignGroupToTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignGroupToTenantPathParam_groupId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignMappingRuleToGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignMappingRuleToGroupPathParam_mappingRuleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignMappingRuleToTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignMappingRuleToTenantPathParam_mappingRuleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignProcessInstanceBusinessIdPathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignRoleToClientPathParam_roleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignRoleToClientPathParam_clientId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignRoleToGroupPathParam_roleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignRoleToGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignRoleToMappingRulePathParam_roleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignRoleToMappingRulePathParam_mappingRuleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignRoleToTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignRoleToTenantPathParam_roleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignRoleToUserPathParam_roleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignRoleToUserPathParam_username" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignUserTaskPathParam_userTaskKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignUserToGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignUserToGroupPathParam_username" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignUserToTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "assignUserToTenantPathParam_username" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "cancelBatchOperationPathParam_batchOperationKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "cancelProcessInstancePathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "changeClusterModeQueryParam_mode" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "changeClusterModeQueryParam_dryRun" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "changeClusterModeAsClusterAdminQueryParam_mode" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "changeClusterModeAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "changeClusterModeAsClusterAdminQueryParam_dryRun" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "completeJobPathParam_jobKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "completeUserTaskPathParam_userTaskKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "createDocumentQueryParam_storeId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "createDocumentQueryParam_documentId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "createDocumentLinkPathParam_documentId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "createDocumentLinkQueryParam_storeId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "createDocumentLinkQueryParam_contentHash" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "createDocumentsQueryParam_storeId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "createElementInstanceVariablesPathParam_elementInstanceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "createTenantClusterVariablePathParam_tenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "deleteAuthorizationPathParam_authorizationKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "deleteDecisionInstancePathParam_decisionEvaluationKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "deleteDocumentPathParam_documentId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "deleteDocumentQueryParam_storeId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "deleteGlobalClusterVariablePathParam_name" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "deleteGlobalTaskListenerPathParam_id" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "deleteGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "deleteHistoryBackupPathParam_backupId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "deleteHistoryBackupAsClusterAdminPathParam_backupId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "deleteHistoryBackupAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "deleteMappingRulePathParam_mappingRuleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "deleteProcessInstancePathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "deleteResourcePathParam_resourceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "deleteRolePathParam_roleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "deleteRuntimeBackupPathParam_backupId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "deleteRuntimeBackupAsClusterAdminPathParam_backupId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "deleteRuntimeBackupAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "deleteRuntimeBackupStateAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "deleteTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "deleteTenantClusterVariablePathParam_tenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "deleteTenantClusterVariablePathParam_name" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "deleteUserPathParam_username" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "failJobPathParam_jobKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getAgentDefinitionPathParam_agentDefinitionKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "ConsistencyOptions" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getAgentInstancePathParam_agentInstanceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getAuditLogPathParam_auditLogKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getAuthorizationPathParam_authorizationKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getBatchOperationPathParam_batchOperationKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getDecisionDefinitionPathParam_decisionDefinitionKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getDecisionDefinitionXmlPathParam_decisionDefinitionKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getDecisionInstancePathParam_decisionEvaluationInstanceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getDecisionRequirementsPathParam_decisionRequirementsKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getDecisionRequirementsXmlPathParam_decisionRequirementsKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getDocumentPathParam_documentId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getDocumentQueryParam_storeId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getDocumentQueryParam_contentHash" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getElementInstancePathParam_elementInstanceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getFormByKeyPathParam_formKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getGlobalClusterVariablePathParam_name" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getGlobalJobStatisticsQueryParam_from" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getGlobalJobStatisticsQueryParam_to" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getGlobalJobStatisticsQueryParam_jobType" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getGlobalTaskListenerPathParam_id" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getHistoryBackupPathParam_backupId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getHistoryBackupAsClusterAdminPathParam_backupId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getHistoryBackupAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getIncidentPathParam_incidentKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getMappingRulePathParam_mappingRuleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getProcessDefinitionPathParam_processDefinitionKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getProcessDefinitionStatisticsPathParam_processDefinitionKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getProcessDefinitionXmlPathParam_processDefinitionKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getProcessInstancePathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getProcessInstanceCallHierarchyPathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getProcessInstanceSequenceFlowsPathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getProcessInstanceStatisticsPathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getProcessInstanceWaitStateStatisticsPathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getResourcePathParam_resourceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getResourceContentPathParam_resourceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getResourceContentBinaryPathParam_resourceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getRolePathParam_roleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getRuntimeBackupPathParam_backupId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getRuntimeBackupAsClusterAdminPathParam_backupId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getRuntimeBackupAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getRuntimeBackupStateAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getStartProcessFormPathParam_processDefinitionKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getTenantClusterVariablePathParam_tenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getTenantClusterVariablePathParam_name" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getUsageMetricsQueryParam_startTime" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getUsageMetricsQueryParam_endTime" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getUsageMetricsQueryParam_tenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getUsageMetricsQueryParam_withTenants" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getUserPathParam_username" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getUserTaskPathParam_userTaskKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getUserTaskFormPathParam_userTaskKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "getVariablePathParam_variableKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "listHistoryBackupsQueryParam_prefix" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "listHistoryBackupsQueryParam_verbose" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "listHistoryBackupsAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "listHistoryBackupsAsClusterAdminQueryParam_prefix" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "listHistoryBackupsAsClusterAdminQueryParam_verbose" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "listRuntimeBackupsQueryParam_prefix" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "listRuntimeBackupsAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "listRuntimeBackupsAsClusterAdminQueryParam_prefix" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "lookupUserTaskPathParam_userTaskKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "migrateProcessInstancePathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "modifyProcessInstancePathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "pauseClusterExportingQueryParam_soft" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "pauseExportingQueryParam_soft" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "resolveIncidentPathParam_incidentKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "resolveProcessInstanceIncidentsPathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "restoreQueryParam_dryRun" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "restoreAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "restoreAsClusterAdminQueryParam_dryRun" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "resumeBatchOperationPathParam_batchOperationKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "resumeProcessInstancePathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "searchAgentInstanceHistoryPathParam_agentInstanceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "searchClientsForGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "searchClientsForRolePathParam_roleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "searchClientsForTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "searchClusterVariablesQueryParam_truncateValues" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "searchElementInstanceIncidentsPathParam_elementInstanceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "searchGroupIdsForTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "searchGroupsForRolePathParam_roleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "searchMappingRulesForGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "searchMappingRulesForRolePathParam_roleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "searchMappingRulesForTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "searchProcessDefinitionVariableNamesPathParam_processDefinitionKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "searchProcessInstanceIncidentsPathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "searchRolesForGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "searchRolesForTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "searchUsersForGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "searchUsersForRolePathParam_roleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "searchUsersForTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "searchUserTaskAuditLogsPathParam_userTaskKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "searchUserTaskEffectiveVariablesPathParam_userTaskKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "searchUserTaskEffectiveVariablesQueryParam_truncateValues" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "searchUserTaskVariablesPathParam_userTaskKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "searchUserTaskVariablesQueryParam_truncateValues" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "searchVariablesQueryParam_truncateValues" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "suspendBatchOperationPathParam_batchOperationKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "suspendProcessInstancePathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "syncRuntimeBackupStateAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "takeHistoryBackupAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "takeRuntimeBackupAsClusterAdminQueryParam_physicalTenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "throwJobErrorPathParam_jobKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "triggerClusterRebalanceQueryParam_dryRun" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "unassignClientFromGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "unassignClientFromGroupPathParam_clientId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "unassignClientFromTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "unassignClientFromTenantPathParam_clientId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "unassignGroupFromTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "unassignGroupFromTenantPathParam_groupId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "unassignMappingRuleFromGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "unassignMappingRuleFromGroupPathParam_mappingRuleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "unassignMappingRuleFromTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "unassignMappingRuleFromTenantPathParam_mappingRuleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "unassignRoleFromClientPathParam_roleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "unassignRoleFromClientPathParam_clientId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "unassignRoleFromGroupPathParam_roleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "unassignRoleFromGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "unassignRoleFromMappingRulePathParam_roleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "unassignRoleFromMappingRulePathParam_mappingRuleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "unassignRoleFromTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "unassignRoleFromTenantPathParam_roleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "unassignRoleFromUserPathParam_roleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "unassignRoleFromUserPathParam_username" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "unassignUserFromGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "unassignUserFromGroupPathParam_username" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "unassignUserFromTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "unassignUserFromTenantPathParam_username" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "unassignUserTaskPathParam_userTaskKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "updateAgentInstancePathParam_agentInstanceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "updateAuthorizationPathParam_authorizationKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "updateGlobalClusterVariablePathParam_name" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "updateGlobalTaskListenerPathParam_id" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "updateGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "updateJobPathParam_jobKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "updateMappingRulePathParam_mappingRuleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "updateRolePathParam_roleId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "updateTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "updateTenantClusterVariablePathParam_tenantId" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "updateTenantClusterVariablePathParam_name" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "updateUserPathParam_username" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "updateUserTaskPathParam_userTaskKey" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
