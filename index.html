@@ -718,6 +718,25 @@ timeouts) and <strong>observational timestamps</strong> (log, telemetry and supp
 <li>Incoming <code>customHeaders</code> parsed with <code>customHeadersSchema</code> if provided.</li>
 <li>Completion payload <code>variables</code> parsed with <code>outputSchema</code> (warns &amp; proceeds on failure).</li>
 </ul>
+<h3 id="job-variables-are-untrusted-input" class="tsd-anchor-link">Job variables are untrusted input<a href="#job-variables-are-untrusted-input" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p><code>job.variables</code> reach your handler from the Orchestration Cluster, but their <strong>content is set by whoever started the process instance or wrote to it since</strong> — a form submission, an API caller, an upstream service, a message payload. Treat every value as attacker-controlled: validate it before using it in a database query, a file path, a shell command, an outbound URL or a template.</p>
+<p><code>job.customHeaders</code> have a different provenance: they are defined during modelling and reach you from the deployed process model, so they are controlled by whoever deploys processes rather than by whoever starts an instance. That is a narrower trust boundary, not an absent one — validate them too if your handler uses a header to pick a code path, a destination or a credential.</p>
+<p>What the SDK does:</p>
+<ul>
+<li><strong>JSON only.</strong> Variables are deserialized as plain JSON. No constructor is invoked and no user class is instantiated from the payload — there is no mechanism in the worker path that can turn a payload into an arbitrary object.</li>
+<li><strong>No sharing between jobs.</strong> Each activated job owns its own variables object. Nothing is shared or mutated across concurrently running jobs, including across threads in a threaded worker.</li>
+</ul>
+<p>What the SDK does <strong>not</strong> do:</p>
+<ul>
+<li><strong>No size or depth limit.</strong> The SDK enforces no limit of its own on the size or nesting depth of a variable payload, over and above whatever the cluster accepts. If you need a bound, impose it in your schema (<code>z.string().max(...)</code>, a closed object shape) or in your handler.</li>
+<li><strong>No shape validation by default.</strong> <code>validateSchemas</code> is <code>false</code> unless you set it.</li>
+</ul>
+<p>Constraining the shape of what reaches your handler is what <code>validateSchemas</code> with an <code>inputSchema</code> is for. With it enabled, variables that do not match the schema are rejected and the job is failed with a validation error <strong>before</strong> your handler runs:</p>
+<!-- snippet-source: examples/readme.ts | regions: ReadmeJobVariablesUntrusted -->
+<pre><code class="ts"><span class="hl-5">client</span><span class="hl-1">.</span><span class="hl-0">createJobWorker</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-5">jobType:</span><span class="hl-1"> </span><span class="hl-2">&#39;charge-card&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-5">validateSchemas:</span><span class="hl-1"> </span><span class="hl-6">true</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-5">inputSchema:</span><span class="hl-1"> </span><span class="hl-5">z</span><br/><span class="hl-1">    .</span><span class="hl-0">object</span><span class="hl-1">({</span><br/><span class="hl-1">      </span><span class="hl-5">orderId:</span><span class="hl-1"> </span><span class="hl-5">z</span><span class="hl-1">.</span><span class="hl-0">string</span><span class="hl-1">().</span><span class="hl-0">uuid</span><span class="hl-1">(),</span><br/><span class="hl-1">      </span><span class="hl-5">amountCents:</span><span class="hl-1"> </span><span class="hl-5">z</span><span class="hl-1">.</span><span class="hl-0">number</span><span class="hl-1">().</span><span class="hl-0">int</span><span class="hl-1">().</span><span class="hl-0">positive</span><span class="hl-1">(),</span><br/><span class="hl-1">    })</span><br/><span class="hl-1">    .</span><span class="hl-0">strict</span><span class="hl-1">(), </span><span class="hl-3">// reject variables the process sent that this handler does not expect</span><br/><span class="hl-1">  </span><span class="hl-0">jobHandler</span><span class="hl-5">:</span><span class="hl-1"> </span><span class="hl-6">async</span><span class="hl-1"> (</span><span class="hl-5">job</span><span class="hl-1">) </span><span class="hl-6">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-3">// job.variables is now known to match the schema</span><br/><span class="hl-1">    </span><span class="hl-4">return</span><span class="hl-1"> </span><span class="hl-5">job</span><span class="hl-1">.</span><span class="hl-0">complete</span><span class="hl-1">();</span><br/><span class="hl-1">  },</span><br/><span class="hl-1">});</span>
+</code><button type="button">Copy</button></pre>
+
+<p>Without it, <code>job.variables</code> is handed to your handler exactly as deserialized, and the TypeScript type you get from <code>inputSchema</code> is a compile-time convenience only — it is not enforced at runtime.</p>
 <h3 id="graceful-shutdown" class="tsd-anchor-link">Graceful Shutdown<a href="#graceful-shutdown" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <p>Use <code>await worker.stopGracefully({ waitUpToMs?, checkIntervalMs? })</code> to drain without force‑cancelling the current activation request.</p>
 <!-- snippet-source: examples/readme.ts | regions: ReadmeJobWorkerGraceful -->
@@ -1483,6 +1502,7 @@ from the package entry point.</p>
 <li><a href="#job-corrections-user-task-listeners"><span>Job <wbr/>Corrections (<wbr/>User <wbr/>Task <wbr/>Listeners)</span></a></li>
 <li><a href="#concurrency-backpressure"><span>Concurrency &amp; <wbr/>Backpressure</span></a></li>
 <li><a href="#validation-1"><span>Validation</span></a></li>
+<li><a href="#job-variables-are-untrusted-input"><span>Job variables are untrusted input</span></a></li>
 <li><a href="#graceful-shutdown"><span>Graceful <wbr/>Shutdown</span></a></li>
 <li><a href="#multiple-workers"><span>Multiple <wbr/>Workers</span></a></li>
 <li><a href="#startup-jitter"><span>Startup <wbr/>Jitter</span></a></li>
