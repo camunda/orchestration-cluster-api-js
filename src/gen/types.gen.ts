@@ -9673,13 +9673,12 @@ export type ProcessDefinitionFilter = {
     /**
      * Filter by the process definition's state.
      * When not set, process definitions in any state are returned.
-     * Set to `ACTIVE` to exclude draining and deleted definitions (recommended for most use cases).
-     * Set to `SUSPENDED` to return only definitions that are suspended, so that no new
-     * process instances can be created from them.
+     * Set to `ACTIVE` to exclude draining, deleted, and suspended definitions (recommended for most use cases).
      * Set to `DRAINING` to return only definitions that are being deleted but still have
      * active process instances draining.
      * Set to `DELETED` to return only definitions that have been deleted but are still
      * retained in secondary storage.
+     * Set to `SUSPENDED` to return only definitions that are suspended: no new process instances can be created from them.
      *
      */
     state?: 'ACTIVE' | 'DRAINING' | 'DELETED' | 'SUSPENDED';
@@ -9729,7 +9728,7 @@ export type ProcessDefinitionResult = {
      * The state of this process definition.
      * `DRAINING` indicates the definition is being deleted but still has active process
      * instances draining before it is removed.
-     * `SUSPENDED` indicates no new process instances can be created from the definition.
+     * `SUSPENDED` indicates no new process instances can be created from this definition; it returns to `ACTIVE` when resumed.
      *
      */
     state: 'ACTIVE' | 'DRAINING' | 'DELETED' | 'SUSPENDED';
@@ -24533,7 +24532,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:563b0c89df420cb7fdc1727e47ce10625ff5e3a6bc20f714ec7c18b40fc974f5
+// specHash=sha256:914f89f26245982b7e11d9a3bdcbfccdc228e07fbf7bd7008279ed1d494d70ed
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
