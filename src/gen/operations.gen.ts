@@ -1434,7 +1434,7 @@ export function activateJobs(core: CamundaCore, arg: any, options?: OperationOpt
     const _body = arg;
     let envelope: any = {};
     envelope.body = _body;
-    if (envelope.body && rt._config.defaultTenantId !== undefined && rt._config.defaultTenantId !== null && (!Array.isArray(envelope.body.tenantIds) || envelope.body.tenantIds.length === 0)) {
+    if (envelope.body && envelope.body.tenantFilter !== 'ASSIGNED' && rt._config.defaultTenantId !== undefined && rt._config.defaultTenantId !== null && (!Array.isArray(envelope.body.tenantIds) || envelope.body.tenantIds.length === 0)) {
       envelope.body = { ...envelope.body, tenantIds: [rt._config.defaultTenantId] };
       rt._log.trace(() => ['tenant.default.inject', { op: 'activateJobs', tenantIds: [rt._config.defaultTenantId] }]);
     }
