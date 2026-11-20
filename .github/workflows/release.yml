@@ -303,7 +303,9 @@ jobs:
       - name: API compatibility gate (stable branches)
         if: steps.next_version.outputs.publish_needed == 'true' && startsWith(github.ref_name, 'stable/')
         env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          # Not every stable branch creates the app token (stable/9 releases with
+          # GITHUB_TOKEN); the job token can read the PRs a commit came from.
+          GH_TOKEN: ${{ steps.app-token.outputs.token || github.token }}
           DISPATCH_APPROVED: ${{ github.event_name == 'workflow_dispatch' && inputs.api_break_approved }}
           API_COMPAT_BASELINES: ${{ runner.temp }}/api-compat-baselines
         run: |
