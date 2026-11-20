@@ -1,0 +1,56 @@
+/**
+ * API Extractor configuration for the public API surface guard (issue #700).
+ *
+ * One report per public entry point is written to etc/<entry>.api.md and
+ * committed. CI runs `npm run api:check` after the tsup build; any difference
+ * between the freshly extracted report and the committed one is a public API
+ * change and fails the build with a readable diff.
+ *
+ * `mainEntryPointFilePath` is a placeholder — scripts/api-report.ts runs API
+ * Extractor once per entry point, substituting the real path. The other entry
+ * points (`./logger`, `./fn`, `./effect`, and the `#platform` node/browser
+ * implementations) are public via package.json "exports"/"imports".
+ */
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
+
+  "mainEntryPointFilePath": "<projectFolder>/dist/index.d.ts",
+
+  "apiReport": {
+    "enabled": true,
+    // <entryPointName> is substituted by scripts/api-report.ts per entry point
+    // (index, logger, fn, effect, platform-node, platform-browser).
+    "reportFileName": "<entryPointName>.api.md",
+    "reportFolder": "<projectFolder>/etc/",
+    "reportTempFolder": "<projectFolder>/etc/temp/"
+  },
+
+  "docModel": {
+    "enabled": false
+  },
+
+  "dtsRollup": {
+    "enabled": false
+  },
+
+  "tsdocMetadata": {
+    "enabled": false
+  },
+
+  "messages": {
+    "compilerMessageReporting": {
+      "default": { "logLevel": "warning" }
+    },
+    "extractorMessageReporting": {
+      "default": { "logLevel": "warning", "addToApiReportFile": true },
+      // Internal symbols reachable from the public surface are reported with
+      // their real names by tsup's declaration bundler; missing release tags
+      // are the norm in this codebase (TSDoc is not enforced).
+      "ae-missing-release-tag": { "logLevel": "none" },
+      "ae-internal-missing-underscore": { "logLevel": "none" }
+    },
+    "tsdocMessageReporting": {
+      "default": { "logLevel": "none" }
+    }
+  }
+}

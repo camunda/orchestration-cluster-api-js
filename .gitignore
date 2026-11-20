@@ -167,3 +167,6 @@ external-spec/upstream/**/.tmp*
 
 # API compatibility check work dir (scripts/api-compat.ts)
 .api-compat/
+
+# API Extractor check-mode scratch dir (scripts/api-report.ts)
+etc/temp/

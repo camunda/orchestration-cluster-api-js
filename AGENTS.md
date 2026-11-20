@@ -199,6 +199,12 @@ npm run api-compat -- --baseline <dir> --current <dir>   # two unpacked packages
 
 Tests: `tests/api-compat.test.ts` covers each kind of break and of compatible change. When you change the checker, keep it green against real releases too: a release compared with itself must report nothing.
 
+## Public API surface reports (`etc/*.api.md`)
+
+Every public entry point (`index`, `logger`, `fn`, `effect`, `#platform` node/browser) has a committed API Extractor report in `etc/*.api.md`. `npm run build` ends with `npm run api:check` (`scripts/api-report.ts`), which fails with a readable diff when the built declarations no longer match the committed reports — i.e. when the public API surface changed for any reason (spec bump, bundler/generator/hook change, hand edit). This is the change-detection complement to the stable-branch compatibility gate above: the reports flag *any* public API change against the branch's own baseline, whether or not it is breaking.
+
+When it fails on an intentional change: run `npm run api:update`, review the `etc/*.api.md` diff (that diff **is** the public API review surface), and commit it with the PR. If the diff removes or narrows anything, the change is breaking — say so with a `BREAKING CHANGE:` footer. Reports are LF-normalized and timestamp-free, so a no-op dependency bump produces no diff. Tests: `tests/api-report.test.ts`.
+
 ## Pre-push checklist
 
 Before pushing any commits, **always** run `npm run build`. This:
