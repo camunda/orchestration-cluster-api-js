@@ -286,6 +286,13 @@ jobs:
         run: |
           npm version ${{ steps.next_version.outputs.version }} --no-git-tag-version
           npm run build
+          # The API surface check must not fail the publish on upstream spec
+          # drift fetched by `npm run build`; compare against declarations
+          # regenerated from the committed spec bundle instead (same rule as
+          # the blocking CI check).
+          npm run generate:local
+          npm run build:types
+          npm run api:check
 
       - name: Download approved API baselines
         if: steps.next_version.outputs.publish_needed == 'true' && needs.api-compat-baselines.outputs.artifact-id != ''

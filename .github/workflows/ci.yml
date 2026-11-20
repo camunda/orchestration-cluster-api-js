@@ -137,6 +137,20 @@ jobs:
         run: npm ci
       - name: Generate & Build
         run: npm run build
+      # The public API surface check must attribute a diff to THIS PR, so it
+      # cannot run against the `npm run build` output above — that build
+      # re-bundles the spec from camunda/camunda@main, and upstream movement
+      # would fail an unchanged PR (the drift step below is non-blocking for
+      # exactly that reason). Regenerate from the spec bundle committed in this
+      # branch (same inputs as the blocking generation-drift job), rebuild the
+      # declarations, and compare those against the committed etc/*.api.md.
+      # Deterministic, so one matrix leg suffices.
+      - name: API Surface Check (committed spec inputs)
+        if: matrix.node == '22.x' && matrix.stack == 'simple'
+        run: |
+          npm run generate:local
+          npm run build:types
+          npm run api:check
       - name: Check SDK Example Coverage
         run: node scripts/check-example-coverage.cjs
       - name: Check Method Example Completeness

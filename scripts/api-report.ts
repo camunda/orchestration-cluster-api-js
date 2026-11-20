@@ -117,13 +117,13 @@ function main(): void {
       );
     }
 
-    // API Extractor writes CRLF; this repo normalizes all text to LF
-    // (.gitattributes: `* text=auto eol=lf`). Normalize the freshly written
-    // report in place so the committed bytes are stable across platforms.
+    // Normalize the freshly written report in place (see normalizeReport). This
+    // runs in BOTH modes so the committed bytes and the temp bytes go through
+    // the same normalization before they are compared.
     for (const dir of [REPORT_DIR, TEMP_DIR]) {
       const report = path.join(dir, `${entry.name}.api.md`);
       if (fs.existsSync(report)) {
-        fs.writeFileSync(report, fs.readFileSync(report, 'utf8').replace(/\r\n/g, '\n'));
+        fs.writeFileSync(report, normalizeReport(fs.readFileSync(report, 'utf8')));
       }
     }
   }
@@ -192,6 +192,25 @@ function main(): void {
     ].join('\n')
   );
   process.exit(1);
+}
+
+/**
+ * Normalize a freshly written report so the committed bytes are stable:
+ *
+ * - CRLF → LF: API Extractor writes CRLF; this repo normalizes all text to LF
+ *   (.gitattributes: `* text=auto eol=lf`).
+ * - Diagnostic source locations stripped: ae-* message lines are emitted as
+ *   `// dist/index-<hash>.d.ts:25871:9 - (ae-forgotten-export) The symbol ...`.
+ *   The path carries tsup's content hash and the line:column shifts with any
+ *   declaration-comment or layout change, neither of which is a public API
+ *   change. Keep only the message id and text — a signature change still
+ *   changes the symbol/name text, so detection power is unchanged. Applied in
+ *   both check and update mode so the compared bytes agree.
+ */
+function normalizeReport(content: string): string {
+  return content
+    .replace(/\r\n/g, '\n')
+    .replace(/^(\s*\/\/ )[^\n]*?\.d\.ts:\d+:\d+ - (\(ae-[a-z-]+\) )/gm, '$1$2');
 }
 
 /** `git diff --no-index` between two on-disk files, labelled with the repo path. */

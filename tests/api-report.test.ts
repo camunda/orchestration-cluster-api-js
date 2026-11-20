@@ -137,4 +137,62 @@ describe('api-report guard', () => {
     expect(result.status).toBe(2);
     expect(result.stderr).toContain('npm run build');
   });
+
+  it('fails when a reachable non-exported helper type changes', { timeout: T }, () => {
+    // tsup's declaration bundler emits public-signature helpers without
+    // exporting them (e.g. `EffectifyMethod`, `NodeBuiltins`). The report must
+    // record such a helper's full definition (includeForgottenExports), not
+    // just its name in a warning — otherwise mutating it silently changes a
+    // public return type without changing the recorded surface.
+    setupFixture({ withReports: true });
+    mutateDist(
+      (c) =>
+        'declare type ResultOf<F> = F extends (...a: never[]) => infer R ? Awaited<R> : never;\n' +
+        c.replace(
+          'export declare function createThing(name: string): { id: string };',
+          'export declare function createThing(name: string): { id: string };\nexport declare function call<F extends (...a: never[]) => unknown>(fn: F): ResultOf<F>;'
+        )
+    );
+    expect(run(['--update']).status).toBe(0);
+    // Mutate ONLY the non-exported helper's definition.
+    mutateDist((c) => c.replace('Awaited<R>', 'Awaited<R> | undefined'));
+    const result = run();
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('index.api.md');
+    expect(result.stderr).toMatch(/-.*Awaited<R>/);
+    expect(result.stderr).toMatch(/\+.*Awaited<R> \| undefined/);
+  });
+
+  it('passes when only diagnostic source locations shift (comment-only change)', {
+    timeout: T,
+  }, () => {
+    // API Extractor emits ae-* messages with source locations
+    // (`dist/<hash>.d.ts:line:col`). A comment-only change shifts those
+    // locations without changing the public API, so the check must stay green.
+    // The fixture needs a forgotten export so the report has ae-* message
+    // lines whose locations can shift.
+    setupFixture({ withReports: true });
+    mutateDist(
+      (c) =>
+        'declare type ResultOf<F> = F extends (...a: never[]) => infer R ? Awaited<R> : never;\n' +
+        c.replace(
+          'export declare function createThing(name: string): { id: string };',
+          'export declare function createThing(name: string): { id: string };\nexport declare function call<F extends (...a: never[]) => unknown>(fn: F): ResultOf<F>;'
+        )
+    );
+    expect(run(['--update']).status).toBe(0);
+    // Sanity: the helper's full definition is recorded (includeForgottenExports)
+    // and no diagnostic source locations survive normalization.
+    const committed = fs.readFileSync(path.join(tmp, 'etc', 'index.api.md'), 'utf8');
+    expect(committed).toContain('type ResultOf<F>');
+    expect(committed).not.toMatch(/\.d\.ts:\d+:\d+/);
+    // Comment-only change: shifts the line:col of every ae-* message below it
+    // without touching any signature or doc status.
+    mutateDist((c) =>
+      c.replace('declare type ResultOf', '// layout-only comment\ndeclare type ResultOf')
+    );
+    const result = run();
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('public API surface unchanged');
+  });
 });

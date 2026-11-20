@@ -56,7 +56,7 @@ If you inadvertently add a timestamp, the second local build will show a diff—
 
 ## Public API surface reports (`etc/*.api.md`)
 
-The package's public API surface is guarded by committed [API Extractor](https://api-extractor.com/) reports. `npm run build` ends with `npm run api:check`, which extracts an API report from the built declarations of every public entry point (`index`, `logger`, `fn`, `effect`, and the `#platform` node/browser entries) and fails if it differs from the committed report in `etc/*.api.md`, printing the diff.
+The package's public API surface is guarded by committed [API Extractor](https://api-extractor.com/) reports. `npm run api:check` extracts an API report from the built declarations of every public entry point (`index`, `logger`, `fn`, `effect`, and the `#platform` node/browser entries) and fails if it differs from the committed report in `etc/*.api.md`, printing the diff. The blocking check always runs against declarations regenerated from the **committed spec bundle** (`npm run build:local`; CI runs `generate:local && build:types && api:check` as a dedicated step) — never against a build that re-bundled the moving upstream spec, which would fail an unchanged PR on upstream drift.
 
 A diff means the public API changed — types widened or narrowed, an optional field became required (or the reverse), a union variant or enum member was dropped, or exports were added, removed or renamed. Because the public types are generated from the bundled spec, this can come from a spec bump, a `camunda-schema-bundler` bump, or a generator/hook change — not just a hand edit.
 
@@ -65,7 +65,7 @@ When the check fails:
 1. If the change is **intentional**: run `npm run api:update`, review the diff in `etc/*.api.md` — it is the public API review surface — and commit it with your PR. If the diff removes or narrows anything, mark the PR as breaking (`BREAKING CHANGE:` footer).
 2. If the change is **not intentional**: find the spec/generator/hook change that caused it before merging.
 
-The reports are deterministic (LF-normalized, no timestamps): a no-op dependency bump produces no diff. This check complements the stable-branch API compatibility gate (`scripts/api-compat.ts`), which compares against the last published npm release; the reports catch every public API change relative to the branch's own committed baseline, whether or not it is breaking.
+The reports are deterministic — LF-normalized, no timestamps, diagnostic source locations (`dist/<hash>.d.ts:line:col`) stripped, and reachable-but-unexported helper types recorded in full (`includeForgottenExports`) — so a no-op dependency bump or a declaration-comment-only change produces no diff. This check complements the stable-branch API compatibility gate (`scripts/api-compat.ts`), which compares against the last published npm release; the reports catch every public API change relative to the branch's own committed baseline, whether or not it is breaking.
 
 ## Commit Message Guidelines
 

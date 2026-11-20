@@ -22,7 +22,14 @@
     // (index, logger, fn, effect, platform-node, platform-browser).
     "reportFileName": "<entryPointName>.api.md",
     "reportFolder": "<projectFolder>/etc/",
-    "reportTempFolder": "<projectFolder>/etc/temp/"
+    "reportTempFolder": "<projectFolder>/etc/temp/",
+    // Record the full definition of every reachable-but-unexported declaration
+    // (tsup's declaration bundler emits public-signature helpers such as
+    // `EffectifyMethod` or `NodeBuiltins` without exporting them). With the
+    // default (false) the report only names them in ae-forgotten-export
+    // warnings, so a change to such a helper's definition could silently change
+    // a public return type without changing the recorded surface.
+    "includeForgottenExports": true
   },
 
   "docModel": {
