@@ -1,0 +1,40 @@
+{
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.js"
+    },
+    "./logger": {
+      "types": "./dist/logger.d.ts",
+      "import": "./dist/logger.js",
+      "require": "./dist/logger.cjs",
+      "default": "./dist/logger.js"
+    },
+    "./fn": {
+      "types": "./dist/fn/index.d.ts",
+      "import": "./dist/fn/index.js",
+      "require": "./dist/fn/index.cjs",
+      "default": "./dist/fn/index.js"
+    },
+    "./effect": {
+      "types": "./dist/effect/index.d.ts",
+      "import": "./dist/effect/index.js",
+      "require": "./dist/effect/index.cjs",
+      "default": "./dist/effect/index.js"
+    }
+  },
+  "imports": {
+    "#platform": {
+      "types": "./dist/runtime/platform/node.d.ts",
+      "browser": {
+        "import": "./dist/runtime/platform/browser.js",
+        "require": "./dist/runtime/platform/browser.cjs"
+      },
+      "import": "./dist/runtime/platform/node.js",
+      "require": "./dist/runtime/platform/node.cjs",
+      "default": "./dist/runtime/platform/node.js"
+    }
+  }
+}

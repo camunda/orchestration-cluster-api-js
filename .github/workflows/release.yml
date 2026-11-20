@@ -293,6 +293,13 @@ jobs:
           npm run build:types
           npm run api:check
           npm run build
+          # The fetching build above can move the public declarations with the
+          # upstream spec. Refresh the API reports from the FINAL build so the
+          # release commit below records reports that match the declarations it
+          # ships — otherwise it commits changed inputs (external-spec/,
+          # src/gen/) with stale reports, and the next PR's committed-input API
+          # check fails on drift it did not cause.
+          npm run api:update
 
       - name: Download approved API baselines
         if: steps.next_version.outputs.publish_needed == 'true' && needs.api-compat-baselines.outputs.artifact-id != ''

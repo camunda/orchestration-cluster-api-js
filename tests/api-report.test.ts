@@ -46,16 +46,22 @@ interface RunResult {
   stderr: string;
 }
 
-function run(args: string[] = []): RunResult {
+function run(args: string[] = [], opts: { deriveFromPackage?: boolean } = {}): RunResult {
+  const env: Record<string, string | undefined> = {
+    ...process.env,
+    API_REPORT_ROOT: tmp,
+    API_REPORT_ENTRIES: 'index:dist/index.d.ts,logger:dist/logger.d.ts',
+  };
+  if (opts.deriveFromPackage) {
+    // Let the script derive the entry points from the fixture's package.json
+    // instead of pinning them (the entry-point map guard tests need this).
+    delete env.API_REPORT_ENTRIES;
+  }
   try {
     const stdout = execFileSync(process.execPath, ['--import', 'tsx', SCRIPT, ...args], {
       cwd: REPO_ROOT,
       encoding: 'utf8',
-      env: {
-        ...process.env,
-        API_REPORT_ROOT: tmp,
-        API_REPORT_ENTRIES: 'index:dist/index.d.ts,logger:dist/logger.d.ts',
-      },
+      env,
       stdio: ['pipe', 'pipe', 'pipe'],
     });
     return { status: 0, stdout, stderr: '' };
@@ -194,5 +200,148 @@ describe('api-report guard', () => {
     const result = run();
     expect(result.status).toBe(0);
     expect(result.stdout).toContain('public API surface unchanged');
+  });
+});
+
+/*
+ * api:update ⇒ api:check must be a true round trip for EVERY change class the
+ * guard can detect — including a whitespace-only change inside a string
+ * literal. API Extractor's localBuild auto-write compares reports with
+ * whitespace collapsed (areEquivalentApiFileContents), so it can report
+ * success while leaving the committed report stale; the next byte-exact check
+ * then fails on a report the update just "refreshed". The script must write
+ * the committed reports itself, byte-for-byte.
+ */
+describe('api-report update round trip', () => {
+  const T = 60_000;
+
+  it('update refreshes a whitespace-only change so the next check passes', { timeout: T }, () => {
+    setupFixture({ withReports: true });
+    // Whitespace inside a string literal: a real declaration change that the
+    // whitespace-collapsing comparison treats as "equivalent".
+    mutateDist((c) => c.replace('"a" | "b"', '"a"  |  "b"'));
+    const update = run(['--update']);
+    expect(update.status).toBe(0);
+    // The committed report must carry the new bytes, not the stale ones.
+    const committed = fs.readFileSync(path.join(tmp, 'etc', 'index.api.md'), 'utf8');
+    expect(committed).toContain('"a"  |  "b"');
+    const result = run();
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('public API surface unchanged');
+  });
+});
+
+/*
+ * The public import surface is package.json's "exports"/"imports" map, not
+ * the set of declaration files: removing or renaming a subpath (or retargeting
+ * one at a different file) leaves every committed declaration report matching
+ * — the orphaned dist/*.d.ts still builds and analyzes — while the public API
+ * is gone. The guard must therefore derive its entry points from package.json
+ * and compare the committed map alongside the reports.
+ */
+describe('api-report entry-point map guard', () => {
+  const T = 60_000;
+
+  /** Fixture with its own package.json, so the script derives entry points. */
+  function setupPackageFixture(): void {
+    setupFixture();
+    fs.writeFileSync(
+      path.join(tmp, 'package.json'),
+      `${JSON.stringify(
+        {
+          name: 'fixture-pkg',
+          version: '0.0.0',
+          exports: {
+            '.': { types: './dist/index.d.ts', import: './dist/index.js' },
+            './logger': { types: './dist/logger.d.ts', import: './dist/logger.js' },
+          },
+        },
+        null,
+        2
+      )}\n`
+    );
+    // No API_REPORT_ENTRIES: the script must derive the entry points (and the
+    // map) from the fixture's package.json.
+    const update = run(['--update'], { deriveFromPackage: true });
+    expect(update.status).toBe(0);
+    expect(fs.existsSync(path.join(tmp, 'etc', 'index.api.md'))).toBe(true);
+    expect(fs.existsSync(path.join(tmp, 'etc', 'logger.api.md'))).toBe(true);
+    expect(fs.existsSync(path.join(tmp, 'etc', 'entry-points.json'))).toBe(true);
+  }
+
+  function editFixturePackage(edit: (pkg: { exports: Record<string, unknown> }) => void): void {
+    const file = path.join(tmp, 'package.json');
+    const pkg = JSON.parse(fs.readFileSync(file, 'utf8'));
+    edit(pkg);
+    fs.writeFileSync(file, `${JSON.stringify(pkg, null, 2)}\n`);
+  }
+
+  it('derives entry points from package.json and passes when nothing changed', {
+    timeout: T,
+  }, () => {
+    setupPackageFixture();
+    const result = run([], { deriveFromPackage: true });
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('public API surface unchanged');
+  });
+
+  it('fails when a public subpath export is removed', { timeout: T }, () => {
+    setupPackageFixture();
+    editFixturePackage((pkg) => {
+      delete pkg.exports['./logger'];
+    });
+    const result = run([], { deriveFromPackage: true });
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('entry-points.json');
+  });
+
+  it('fails when a public subpath export is renamed', { timeout: T }, () => {
+    setupPackageFixture();
+    editFixturePackage((pkg) => {
+      pkg.exports['./log'] = pkg.exports['./logger'];
+      delete pkg.exports['./logger'];
+    });
+    const result = run([], { deriveFromPackage: true });
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('entry-points.json');
+  });
+
+  it('fails when a public subpath is retargeted at a different file', { timeout: T }, () => {
+    setupPackageFixture();
+    editFixturePackage((pkg) => {
+      pkg.exports['./logger'] = { types: './dist/logger.d.ts', import: './dist/logger.mjs' };
+    });
+    const result = run([], { deriveFromPackage: true });
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('entry-points.json');
+  });
+
+  it('passes again after api:update records the new map', { timeout: T }, () => {
+    setupPackageFixture();
+    editFixturePackage((pkg) => {
+      delete pkg.exports['./logger'];
+    });
+    expect(run([], { deriveFromPackage: true }).status).toBe(1);
+    expect(run(['--update'], { deriveFromPackage: true }).status).toBe(0);
+    expect(run([], { deriveFromPackage: true }).status).toBe(0);
+  });
+
+  it('flags a stale committed report whose entry point was removed, and update removes it', {
+    timeout: T,
+  }, () => {
+    setupPackageFixture();
+    editFixturePackage((pkg) => {
+      delete pkg.exports['./logger'];
+    });
+    // Even after recording the new map, the orphaned logger report must not
+    // survive: it records an API nothing can import anymore.
+    expect(run(['--update'], { deriveFromPackage: true }).status).toBe(0);
+    expect(fs.existsSync(path.join(tmp, 'etc', 'logger.api.md'))).toBe(false);
+    expect(run([], { deriveFromPackage: true }).status).toBe(0);
+    // And a stale report that slips in anyway fails the check.
+    fs.writeFileSync(path.join(tmp, 'etc', 'logger.api.md'), 'stale\n');
+    const result = run([], { deriveFromPackage: true });
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('logger.api.md');
   });
 });
