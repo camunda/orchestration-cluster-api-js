@@ -285,7 +285,21 @@ jobs:
         if: steps.next_version.outputs.publish_needed == 'true'
         run: |
           npm version ${{ steps.next_version.outputs.version }} --no-git-tag-version
+          # Check the API surface against the committed spec sources FIRST:
+          # `npm run build` re-fetches the upstream spec, and generate:local
+          # wipes dist/. Finishing with the full build keeps publish artifacts
+          # (dist/index.js, dist/index.cjs, ...) complete.
+          npm run generate:local
+          npm run build:types
+          npm run api:check
           npm run build
+          # The fetching build above can move the public declarations with the
+          # upstream spec. Refresh the API reports from the FINAL build so the
+          # release commit below records reports that match the declarations it
+          # ships — otherwise it commits changed inputs (external-spec/,
+          # src/gen/) with stale reports, and the next PR's committed-input API
+          # check fails on drift it did not cause.
+          npm run api:update
 
       - name: Download approved API baselines
         if: steps.next_version.outputs.publish_needed == 'true' && needs.api-compat-baselines.outputs.artifact-id != ''

@@ -217,16 +217,24 @@ npm run api-compat -- --baseline <dir> --current <dir>   # two unpacked packages
 
 Tests: `tests/api-compat.test.ts` covers each kind of break and of compatible change. When you change the checker, keep it green against real releases too: a release compared with itself must report nothing.
 
+## Public API surface reports (`etc/*.api.md`)
+
+Every public entry point — derived from `package.json` (`exports` → `index`, `logger`, `fn`, `effect`; `imports` `#platform` → node/browser), never a hardcoded list — has a committed API Extractor report in `etc/*.api.md`, and the `exports`/`imports` map itself is committed as `etc/entry-points.json` so a removed, renamed or retargeted public subpath is flagged even when every declaration report still matches. `npm run api:check` (`scripts/api-report.ts`) fails with a readable diff when the built declarations or the entry-point map no longer match the committed reports — i.e. when the public API surface changed for any reason (spec bump, bundler/generator/hook change, hand edit). This is the change-detection complement to the stable-branch compatibility gate above: the reports flag *any* public API change against the branch's own baseline, whether or not it is breaking.
+
+The blocking comparison always runs against declarations regenerated from the **committed spec bundle**, never against a build that re-bundled the moving upstream spec (that would fail an unchanged PR on upstream drift, which CI treats as non-blocking). So: `npm run build:local` ends with `api:check`; plain `npm run build` does not; CI and release run `generate:local && build:types && api:check` as a dedicated step *before* the fetching `npm run build` (so the check sees the committed spec and the final build leaves a complete `dist/`). The release job additionally runs `api:update` after that final fetching build, so the release commit records reports matching the declarations it ships. For a local pre-push check with fresh fetch, use `npm run build:ci`.
+
+When it fails on an intentional change: run `npm run api:update`, review the `etc/*.api.md` diff (that diff **is** the public API review surface), and commit it with the PR. If the diff removes or narrows anything, the change is breaking — say so with a `BREAKING CHANGE:` footer. Reports are LF-normalized, timestamp-free, include the full definitions of reachable-but-unexported helper types (`includeForgottenExports`), and have diagnostic source locations (`dist/<hash>.d.ts:line:col`) stripped, so a no-op dependency bump or a declaration-comment-only change produces no diff. `api:update` rewrites the committed reports byte-for-byte from the freshly extracted ones (it never relies on API Extractor's whitespace-insensitive localBuild auto-write), so update ⇒ check is a true round trip — even for a whitespace-only change inside a string literal. Tests: `tests/api-report.test.ts`.
+
 ## Pre-push checklist
 
-Before pushing any commits, **always** run `npm run build`. This:
+Before pushing any commits, **always** run `npm run build:ci`. This:
 
 1. Regenerates `src/gen/` from the bundled spec
 2. Syncs README code snippets from `examples/readme.ts` (fails if out of sync)
-3. Runs all unit tests
-4. Produces the `dist/` output
+3. Produces the `dist/` output
+4. Verifies the public API reports (`api:check`)
 
-If the build modifies any files (e.g. README snippet drift, generated code changes), commit those changes before pushing — and respect the **separate-commits rule** above when the modified files are `src/gen/*`.
+Then run `npm test` (unit tests). If the build modifies any files (e.g. README snippet drift, generated code changes), commit those changes before pushing — and respect the **separate-commits rule** above when the modified files are `src/gen/*`.
 
 ## Build pipeline
 
