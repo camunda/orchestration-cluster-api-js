@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const ROOT = process.cwd();
 const METADATA_PATH = path.join(ROOT, 'external-spec/bundled/spec-metadata.json');
@@ -104,7 +105,7 @@ function collectOpsWithOptionalTenantIdsArray(): Set<string> {
  * `createProcessInstance`; this complements it (OR-ed) so every tenant-scoped
  * command gets the default tenant. See issues #647 and #704.
  */
-function collectOpsWithOptionalTenantId(): {
+export function collectOpsWithOptionalTenantId(): {
   variants: Map<string, string[][]>;
   total: Map<string, number>;
 } {
@@ -114,45 +115,6 @@ function collectOpsWithOptionalTenantId(): {
   if (!fs.existsSync(BUNDLED_SPEC_PATH)) return result;
   const spec = JSON.parse(fs.readFileSync(BUNDLED_SPEC_PATH, 'utf8'));
   const schemas = (spec?.components?.schemas || {}) as Record<string, Record<string, unknown>>;
-  const resolve = (s: Record<string, unknown> | undefined) =>
-    s && typeof s['$ref'] === 'string' ? schemas[(s['$ref'] as string).split('/').pop()!] : s;
-
-  // Per (non-union) shape: 'optional' when it has an optional tenantId, plus the
-  // sorted names of its required properties (used at runtime to recognise the
-  // variant being sent). 'required' tenantId or no tenantId yields no variant.
-  function variantInfo(
-    raw: Record<string, unknown> | undefined,
-    depth = 0
-  ): { state: 'optional' | 'required' | 'absent'; required: string[] } {
-    const s = resolve(raw);
-    if (!s || depth > 10) return { state: 'absent', required: [] };
-    let state: 'optional' | 'required' | 'absent' = 'absent';
-    const props = s['properties'] as Record<string, unknown> | undefined;
-    if (props?.['tenantId']) state = 'optional';
-    const required = new Set<string>((s['required'] as string[] | undefined) ?? []);
-    for (const part of (s['allOf'] as Record<string, unknown>[] | undefined) ?? []) {
-      const sub = variantInfo(part, depth + 1);
-      if (sub.state === 'required') return { state: 'required', required: [] };
-      if (sub.state === 'optional') state = 'optional';
-      for (const p of sub.required) required.add(p);
-    }
-    if (required.has('tenantId')) return { state: 'required', required: [] };
-    return { state, required: [...required].sort() };
-  }
-
-  // Flatten a (possibly nested union) body schema into its variant shapes.
-  function variantsOf(
-    raw: Record<string, unknown> | undefined,
-    depth = 0
-  ): Record<string, unknown>[] {
-    const s = resolve(raw);
-    if (!s || depth > 10) return [];
-    const variants = (s['oneOf'] || s['anyOf']) as Record<string, unknown>[] | undefined;
-    if (Array.isArray(variants) && variants.length > 0) {
-      return variants.flatMap((v) => variantsOf(v, depth + 1));
-    }
-    return [s];
-  }
 
   for (const methods of Object.values(
     (spec?.paths || {}) as Record<string, Record<string, unknown>>
@@ -166,13 +128,11 @@ function collectOpsWithOptionalTenantId(): {
       if (!opId || !content) continue;
       for (const [ct, media] of Object.entries(content)) {
         if (!/json/i.test(ct)) continue;
-        const shapes = variantsOf(media?.['schema'] as Record<string, unknown>);
-        total.set(opId, (total.get(opId) ?? 0) + shapes.length);
-        const matching: string[][] = [];
-        for (const shape of shapes) {
-          const info = variantInfo(shape);
-          if (info.state === 'optional') matching.push(info.required);
-        }
+        const { variants: matching, total: shapeCount } = optionalTenantIdVariantsOfBody(
+          media?.['schema'] as Record<string, unknown>,
+          schemas
+        );
+        total.set(opId, (total.get(opId) ?? 0) + shapeCount);
         if (matching.length > 0) {
           const existing = variants.get(opId) ?? [];
           variants.set(opId, [...existing, ...matching]);
@@ -181,6 +141,112 @@ function collectOpsWithOptionalTenantId(): {
     }
   }
   return result;
+}
+
+type SpecSchema = Record<string, unknown>;
+
+/**
+ * The pure variant walk behind {@link collectOpsWithOptionalTenantId}, exported
+ * so tests can exercise it against synthetic spec fixtures without a bundled
+ * spec on disk. Given one request-body schema (and the spec's component schemas
+ * for `$ref` resolution), returns the sorted required-property names of every
+ * body variant with an optional top-level `tenantId`, plus the total number of
+ * body variants (used to decide whether the matcher must discriminate).
+ */
+export function optionalTenantIdVariantsOfBody(
+  bodySchema: SpecSchema | undefined,
+  schemas: Record<string, SpecSchema>
+): { variants: string[][]; total: number } {
+  const resolve = (s: SpecSchema | undefined) =>
+    s && typeof s['$ref'] === 'string' ? schemas[(s['$ref'] as string).split('/').pop()!] : s;
+
+  // Per (non-union) shape: 'optional' when it has an optional tenantId, plus the
+  // sorted names of its required properties (used at runtime to recognise the
+  // variant being sent). 'required' tenantId or no tenantId yields no variant.
+  function variantInfo(
+    raw: SpecSchema | undefined,
+    depth = 0
+  ): { state: 'optional' | 'required' | 'absent'; required: string[] } {
+    const s = resolve(raw);
+    if (!s || depth > 10) return { state: 'absent', required: [] };
+    let state: 'optional' | 'required' | 'absent' = 'absent';
+    const props = s['properties'] as Record<string, unknown> | undefined;
+    if (props?.['tenantId']) state = 'optional';
+    const required = new Set<string>((s['required'] as string[] | undefined) ?? []);
+    for (const part of (s['allOf'] as SpecSchema[] | undefined) ?? []) {
+      const sub = variantInfo(part, depth + 1);
+      if (sub.state === 'required') return { state: 'required', required: [] };
+      if (sub.state === 'optional') state = 'optional';
+      for (const p of sub.required) required.add(p);
+    }
+    if (required.has('tenantId')) return { state: 'required', required: [] };
+    return { state, required: [...required].sort() };
+  }
+
+  // Flatten a (possibly nested union) body schema into its variant shapes.
+  // A union nested inside `allOf` (a composed union, e.g.
+  // `allOf: [{ oneOf: [A, B] }]` plus enclosing constraints) still yields one
+  // shape per union branch: the enclosing `properties`/`required` are merged
+  // into every branch so `variantInfo` sees the composed shape each branch
+  // actually accepts. Without this, wrapping the by-id/by-key union in `allOf`
+  // collapses it to a single shape and a mixed union silently loses (or
+  // mis-scopes) default-tenant injection.
+  function variantsOf(raw: SpecSchema | undefined, depth = 0): SpecSchema[] {
+    const s = resolve(raw);
+    if (!s || depth > 10) return [];
+    const variants = (s['oneOf'] || s['anyOf']) as SpecSchema[] | undefined;
+    if (Array.isArray(variants) && variants.length > 0) {
+      const branchShapes = variants.flatMap((v) => variantsOf(v, depth + 1));
+      // Constraints sitting alongside the union (own `properties`/`required`,
+      // or a sibling `allOf`) apply to every branch — fold them in so
+      // variantInfo sees the full composed shape, mirroring the allOf path.
+      const own: SpecSchema = {};
+      if (s['properties']) own['properties'] = s['properties'];
+      if (s['required']) own['required'] = s['required'];
+      const siblings = (s['allOf'] as SpecSchema[] | undefined) ?? [];
+      const envelope: SpecSchema[] = [...(Object.keys(own).length > 0 ? [own] : []), ...siblings];
+      if (envelope.length === 0) return branchShapes;
+      return branchShapes.map((branch) => ({
+        ...branch,
+        allOf: [...((branch['allOf'] as unknown[]) ?? []), ...envelope],
+      }));
+    }
+    const allOf = s['allOf'] as SpecSchema[] | undefined;
+    if (Array.isArray(allOf) && allOf.length > 0) {
+      const partShapes = allOf.map((part) => variantsOf(part, depth + 1));
+      // Only expand when some allOf part actually contains a union; otherwise
+      // the allOf is a plain composition and must stay ONE shape (variantInfo
+      // already merges allOf parts) — expanding would cross-product the parts
+      // into phantom variants.
+      if (!partShapes.some((shapes) => shapes.length > 1)) return [s];
+      // The union branches must still satisfy the rest of the composition:
+      // merge the enclosing constraints and every single-shape (non-union)
+      // sibling part into each branch as an extra allOf entry, so variantInfo
+      // sees the full composed shape each branch actually accepts. The
+      // single-shape siblings are NOT variants of their own — they are
+      // constraints on every branch — so they leave the branch list.
+      const branchShapes = partShapes.flatMap((shapes) => (shapes.length > 1 ? shapes : []));
+      const own: SpecSchema = {};
+      if (s['properties']) own['properties'] = s['properties'];
+      if (s['required']) own['required'] = s['required'];
+      const siblings = allOf.filter((_, i) => partShapes[i].length <= 1);
+      const envelope: SpecSchema[] = [...(Object.keys(own).length > 0 ? [own] : []), ...siblings];
+      if (envelope.length === 0) return branchShapes;
+      return branchShapes.map((branch) => ({
+        ...branch,
+        allOf: [...((branch['allOf'] as unknown[]) ?? []), ...envelope],
+      }));
+    }
+    return [s];
+  }
+
+  const shapes = variantsOf(bodySchema);
+  const matching: string[][] = [];
+  for (const shape of shapes) {
+    const info = variantInfo(shape);
+    if (info.state === 'optional') matching.push(info.required);
+  }
+  return { variants: matching, total: shapes.length };
 }
 
 const MARK_TYPES_START = '// === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===';
@@ -881,9 +947,16 @@ function indent(s: string, d: number) {
     .join('\n');
 }
 
-try {
-  await main();
-} catch (e) {
-  console.error('[class-gen] error', e);
-  process.exitCode = 1;
+// Run only when executed directly (tsx hooks/post/300-generate-class-methods.ts),
+// not when imported by the test suite — tests call collectOpsWithOptionalTenantId()
+// in-process to exercise the real variant walk against synthetic spec fixtures.
+const invokedDirectly =
+  process.argv[1] !== undefined && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (invokedDirectly) {
+  try {
+    await main();
+  } catch (e) {
+    console.error('[class-gen] error', e);
+    process.exitCode = 1;
+  }
 }

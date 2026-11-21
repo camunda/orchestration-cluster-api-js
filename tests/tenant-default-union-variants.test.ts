@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
+import { optionalTenantIdVariantsOfBody } from '../hooks/post/300-generate-class-methods';
 import { createCamundaClient } from '../src';
 
 /**
@@ -74,6 +75,11 @@ interface SpecSchema {
   anyOf?: SpecSchema[];
   allOf?: SpecSchema[];
 }
+
+// The hook's walk takes `Record<string, unknown>` schemas; the fixtures below
+// build that shape directly (the structured SpecSchema above is for reading
+// the bundled spec, where the extra typing helps).
+type RawSchema = Record<string, unknown>;
 
 function loadSpec() {
   const spec = JSON.parse(
@@ -170,6 +176,37 @@ describe('per-variant default tenant on union bodies (#704)', () => {
     expect(bodies[0]).not.toHaveProperty('tenantId');
   });
 
+  // A by-key body carrying the by-id discriminator as an explicit `undefined`
+  // own property must NOT match the by-id variant: JSON serialization drops the
+  // undefined field, so the wire payload is the by-key shape, whose schema
+  // (`additionalProperties: false`) forbids `tenantId`. `in`/`hasOwn` alone
+  // cannot see this — the matcher must require a *defined* value.
+  it.each(['suspendProcessDefinitions', 'resumeProcessDefinitions'] as const)(
+    '%s with an undefined by-id discriminator on a by-key body sends no tenantId',
+    async (op) => {
+      const { client, bodies } = setup({ CAMUNDA_DEFAULT_TENANT_ID: 'tenant-a' });
+      await send(client, op, {
+        processDefinitionKey: '2251799813685249',
+        processDefinitionId: undefined,
+      });
+      expect(bodies).toHaveLength(1);
+      expect(bodies[0]).not.toHaveProperty('tenantId');
+    }
+  );
+
+  it.each(['suspendProcessDefinitions', 'resumeProcessDefinitions'] as const)(
+    '%s with a null by-id discriminator on a by-key body sends no tenantId',
+    async (op) => {
+      const { client, bodies } = setup({ CAMUNDA_DEFAULT_TENANT_ID: 'tenant-a' });
+      await send(client, op, {
+        processDefinitionKey: '2251799813685249',
+        processDefinitionId: null,
+      });
+      expect(bodies).toHaveLength(1);
+      expect(bodies[0]).not.toHaveProperty('tenantId');
+    }
+  );
+
   it('injection does not mutate a reused by-id input', async () => {
     const shared: Record<string, unknown> = { processDefinitionId: 'p' };
     const a = setup({ CAMUNDA_DEFAULT_TENANT_ID: 'tenant-a' });
@@ -205,5 +242,108 @@ describe('per-variant default tenant on union bodies (#704)', () => {
   it('does not inject where tenantId is required (createTenant)', () => {
     const generated = generatedInjectingOps();
     expect(generated).not.toContain('createTenant');
+  });
+
+  // Class-of-defect guard for the generator's variant walk: a `oneOf`/`anyOf`
+  // nested inside `allOf` (a composed union) must still yield per-variant
+  // matchers. These tests call the hook's real walk
+  // (`optionalTenantIdVariantsOfBody` from hooks/post/300-generate-class-methods.ts)
+  // against synthetic spec fixtures: the by-id/by-key union wrapped in
+  // `allOf: [{ oneOf: [...] }]` must produce the same matcher as the bare union.
+  // If the walk stops expanding unions through `allOf`, the composed shape
+  // silently loses injection (or injects unconditionally) and this fails.
+  describe('allOf-composed unions (generator variant walk)', () => {
+    const BY_KEY: RawSchema = {
+      type: 'object',
+      required: ['processDefinitionKey'],
+      properties: { processDefinitionKey: { type: 'string' } },
+    };
+    const BY_ID: RawSchema = {
+      type: 'object',
+      required: ['processDefinitionId'],
+      properties: { processDefinitionId: { type: 'string' }, tenantId: { type: 'string' } },
+    };
+
+    it('a bare mixed union yields a discriminative by-id matcher', () => {
+      const { variants, total } = optionalTenantIdVariantsOfBody({ oneOf: [BY_KEY, BY_ID] }, {});
+      expect(total).toBe(2);
+      expect(variants).toEqual([['processDefinitionId']]);
+    });
+
+    it('a union nested inside allOf yields the same discriminative by-id matcher', () => {
+      const composed: RawSchema = { allOf: [{ oneOf: [BY_KEY, BY_ID] }] };
+      const { variants, total } = optionalTenantIdVariantsOfBody(composed, {});
+      expect(total).toBe(2);
+      expect(variants).toEqual([['processDefinitionId']]);
+    });
+
+    it('enclosing allOf properties merge into every expanded variant', () => {
+      const composed: RawSchema = {
+        allOf: [{ oneOf: [BY_KEY, BY_ID] }],
+        required: ['includeProcessInstances'],
+        properties: { includeProcessInstances: { type: 'boolean' } },
+      };
+      const { variants, total } = optionalTenantIdVariantsOfBody(composed, {});
+      expect(total).toBe(2);
+      // The by-id variant's required set must include both its own discriminator
+      // and the enclosing shape's required property.
+      expect(variants).toEqual([['includeProcessInstances', 'processDefinitionId']]);
+    });
+
+    it('a $ref-ed union nested inside allOf resolves and expands', () => {
+      const schemas: Record<string, RawSchema> = {
+        SuspensionInstruction: { oneOf: [BY_KEY, BY_ID] },
+      };
+      const composed: RawSchema = {
+        allOf: [{ $ref: '#/components/schemas/SuspensionInstruction' }],
+      };
+      const { variants, total } = optionalTenantIdVariantsOfBody(composed, schemas);
+      expect(total).toBe(2);
+      expect(variants).toEqual([['processDefinitionId']]);
+    });
+
+    // An allOf with NO union inside is a plain composition: it must stay ONE
+    // shape (variantInfo merges the parts). Expanding it would cross-product
+    // the parts into phantom variants and inflate the per-op total, flipping a
+    // non-discriminative operation into a discriminative one.
+    it('an allOf without any union stays a single shape', () => {
+      const plain: RawSchema = {
+        allOf: [
+          { properties: { tenantId: { type: 'string' } } },
+          { required: ['foo'], properties: { foo: { type: 'string' } } },
+        ],
+      };
+      const { variants, total } = optionalTenantIdVariantsOfBody(plain, {});
+      expect(total).toBe(1);
+      expect(variants).toEqual([['foo']]);
+    });
+
+    // A mixed allOf (one union part + one plain part) expands the union but
+    // must not multiply the plain part into extra shapes.
+    it('a mixed allOf expands only the union part', () => {
+      const mixed: RawSchema = {
+        allOf: [
+          { oneOf: [BY_KEY, BY_ID] },
+          { properties: { extra: { type: 'string' } }, required: ['extra'] },
+        ],
+      };
+      const { variants, total } = optionalTenantIdVariantsOfBody(mixed, {});
+      expect(total).toBe(2);
+      // The by-id branch must also require the plain part's required property.
+      expect(variants).toEqual([['extra', 'processDefinitionId']]);
+    });
+
+    // Constraints sitting alongside a top-level union apply to every branch;
+    // dropping them would under-specify the runtime matcher.
+    it('constraints alongside a union fold into every branch', () => {
+      const composed: RawSchema = {
+        oneOf: [BY_KEY, BY_ID],
+        required: ['top'],
+        properties: { top: { type: 'string' } },
+      };
+      const { variants, total } = optionalTenantIdVariantsOfBody(composed, {});
+      expect(total).toBe(2);
+      expect(variants).toEqual([['processDefinitionId', 'top']]);
+    });
   });
 });
