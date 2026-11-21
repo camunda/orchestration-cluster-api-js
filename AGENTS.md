@@ -31,7 +31,7 @@ Introduced-by: <commit sha | owner/repo@sha | #PR | release tag>   (optional)
 
 - For a bug, `Found-by`, `Affects` and `Severity` are required. Without them the issue gets `needs-triage`.
 - `Found-by` is the quality layer that caught it, not who typed the issue. `Affects: stable` means a released `stable/N` line.
-- An issue created with a workflow's `GITHUB_TOKEN` does not trigger `sdk-issue-labels.yml`, so the body lines are not turned into labels. Set the labels directly instead: `--label bug --label found-by/<x> --label affects/<main|stable> --label severity/<x>`.
+- An issue created with a workflow's `GITHUB_TOKEN` does not trigger `sdk-issue-labels.yml`, so the body lines are not turned into labels. Set the labels directly instead: `--label bug --label found-by/<x> --label affects/<main|stable> --label severity/<x>`. For `Affects: both`, add both labels (`--label affects/main --label affects/stable`); there is no `affects/both` label.
 
 Value definitions: [shared policy, "Opening issues"](https://github.com/camunda/sdk-infra/blob/main/policies/AGENTS.md#opening-issues).
 
