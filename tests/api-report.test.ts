@@ -281,6 +281,28 @@ describe('api-report guard', () => {
 
   it.each([
     [
+      'a mapped-type property (typeof fields.name)',
+      "declare const fields: Record<'name', string>;\nexport type Name = typeof fields.name;\n",
+    ],
+    [
+      'a mapped-type property literally named unknown',
+      "declare const fields2: Record<'unknown', string>;\nexport type U2 = typeof fields2.unknown;\n",
+    ],
+    [
+      'a homomorphic mapped-type property',
+      'interface Src { a: string }\ndeclare const ro: Readonly<Src>;\nexport type A3 = typeof ro.a;\n',
+    ],
+  ])('accepts a valid synthesized (Transient) symbol: %s', { timeout: T }, (_label, decl) => {
+    // Synthesized properties of mapped types are Transient and may lack
+    // declarations, yet are perfectly valid references.
+    setupFixture();
+    mutateDist((c) => c + decl);
+    expect(run(['--update']).status).toBe(0);
+    expect(run().status).toBe(0);
+  });
+
+  it.each([
+    [
       'an unresolved import() type',
       "export declare function f(): import('./does-not-exist').Foo;\n",
     ],

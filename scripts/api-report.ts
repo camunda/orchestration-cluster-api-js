@@ -258,9 +258,15 @@ function snapshotEntryPointMap(): string {
  * (TypeScriptHelpers.tryGetADeclaration) explicitly tolerates such virtual
  * symbols. What marks an UNRESOLVED name is the compiler's error path: the
  * internal unknownSymbol and the placeholder for a missing member of a
- * resolvable namespace (`NS.NoSuchThing`) are both Transient symbols, and a
- * bare unbound name is named `unknown`. A genuine virtual symbol is neither.
+ * resolvable namespace (`NS.NoSuchThing`) are typed as the intrinsic error
+ * type. Valid synthesized symbols (mapped-type properties) are also Transient
+ * and declaration-less, so flags alone cannot be used.
  */
+/** True for the compiler's intrinsic error type (the type of unknownSymbol). */
+function isErrorType(type: ts.Type): boolean {
+  return (type as ts.Type & { intrinsicName?: string }).intrinsicName === 'error';
+}
+
 function findUnresolvedReferences(checker: ts.TypeChecker, program: ts.Program): string[] {
   const problems: string[] = [];
   const seen = new Set<string>();
@@ -287,14 +293,14 @@ function findUnresolvedReferences(checker: ts.TypeChecker, program: ts.Program):
         return (checker.getAliasedSymbol(symbol).declarations ?? []).length === 0;
       }
       if ((symbol.declarations ?? []).length > 0) return false;
-      // Declaration-less: a valid virtual symbol (e.g. a class's `prototype`,
-      // SymbolFlags.Prototype) or an unresolved one. The compiler's error
-      // symbols are Transient (the unknownSymbol and the missing-namespace-
-      // member placeholder both are); a bare unbound name is named "unknown".
-      // A genuine virtual symbol is neither Transient nor named "unknown".
-      // eslint-disable-next-line no-bitwise
-      if (symbol.flags & ts.SymbolFlags.Transient) return true;
-      return symbol.name === 'unknown';
+      // Declaration-less: a valid virtual/synthesized symbol (a class's
+      // `prototype`, a mapped-type property such as `Record<'name', T>['name']`
+      // — both may be Transient and either may even be named "unknown") or
+      // the compiler's error symbol. Neither flags nor names distinguish them;
+      // the type does: the compiler's unknownSymbol (returned for unbound names
+      // and missing namespace members) is typed as the intrinsic error type,
+      // while every valid synthesized symbol has a real type.
+      return isErrorType(checker.getTypeOfSymbol(symbol));
     };
     const leftmost = (name: ts.Node): ts.Node => {
       let n = name;
