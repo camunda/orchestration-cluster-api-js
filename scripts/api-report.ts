@@ -244,6 +244,35 @@ function findUnresolvedReferences(checker: ts.TypeChecker, program: ts.Program):
         problems.push(key);
       }
     };
+    const isUnresolved = (symbol: ts.Symbol): boolean => {
+      // eslint-disable-next-line no-bitwise
+      if (symbol.flags & ts.SymbolFlags.Alias) {
+        // Alias whose (fully followed) target is the compiler-internal
+        // unknownSymbol, which has no declarations. getAliasedSymbol (not
+        // getImmediateAliasedSymbol) also resolves namespace imports
+        // (`import * as ns from 'mod'`) to their module symbol.
+        return (checker.getAliasedSymbol(symbol).declarations ?? []).length === 0;
+      }
+      // Bare reference bound straight to unknownSymbol: no declarations.
+      return (symbol.declarations ?? []).length === 0;
+    };
+    const leftmost = (name: ts.Node): ts.Node => {
+      let n = name;
+      for (;;) {
+        if (ts.isQualifiedName(n)) n = n.left;
+        else if (ts.isPropertyAccessExpression(n)) n = n.expression;
+        else return n;
+      }
+    };
+    const checkName = (node: ts.Node, name: ts.Node): void => {
+      for (const target of new Set([leftmost(name), name])) {
+        const symbol = checker.getSymbolAtLocation(target);
+        if (symbol && isUnresolved(symbol)) {
+          report(node, name.getText());
+          return;
+        }
+      }
+    };
     const visit = (node: ts.Node): void => {
       if (ts.isImportTypeNode(node)) {
         // `import('./x').Foo` / `typeof import('./x')`: the module specifier
@@ -259,20 +288,16 @@ function findUnresolvedReferences(checker: ts.TypeChecker, program: ts.Program):
           if (!q || (q.declarations ?? []).length === 0) report(node, node.getText());
         }
       }
+      // Every syntactic position API Extractor follows as a reference must be
+      // validated: type references (`Foo`), type queries (`typeof Foo`,
+      // `typeof NS.Foo`) and heritage clauses (`extends Foo`). Each name is
+      // checked at its leftmost identifier (the import alias) and in full.
       if (ts.isTypeReferenceNode(node)) {
-        const symbol = checker.getSymbolAtLocation(node.typeName);
-        if (symbol) {
-          let unresolved = false;
-          // eslint-disable-next-line no-bitwise
-          if (symbol.flags & ts.SymbolFlags.Alias) {
-            // Alias whose target is the compiler-internal unknownSymbol.
-            unresolved = checker.getImmediateAliasedSymbol(symbol) === undefined;
-          } else {
-            // Bare reference bound straight to unknownSymbol: no declarations.
-            unresolved = (symbol.declarations ?? []).length === 0;
-          }
-          if (unresolved) report(node, node.typeName.getText());
-        }
+        checkName(node, node.typeName);
+      } else if (ts.isTypeQueryNode(node)) {
+        checkName(node, node.exprName);
+      } else if (ts.isExpressionWithTypeArguments(node)) {
+        checkName(node, node.expression);
       }
       ts.forEachChild(node, visit);
     };
@@ -300,9 +325,10 @@ function main(): void {
 
   let failed = false;
   for (const entry of ENTRY_POINTS) {
+    const mainEntry = path.join(ROOT, entry.dts);
     const configObject: IConfigFile = {
       ...baseConfig,
-      mainEntryPointFilePath: path.join(ROOT, entry.dts),
+      mainEntryPointFilePath: mainEntry,
       apiReport: {
         enabled: true,
         ...(baseConfig.apiReport ?? {}),
@@ -311,6 +337,26 @@ function main(): void {
         // <projectFolder>) so tests can point the script at a fixture tree.
         reportFolder: REPORT_DIR,
         reportTempFolder: TEMP_DIR,
+      },
+      // API Extractor bundles TypeScript 6, whose `types` default is `[]`: the
+      // repo tsconfig's implicit "all @types" no longer loads @types/node, so
+      // `node:*` imports in the declarations would be unresolved (`any`) in
+      // the analyzed program. Load the Node typings explicitly, from this
+      // repo's node_modules (so fixture trees under API_REPORT_ROOT get them
+      // too).
+      compiler: {
+        overrideTsconfig: {
+          compilerOptions: {
+            target: 'ES2022',
+            module: 'ES2022',
+            moduleResolution: 'Bundler',
+            strict: true,
+            skipLibCheck: true,
+            typeRoots: [path.join(REPO_ROOT, 'node_modules', '@types')],
+            types: ['node'],
+          },
+          files: [mainEntry],
+        },
       },
     };
     const extractorConfig = ExtractorConfig.prepare({

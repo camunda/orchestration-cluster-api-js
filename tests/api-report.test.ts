@@ -230,6 +230,22 @@ describe('api-report guard', () => {
     expect(run().status).toBe(1);
   });
 
+  it('accepts typeof queries on resolvable namespace imports of Node built-ins', {
+    timeout: T,
+  }, () => {
+    // Guards against false positives: API Extractor's bundled TypeScript 6
+    // defaults `types` to [], so without loading @types/node explicitly the
+    // `node:*` modules are unresolved and every `typeof node_x` would fail.
+    setupFixture();
+    mutateDist(
+      (c) =>
+        "import * as node_url from 'node:url';\n" +
+        c +
+        'export declare const deps: { url: typeof node_url; u: typeof node_url.URL };\n'
+    );
+    expect(run(['--update']).status).toBe(0);
+  });
+
   it.each([
     [
       'an unresolved import() type',
@@ -239,6 +255,18 @@ describe('api-report guard', () => {
     [
       'an unresolved import() qualifier',
       "export declare function h(): import('./index').NoSuchThing;\n",
+    ],
+    [
+      'an unresolved import used only in a typeof query',
+      "import { Missing } from './does-not-exist';\nexport declare const value: typeof Missing;\n",
+    ],
+    [
+      'an unresolved import used only in a typeof query on a qualified name',
+      "import * as NS from './does-not-exist';\nexport declare const value2: typeof NS.Missing;\n",
+    ],
+    [
+      'an unresolved import used only as a heritage clause',
+      "import { MissingBase } from './does-not-exist';\nexport declare class Derived extends MissingBase {}\n",
     ],
   ])('fails update when a declaration has %s', { timeout: T }, (_label, decl) => {
     setupFixture();

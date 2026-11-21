@@ -81,7 +81,7 @@
     "build:local": "npm run generate:local && npm run compile && npm run api:check",
     "build:ci": "npm run generate && npm run compile && npm run api:check",
     "compile": "npm run docs:config && npm run sync-readme:check && npm run format && npm run version:sync && npm run typecheck && tsup src/index.ts src/logger.ts src/fn/index.ts src/effect/index.ts src/runtime/platform/node.ts src/runtime/platform/browser.ts --external '#platform' --dts --format esm,cjs --sourcemap --out-dir dist && tsup src/runtime/threadWorkerEntry.ts --external '#platform' --format esm,cjs --sourcemap --out-dir dist --no-splitting && npm run typecheck:dist && node scripts/check-browser-bundle.mjs && node scripts/check-tree-shaking.mjs",
-    "build:types": "tsup src/index.ts src/logger.ts src/fn/index.ts src/effect/index.ts src/runtime/platform/node.ts src/runtime/platform/browser.ts --external '#platform' --dts-only --format esm --out-dir dist",
+    "build:types": "tsup src/index.ts src/logger.ts src/fn/index.ts src/effect/index.ts src/runtime/platform/node.ts src/runtime/platform/browser.ts --external '#platform' --dts-only --format esm,cjs --out-dir dist",
     "api-compat": "tsx scripts/api-compat.ts",
     "api:check": "tsx scripts/api-report.ts",
     "api:update": "tsx scripts/api-report.ts --update",
