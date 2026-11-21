@@ -1,3 +1,10 @@
+# [11.0.0-alpha.10](https://github.com/camunda/orchestration-cluster-api-js/compare/v11.0.0-alpha.9...v11.0.0-alpha.10) (2026-11-21)
+
+
+### Features
+
+* **ci:** guard the public API surface with committed API Extractor reports ([#703](https://github.com/camunda/orchestration-cluster-api-js/issues/703)) ([7b93953](https://github.com/camunda/orchestration-cluster-api-js/commit/7b93953c0f690ad20157ec02e62c11d476593bd0)), closes [#platform](https://github.com/camunda/orchestration-cluster-api-js/issues/platform) [#700](https://github.com/camunda/orchestration-cluster-api-js/issues/700)
+
 # [11.0.0-alpha.9](https://github.com/camunda/orchestration-cluster-api-js/compare/v11.0.0-alpha.8...v11.0.0-alpha.9) (2026-11-21)
 
 
