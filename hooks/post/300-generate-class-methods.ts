@@ -183,61 +183,40 @@ export function optionalTenantIdVariantsOfBody(
     return { state, required: [...required].sort() };
   }
 
-  // Flatten a (possibly nested union) body schema into its variant shapes.
-  // A union nested inside `allOf` (a composed union, e.g.
-  // `allOf: [{ oneOf: [A, B] }]` plus enclosing constraints) still yields one
-  // shape per union branch: the enclosing `properties`/`required` are merged
-  // into every branch so `variantInfo` sees the composed shape each branch
-  // actually accepts. Without this, wrapping the by-id/by-key union in `allOf`
-  // collapses it to a single shape and a mixed union silently loses (or
-  // mis-scopes) default-tenant injection.
+  // Expand a (possibly nested / composed union) body schema into its variant
+  // shapes: the Cartesian product of its union and allOf factors, each combined
+  // with the schema's own properties/required.
   function variantsOf(raw: SpecSchema | undefined, depth = 0): SpecSchema[] {
     const s = resolve(raw);
     if (!s || depth > 10) return [];
+    // A schema is the INTERSECTION of its own constraints, its union (if any)
+    // and every allOf part. Each of the union and allOf parts may itself expand
+    // to several shapes, so the variants are the Cartesian product of those
+    // factors — never a flattening of their branches, which would treat an
+    // intersection as alternatives and drop the other factors' constraints.
+    const factors: SpecSchema[][] = [];
     const variants = (s['oneOf'] || s['anyOf']) as SpecSchema[] | undefined;
-    if (Array.isArray(variants) && variants.length > 0) {
-      const branchShapes = variants.flatMap((v) => variantsOf(v, depth + 1));
-      // Constraints sitting alongside the union (own `properties`/`required`,
-      // or a sibling `allOf`) apply to every branch — fold them in so
-      // variantInfo sees the full composed shape, mirroring the allOf path.
-      const own: SpecSchema = {};
-      if (s['properties']) own['properties'] = s['properties'];
-      if (s['required']) own['required'] = s['required'];
-      const siblings = (s['allOf'] as SpecSchema[] | undefined) ?? [];
-      const envelope: SpecSchema[] = [...(Object.keys(own).length > 0 ? [own] : []), ...siblings];
-      if (envelope.length === 0) return branchShapes;
-      return branchShapes.map((branch) => ({
-        ...branch,
-        allOf: [...((branch['allOf'] as unknown[]) ?? []), ...envelope],
-      }));
+    const hasUnion = Array.isArray(variants) && variants.length > 0;
+    if (hasUnion) {
+      factors.push(variants.flatMap((v) => variantsOf(v, depth + 1)));
     }
-    const allOf = s['allOf'] as SpecSchema[] | undefined;
-    if (Array.isArray(allOf) && allOf.length > 0) {
-      const partShapes = allOf.map((part) => variantsOf(part, depth + 1));
-      // Only expand when some allOf part actually contains a union; otherwise
-      // the allOf is a plain composition and must stay ONE shape (variantInfo
-      // already merges allOf parts) — expanding would cross-product the parts
-      // into phantom variants.
-      if (!partShapes.some((shapes) => shapes.length > 1)) return [s];
-      // The union branches must still satisfy the rest of the composition:
-      // merge the enclosing constraints and every single-shape (non-union)
-      // sibling part into each branch as an extra allOf entry, so variantInfo
-      // sees the full composed shape each branch actually accepts. The
-      // single-shape siblings are NOT variants of their own — they are
-      // constraints on every branch — so they leave the branch list.
-      const branchShapes = partShapes.flatMap((shapes) => (shapes.length > 1 ? shapes : []));
-      const own: SpecSchema = {};
-      if (s['properties']) own['properties'] = s['properties'];
-      if (s['required']) own['required'] = s['required'];
-      const siblings = allOf.filter((_, i) => partShapes[i].length <= 1);
-      const envelope: SpecSchema[] = [...(Object.keys(own).length > 0 ? [own] : []), ...siblings];
-      if (envelope.length === 0) return branchShapes;
-      return branchShapes.map((branch) => ({
-        ...branch,
-        allOf: [...((branch['allOf'] as unknown[]) ?? []), ...envelope],
-      }));
+    for (const part of (s['allOf'] as SpecSchema[] | undefined) ?? []) {
+      factors.push(variantsOf(part, depth + 1));
     }
-    return [s];
+    const nonEmpty = factors.filter((f) => f.length > 0);
+    // Plain composition (no union anywhere): ONE shape; variantInfo merges allOf.
+    if (!hasUnion && !nonEmpty.some((f) => f.length > 1)) return [s];
+    let combos: SpecSchema[][] = [[]];
+    for (const f of nonEmpty) {
+      combos = combos.flatMap((c) => f.map((shape) => [...c, shape]));
+      if (combos.length > 1024) {
+        throw new Error('[class-gen] request-body union expansion exceeds 1024 variants');
+      }
+    }
+    const own: SpecSchema = {};
+    if (s['properties']) own['properties'] = s['properties'];
+    if (s['required']) own['required'] = s['required'];
+    return combos.map((combo) => ({ ...own, allOf: combo }));
   }
 
   const shapes = variantsOf(bodySchema);

@@ -345,5 +345,52 @@ describe('per-variant default tenant on union bodies (#704)', () => {
       expect(total).toBe(2);
       expect(variants).toEqual([['processDefinitionId', 'top']]);
     });
+
+    // Two unions intersected via allOf are a Cartesian product, not alternatives.
+    it('two allOf unions combine as a Cartesian product', () => {
+      const A: RawSchema = { required: ['a'], properties: { a: { type: 'string' } } };
+      const B: RawSchema = { required: ['b'], properties: { b: { type: 'string' } } };
+      const composed: RawSchema = { allOf: [{ oneOf: [A, B] }, { oneOf: [BY_KEY, BY_ID] }] };
+      const { variants, total } = optionalTenantIdVariantsOfBody(composed, {});
+      expect(total).toBe(4);
+      expect(variants).toEqual([
+        ['a', 'processDefinitionId'],
+        ['b', 'processDefinitionId'],
+      ]);
+    });
+
+    // A top-level union with a union in a sibling allOf: tenantId declared only
+    // in the sibling union must still be found, per combination.
+    it('a sibling allOf union is expanded and combined with the outer union', () => {
+      const SCOPED: RawSchema = {
+        required: ['scope'],
+        properties: { scope: { type: 'string' }, tenantId: { type: 'string' } },
+      };
+      const GLOBAL: RawSchema = {
+        required: ['global'],
+        properties: { global: { type: 'string' } },
+      };
+      const ID: RawSchema = { required: ['id'], properties: { id: { type: 'string' } } };
+      const KEY: RawSchema = { required: ['key'], properties: { key: { type: 'string' } } };
+      const composed: RawSchema = { oneOf: [ID, KEY], allOf: [{ oneOf: [SCOPED, GLOBAL] }] };
+      const { variants, total } = optionalTenantIdVariantsOfBody(composed, {});
+      expect(total).toBe(4);
+      expect(variants).toEqual([
+        ['id', 'scope'],
+        ['key', 'scope'],
+      ]);
+    });
+
+    // A combination whose other factor requires tenantId must not get a default.
+    it('a combination requiring tenantId yields no matcher', () => {
+      const REQ: RawSchema = {
+        required: ['tenantId'],
+        properties: { tenantId: { type: 'string' } },
+      };
+      const OPT: RawSchema = { required: ['o'], properties: { o: { type: 'string' } } };
+      const composed: RawSchema = { allOf: [{ oneOf: [REQ, OPT] }, { oneOf: [BY_KEY, BY_ID] }] };
+      const { variants } = optionalTenantIdVariantsOfBody(composed, {});
+      expect(variants).toEqual([['o', 'processDefinitionId']]);
+    });
   });
 });
