@@ -109,7 +109,7 @@ function deriveEntryPoints(): EntryPoint[] {
   }
   for (const target of Object.values(pkg.imports ?? {})) {
     for (const dts of findTypesConditions(target)) {
-      add(`platform-${path.basename(dts, '.d.ts')}`, dts);
+      add(`platform-${dtsSlug(path.basename(dts))}`, dts);
     }
   }
   return entries;
@@ -140,11 +140,16 @@ function findTypesConditions(node: unknown): string[] {
   return unique;
 }
 
-/** Report-name slug for a declaration path: `./dist/a/b.d.ts` → `dist-a-b`. */
+/**
+ * Report-name slug for a declaration path: `./dist/a/b.d.ts` → `dist-a-b`.
+ * Module-suffixed declarations keep their suffix (`b.d.mts` → `dist-a-b-mts`,
+ * `b.d.cts` → `dist-a-b-cts`) so sibling typings of one module never collide.
+ */
 function dtsSlug(dts: string): string {
   return path
     .normalize(dts)
-    .replace(/\.d\.(c|m)?ts$/, '')
+    .replace(/\.d\.ts$/, '')
+    .replace(/\.d\.(c|m)ts$/, '-$1ts')
     .split(/[\\/]+/)
     .filter((p) => p && p !== '.')
     .join('-');
@@ -518,7 +523,7 @@ function staleReports(): string[] {
 function normalizeReport(content: string): string {
   return content
     .replace(/\r\n/g, '\n')
-    .replace(/^(\s*\/\/ )[^\n]*?\.d\.ts:\d+:\d+ - (\(ae-[a-z-]+\) )/gm, '$1$2');
+    .replace(/^(\s*\/\/ )[^\n]*?\.d\.(?:c|m)?ts:\d+:\d+ - (\(ae-[a-z-]+\) )/gm, '$1$2');
 }
 
 /** `git diff --no-index` between two on-disk files, labelled with the repo path. */

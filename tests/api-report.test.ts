@@ -414,6 +414,65 @@ describe('api-report entry-point map guard', () => {
     expect(result.status).toBe(1);
   });
 
+  it('guards .d.ts, .d.mts and .d.cts typings of one subpath without name collisions', {
+    timeout: T,
+  }, () => {
+    setupPackageFixture();
+    const src = fs.readFileSync(path.join(tmp, 'dist', 'logger.d.ts'), 'utf8');
+    fs.writeFileSync(path.join(tmp, 'dist', 'logger.d.mts'), src);
+    fs.writeFileSync(path.join(tmp, 'dist', 'logger.d.cts'), src);
+    editFixturePackage((pkg) => {
+      pkg.exports['./logger'] = {
+        browser: { types: './dist/logger.d.ts' },
+        import: { types: './dist/logger.d.mts' },
+        require: { types: './dist/logger.d.cts' },
+      };
+    });
+    const update = run(['--update'], { deriveFromPackage: true });
+    expect(update.status, update.stderr).toBe(0);
+    const reports = fs.readdirSync(path.join(tmp, 'etc')).filter((f) => f.startsWith('logger'));
+    expect(reports.sort()).toEqual([
+      'logger--dist-logger-cts.api.md',
+      'logger--dist-logger-mts.api.md',
+      'logger.api.md',
+    ]);
+    for (const ext of ['d.mts', 'd.cts']) {
+      const f = path.join(tmp, 'dist', `logger.${ext}`);
+      const before = fs.readFileSync(f, 'utf8');
+      fs.writeFileSync(f, before.replace('msg: string', 'msg: number'));
+      const result = run([], { deriveFromPackage: true });
+      expect(result.status).toBe(1);
+      expect(result.stderr).toContain(`logger-${ext.slice(2)}`);
+      fs.writeFileSync(f, before);
+    }
+  });
+
+  it.each(['d.mts', 'd.cts'])(
+    'ignores diagnostic location shifts in .%s declarations (comment-only change)',
+    { timeout: T },
+    (ext) => {
+      setupPackageFixture();
+      const f = path.join(tmp, 'dist', `logger.${ext}`);
+      fs.writeFileSync(
+        f,
+        'declare type Helper = { level: string };\n' +
+          fs.readFileSync(path.join(tmp, 'dist', 'logger.d.ts'), 'utf8') +
+          'export declare function helper(): Helper;\nexport {};\n'
+      );
+      fs.rmSync(path.join(tmp, 'dist', 'logger.d.ts'));
+      editFixturePackage((pkg) => {
+        pkg.exports['./logger'] = { types: `./dist/logger.${ext}` };
+      });
+      expect(run(['--update'], { deriveFromPackage: true }).status).toBe(0);
+      const committed = fs.readFileSync(path.join(tmp, 'etc', 'logger.api.md'), 'utf8');
+      expect(committed).toContain('ae-forgotten-export');
+      expect(committed).not.toMatch(/\.d\.(c|m)?ts:\d+:\d+/);
+      fs.writeFileSync(f, `// layout-only comment\n${fs.readFileSync(f, 'utf8')}`);
+      const result = run([], { deriveFromPackage: true });
+      expect(result.status).toBe(0);
+    }
+  );
+
   it('guards every distinct declaration target of one subpath', { timeout: T }, () => {
     setupPackageFixture();
     fs.writeFileSync(
