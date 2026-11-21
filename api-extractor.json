@@ -46,7 +46,14 @@
 
   "messages": {
     "compilerMessageReporting": {
-      "default": { "logLevel": "warning" }
+      // Compiler diagnostics (e.g. ts2304/2305/2307 — unresolved types or
+      // imports) mean the extracted report does not faithfully describe the
+      // public API: the unresolved symbol is silently recorded as `any`. The
+      // default-branch message router applies `warning` here, and
+      // scripts/api-report.ts fails only on errors — so a warning would let
+      // api:update commit the invalid report and the next byte-exact
+      // api:check pass against it. Fail closed instead.
+      "default": { "logLevel": "error" }
     },
     "extractorMessageReporting": {
       "default": { "logLevel": "warning", "addToApiReportFile": true },

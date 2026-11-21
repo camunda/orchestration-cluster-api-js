@@ -201,6 +201,33 @@ describe('api-report guard', () => {
     expect(result.status).toBe(0);
     expect(result.stdout).toContain('public API surface unchanged');
   });
+
+  it('fails update AND check when a declaration has an unresolved import', {
+    timeout: T,
+  }, () => {
+    // Compiler diagnostics (ts2304/2305/2307 — unresolved types or imports)
+    // mean the extracted report does not faithfully describe the public API:
+    // the unresolved symbol is silently recorded as `any`. The guard must
+    // refuse to record (--update) or accept (check) such a report — a warning
+    // is not enough, because a warning still lets update commit the invalid
+    // report and the next byte-exact check then passes against it.
+    setupFixture();
+    mutateDist(
+      (c) =>
+        "import type { Missing } from './does-not-exist';\n" +
+        c.replace(
+          'export declare function createThing(name: string): { id: string };',
+          'export declare function createThing(name: string): { id: Missing };'
+        )
+    );
+    const update = run(['--update']);
+    expect(update.status).toBe(1);
+    // The invalid report must NOT have been committed.
+    expect(fs.existsSync(path.join(tmp, 'etc', 'index.api.md'))).toBe(false);
+    // And check mode fails too (no committed report to match, and the
+    // extraction itself is invalid).
+    expect(run().status).toBe(1);
+  });
 });
 
 /*

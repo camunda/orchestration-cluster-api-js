@@ -24,9 +24,12 @@ import { fileURLToPath } from 'node:url';
 import {
   Extractor,
   ExtractorConfig,
+  ExtractorLogLevel,
+  ExtractorMessageCategory,
   type IConfigFile,
   type IExtractorInvokeOptions,
 } from '@microsoft/api-extractor';
+import ts from 'typescript';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 // Tests point the script at a fixture tree instead of the repo (tests/api-report.test.ts).
@@ -160,6 +163,60 @@ function snapshotEntryPointMap(): string {
   return `${JSON.stringify(map, null, 2)}\n`;
 }
 
+/**
+ * Walk the program's declaration files and report every type reference whose
+ * symbol resolves to TypeScript's `unknownSymbol` — i.e. a name the compiler
+ * could not bind (an unresolved import, a typo'd type name). The compiler
+ * itself never reports these for d.ts files (it does not type-check
+ * declaration files), and API Extractor records the unresolved symbol as
+ * `any`, so the guard checks for them itself.
+ *
+ * Detection: an unresolved alias has the Alias flag but
+ * `getImmediateAliasedSymbol()` returns undefined (its `resolveAlias` target
+ * is the compiler-internal `unknownSymbol`). A bare unresolved type reference
+ * binds straight to `unknownSymbol`, which has no declarations.
+ */
+function findUnresolvedReferences(checker: ts.TypeChecker, program: ts.Program): string[] {
+  const problems: string[] = [];
+  const seen = new Set<string>();
+  for (const sourceFile of program.getSourceFiles()) {
+    // Only the analyzed declarations, not lib.*.d.ts or node_modules typings.
+    if (sourceFile.isDeclarationFile === false) continue;
+    if (program.isSourceFileDefaultLibrary(sourceFile)) continue;
+    if (sourceFile.fileName.includes('node_modules')) continue;
+    const visit = (node: ts.Node): void => {
+      if (ts.isTypeReferenceNode(node)) {
+        const symbol = checker.getSymbolAtLocation(node.typeName);
+        if (symbol) {
+          let unresolved = false;
+          // eslint-disable-next-line no-bitwise
+          if (symbol.flags & ts.SymbolFlags.Alias) {
+            // Alias whose target is the compiler-internal unknownSymbol.
+            unresolved = checker.getImmediateAliasedSymbol(symbol) === undefined;
+          } else {
+            // Bare reference bound straight to unknownSymbol: no declarations.
+            unresolved = (symbol.declarations ?? []).length === 0;
+          }
+          if (unresolved) {
+            const { line, character } = ts.getLineAndCharacterOfPosition(
+              sourceFile,
+              node.getStart()
+            );
+            const key = `${sourceFile.fileName}:${line + 1}:${character + 1} — '${node.typeName.getText()}'`;
+            if (!seen.has(key)) {
+              seen.add(key);
+              problems.push(key);
+            }
+          }
+        }
+      }
+      ts.forEachChild(node, visit);
+    };
+    visit(sourceFile);
+  }
+  return problems;
+}
+
 function main(): void {
   const update = process.argv.includes('--update');
 
@@ -206,9 +263,27 @@ function main(): void {
     // → `"a"  |  "b"` — would leave the committed report stale while --update
     // still exits 0, and the next byte-exact check fails. This script does all
     // committed-report writing itself, byte-exact, in the update block below.
+    //
+    // messageCallback: api-extractor.json already routes compiler diagnostics
+    // (ts2304/2305/2307 — unresolved types or imports) at logLevel "error".
+    // That is not enough on its own: the Collector only feeds
+    // program.getSemanticDiagnostics() into the message router, and a d.ts
+    // file is not type-checked by the compiler, so an unresolved import in a
+    // declaration file produces NO compiler message at all — the unresolved
+    // symbol is silently recorded as `any` in the report. Promote ANY
+    // compiler-category message to error here as a fail-closed backstop: if a
+    // future api-extractor version (or a .ts analysis path) does surface a
+    // compiler diagnostic, the guard fails instead of recording the invalid
+    // report. The callback mutates the message before the router counts it,
+    // so result.errorCount below sees the promotion.
     const options: IExtractorInvokeOptions = {
       localBuild: false,
       showVerboseMessages: false,
+      messageCallback: (message) => {
+        if (message.category === ExtractorMessageCategory.Compiler) {
+          message.logLevel = ExtractorLogLevel.Error;
+        }
+      },
     };
     const result = Extractor.invoke(extractorConfig, options);
     if (!result.succeeded) {
@@ -221,6 +296,26 @@ function main(): void {
       console.error(
         `api-extractor ${update ? 'update' : 'check'} reported drift for ${entry.name} ` +
           `(${result.errorCount} errors, ${result.warningCount} warnings)`
+      );
+    }
+
+    // Fail closed on unresolved types or imports in the declarations being
+    // analyzed. This cannot be delegated to the compiler diagnostics above:
+    // the Collector only routes program.getSemanticDiagnostics(), and the
+    // TypeScript compiler does NOT type-check d.ts files — an unresolved
+    // import in a declaration file produces no diagnostic at all, and the
+    // unresolved symbol is silently recorded as `any` in the report. A
+    // warning would let api:update commit that invalid report and the next
+    // byte-exact api:check pass against it, so this must be a hard failure.
+    const unresolved = findUnresolvedReferences(
+      (result.compilerState.program as ts.Program).getTypeChecker(),
+      result.compilerState.program as ts.Program
+    );
+    if (unresolved.length > 0) {
+      failed = true;
+      console.error(
+        `api-extractor ${update ? 'update' : 'check'} found unresolved type references in ` +
+          `${entry.name}:\n${unresolved.map((u) => `  ${u}`).join('\n')}`
       );
     }
 
