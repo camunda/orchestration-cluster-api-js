@@ -130,7 +130,10 @@ function findTypesConditions(node: unknown): string[] {
       found.push(value);
       continue;
     }
-    if ((key === 'import' || key === 'require' || key === 'default') && /\.(c?js|mjs)$/.test(value)) {
+    if (
+      (key === 'import' || key === 'require' || key === 'default') &&
+      /\.(c?js|mjs)$/.test(value)
+    ) {
       const twin = value.replace(/\.(c?js|mjs)$/, '.d.ts');
       if (fs.existsSync(path.join(ROOT, twin))) found.push(twin);
     }
