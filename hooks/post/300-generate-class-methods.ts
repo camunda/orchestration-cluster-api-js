@@ -93,43 +93,65 @@ function collectOpsWithOptionalTenantIdsArray(): Set<string> {
 }
 
 /**
- * Detect operations whose JSON request body carries an optional singular
- * `tenantId`, including union bodies (`oneOf`/`anyOf`) whose variants are
- * composed with `allOf`. The bundler's `optionalTenantIdInBody` flag misses
- * union bodies such as `createProcessInstance`; this complements it (OR-ed)
- * so every tenant-scoped command gets the default tenant, matching the
- * Camunda Java client. See issue #647.
+ * Detect, per operation, the body variants that carry an optional singular
+ * `tenantId`. Returns a map of operationId → the sorted required-property
+ * names of each such variant. Union bodies (`oneOf`/`anyOf`) contribute one
+ * entry per matching variant, so an operation like `suspendProcessDefinitions`
+ * injects the default tenant on its by-id variant (optional `tenantId`) but
+ * not its by-key variant (no `tenantId`) — matching the Camunda Java client.
+ *
+ * The bundler's `optionalTenantIdInBody` flag misses union bodies such as
+ * `createProcessInstance`; this complements it (OR-ed) so every tenant-scoped
+ * command gets the default tenant. See issues #647 and #704.
  */
-function collectOpsWithOptionalTenantId(): Set<string> {
-  const result = new Set<string>();
+function collectOpsWithOptionalTenantId(): {
+  variants: Map<string, string[][]>;
+  total: Map<string, number>;
+} {
+  const variants = new Map<string, string[][]>();
+  const total = new Map<string, number>();
+  const result = { variants, total };
   if (!fs.existsSync(BUNDLED_SPEC_PATH)) return result;
   const spec = JSON.parse(fs.readFileSync(BUNDLED_SPEC_PATH, 'utf8'));
   const schemas = (spec?.components?.schemas || {}) as Record<string, Record<string, unknown>>;
   const resolve = (s: Record<string, unknown> | undefined) =>
     s && typeof s['$ref'] === 'string' ? schemas[(s['$ref'] as string).split('/').pop()!] : s;
 
-  // Returns 'optional' | 'required' | 'absent' for tenantId within one (non-union) shape.
-  function tenantIdState(
+  // Per (non-union) shape: 'optional' when it has an optional tenantId, plus the
+  // sorted names of its required properties (used at runtime to recognise the
+  // variant being sent). 'required' tenantId or no tenantId yields no variant.
+  function variantInfo(
     raw: Record<string, unknown> | undefined,
     depth = 0
-  ): 'optional' | 'required' | 'absent' {
+  ): { state: 'optional' | 'required' | 'absent'; required: string[] } {
     const s = resolve(raw);
-    if (!s || depth > 10) return 'absent';
-    const variants = (s['oneOf'] || s['anyOf']) as Record<string, unknown>[] | undefined;
-    if (Array.isArray(variants) && variants.length > 0) {
-      const states = variants.map((v) => tenantIdState(v, depth + 1));
-      return states.every((x) => x === 'optional') ? 'optional' : 'absent';
-    }
+    if (!s || depth > 10) return { state: 'absent', required: [] };
     let state: 'optional' | 'required' | 'absent' = 'absent';
     const props = s['properties'] as Record<string, unknown> | undefined;
     if (props?.['tenantId']) state = 'optional';
+    const required = new Set<string>((s['required'] as string[] | undefined) ?? []);
     for (const part of (s['allOf'] as Record<string, unknown>[] | undefined) ?? []) {
-      const st = tenantIdState(part, depth + 1);
-      if (st === 'required') return 'required';
-      if (st === 'optional') state = 'optional';
+      const sub = variantInfo(part, depth + 1);
+      if (sub.state === 'required') return { state: 'required', required: [] };
+      if (sub.state === 'optional') state = 'optional';
+      for (const p of sub.required) required.add(p);
     }
-    if (((s['required'] as string[] | undefined) ?? []).includes('tenantId')) return 'required';
-    return state;
+    if (required.has('tenantId')) return { state: 'required', required: [] };
+    return { state, required: [...required].sort() };
+  }
+
+  // Flatten a (possibly nested union) body schema into its variant shapes.
+  function variantsOf(
+    raw: Record<string, unknown> | undefined,
+    depth = 0
+  ): Record<string, unknown>[] {
+    const s = resolve(raw);
+    if (!s || depth > 10) return [];
+    const variants = (s['oneOf'] || s['anyOf']) as Record<string, unknown>[] | undefined;
+    if (Array.isArray(variants) && variants.length > 0) {
+      return variants.flatMap((v) => variantsOf(v, depth + 1));
+    }
+    return [s];
   }
 
   for (const methods of Object.values(
@@ -144,8 +166,17 @@ function collectOpsWithOptionalTenantId(): Set<string> {
       if (!opId || !content) continue;
       for (const [ct, media] of Object.entries(content)) {
         if (!/json/i.test(ct)) continue;
-        if (tenantIdState(media?.['schema'] as Record<string, unknown>) === 'optional')
-          result.add(opId);
+        const shapes = variantsOf(media?.['schema'] as Record<string, unknown>);
+        total.set(opId, (total.get(opId) ?? 0) + shapes.length);
+        const matching: string[][] = [];
+        for (const shape of shapes) {
+          const info = variantInfo(shape);
+          if (info.state === 'optional') matching.push(info.required);
+        }
+        if (matching.length > 0) {
+          const existing = variants.get(opId) ?? [];
+          variants.set(opId, [...existing, ...matching]);
+        }
       }
     }
   }
@@ -219,14 +250,27 @@ async function main() {
     pathParams: string[];
     queryParams: Array<{ name: string; required: boolean }>;
     optionalTenantIdInBody: boolean;
+    optionalTenantIdVariants: string[][];
     optionalTenantIdsInBody: boolean;
   }
   const ops: OpMeta[] = [];
   const opsWithTenantIdsArray = collectOpsWithOptionalTenantIdsArray();
-  const opsWithTenantId = collectOpsWithOptionalTenantId();
+  const tenantIdInfo = collectOpsWithOptionalTenantId();
+  const opsWithTenantId = tenantIdInfo.variants;
+  const opsWithTenantIdTotal = tenantIdInfo.total;
   for (const op of metadata.operations) {
     const originalId = op.operationId;
     const opId = sanitize(originalId);
+    // The bundler flag covers non-union bodies; the spec walk adds per-variant
+    // detail (and catches union bodies the flag misses). Variant matching is
+    // only needed to discriminate a mixed union (some variants with an optional
+    // tenantId, some without); when every body variant accepts an optional
+    // tenantId the empty matcher `[[]]` injects unconditionally, preserving the
+    // previous behaviour for bodies with no required properties.
+    const variants = opsWithTenantId.get(originalId) ?? [];
+    const total = opsWithTenantIdTotal.get(originalId) ?? 0;
+    const optionalTenantIdInBody = !!op.optionalTenantIdInBody || variants.length > 0;
+    const discriminative = total > variants.length;
     ops.push({
       opId,
       hasBody: op.hasRequestBody,
@@ -240,7 +284,12 @@ async function main() {
       verb: op.method.toLowerCase(),
       pathParams: op.pathParams || [],
       queryParams: op.queryParams || [],
-      optionalTenantIdInBody: !!op.optionalTenantIdInBody || opsWithTenantId.has(originalId),
+      optionalTenantIdInBody,
+      optionalTenantIdVariants: optionalTenantIdInBody
+        ? discriminative
+          ? variants
+          : [[]]
+        : [],
       optionalTenantIdsInBody: opsWithTenantIdsArray.has(originalId),
     });
   }
@@ -420,12 +469,15 @@ export type ${o.opId}Consistency = {
         methods.push(`      envelope.query = { ${queryParamNames.join(', ')} };`);
       if (o.hasBody) methods.push('      envelope.body = _body;');
       if (o.hasBody && o.optionalTenantIdInBody) {
-        methods.push(
-          '      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {'
-        );
         // Inject into a shallow copy: envelope.body aliases the caller's input, so
         // mutating it would leak the default tenant into reused inputs and throw on
         // frozen inputs. See issue #647 / PR #648 review.
+        // The variant list scopes injection to the body shapes that actually carry
+        // an optional tenantId: a union body (e.g. suspendProcessDefinitions)
+        // injects on its by-id variant but not its by-key variant. See issue #704.
+        methods.push(
+          `      if (_bodyHasOptionalTenantIdVariant(envelope.body, ${JSON.stringify(o.optionalTenantIdVariants)})) {`
+        );
         methods.push(
           '        envelope.body = { ...envelope.body, tenantId: this._config.defaultTenantId };'
         );
@@ -718,7 +770,7 @@ export type ${o.opId}Consistency = {
   const opsSrc = [
     '// @generated by hooks/post/300-generate-class-methods.ts - DO NOT EDIT DIRECTLY',
     '// One standalone function per operation. CamundaClient methods delegate to these.',
-    "import type { CamundaCore, OperationRuntime } from '../runtime/camundaCore';",
+    "import { _bodyHasOptionalTenantIdVariant, type CamundaCore, type OperationRuntime } from '../runtime/camundaCore';",
     "import { type CancelablePromise, toCancelable } from '../runtime/cancelable';",
     "import { type ConsistencyOptions, eventualPoll } from '../runtime/eventual';",
     "import type { OperationOptions } from '../runtime/retry';",

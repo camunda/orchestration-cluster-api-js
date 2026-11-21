@@ -83,6 +83,29 @@ export interface CamundaOptions {
 }
 
 /**
+ * Decide, per union variant, whether the body being sent accepts an optional
+ * `tenantId` that the default tenant should be injected into. The generator
+ * emits, per operation, the sorted list of required-property names for each
+ * body variant that carries an optional top-level `tenantId`; a body matches
+ * when it has no `tenantId` yet and contains every one of those properties.
+ *
+ * This is what lets `suspendProcessDefinitions` / `resumeProcessDefinitions`
+ * inject the default tenant on the by-id variant (optional `tenantId`) while
+ * leaving the by-key variant (no `tenantId`) untouched — matching the Camunda
+ * Java client. See issue #704.
+ * @internal
+ */
+export function _bodyHasOptionalTenantIdVariant(
+  body: unknown,
+  variants: ReadonlyArray<readonly string[]>
+): boolean {
+  if (typeof body !== 'object' || body === null || Array.isArray(body)) return false;
+  const rec = body as Record<string, unknown>;
+  if (rec.tenantId !== undefined && rec.tenantId !== null) return false;
+  return variants.some((required) => required.every((p) => p in rec));
+}
+
+/**
  * Members of {@link CamundaCore} that the generated per-operation functions use.
  * @internal
  */

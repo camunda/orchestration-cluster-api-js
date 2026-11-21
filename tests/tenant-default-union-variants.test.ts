@@ -89,7 +89,10 @@ function loadSpec() {
   // Per-variant tenantId state for one (possibly union) body schema.
   // 'optional' = this variant accepts an optional tenantId; 'required' = tenantId is
   // required; 'absent' = no tenantId on this variant. A union yields one state per variant.
-  function variantStates(raw: SpecSchema | undefined, depth = 0): Array<'optional' | 'required' | 'absent'> {
+  function variantStates(
+    raw: SpecSchema | undefined,
+    depth = 0
+  ): Array<'optional' | 'required' | 'absent'> {
     const s = resolve(raw);
     if (!s || depth > 10) return ['absent'];
     const variants = s.oneOf ?? s.anyOf;
