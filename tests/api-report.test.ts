@@ -246,6 +246,19 @@ describe('api-report guard', () => {
     expect(run(['--update']).status).toBe(0);
   });
 
+  it('accepts a call-expression heritage clause', { timeout: T }, () => {
+    // Guards against false positives: `extends mixin(Base)` has no symbol for
+    // the full expression, which must not be mistaken for a missing member.
+    setupFixture();
+    mutateDist(
+      (c) =>
+        c +
+        'declare class Base0 {}\ndeclare function mixin<C>(c: C): C;\n' +
+        'export declare class Mixed extends mixin(Base0) {}\n'
+    );
+    expect(run(['--update']).status).toBe(0);
+  });
+
   it.each([
     [
       'an unresolved import() type',
@@ -267,6 +280,18 @@ describe('api-report guard', () => {
     [
       'an unresolved import used only as a heritage clause',
       "import { MissingBase } from './does-not-exist';\nexport declare class Derived extends MissingBase {}\n",
+    ],
+    [
+      'a missing member of a resolvable namespace in a type reference',
+      "import * as NS from 'node:url';\nexport type T1 = NS.NoSuchThing;\n",
+    ],
+    [
+      'a missing member of a resolvable namespace in a typeof query',
+      "import * as NS from 'node:url';\nexport declare const v1: typeof NS.noSuchValue;\n",
+    ],
+    [
+      'a missing member of a resolvable namespace in a heritage clause',
+      "import * as NS from 'node:events';\nexport declare class D1 extends NS.NoSuchBase {}\n",
     ],
   ])('fails update when a declaration has %s', { timeout: T }, (_label, decl) => {
     setupFixture();

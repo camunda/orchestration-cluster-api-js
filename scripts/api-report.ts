@@ -264,10 +264,19 @@ function findUnresolvedReferences(checker: ts.TypeChecker, program: ts.Program):
         else return n;
       }
     };
+    // A pure name chain (`Foo`, `NS.Foo`, `a.b.c`) — as opposed to e.g. a
+    // call-expression heritage clause (`extends mixin(Base)`), which has no
+    // symbol of its own and is validated through its sub-expressions.
+    const isNameChain = (n: ts.Node): boolean =>
+      ts.isIdentifier(n) ||
+      (ts.isQualifiedName(n) && isNameChain(n.left)) ||
+      (ts.isPropertyAccessExpression(n) && isNameChain(n.expression));
     const checkName = (node: ts.Node, name: ts.Node): void => {
       for (const target of new Set([leftmost(name), name])) {
         const symbol = checker.getSymbolAtLocation(target);
-        if (symbol && isUnresolved(symbol)) {
+        // A name chain with no symbol at all (e.g. `NS.NoSuchThing`, where
+        // `NS` resolves but the member does not) is just as unresolved.
+        if ((symbol && isUnresolved(symbol)) || (!symbol && isNameChain(target))) {
           report(node, name.getText());
           return;
         }
