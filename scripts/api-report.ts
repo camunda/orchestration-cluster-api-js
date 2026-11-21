@@ -246,10 +246,20 @@ function snapshotEntryPointMap(): string {
  * declaration files), and API Extractor records the unresolved symbol as
  * `any`, so the guard checks for them itself.
  *
- * Detection: an unresolved alias has the Alias flag but
- * `getImmediateAliasedSymbol()` returns undefined (its `resolveAlias` target
+ * Detection: an unresolved alias has the Alias flag but its fully followed
+ * `getAliasedSymbol()` target has no declarations (its `resolveAlias` target
  * is the compiler-internal `unknownSymbol`). A bare unresolved type reference
  * binds straight to `unknownSymbol`, which has no declarations.
+ *
+ * A declaration-less symbol is NOT automatically unresolved, though:
+ * TypeScript also creates valid VIRTUAL symbols with no declarations — e.g.
+ * the `prototype` symbol of a class (SymbolFlags.Prototype), which a public
+ * signature can reference as `typeof C.prototype`. API Extractor's own helper
+ * (TypeScriptHelpers.tryGetADeclaration) explicitly tolerates such virtual
+ * symbols. What marks an UNRESOLVED name is the compiler's error path: the
+ * internal unknownSymbol and the placeholder for a missing member of a
+ * resolvable namespace (`NS.NoSuchThing`) are both Transient symbols, and a
+ * bare unbound name is named `unknown`. A genuine virtual symbol is neither.
  */
 function findUnresolvedReferences(checker: ts.TypeChecker, program: ts.Program): string[] {
   const problems: string[] = [];
@@ -276,8 +286,15 @@ function findUnresolvedReferences(checker: ts.TypeChecker, program: ts.Program):
         // (`import * as ns from 'mod'`) to their module symbol.
         return (checker.getAliasedSymbol(symbol).declarations ?? []).length === 0;
       }
-      // Bare reference bound straight to unknownSymbol: no declarations.
-      return (symbol.declarations ?? []).length === 0;
+      if ((symbol.declarations ?? []).length > 0) return false;
+      // Declaration-less: a valid virtual symbol (e.g. a class's `prototype`,
+      // SymbolFlags.Prototype) or an unresolved one. The compiler's error
+      // symbols are Transient (the unknownSymbol and the missing-namespace-
+      // member placeholder both are); a bare unbound name is named "unknown".
+      // A genuine virtual symbol is neither Transient nor named "unknown".
+      // eslint-disable-next-line no-bitwise
+      if (symbol.flags & ts.SymbolFlags.Transient) return true;
+      return symbol.name === 'unknown';
     };
     const leftmost = (name: ts.Node): ts.Node => {
       let n = name;

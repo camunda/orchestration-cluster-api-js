@@ -259,6 +259,26 @@ describe('api-report guard', () => {
     expect(run(['--update']).status).toBe(0);
   });
 
+  it('accepts a valid declaration-less virtual symbol (typeof C.prototype)', { timeout: T }, () => {
+    // Guards against false positives: TypeScript creates a valid virtual
+    // `prototype` symbol (SymbolFlags.Prototype) for every class, with NO
+    // declarations. A public signature referencing `typeof C.prototype` must
+    // be accepted by both api:update and api:check — declaration-less is not
+    // the same as unresolved. API Extractor's own helper
+    // (TypeScriptHelpers.tryGetADeclaration) explicitly tolerates such
+    // virtual symbols.
+    setupFixture();
+    mutateDist(
+      (c) =>
+        c +
+        'export declare class Widget { render(): void; }\n' +
+        'export declare const widgetProto: typeof Widget.prototype;\n'
+    );
+    expect(run(['--update']).status).toBe(0);
+    // And the committed report must then pass a byte-exact check.
+    expect(run().status).toBe(0);
+  });
+
   it.each([
     [
       'an unresolved import() type',

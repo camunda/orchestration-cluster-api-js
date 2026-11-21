@@ -11,9 +11,13 @@
  *      release commit must record reports matching the declarations it ships,
  *      or the next PR's committed-input check fails on drift it did not cause.
  *
- * Scoped to the defect class: this asserts the relative ORDER of the four
- * commands, not the presence of any one line, so reordering or dropping any
- * of them fails the test.
+ * Scoped to the defect class: this asserts the relative ORDER of the commands,
+ * not the presence of any one line, so reordering or dropping any of them
+ * fails the test. In particular it asserts the full
+ * `generate:local → build:types → api:check` committed-input chain: removing
+ * `generate:local` or `build:types`, or moving either after `api:check`,
+ * would leave the check comparing stale or missing declarations instead of
+ * output regenerated from the committed spec inputs.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -42,10 +46,17 @@ describe('release workflow API report sequencing', () => {
       expect(i, `expected bump step to run \`${cmd}\``).toBeGreaterThanOrEqual(0);
       return i;
     };
+    const generateLocal = at('npm run generate:local');
+    const buildTypes = at('npm run build:types');
     const check = at('npm run api:check');
     const build = at('npm run build');
     const update = at('npm run api:update');
-    // Committed-input check first, fetching build second, report refresh last.
+    // Committed-input chain first — regenerate from the committed spec, build
+    // declarations, then check — so api:check compares freshly regenerated
+    // committed-input declarations, not stale or missing ones.
+    expect(generateLocal).toBeLessThan(buildTypes);
+    expect(buildTypes).toBeLessThan(check);
+    // Committed-input check before the fetching build; report refresh last.
     expect(check).toBeLessThan(build);
     expect(build).toBeLessThan(update);
   });
