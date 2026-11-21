@@ -119,7 +119,8 @@ function deriveEntryPoints(): EntryPoint[] {
  * Every declaration file reachable through a package.json condition tree, in
  * stable depth-first order. A condition contributes its declaration file when
  * it either has an explicit `types` condition or points at a runtime file
- * (`import`/`require`/`default`) with a `.d.ts` twin on disk — the nested
+ * under any condition key with a declaration twin on disk (`.d.ts`, or
+ * `.d.mts`/`.d.cts` for `.mjs`/`.cjs`) — the nested
  * `browser` condition of `#platform` has no `types` of its own, but tsup
  * builds `browser.ts` as its own entry with `browser.d.ts` beside the `.js`,
  * and that surface needs a report too. Handles both flat
@@ -152,8 +153,17 @@ function dtsSlug(dts: string): string {
 /** Declaration file for one string target: itself, or its `.d.ts` twin on disk. */
 function declarationFor(target: string): string | undefined {
   if (/\.d\.(c|m)?ts$/.test(target)) return target;
-  if (/\.(c?js|mjs)$/.test(target)) {
-    const twin = target.replace(/\.(c?js|mjs)$/, '.d.ts');
+  const m = /\.(js|mjs|cjs)$/.exec(target);
+  if (!m) return undefined;
+  // Prefer the plain .d.ts twin (tsup emits .d.cts beside .cjs as a mirror of
+  // the .d.ts, so guarding both would only duplicate reports); fall back to
+  // the module-suffixed twin (.mjs → .d.mts, .cjs → .d.cts) when that is the
+  // only declaration on disk, so such a surface is never left unguarded.
+  const base = target.slice(0, -m[0].length);
+  const candidates =
+    m[1] === 'mjs' ? ['.d.ts', '.d.mts'] : m[1] === 'cjs' ? ['.d.ts', '.d.cts'] : ['.d.ts'];
+  for (const ext of candidates) {
+    const twin = base + ext;
     if (fs.existsSync(path.join(ROOT, twin))) return twin;
   }
   return undefined;
@@ -176,10 +186,10 @@ function collectTypesConditions(node: unknown): string[] {
       found.push(value);
       continue;
     }
-    if (key === 'import' || key === 'require' || key === 'default') {
-      const dts = declarationFor(value);
-      if (dts) found.push(dts);
-    }
+    // Any other condition key (import/require/default/node/browser/custom):
+    // a runtime target with a declaration twin is a public surface too.
+    const dts = declarationFor(value);
+    if (dts) found.push(dts);
   }
   return found;
 }

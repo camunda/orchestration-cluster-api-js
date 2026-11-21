@@ -389,6 +389,31 @@ describe('api-report entry-point map guard', () => {
     expect(result.stderr).toContain('logger.api.md');
   });
 
+  // Class: a runtime target with a declaration twin must be guarded whatever
+  // its module suffix (.js/.mjs/.cjs → .d.ts/.d.mts/.d.cts) and whatever
+  // condition key it sits under (not only import/require/default).
+  it.each([
+    ['an .mjs string target with a .d.mts twin', './dist/logger.mjs', 'logger.d.mts'],
+    ['a require .cjs target with a .d.cts twin', { require: './dist/logger.cjs' }, 'logger.d.cts'],
+    ['a custom-condition .js target', { node: './dist/logger.js' }, 'logger.d.ts'],
+    ['a nested custom-condition target', { worker: { deno: './dist/logger.js' } }, 'logger.d.ts'],
+  ])('guards %s through its declaration twin', { timeout: T }, (_label, target, twinName) => {
+    setupPackageFixture();
+    const twin = path.join(tmp, 'dist', twinName);
+    if (twinName !== 'logger.d.ts') {
+      fs.renameSync(path.join(tmp, 'dist', 'logger.d.ts'), twin);
+    }
+    editFixturePackage((pkg) => {
+      pkg.exports['./logger'] = target;
+    });
+    expect(run(['--update'], { deriveFromPackage: true }).status).toBe(0);
+    const reports = fs.readdirSync(path.join(tmp, 'etc')).filter((f) => f.includes('logger'));
+    expect(reports.length).toBeGreaterThan(0);
+    fs.writeFileSync(twin, fs.readFileSync(twin, 'utf8').replace('msg: string', 'msg: number'));
+    const result = run([], { deriveFromPackage: true });
+    expect(result.status).toBe(1);
+  });
+
   it('guards every distinct declaration target of one subpath', { timeout: T }, () => {
     setupPackageFixture();
     fs.writeFileSync(
