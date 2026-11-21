@@ -18441,7 +18441,7 @@ export type SourceElementInstruction = ({
 } & SourceElementInstanceKeyInstruction);
 
 // @public (undocumented)
-export const SPEC_HASH: "sha256:563b0c89df420cb7fdc1727e47ce10625ff5e3a6bc20f714ec7c18b40fc974f5";
+export const SPEC_HASH: "sha256:914f89f26245982b7e11d9a3bdcbfccdc228e07fbf7bd7008279ed1d494d70ed";
 
 // Warning: (ae-forgotten-export) The symbol "ServerSentEventsResult" needs to be exported by the entry point index.d.ts
 //
