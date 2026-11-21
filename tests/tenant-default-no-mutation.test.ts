@@ -42,6 +42,12 @@ function minimalBody(opId: string): Record<string, unknown> {
       resources: [new File([Buffer.from('<bpmn/>')], 'p.bpmn', { type: 'application/xml' })],
     };
   }
+  // Mixed-union bodies (issue #704): injection is per-variant, so the no-mutation
+  // assertions must send the tenant-carrying by-id variant — an empty body matches
+  // no variant and (correctly) gets no tenant.
+  if (opId === 'suspendProcessDefinitions' || opId === 'resumeProcessDefinitions') {
+    return { processDefinitionId: 'p' };
+  }
   return {};
 }
 
