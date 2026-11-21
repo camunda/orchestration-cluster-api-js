@@ -84,7 +84,7 @@ function deriveEntryPoints(): EntryPoint[] {
     });
   }
   const pkg = JSON.parse(fs.readFileSync(PACKAGE_JSON, 'utf8')) as {
-    exports?: Record<string, unknown>;
+    exports?: unknown;
     imports?: Record<string, unknown>;
   };
   const entries: EntryPoint[] = [];
@@ -96,7 +96,7 @@ function deriveEntryPoints(): EntryPoint[] {
     seen.add(name);
     entries.push({ name, dts });
   };
-  for (const [subpath, target] of Object.entries(pkg.exports ?? {})) {
+  for (const [subpath, target] of Object.entries(normalizeExports(pkg.exports))) {
     const types = findTypesConditions(target);
     if (types.length === 0) continue;
     const name = subpath === '.' ? 'index' : subpath.replace(/^\.\//, '').replaceAll('/', '-');
@@ -113,6 +113,29 @@ function deriveEntryPoints(): EntryPoint[] {
     }
   }
   return entries;
+}
+
+/**
+ * Node's "exports" sugar: a string, an array, or a condition-only object
+ * (no key starting with '.') all denote the root `.` export. Normalize them
+ * to a subpath map so the root surface is never silently dropped (iterating
+ * a string would walk its characters instead).
+ */
+function normalizeExports(exportsField: unknown): Record<string, unknown> {
+  if (exportsField === undefined || exportsField === null) return {};
+  if (typeof exportsField === 'string' || Array.isArray(exportsField)) {
+    return { '.': exportsField };
+  }
+  if (typeof exportsField === 'object') {
+    const keys = Object.keys(exportsField);
+    if (keys.length > 0 && keys.every((k) => !k.startsWith('.'))) {
+      return { '.': exportsField };
+    }
+    return exportsField as Record<string, unknown>;
+  }
+  throw new Error(
+    `api-report: unsupported package.json "exports" value: ${JSON.stringify(exportsField)}`
+  );
 }
 
 /**

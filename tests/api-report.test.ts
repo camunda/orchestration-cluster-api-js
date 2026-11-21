@@ -459,6 +459,28 @@ describe('api-report entry-point map guard', () => {
     expect(result.stderr).toContain('logger.api.md');
   });
 
+  // Class: Node's root "exports" sugar (string, array, condition-only object)
+  // must still guard the root surface, not drop it.
+  it.each([
+    ['a string root export', './dist/index.js'],
+    ['an array root export', ['./dist/index.js']],
+    ['a condition-only root export', { types: './dist/index.d.ts', import: './dist/index.js' }],
+  ])('guards %s', { timeout: T }, (_label, rootExport) => {
+    setupPackageFixture();
+    const file = path.join(tmp, 'package.json');
+    const pkg = JSON.parse(fs.readFileSync(file, 'utf8'));
+    pkg.exports = rootExport;
+    fs.writeFileSync(file, `${JSON.stringify(pkg, null, 2)}\n`);
+    expect(run(['--update'], { deriveFromPackage: true }).status).toBe(0);
+    expect(fs.existsSync(path.join(tmp, 'etc', 'index.api.md'))).toBe(true);
+    const dts = path.join(tmp, 'dist', 'index.d.ts');
+    const before = fs.readFileSync(dts, 'utf8');
+    fs.writeFileSync(dts, `${before}\nexport declare const addedForTest: number;\n`);
+    const result = run([], { deriveFromPackage: true });
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('index.api.md');
+  });
+
   // Class: a runtime target with a declaration twin must be guarded whatever
   // its module suffix (.js/.mjs/.cjs → .d.ts/.d.mts/.d.cts) and whatever
   // condition key it sits under (not only import/require/default).
