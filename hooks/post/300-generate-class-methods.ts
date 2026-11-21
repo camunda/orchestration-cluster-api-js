@@ -194,21 +194,34 @@ export function optionalTenantIdVariantsOfBody(
     // to several shapes, so the variants are the Cartesian product of those
     // factors — never a flattening of their branches, which would treat an
     // intersection as alternatives and drop the other factors' constraints.
-    const factors: SpecSchema[][] = [];
+    //
+    // Each factor is paired with a `viaUnion` flag recording whether its
+    // shapes came from expanding a union (oneOf/anyOf), however deep. The flag
+    // — not the shape COUNT — decides between "plain composition" and "union
+    // expansion": a singleton union nested in allOf still expands to exactly
+    // one shape, but that shape is the branch, and returning the raw schema
+    // instead would lose it (variantInfo never visits unions).
+    const factors: { shapes: SpecSchema[]; viaUnion: boolean }[] = [];
     const variants = (s['oneOf'] || s['anyOf']) as SpecSchema[] | undefined;
     const hasUnion = Array.isArray(variants) && variants.length > 0;
     if (hasUnion) {
-      factors.push(variants.flatMap((v) => variantsOf(v, depth + 1)));
+      factors.push({
+        shapes: variants.flatMap((v) => variantsOf(v, depth + 1)),
+        viaUnion: true,
+      });
     }
     for (const part of (s['allOf'] as SpecSchema[] | undefined) ?? []) {
-      factors.push(variantsOf(part, depth + 1));
+      factors.push({
+        shapes: variantsOf(part, depth + 1),
+        viaUnion: hasUnionDeep(part, depth + 1),
+      });
     }
-    const nonEmpty = factors.filter((f) => f.length > 0);
+    const nonEmpty = factors.filter((f) => f.shapes.length > 0);
     // Plain composition (no union anywhere): ONE shape; variantInfo merges allOf.
-    if (!hasUnion && !nonEmpty.some((f) => f.length > 1)) return [s];
+    if (!hasUnion && !nonEmpty.some((f) => f.viaUnion)) return [s];
     let combos: SpecSchema[][] = [[]];
     for (const f of nonEmpty) {
-      combos = combos.flatMap((c) => f.map((shape) => [...c, shape]));
+      combos = combos.flatMap((c) => f.shapes.map((shape) => [...c, shape]));
       if (combos.length > 1024) {
         throw new Error('[class-gen] request-body union expansion exceeds 1024 variants');
       }
@@ -217,6 +230,17 @@ export function optionalTenantIdVariantsOfBody(
     if (s['properties']) own['properties'] = s['properties'];
     if (s['required']) own['required'] = s['required'];
     return combos.map((combo) => ({ ...own, allOf: combo }));
+  }
+
+  // Whether a schema's expansion involves a union (oneOf/anyOf) at any depth —
+  // its own, or inside any allOf part. Mirrors the recursion shape of
+  // variantsOf so the two can never disagree about what counts as a union.
+  function hasUnionDeep(raw: SpecSchema | undefined, depth = 0): boolean {
+    const s = resolve(raw);
+    if (!s || depth > 10) return false;
+    const variants = (s['oneOf'] || s['anyOf']) as SpecSchema[] | undefined;
+    if (Array.isArray(variants) && variants.length > 0) return true;
+    return ((s['allOf'] as SpecSchema[] | undefined) ?? []).some((p) => hasUnionDeep(p, depth + 1));
   }
 
   const shapes = variantsOf(bodySchema);

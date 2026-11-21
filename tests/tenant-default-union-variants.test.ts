@@ -392,5 +392,50 @@ describe('per-variant default tenant on union bodies (#704)', () => {
       const { variants } = optionalTenantIdVariantsOfBody(composed, {});
       expect(variants).toEqual([['o', 'processDefinitionId']]);
     });
+
+    // A singleton oneOf/anyOf nested inside allOf still introduces a union
+    // factor: the branch is an EXPANSION of the part, not the part itself.
+    // Treating "expands to exactly one shape" as "no union" returns the raw
+    // outer schema, whose variantInfo never visits the union — so a branch
+    // with an optional tenantId silently loses default-tenant injection.
+    it('a singleton oneOf nested inside allOf preserves its expanded branch', () => {
+      const composed: RawSchema = { allOf: [{ oneOf: [BY_ID] }] };
+      const { variants, total } = optionalTenantIdVariantsOfBody(composed, {});
+      expect(total).toBe(1);
+      expect(variants).toEqual([['processDefinitionId']]);
+    });
+
+    it('a singleton anyOf nested inside allOf preserves its expanded branch', () => {
+      const composed: RawSchema = { allOf: [{ anyOf: [BY_ID] }] };
+      const { variants, total } = optionalTenantIdVariantsOfBody(composed, {});
+      expect(total).toBe(1);
+      expect(variants).toEqual([['processDefinitionId']]);
+    });
+
+    it('a singleton union next to a plain allOf part folds in the plain part', () => {
+      const composed: RawSchema = {
+        allOf: [
+          { oneOf: [BY_ID] },
+          { required: ['extra'], properties: { extra: { type: 'string' } } },
+        ],
+      };
+      const { variants, total } = optionalTenantIdVariantsOfBody(composed, {});
+      expect(total).toBe(1);
+      expect(variants).toEqual([['extra', 'processDefinitionId']]);
+    });
+
+    it('a singleton union nested two allOf levels deep still expands', () => {
+      const composed: RawSchema = { allOf: [{ allOf: [{ oneOf: [BY_ID] }] }] };
+      const { variants, total } = optionalTenantIdVariantsOfBody(composed, {});
+      expect(total).toBe(1);
+      expect(variants).toEqual([['processDefinitionId']]);
+    });
+
+    it('a singleton union branch without tenantId yields no matcher', () => {
+      const composed: RawSchema = { allOf: [{ oneOf: [BY_KEY] }] };
+      const { variants, total } = optionalTenantIdVariantsOfBody(composed, {});
+      expect(total).toBe(1);
+      expect(variants).toEqual([]);
+    });
   });
 });
