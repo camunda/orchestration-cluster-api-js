@@ -23,233 +23,80 @@ function toFunctionBody(line: string): string {
     .replace(/\bthis\./g, 'rt.');
 }
 
-/**
- * Detect operations whose request body has an optional `tenantIds: array`
- * property. Mirrors `optionalTenantIdInBody` (singular) from the bundler
- * metadata, but for the plural array case (e.g. `activateJobs`).
- *
- * Sourced from the bundled spec rather than spec-metadata.json so this hook
- * remains self-contained and does not require a `camunda-schema-bundler`
- * release. See issue #170.
- */
-function collectOpsWithOptionalTenantIdsArray(): Set<string> {
-  const result = new Set<string>();
-  if (!fs.existsSync(BUNDLED_SPEC_PATH)) return result;
-  const spec = JSON.parse(fs.readFileSync(BUNDLED_SPEC_PATH, 'utf8'));
-  const componentSchemas = (spec?.components?.schemas || {}) as Record<
-    string,
-    Record<string, unknown>
-  >;
-
-  function resolveSchemaRef(
-    schema: Record<string, unknown> | undefined
-  ): Record<string, unknown> | undefined {
-    if (!schema) return undefined;
-    if (typeof schema['$ref'] === 'string') {
-      const name = (schema['$ref'] as string).split('/').pop()!;
-      return componentSchemas[name];
-    }
-    return schema;
-  }
-
-  function hasOptionalTenantIdsArray(schema: Record<string, unknown> | undefined): boolean {
-    if (!schema || schema['type'] !== 'object') return false;
-    const props = schema['properties'] as Record<string, Record<string, unknown>> | undefined;
-    if (!props || !props['tenantIds']) return false;
-    const required = (schema['required'] as string[] | undefined) ?? [];
-    if (required.includes('tenantIds')) return false;
-    return props['tenantIds']['type'] === 'array';
-  }
-
-  const paths = (spec?.paths || {}) as Record<string, Record<string, unknown>>;
-  for (const methods of Object.values(paths)) {
-    for (const op of Object.values(methods)) {
-      const opObj = op as Record<string, unknown>;
-      const opId = opObj['operationId'] as string | undefined;
-      if (!opId) continue;
-      const rb = opObj['requestBody'] as Record<string, unknown> | undefined;
-      const content = rb?.['content'] as Record<string, unknown> | undefined;
-      if (!content) continue;
-      for (const [ct, mediaObj] of Object.entries(content)) {
-        if (!/json/i.test(ct)) continue;
-        const media = mediaObj as Record<string, unknown> | undefined;
-        const rawSchema = media?.['schema'] as Record<string, unknown> | undefined;
-        const resolved = resolveSchemaRef(rawSchema);
-        if (!resolved) continue;
-        const variants = (resolved['oneOf'] || resolved['anyOf']) as
-          | Record<string, unknown>[]
-          | undefined;
-        if (Array.isArray(variants) && variants.length > 1) {
-          const all =
-            variants.length > 0 &&
-            variants.map((v) => resolveSchemaRef(v)).every((rs) => hasOptionalTenantIdsArray(rs));
-          if (all) result.add(opId);
-        } else if (hasOptionalTenantIdsArray(resolved)) {
-          result.add(opId);
-        }
-      }
-    }
-  }
-  return result;
-}
-
-/**
- * Detect, per operation, the body variants that carry an optional singular
- * `tenantId`. Returns a map of operationId → the sorted required-property
- * names of each such variant. Union bodies (`oneOf`/`anyOf`) contribute one
- * entry per matching variant, so an operation like `suspendProcessDefinitions`
- * injects the default tenant on its by-id variant (optional `tenantId`) but
- * not its by-key variant (no `tenantId`) — matching the Camunda Java client.
- *
- * The bundler's `optionalTenantIdInBody` flag misses union bodies such as
- * `createProcessInstance`; this complements it (OR-ed) so every tenant-scoped
- * command gets the default tenant. See issues #647 and #704.
- */
-export function collectOpsWithOptionalTenantId(): {
-  variants: Map<string, string[][]>;
-  total: Map<string, number>;
-} {
-  const variants = new Map<string, string[][]>();
-  const total = new Map<string, number>();
-  const result = { variants, total };
-  if (!fs.existsSync(BUNDLED_SPEC_PATH)) return result;
-  const spec = JSON.parse(fs.readFileSync(BUNDLED_SPEC_PATH, 'utf8'));
-  const schemas = (spec?.components?.schemas || {}) as Record<string, Record<string, unknown>>;
-
-  for (const methods of Object.values(
-    (spec?.paths || {}) as Record<string, Record<string, unknown>>
-  )) {
-    for (const op of Object.values(methods)) {
-      const opObj = op as Record<string, unknown>;
-      const opId = opObj['operationId'] as string | undefined;
-      const content = (opObj['requestBody'] as Record<string, unknown> | undefined)?.['content'] as
-        | Record<string, Record<string, unknown>>
-        | undefined;
-      if (!opId || !content) continue;
-      for (const [ct, media] of Object.entries(content)) {
-        if (!/json/i.test(ct)) continue;
-        const { variants: matching, total: shapeCount } = optionalTenantIdVariantsOfBody(
-          media?.['schema'] as Record<string, unknown>,
-          schemas
-        );
-        total.set(opId, (total.get(opId) ?? 0) + shapeCount);
-        if (matching.length > 0) {
-          const existing = variants.get(opId) ?? [];
-          variants.set(opId, [...existing, ...matching]);
-        }
-      }
-    }
-  }
-  return result;
-}
-
 type SpecSchema = Record<string, unknown>;
 
+/** The default-tenant fields `camunda-schema-bundler` (>= 2.5.1) writes per operation. */
+export interface TenantMetadata {
+  optionalTenantIdInBody?: boolean;
+  optionalTenantIdInBodyVariants?: string[];
+  optionalTenantIdsInBody?: boolean;
+}
+
 /**
- * The pure variant walk behind {@link collectOpsWithOptionalTenantId}, exported
- * so tests can exercise it against synthetic spec fixtures without a bundled
- * spec on disk. Given one request-body schema (and the spec's component schemas
- * for `$ref` resolution), returns the sorted required-property names of every
- * body variant with an optional top-level `tenantId`, plus the total number of
- * body variants (used to decide whether the matcher must discriminate).
+ * Decide default-tenant injection for one operation from its spec-metadata
+ * entry (issue #707). The bundler owns the spec analysis; this only turns its
+ * flags into the runtime matcher the generated code uses:
+ *
+ * - `optionalTenantIdInBody` true → every body the operation accepts carries
+ *   an optional `tenantId` (including inline bodies such as `createDeployment`,
+ *   which have no named variant), so inject unconditionally (`[[]]`).
+ * - otherwise, if `optionalTenantIdInBodyVariants` lists union variants, inject
+ *   only when the body sent is one of them. Each named variant is recognised at
+ *   runtime by its sorted required property names (resolved from the bundled
+ *   spec's component schemas), so `suspendProcessDefinitions` injects on its
+ *   by-id variant and not its by-key one.
+ * - `optionalTenantIdsInBody` → inject `[defaultTenantId]` (activateJobs).
  */
-export function optionalTenantIdVariantsOfBody(
-  bodySchema: SpecSchema | undefined,
+export function tenantInjectionFromMetadata(
+  op: TenantMetadata,
   schemas: Record<string, SpecSchema>
-): { variants: string[][]; total: number } {
-  const resolve = (s: SpecSchema | undefined) =>
-    s && typeof s['$ref'] === 'string' ? schemas[(s['$ref'] as string).split('/').pop()!] : s;
-
-  // Per (non-union) shape: 'optional' when it has an optional tenantId, plus the
-  // sorted names of its required properties (used at runtime to recognise the
-  // variant being sent). 'required' tenantId or no tenantId yields no variant.
-  function variantInfo(
-    raw: SpecSchema | undefined,
-    depth = 0
-  ): { state: 'optional' | 'required' | 'absent'; required: string[] } {
-    const s = resolve(raw);
-    if (!s || depth > 10) return { state: 'absent', required: [] };
-    let state: 'optional' | 'required' | 'absent' = 'absent';
-    const props = s['properties'] as Record<string, unknown> | undefined;
-    if (props?.['tenantId']) state = 'optional';
-    const required = new Set<string>((s['required'] as string[] | undefined) ?? []);
-    for (const part of (s['allOf'] as SpecSchema[] | undefined) ?? []) {
-      const sub = variantInfo(part, depth + 1);
-      if (sub.state === 'required') return { state: 'required', required: [] };
-      if (sub.state === 'optional') state = 'optional';
-      for (const p of sub.required) required.add(p);
-    }
-    if (required.has('tenantId')) return { state: 'required', required: [] };
-    return { state, required: [...required].sort() };
+): {
+  optionalTenantIdInBody: boolean;
+  optionalTenantIdVariants: string[][];
+  optionalTenantIdsInBody: boolean;
+} {
+  const optionalTenantIdsInBody = !!op.optionalTenantIdsInBody;
+  if (op.optionalTenantIdInBody) {
+    return {
+      optionalTenantIdInBody: true,
+      optionalTenantIdVariants: [[]],
+      optionalTenantIdsInBody,
+    };
   }
-
-  // Expand a (possibly nested / composed union) body schema into its variant
-  // shapes: the Cartesian product of its union and allOf factors, each combined
-  // with the schema's own properties/required.
-  function variantsOf(raw: SpecSchema | undefined, depth = 0): SpecSchema[] {
-    const s = resolve(raw);
-    if (!s || depth > 10) return [];
-    // A schema is the INTERSECTION of its own constraints, its union (if any)
-    // and every allOf part. Each of the union and allOf parts may itself expand
-    // to several shapes, so the variants are the Cartesian product of those
-    // factors — never a flattening of their branches, which would treat an
-    // intersection as alternatives and drop the other factors' constraints.
-    //
-    // Each factor is paired with a `viaUnion` flag recording whether its
-    // shapes came from expanding a union (oneOf/anyOf), however deep. The flag
-    // — not the shape COUNT — decides between "plain composition" and "union
-    // expansion": a singleton union nested in allOf still expands to exactly
-    // one shape, but that shape is the branch, and returning the raw schema
-    // instead would lose it (variantInfo never visits unions).
-    const factors: { shapes: SpecSchema[]; viaUnion: boolean }[] = [];
-    const variants = (s['oneOf'] || s['anyOf']) as SpecSchema[] | undefined;
-    const hasUnion = Array.isArray(variants) && variants.length > 0;
-    if (hasUnion) {
-      factors.push({
-        shapes: variants.flatMap((v) => variantsOf(v, depth + 1)),
-        viaUnion: true,
-      });
+  const names = op.optionalTenantIdInBodyVariants ?? [];
+  const variants = names.map((name) => {
+    const schema = schemas[name];
+    if (!schema) {
+      throw new Error(`[class-gen] optionalTenantIdInBodyVariants names unknown schema ${name}`);
     }
-    for (const part of (s['allOf'] as SpecSchema[] | undefined) ?? []) {
-      factors.push({
-        shapes: variantsOf(part, depth + 1),
-        viaUnion: hasUnionDeep(part, depth + 1),
-      });
-    }
-    const nonEmpty = factors.filter((f) => f.shapes.length > 0);
-    // Plain composition (no union anywhere): ONE shape; variantInfo merges allOf.
-    if (!hasUnion && !nonEmpty.some((f) => f.viaUnion)) return [s];
-    let combos: SpecSchema[][] = [[]];
-    for (const f of nonEmpty) {
-      combos = combos.flatMap((c) => f.shapes.map((shape) => [...c, shape]));
-      if (combos.length > 1024) {
-        throw new Error('[class-gen] request-body union expansion exceeds 1024 variants');
-      }
-    }
-    const own: SpecSchema = {};
-    if (s['properties']) own['properties'] = s['properties'];
-    if (s['required']) own['required'] = s['required'];
-    return combos.map((combo) => ({ ...own, allOf: combo }));
-  }
+    return requiredPropsOf(schema, schemas);
+  });
+  return {
+    optionalTenantIdInBody: variants.length > 0,
+    optionalTenantIdVariants: variants,
+    optionalTenantIdsInBody,
+  };
+}
 
-  // Whether a schema's expansion involves a union (oneOf/anyOf) at any depth —
-  // its own, or inside any allOf part. Mirrors the recursion shape of
-  // variantsOf so the two can never disagree about what counts as a union.
-  function hasUnionDeep(raw: SpecSchema | undefined, depth = 0): boolean {
-    const s = resolve(raw);
-    if (!s || depth > 10) return false;
-    const variants = (s['oneOf'] || s['anyOf']) as SpecSchema[] | undefined;
-    if (Array.isArray(variants) && variants.length > 0) return true;
-    return ((s['allOf'] as SpecSchema[] | undefined) ?? []).some((p) => hasUnionDeep(p, depth + 1));
-  }
+/** Sorted required property names of a schema, merged through `$ref` and `allOf`. */
+function requiredPropsOf(schema: SpecSchema, schemas: Record<string, SpecSchema>): string[] {
+  const required = new Set<string>();
+  const visit = (raw: SpecSchema | undefined, depth: number) => {
+    const s =
+      raw && typeof raw['$ref'] === 'string'
+        ? schemas[(raw['$ref'] as string).split('/').pop()!]
+        : raw;
+    if (!s || depth > 10) return;
+    for (const r of (s['required'] as string[] | undefined) ?? []) required.add(r);
+    for (const part of (s['allOf'] as SpecSchema[] | undefined) ?? []) visit(part, depth + 1);
+  };
+  visit(schema, 0);
+  return [...required].sort();
+}
 
-  const shapes = variantsOf(bodySchema);
-  const matching: string[][] = [];
-  for (const shape of shapes) {
-    const info = variantInfo(shape);
-    if (info.state === 'optional') matching.push(info.required);
-  }
-  return { variants: matching, total: shapes.length };
+function loadComponentSchemas(): Record<string, SpecSchema> {
+  const spec = JSON.parse(fs.readFileSync(BUNDLED_SPEC_PATH, 'utf8'));
+  return (spec?.components?.schemas || {}) as Record<string, SpecSchema>;
 }
 
 const MARK_TYPES_START = '// === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===';
@@ -323,23 +170,11 @@ async function main() {
     optionalTenantIdsInBody: boolean;
   }
   const ops: OpMeta[] = [];
-  const opsWithTenantIdsArray = collectOpsWithOptionalTenantIdsArray();
-  const tenantIdInfo = collectOpsWithOptionalTenantId();
-  const opsWithTenantId = tenantIdInfo.variants;
-  const opsWithTenantIdTotal = tenantIdInfo.total;
+  const componentSchemas = loadComponentSchemas();
   for (const op of metadata.operations) {
     const originalId = op.operationId;
     const opId = sanitize(originalId);
-    // The bundler flag covers non-union bodies; the spec walk adds per-variant
-    // detail (and catches union bodies the flag misses). Variant matching is
-    // only needed to discriminate a mixed union (some variants with an optional
-    // tenantId, some without); when every body variant accepts an optional
-    // tenantId the empty matcher `[[]]` injects unconditionally, preserving the
-    // previous behaviour for bodies with no required properties.
-    const variants = opsWithTenantId.get(originalId) ?? [];
-    const total = opsWithTenantIdTotal.get(originalId) ?? 0;
-    const optionalTenantIdInBody = !!op.optionalTenantIdInBody || variants.length > 0;
-    const discriminative = total > variants.length;
+    const tenant = tenantInjectionFromMetadata(op, componentSchemas);
     ops.push({
       opId,
       hasBody: op.hasRequestBody,
@@ -353,9 +188,7 @@ async function main() {
       verb: op.method.toLowerCase(),
       pathParams: op.pathParams || [],
       queryParams: op.queryParams || [],
-      optionalTenantIdInBody,
-      optionalTenantIdVariants: optionalTenantIdInBody ? (discriminative ? variants : [[]]) : [],
-      optionalTenantIdsInBody: opsWithTenantIdsArray.has(originalId),
+      ...tenant,
     });
   }
   ops.sort((a, b) => a.opId.localeCompare(b.opId));
@@ -951,8 +784,8 @@ function indent(s: string, d: number) {
 }
 
 // Run only when executed directly (tsx hooks/post/300-generate-class-methods.ts),
-// not when imported by the test suite — tests call collectOpsWithOptionalTenantId()
-// in-process to exercise the real variant walk against synthetic spec fixtures.
+// not when imported by the test suite — tests call tenantInjectionFromMetadata()
+// in-process against synthetic metadata fixtures.
 const invokedDirectly =
   process.argv[1] !== undefined && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (invokedDirectly) {

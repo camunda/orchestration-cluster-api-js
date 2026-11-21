@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
-import { optionalTenantIdVariantsOfBody } from '../hooks/post/300-generate-class-methods';
+import { tenantInjectionFromMetadata } from '../hooks/post/300-generate-class-methods';
 import { createCamundaClient } from '../src';
 
 /**
@@ -17,9 +17,10 @@ import { createCamundaClient } from '../src';
  * This matches the Camunda Java client, which sets the default tenant on the
  * by-id path only.
  *
- * Class-of-defect guard: the spec walk below derives, from the bundled spec,
- * every operation with an optional body `tenantId` on any union variant and
- * asserts the generated SDK injects for it — a new tenant-scoped operation is
+ * Class-of-defect guard: the check below reads, from spec-metadata.json (the
+ * bundler's `optionalTenantIdInBody` / `optionalTenantIdInBodyVariants`), every
+ * operation with an optional body `tenantId` and asserts the generated SDK
+ * injects for it — a new tenant-scoped operation is
  * covered without editing this file, and the test fails if one is missed.
  */
 
@@ -64,70 +65,24 @@ async function send(client: any, op: string, body: Record<string, unknown>) {
   }
 }
 
-// --- Spec-derived expectations (the "generated from the spec, not a list" guard) ---
+// --- Metadata-derived expectations (the "generated from the spec, not a list" guard) ---
 
-interface SpecSchema {
-  $ref?: string;
-  type?: string;
-  properties?: Record<string, unknown>;
-  required?: string[];
-  oneOf?: SpecSchema[];
-  anyOf?: SpecSchema[];
-  allOf?: SpecSchema[];
+interface OpMetadata {
+  operationId: string;
+  optionalTenantIdInBody?: boolean;
+  optionalTenantIdInBodyVariants?: string[];
+  optionalTenantIdsInBody?: boolean;
 }
 
-// The hook's walk takes `Record<string, unknown>` schemas; the fixtures below
-// build that shape directly (the structured SpecSchema above is for reading
-// the bundled spec, where the extra typing helps).
-type RawSchema = Record<string, unknown>;
-
-function loadSpec() {
-  const spec = JSON.parse(
-    readFileSync(join(root, 'external-spec', 'bundled', 'rest-api.bundle.json'), 'utf8')
-  ) as {
-    paths: Record<string, Record<string, { operationId?: string; requestBody?: unknown }>>;
-    components: { schemas: Record<string, SpecSchema> };
-  };
-  const schemas = spec.components.schemas;
-  const resolve = (s: SpecSchema | undefined): SpecSchema | undefined =>
-    s && typeof s.$ref === 'string' ? schemas[s.$ref.split('/').pop()!] : s;
-
-  // Per-variant tenantId state for one (possibly union) body schema.
-  // 'optional' = this variant accepts an optional tenantId; 'required' = tenantId is
-  // required; 'absent' = no tenantId on this variant. A union yields one state per variant.
-  function variantStates(
-    raw: SpecSchema | undefined,
-    depth = 0
-  ): Array<'optional' | 'required' | 'absent'> {
-    const s = resolve(raw);
-    if (!s || depth > 10) return ['absent'];
-    const variants = s.oneOf ?? s.anyOf;
-    if (Array.isArray(variants) && variants.length > 0) {
-      return variants.flatMap((v) => variantStates(v, depth + 1));
-    }
-    let state: 'optional' | 'required' | 'absent' = 'absent';
-    if (s.properties?.tenantId) state = 'optional';
-    for (const part of s.allOf ?? []) {
-      const sub = variantStates(part, depth + 1);
-      if (sub.includes('required')) return ['required'];
-      if (sub.includes('optional')) state = 'optional';
-    }
-    if ((s.required ?? []).includes('tenantId')) return ['required'];
-    return [state];
-  }
-
-  /** Operations whose body has an optional `tenantId` on at least one union variant. */
+function loadMetadata() {
+  const meta = JSON.parse(
+    readFileSync(join(root, 'external-spec', 'bundled', 'spec-metadata.json'), 'utf8')
+  ) as { operations: OpMetadata[] };
+  /** Operations whose body may carry an optional `tenantId` (whole body or some variant). */
   const injectable = new Set<string>();
-  for (const methods of Object.values(spec.paths)) {
-    for (const op of Object.values(methods)) {
-      const opId = op.operationId;
-      const content = (op.requestBody as { content?: Record<string, { schema?: SpecSchema }> })
-        ?.content;
-      if (!opId || !content) continue;
-      for (const [ct, media] of Object.entries(content)) {
-        if (!/json/i.test(ct)) continue;
-        if (variantStates(media?.schema).includes('optional')) injectable.add(opId);
-      }
+  for (const op of meta.operations) {
+    if (op.optionalTenantIdInBody || (op.optionalTenantIdInBodyVariants ?? []).length > 0) {
+      injectable.add(op.operationId);
     }
   }
   return { injectable };
@@ -225,9 +180,9 @@ describe('per-variant default tenant on union bodies (#704)', () => {
   });
 
   it('injects for every spec operation with an optional body tenantId on any variant', () => {
-    const { injectable } = loadSpec();
+    const { injectable } = loadMetadata();
     const generated = generatedInjectingOps();
-    // Sanity: the walk must find the known tenant-scoped commands.
+    // Sanity: the metadata must list the known tenant-scoped commands.
     expect(injectable.size).toBeGreaterThan(0);
     expect(injectable).toContain('suspendProcessDefinitions');
     expect(injectable).toContain('resumeProcessDefinitions');
@@ -244,198 +199,62 @@ describe('per-variant default tenant on union bodies (#704)', () => {
     expect(generated).not.toContain('createTenant');
   });
 
-  // Class-of-defect guard for the generator's variant walk: a `oneOf`/`anyOf`
-  // nested inside `allOf` (a composed union) must still yield per-variant
-  // matchers. These tests call the hook's real walk
-  // (`optionalTenantIdVariantsOfBody` from hooks/post/300-generate-class-methods.ts)
-  // against synthetic spec fixtures: the by-id/by-key union wrapped in
-  // `allOf: [{ oneOf: [...] }]` must produce the same matcher as the bare union.
-  // If the walk stops expanding unions through `allOf`, the composed shape
-  // silently loses injection (or injects unconditionally) and this fails.
-  describe('allOf-composed unions (generator variant walk)', () => {
-    const BY_KEY: RawSchema = {
-      type: 'object',
-      required: ['processDefinitionKey'],
-      properties: { processDefinitionKey: { type: 'string' } },
-    };
-    const BY_ID: RawSchema = {
-      type: 'object',
-      required: ['processDefinitionId'],
-      properties: { processDefinitionId: { type: 'string' }, tenantId: { type: 'string' } },
+  // The generator's metadata → matcher mapping (hooks/post/300-generate-class-methods.ts).
+  describe('tenantInjectionFromMetadata', () => {
+    const schemas: Record<string, Record<string, unknown>> = {
+      ById: {
+        type: 'object',
+        required: ['processDefinitionId'],
+        properties: { processDefinitionId: { type: 'string' }, tenantId: { type: 'string' } },
+      },
+      Base: { required: ['includeInstances'] },
+      Composed: {
+        allOf: [{ $ref: '#/components/schemas/Base' }],
+        required: ['processDefinitionId'],
+      },
     };
 
-    it('a bare mixed union yields a discriminative by-id matcher', () => {
-      const { variants, total } = optionalTenantIdVariantsOfBody({ oneOf: [BY_KEY, BY_ID] }, {});
-      expect(total).toBe(2);
-      expect(variants).toEqual([['processDefinitionId']]);
+    it('injects unconditionally when optionalTenantIdInBody is true (inline bodies too)', () => {
+      expect(
+        tenantInjectionFromMetadata(
+          { optionalTenantIdInBody: true, optionalTenantIdInBodyVariants: [] },
+          schemas
+        )
+      ).toEqual({
+        optionalTenantIdInBody: true,
+        optionalTenantIdVariants: [[]],
+        optionalTenantIdsInBody: false,
+      });
     });
 
-    it('a union nested inside allOf yields the same discriminative by-id matcher', () => {
-      const composed: RawSchema = { allOf: [{ oneOf: [BY_KEY, BY_ID] }] };
-      const { variants, total } = optionalTenantIdVariantsOfBody(composed, {});
-      expect(total).toBe(2);
-      expect(variants).toEqual([['processDefinitionId']]);
+    it('restricts injection to the listed variants otherwise', () => {
+      expect(
+        tenantInjectionFromMetadata(
+          { optionalTenantIdInBody: false, optionalTenantIdInBodyVariants: ['ById'] },
+          schemas
+        ).optionalTenantIdVariants
+      ).toEqual([['processDefinitionId']]);
     });
 
-    it('enclosing allOf properties merge into every expanded variant', () => {
-      const composed: RawSchema = {
-        allOf: [{ oneOf: [BY_KEY, BY_ID] }],
-        required: ['includeProcessInstances'],
-        properties: { includeProcessInstances: { type: 'boolean' } },
-      };
-      const { variants, total } = optionalTenantIdVariantsOfBody(composed, {});
-      expect(total).toBe(2);
-      // The by-id variant's required set must include both its own discriminator
-      // and the enclosing shape's required property.
-      expect(variants).toEqual([['includeProcessInstances', 'processDefinitionId']]);
+    it('merges required properties through allOf and $ref', () => {
+      expect(
+        tenantInjectionFromMetadata({ optionalTenantIdInBodyVariants: ['Composed'] }, schemas)
+          .optionalTenantIdVariants
+      ).toEqual([['includeInstances', 'processDefinitionId']]);
     });
 
-    it('a $ref-ed union nested inside allOf resolves and expands', () => {
-      const schemas: Record<string, RawSchema> = {
-        SuspensionInstruction: { oneOf: [BY_KEY, BY_ID] },
-      };
-      const composed: RawSchema = {
-        allOf: [{ $ref: '#/components/schemas/SuspensionInstruction' }],
-      };
-      const { variants, total } = optionalTenantIdVariantsOfBody(composed, schemas);
-      expect(total).toBe(2);
-      expect(variants).toEqual([['processDefinitionId']]);
+    it('does not inject when neither flag nor variants are set', () => {
+      expect(tenantInjectionFromMetadata({ optionalTenantIdsInBody: true }, schemas)).toEqual({
+        optionalTenantIdInBody: false,
+        optionalTenantIdVariants: [],
+        optionalTenantIdsInBody: true,
+      });
     });
 
-    // An allOf with NO union inside is a plain composition: it must stay ONE
-    // shape (variantInfo merges the parts). Expanding it would cross-product
-    // the parts into phantom variants and inflate the per-op total, flipping a
-    // non-discriminative operation into a discriminative one.
-    it('an allOf without any union stays a single shape', () => {
-      const plain: RawSchema = {
-        allOf: [
-          { properties: { tenantId: { type: 'string' } } },
-          { required: ['foo'], properties: { foo: { type: 'string' } } },
-        ],
-      };
-      const { variants, total } = optionalTenantIdVariantsOfBody(plain, {});
-      expect(total).toBe(1);
-      expect(variants).toEqual([['foo']]);
-    });
-
-    // A mixed allOf (one union part + one plain part) expands the union but
-    // must not multiply the plain part into extra shapes.
-    it('a mixed allOf expands only the union part', () => {
-      const mixed: RawSchema = {
-        allOf: [
-          { oneOf: [BY_KEY, BY_ID] },
-          { properties: { extra: { type: 'string' } }, required: ['extra'] },
-        ],
-      };
-      const { variants, total } = optionalTenantIdVariantsOfBody(mixed, {});
-      expect(total).toBe(2);
-      // The by-id branch must also require the plain part's required property.
-      expect(variants).toEqual([['extra', 'processDefinitionId']]);
-    });
-
-    // Constraints sitting alongside a top-level union apply to every branch;
-    // dropping them would under-specify the runtime matcher.
-    it('constraints alongside a union fold into every branch', () => {
-      const composed: RawSchema = {
-        oneOf: [BY_KEY, BY_ID],
-        required: ['top'],
-        properties: { top: { type: 'string' } },
-      };
-      const { variants, total } = optionalTenantIdVariantsOfBody(composed, {});
-      expect(total).toBe(2);
-      expect(variants).toEqual([['processDefinitionId', 'top']]);
-    });
-
-    // Two unions intersected via allOf are a Cartesian product, not alternatives.
-    it('two allOf unions combine as a Cartesian product', () => {
-      const A: RawSchema = { required: ['a'], properties: { a: { type: 'string' } } };
-      const B: RawSchema = { required: ['b'], properties: { b: { type: 'string' } } };
-      const composed: RawSchema = { allOf: [{ oneOf: [A, B] }, { oneOf: [BY_KEY, BY_ID] }] };
-      const { variants, total } = optionalTenantIdVariantsOfBody(composed, {});
-      expect(total).toBe(4);
-      expect(variants).toEqual([
-        ['a', 'processDefinitionId'],
-        ['b', 'processDefinitionId'],
-      ]);
-    });
-
-    // A top-level union with a union in a sibling allOf: tenantId declared only
-    // in the sibling union must still be found, per combination.
-    it('a sibling allOf union is expanded and combined with the outer union', () => {
-      const SCOPED: RawSchema = {
-        required: ['scope'],
-        properties: { scope: { type: 'string' }, tenantId: { type: 'string' } },
-      };
-      const GLOBAL: RawSchema = {
-        required: ['global'],
-        properties: { global: { type: 'string' } },
-      };
-      const ID: RawSchema = { required: ['id'], properties: { id: { type: 'string' } } };
-      const KEY: RawSchema = { required: ['key'], properties: { key: { type: 'string' } } };
-      const composed: RawSchema = { oneOf: [ID, KEY], allOf: [{ oneOf: [SCOPED, GLOBAL] }] };
-      const { variants, total } = optionalTenantIdVariantsOfBody(composed, {});
-      expect(total).toBe(4);
-      expect(variants).toEqual([
-        ['id', 'scope'],
-        ['key', 'scope'],
-      ]);
-    });
-
-    // A combination whose other factor requires tenantId must not get a default.
-    it('a combination requiring tenantId yields no matcher', () => {
-      const REQ: RawSchema = {
-        required: ['tenantId'],
-        properties: { tenantId: { type: 'string' } },
-      };
-      const OPT: RawSchema = { required: ['o'], properties: { o: { type: 'string' } } };
-      const composed: RawSchema = { allOf: [{ oneOf: [REQ, OPT] }, { oneOf: [BY_KEY, BY_ID] }] };
-      const { variants } = optionalTenantIdVariantsOfBody(composed, {});
-      expect(variants).toEqual([['o', 'processDefinitionId']]);
-    });
-
-    // A singleton oneOf/anyOf nested inside allOf still introduces a union
-    // factor: the branch is an EXPANSION of the part, not the part itself.
-    // Treating "expands to exactly one shape" as "no union" returns the raw
-    // outer schema, whose variantInfo never visits the union — so a branch
-    // with an optional tenantId silently loses default-tenant injection.
-    it('a singleton oneOf nested inside allOf preserves its expanded branch', () => {
-      const composed: RawSchema = { allOf: [{ oneOf: [BY_ID] }] };
-      const { variants, total } = optionalTenantIdVariantsOfBody(composed, {});
-      expect(total).toBe(1);
-      expect(variants).toEqual([['processDefinitionId']]);
-    });
-
-    it('a singleton anyOf nested inside allOf preserves its expanded branch', () => {
-      const composed: RawSchema = { allOf: [{ anyOf: [BY_ID] }] };
-      const { variants, total } = optionalTenantIdVariantsOfBody(composed, {});
-      expect(total).toBe(1);
-      expect(variants).toEqual([['processDefinitionId']]);
-    });
-
-    it('a singleton union next to a plain allOf part folds in the plain part', () => {
-      const composed: RawSchema = {
-        allOf: [
-          { oneOf: [BY_ID] },
-          { required: ['extra'], properties: { extra: { type: 'string' } } },
-        ],
-      };
-      const { variants, total } = optionalTenantIdVariantsOfBody(composed, {});
-      expect(total).toBe(1);
-      expect(variants).toEqual([['extra', 'processDefinitionId']]);
-    });
-
-    it('a singleton union nested two allOf levels deep still expands', () => {
-      const composed: RawSchema = { allOf: [{ allOf: [{ oneOf: [BY_ID] }] }] };
-      const { variants, total } = optionalTenantIdVariantsOfBody(composed, {});
-      expect(total).toBe(1);
-      expect(variants).toEqual([['processDefinitionId']]);
-    });
-
-    it('a singleton union branch without tenantId yields no matcher', () => {
-      const composed: RawSchema = { allOf: [{ oneOf: [BY_KEY] }] };
-      const { variants, total } = optionalTenantIdVariantsOfBody(composed, {});
-      expect(total).toBe(1);
-      expect(variants).toEqual([]);
+    it('fails closed on an unknown variant schema', () => {
+      expect(() =>
+        tenantInjectionFromMetadata({ optionalTenantIdInBodyVariants: ['Nope'] }, schemas)
+      ).toThrow(/unknown schema Nope/);
     });
   });
 });
