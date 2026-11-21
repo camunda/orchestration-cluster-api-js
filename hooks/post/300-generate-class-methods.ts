@@ -285,11 +285,7 @@ async function main() {
       pathParams: op.pathParams || [],
       queryParams: op.queryParams || [],
       optionalTenantIdInBody,
-      optionalTenantIdVariants: optionalTenantIdInBody
-        ? discriminative
-          ? variants
-          : [[]]
-        : [],
+      optionalTenantIdVariants: optionalTenantIdInBody ? (discriminative ? variants : [[]]) : [],
       optionalTenantIdsInBody: opsWithTenantIdsArray.has(originalId),
     });
   }
