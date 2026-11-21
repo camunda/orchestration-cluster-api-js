@@ -155,30 +155,28 @@ function dtsSlug(dts: string): string {
     .join('-');
 }
 
-/** Declaration file for one string target: itself, or its `.d.ts` twin on disk. */
-function declarationFor(target: string): string | undefined {
-  if (/\.d\.(c|m)?ts$/.test(target)) return target;
+/**
+ * Declaration files for one string target: itself, or every declaration twin
+ * on disk. A `.mjs`/`.cjs` target may have both a plain `.d.ts` and a
+ * module-suffixed `.d.mts`/`.d.cts` twin; TypeScript resolves the suffixed one
+ * under the matching condition, so each existing twin is guarded (each gets
+ * its own report — the slug keeps the module suffix) rather than trusting
+ * that they are mirrors.
+ */
+function declarationsFor(target: string): string[] {
+  if (/\.d\.(c|m)?ts$/.test(target)) return [target];
   const m = /\.(js|mjs|cjs)$/.exec(target);
-  if (!m) return undefined;
-  // Prefer the plain .d.ts twin (tsup emits .d.cts beside .cjs as a mirror of
-  // the .d.ts, so guarding both would only duplicate reports); fall back to
-  // the module-suffixed twin (.mjs → .d.mts, .cjs → .d.cts) when that is the
-  // only declaration on disk, so such a surface is never left unguarded.
+  if (!m) return [];
   const base = target.slice(0, -m[0].length);
   const candidates =
     m[1] === 'mjs' ? ['.d.ts', '.d.mts'] : m[1] === 'cjs' ? ['.d.ts', '.d.cts'] : ['.d.ts'];
-  for (const ext of candidates) {
-    const twin = base + ext;
-    if (fs.existsSync(path.join(ROOT, twin))) return twin;
-  }
-  return undefined;
+  return candidates.map((ext) => base + ext).filter((twin) => fs.existsSync(path.join(ROOT, twin)));
 }
 
 function collectTypesConditions(node: unknown): string[] {
   if (typeof node === 'string') {
     // Direct string target, e.g. "./logger": "./dist/logger.js".
-    const dts = declarationFor(node);
-    return dts ? [dts] : [];
+    return declarationsFor(node);
   }
   if (!node || typeof node !== 'object') return [];
   const found: string[] = [];
@@ -193,8 +191,7 @@ function collectTypesConditions(node: unknown): string[] {
     }
     // Any other condition key (import/require/default/node/browser/custom):
     // a runtime target with a declaration twin is a public surface too.
-    const dts = declarationFor(value);
-    if (dts) found.push(dts);
+    found.push(...declarationsFor(value));
   }
   return found;
 }
@@ -239,7 +236,29 @@ function findUnresolvedReferences(checker: ts.TypeChecker, program: ts.Program):
     if (sourceFile.isDeclarationFile === false) continue;
     if (program.isSourceFileDefaultLibrary(sourceFile)) continue;
     if (sourceFile.fileName.includes('node_modules')) continue;
+    const report = (node: ts.Node, name: string): void => {
+      const { line, character } = ts.getLineAndCharacterOfPosition(sourceFile, node.getStart());
+      const key = `${sourceFile.fileName}:${line + 1}:${character + 1} — '${name}'`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        problems.push(key);
+      }
+    };
     const visit = (node: ts.Node): void => {
+      if (ts.isImportTypeNode(node)) {
+        // `import('./x').Foo` / `typeof import('./x')`: the module specifier
+        // must resolve to a module, and the qualifier (if any) to a symbol.
+        const arg = node.argument;
+        const literal =
+          ts.isLiteralTypeNode(arg) && ts.isStringLiteral(arg.literal) ? arg.literal : undefined;
+        const moduleSymbol = literal ? checker.getSymbolAtLocation(literal) : undefined;
+        if (!moduleSymbol) {
+          report(node, node.getText());
+        } else if (node.qualifier) {
+          const q = checker.getSymbolAtLocation(node.qualifier);
+          if (!q || (q.declarations ?? []).length === 0) report(node, node.getText());
+        }
+      }
       if (ts.isTypeReferenceNode(node)) {
         const symbol = checker.getSymbolAtLocation(node.typeName);
         if (symbol) {
@@ -252,17 +271,7 @@ function findUnresolvedReferences(checker: ts.TypeChecker, program: ts.Program):
             // Bare reference bound straight to unknownSymbol: no declarations.
             unresolved = (symbol.declarations ?? []).length === 0;
           }
-          if (unresolved) {
-            const { line, character } = ts.getLineAndCharacterOfPosition(
-              sourceFile,
-              node.getStart()
-            );
-            const key = `${sourceFile.fileName}:${line + 1}:${character + 1} — '${node.typeName.getText()}'`;
-            if (!seen.has(key)) {
-              seen.add(key);
-              problems.push(key);
-            }
-          }
+          if (unresolved) report(node, node.typeName.getText());
         }
       }
       ts.forEachChild(node, visit);

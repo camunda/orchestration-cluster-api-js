@@ -229,6 +229,23 @@ describe('api-report guard', () => {
     // extraction itself is invalid).
     expect(run().status).toBe(1);
   });
+
+  it.each([
+    [
+      'an unresolved import() type',
+      "export declare function f(): import('./does-not-exist').Foo;\n",
+    ],
+    ['an unresolved typeof import()', "export declare const g: typeof import('./also-missing');\n"],
+    [
+      'an unresolved import() qualifier',
+      "export declare function h(): import('./index').NoSuchThing;\n",
+    ],
+  ])('fails update when a declaration has %s', { timeout: T }, (_label, decl) => {
+    setupFixture();
+    mutateDist((c) => c + decl);
+    expect(run(['--update']).status).toBe(1);
+    expect(fs.existsSync(path.join(tmp, 'etc', 'index.api.md'))).toBe(false);
+  });
 });
 
 /*
@@ -413,6 +430,29 @@ describe('api-report entry-point map guard', () => {
     const result = run([], { deriveFromPackage: true });
     expect(result.status).toBe(1);
   });
+
+  // Class: when a .mjs/.cjs target has BOTH a plain .d.ts and a suffixed
+  // twin, each is a resolvable surface and each must be guarded.
+  it.each([
+    ['import', './dist/logger.mjs', 'logger.d.mts'],
+    ['require', './dist/logger.cjs', 'logger.d.cts'],
+  ])(
+    'guards the %s suffixed twin even when a .d.ts twin also exists',
+    { timeout: T },
+    (cond, target, twinName) => {
+      setupPackageFixture();
+      const plain = path.join(tmp, 'dist', 'logger.d.ts');
+      const twin = path.join(tmp, 'dist', twinName);
+      fs.copyFileSync(plain, twin);
+      editFixturePackage((pkg) => {
+        pkg.exports['./logger'] = { [cond]: target };
+      });
+      expect(run(['--update'], { deriveFromPackage: true }).status).toBe(0);
+      // Mutate ONLY the suffixed twin.
+      fs.writeFileSync(twin, fs.readFileSync(twin, 'utf8').replace('msg: string', 'msg: boolean'));
+      expect(run([], { deriveFromPackage: true }).status).toBe(1);
+    }
+  );
 
   it('guards .d.ts, .d.mts and .d.cts typings of one subpath without name collisions', {
     timeout: T,
