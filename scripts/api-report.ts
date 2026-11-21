@@ -90,16 +90,22 @@ function deriveEntryPoints(): EntryPoint[] {
   const entries: EntryPoint[] = [];
   const seen = new Set<string>();
   const add = (name: string, dts: string): void => {
-    if (!seen.has(name)) {
-      seen.add(name);
-      entries.push({ name, dts });
+    if (seen.has(name)) {
+      throw new Error(`api-report: entry-point report name collision '${name}' (${dts})`);
     }
+    seen.add(name);
+    entries.push({ name, dts });
   };
   for (const [subpath, target] of Object.entries(pkg.exports ?? {})) {
     const types = findTypesConditions(target);
     if (types.length === 0) continue;
     const name = subpath === '.' ? 'index' : subpath.replace(/^\.\//, '').replaceAll('/', '-');
-    add(name, types[0]);
+    // The primary (first) target keeps the plain subpath name; every other
+    // distinct target (browser/node, import/require typings) gets its own
+    // report named after its declaration path, so no target goes unguarded.
+    types.forEach((dts, i) => {
+      add(i === 0 ? name : `${name}--${dtsSlug(dts)}`, dts);
+    });
   }
   for (const target of Object.values(pkg.imports ?? {})) {
     for (const dts of findTypesConditions(target)) {
@@ -121,24 +127,58 @@ function deriveEntryPoints(): EntryPoint[] {
  * shapes.
  */
 function findTypesConditions(node: unknown): string[] {
-  if (typeof node === 'string') return [];
+  const unique: string[] = [];
+  const seen = new Set<string>();
+  for (const dts of collectTypesConditions(node)) {
+    const key = path.normalize(dts);
+    if (!seen.has(key)) {
+      seen.add(key);
+      unique.push(dts);
+    }
+  }
+  return unique;
+}
+
+/** Report-name slug for a declaration path: `./dist/a/b.d.ts` → `dist-a-b`. */
+function dtsSlug(dts: string): string {
+  return path
+    .normalize(dts)
+    .replace(/\.d\.(c|m)?ts$/, '')
+    .split(/[\\/]+/)
+    .filter((p) => p && p !== '.')
+    .join('-');
+}
+
+/** Declaration file for one string target: itself, or its `.d.ts` twin on disk. */
+function declarationFor(target: string): string | undefined {
+  if (/\.d\.(c|m)?ts$/.test(target)) return target;
+  if (/\.(c?js|mjs)$/.test(target)) {
+    const twin = target.replace(/\.(c?js|mjs)$/, '.d.ts');
+    if (fs.existsSync(path.join(ROOT, twin))) return twin;
+  }
+  return undefined;
+}
+
+function collectTypesConditions(node: unknown): string[] {
+  if (typeof node === 'string') {
+    // Direct string target, e.g. "./logger": "./dist/logger.js".
+    const dts = declarationFor(node);
+    return dts ? [dts] : [];
+  }
   if (!node || typeof node !== 'object') return [];
   const found: string[] = [];
   for (const [key, value] of Object.entries(node)) {
     if (typeof value !== 'string') {
-      found.push(...findTypesConditions(value));
+      found.push(...collectTypesConditions(value));
       continue;
     }
     if (key === 'types') {
       found.push(value);
       continue;
     }
-    if (
-      (key === 'import' || key === 'require' || key === 'default') &&
-      /\.(c?js|mjs)$/.test(value)
-    ) {
-      const twin = value.replace(/\.(c?js|mjs)$/, '.d.ts');
-      if (fs.existsSync(path.join(ROOT, twin))) found.push(twin);
+    if (key === 'import' || key === 'require' || key === 'default') {
+      const dts = declarationFor(value);
+      if (dts) found.push(dts);
     }
   }
   return found;

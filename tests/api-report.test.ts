@@ -88,7 +88,8 @@ describe('api-report guard', () => {
   // Each run spawns API Extractor (a full TypeScript analysis) per entry point;
   // ~6s per invocation. The timeout is a safety net for runner load, not a
   // correctness signal.
-  const T = 60_000;
+  // Safety net, not a correctness signal: each case spawns API Extractor several times and is slow on a loaded runner.
+  const T = 180_000;
 
   it('passes when the built declarations match the committed reports', { timeout: T }, () => {
     setupFixture({ withReports: true });
@@ -240,7 +241,8 @@ describe('api-report guard', () => {
  * the committed reports itself, byte-for-byte.
  */
 describe('api-report update round trip', () => {
-  const T = 60_000;
+  // Safety net, not a correctness signal: each case spawns API Extractor several times and is slow on a loaded runner.
+  const T = 180_000;
 
   it('update refreshes a whitespace-only change so the next check passes', { timeout: T }, () => {
     setupFixture({ withReports: true });
@@ -267,7 +269,8 @@ describe('api-report update round trip', () => {
  * and compare the committed map alongside the reports.
  */
 describe('api-report entry-point map guard', () => {
-  const T = 60_000;
+  // Safety net, not a correctness signal: each case spawns API Extractor several times and is slow on a loaded runner.
+  const T = 180_000;
 
   /** Fixture with its own package.json, so the script derives entry points. */
   function setupPackageFixture(): void {
@@ -370,5 +373,43 @@ describe('api-report entry-point map guard', () => {
     const result = run([], { deriveFromPackage: true });
     expect(result.status).toBe(1);
     expect(result.stderr).toContain('logger.api.md');
+  });
+
+  it('guards a string-valued export target through its declaration twin', { timeout: T }, () => {
+    setupPackageFixture();
+    editFixturePackage((pkg) => {
+      pkg.exports['./logger'] = './dist/logger.js';
+    });
+    expect(run(['--update'], { deriveFromPackage: true }).status).toBe(0);
+    expect(fs.existsSync(path.join(tmp, 'etc', 'logger.api.md'))).toBe(true);
+    const dts = path.join(tmp, 'dist', 'logger.d.ts');
+    fs.writeFileSync(dts, fs.readFileSync(dts, 'utf8').replace('msg: string', 'msg: number'));
+    const result = run([], { deriveFromPackage: true });
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('logger.api.md');
+  });
+
+  it('guards every distinct declaration target of one subpath', { timeout: T }, () => {
+    setupPackageFixture();
+    fs.writeFileSync(
+      path.join(tmp, 'dist', 'logger-browser.d.ts'),
+      'export declare function createLogger(): { warn(msg: string): void };\n'
+    );
+    editFixturePackage((pkg) => {
+      pkg.exports['./logger'] = {
+        types: './dist/logger.d.ts',
+        browser: { types: './dist/logger-browser.d.ts' },
+        import: './dist/logger.js',
+      };
+    });
+    expect(run(['--update'], { deriveFromPackage: true }).status).toBe(0);
+    const secondary = path.join(tmp, 'dist', 'logger-browser.d.ts');
+    fs.writeFileSync(
+      secondary,
+      fs.readFileSync(secondary, 'utf8').replace('msg: string', 'msg: number')
+    );
+    const result = run([], { deriveFromPackage: true });
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('logger-browser');
   });
 });
