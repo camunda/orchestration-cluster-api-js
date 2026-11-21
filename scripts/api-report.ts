@@ -238,6 +238,11 @@ function snapshotEntryPointMap(): string {
   return `${JSON.stringify(map, null, 2)}\n`;
 }
 
+/** True for the compiler's intrinsic error type (the type of unknownSymbol). */
+function isErrorType(type: ts.Type): boolean {
+  return (type as ts.Type & { intrinsicName?: string }).intrinsicName === 'error';
+}
+
 /**
  * Walk the program's declaration files and report every type reference whose
  * symbol resolves to TypeScript's `unknownSymbol` — i.e. a name the compiler
@@ -262,11 +267,6 @@ function snapshotEntryPointMap(): string {
  * type. Valid synthesized symbols (mapped-type properties) are also Transient
  * and declaration-less, so flags alone cannot be used.
  */
-/** True for the compiler's intrinsic error type (the type of unknownSymbol). */
-function isErrorType(type: ts.Type): boolean {
-  return (type as ts.Type & { intrinsicName?: string }).intrinsicName === 'error';
-}
-
 function findUnresolvedReferences(checker: ts.TypeChecker, program: ts.Program): string[] {
   const problems: string[] = [];
   const seen = new Set<string>();
