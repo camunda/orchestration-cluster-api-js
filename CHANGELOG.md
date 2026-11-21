@@ -1,3 +1,10 @@
+# [11.0.0-alpha.9](https://github.com/camunda/orchestration-cluster-api-js/compare/v11.0.0-alpha.8...v11.0.0-alpha.9) (2026-11-21)
+
+
+### Features
+
+* inject default tenant per union-variant body shape (Closes [#704](https://github.com/camunda/orchestration-cluster-api-js/issues/704)) ([#705](https://github.com/camunda/orchestration-cluster-api-js/issues/705)) ([af1c2b1](https://github.com/camunda/orchestration-cluster-api-js/commit/af1c2b1e258be4bd1088a820ac6bda14ff26df47))
+
 # [11.0.0-alpha.8](https://github.com/camunda/orchestration-cluster-api-js/compare/v11.0.0-alpha.7...v11.0.0-alpha.8) (2026-11-20)
 
 
