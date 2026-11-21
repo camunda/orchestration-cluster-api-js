@@ -272,7 +272,8 @@ describe('api-report guard', () => {
       (c) =>
         c +
         'export declare class Widget { render(): void; }\n' +
-        'export declare const widgetProto: typeof Widget.prototype;\n'
+        'export declare const widgetProto: typeof Widget.prototype;\n' +
+        "export declare function eeProto(): typeof import('node:events').EventEmitter.prototype;\n"
     );
     expect(run(['--update']).status).toBe(0);
     // And the committed report must then pass a byte-exact check.

@@ -340,7 +340,9 @@ function findUnresolvedReferences(checker: ts.TypeChecker, program: ts.Program):
           report(node, node.getText());
         } else if (node.qualifier) {
           const q = checker.getSymbolAtLocation(node.qualifier);
-          if (!q || (q.declarations ?? []).length === 0) report(node, node.getText());
+          // Same error-type test as names: a declaration-less virtual qualifier
+          // (e.g. `EventEmitter.prototype`) is valid.
+          if (!q || isUnresolved(q)) report(node, node.getText());
         }
       }
       // Every syntactic position API Extractor follows as a reference must be
