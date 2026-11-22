@@ -111,7 +111,8 @@ jobs:
           # PRs often contain "Merge branch 'main'" commits; don't cherry-pick them.
           merge_commits: skip
           label_pattern: ^backport ([^ ]+)$
-          pull_title: ${pull_title} (backport #${pull_number} to ${target_branch})
+          # Quoted: unquoted, YAML reads " #" as a comment and drops the rest of the title.
+          pull_title: '${pull_title} (backport #${pull_number} to ${target_branch})'
           pull_description: |-
             Backport of #${pull_number} to `${target_branch}`.
 
