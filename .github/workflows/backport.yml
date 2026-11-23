@@ -188,8 +188,9 @@ jobs:
   #   - `push` mints the App token but never checks out or executes branch
   #     code: it runs scripts/check-derived-paths.sh from this workflow's own
   #     commit, rejects the patch unless every changed path is a derived path
-  #     (fail closed), applies it with git, and pushes only if the branch head
-  #     is still the one that was regenerated.
+  #     or a new, unmodified integration test scaffold (fail closed), applies
+  #     it with git, and pushes only if the branch head is still the one that
+  #     was regenerated.
   regenerate:
     name: Regenerate (#${{ matrix.target.pr }})
     needs: backport
