@@ -1896,6 +1896,7 @@ export const PermissionTypeEnum = {
   READ_TASK_LISTENER: 'READ_TASK_LISTENER',
   RESTORE: 'RESTORE',
   REVEAL: 'REVEAL',
+  SUSPEND_PROCESS_DEFINITION: 'SUSPEND_PROCESS_DEFINITION',
   SUSPEND_PROCESS_INSTANCE: 'SUSPEND_PROCESS_INSTANCE',
   UPDATE: 'UPDATE',
   UPDATE_PROCESS_INSTANCE: 'UPDATE_PROCESS_INSTANCE',
@@ -23922,7 +23923,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:5e576aaaf222a649dc8cc7fd18d3f494bec8e8a28d50c79de38ec11ada7389f3
+// specHash=sha256:c2753ae1170cba99ba724796cdd1636d678e89d78c7cbbaf98fe1b9f95e448bb
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
