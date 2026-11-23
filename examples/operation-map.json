@@ -961,6 +961,20 @@
       "label": "Get message subscription statistics"
     }
   ],
+  "suspendProcessDefinitions": [
+    {
+      "file": "extended-operations.ts",
+      "region": "SuspendProcessDefinitions",
+      "label": "Suspend process definitions"
+    }
+  ],
+  "resumeProcessDefinitions": [
+    {
+      "file": "extended-operations.ts",
+      "region": "ResumeProcessDefinitions",
+      "label": "Resume process definitions"
+    }
+  ],
   "getStartProcessForm": [
     {
       "file": "extended-operations.ts",

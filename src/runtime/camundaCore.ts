@@ -27,6 +27,7 @@ import { createSupportLogger, type SupportLogger, writeSupportLogPreamble } from
 import { withCorrelation as _withCorrelation, getCorrelation, wrapFetch } from './telemetry';
 import type { CamundaConfig } from './unifiedConfiguration';
 import { hydrateConfig } from './unifiedConfiguration';
+import { withUserAgent } from './userAgent';
 import { ValidationManager } from './validationManager';
 
 // Internal deep-freeze to make exposed config immutable for consumers.
@@ -79,6 +80,38 @@ export interface CamundaOptions {
    * @internal
    */
   __camundaComponent?: 'CamundaCore' | 'CamundaClient';
+}
+
+/**
+ * Decide, per union variant, whether the body being sent accepts an optional
+ * `tenantId` that the default tenant should be injected into. The generator
+ * emits, per operation, the sorted list of required-property names for each
+ * body variant that carries an optional top-level `tenantId`; a body matches
+ * when it has no `tenantId` yet and contains every one of those properties.
+ *
+ * A required property counts only when it is an **own, defined** property of the
+ * body: an explicit `undefined` (or `null`) discriminator such as
+ * `{ processDefinitionKey: k, processDefinitionId: undefined }` must not match
+ * the by-id variant, because JSON serialization drops the undefined field and
+ * the wire payload is the by-key shape — whose schema (`additionalProperties:
+ * false`) forbids the injected `tenantId`.
+ *
+ * This is what lets `suspendProcessDefinitions` / `resumeProcessDefinitions`
+ * inject the default tenant on the by-id variant (optional `tenantId`) while
+ * leaving the by-key variant (no `tenantId`) untouched — matching the Camunda
+ * Java client. See issue #704.
+ * @internal
+ */
+export function _bodyHasOptionalTenantIdVariant(
+  body: unknown,
+  variants: ReadonlyArray<readonly string[]>
+): boolean {
+  if (typeof body !== 'object' || body === null || Array.isArray(body)) return false;
+  const rec = body as Record<string, unknown>;
+  if (rec.tenantId !== undefined && rec.tenantId !== null) return false;
+  return variants.some((required) =>
+    required.every((p) => Object.hasOwn(rec, p) && rec[p] !== undefined && rec[p] !== null)
+  );
 }
 
 /**
@@ -153,13 +186,34 @@ export class CamundaCore {
   // Internal fixed error mode for eventual consistency ('throw' | 'result'). Not user mutable after construction.
   protected readonly _errorMode: 'throw' | 'result';
 
-  protected _overrides: EnvOverrides = {};
+  /**
+   * The callers' own override maps, held off the instances entirely.
+   *
+   * The map holds raw credentials and is kept so `configure()` can re-hydrate from it. As
+   * a property — even a non-enumerable one — it still reaches `util.inspect(client,
+   * { showHidden: true })` and `console.log('%o', client)`, which enables `showHidden`,
+   * so every secret the caller passed in would print despite the hydrated `config`
+   * redacting them. Keyed off the instance in a WeakMap, it is not a property at all, so
+   * no inspection mode can reach it, and it is collected with the client.
+   */
+  static readonly #overridesByInstance = new WeakMap<object, EnvOverrides>();
+
+  /**
+   * Plain methods, not an accessor: `util.inspect(client, { showHidden: true, getters: true })`
+   * invokes accessors and would print the raw override map, whereas it never calls a method.
+   */
+  protected _getOverrides(): EnvOverrides {
+    return CamundaCore.#overridesByInstance.get(this) ?? {};
+  }
+  protected _setOverrides(value: EnvOverrides): void {
+    CamundaCore.#overridesByInstance.set(this, value);
+  }
 
   constructor(opts: CamundaOptions = {}) {
-    if (opts.config) this._overrides = { ...opts.config };
+    this._setOverrides(opts.config ? { ...opts.config } : {});
     this._clock = opts.clock ?? createLiveClock();
     this._random = opts.random ?? liveRandom;
-    const { config } = hydrateConfig({ overrides: this._overrides, env: opts.env });
+    const { config } = hydrateConfig({ overrides: this._getOverrides(), env: opts.env });
     this._config = deepFreeze(config) as Readonly<CamundaConfig>;
     // Initialize per-client logger
     this._log = createLogger({
@@ -168,7 +222,7 @@ export class CamundaCore {
     });
     const baseFetch = opts.fetch;
     this._baseFetch = baseFetch;
-    this._fetch = baseFetch;
+    this._fetch = withUserAgent(baseFetch, () => this._config.userAgent);
     // Telemetry wrap (after logger & config known). If user provided explicit telemetry, honor it.
     // Else if environment enabled auto telemetry logging, wrap with mirrorToLog + optional correlation.
     if (opts.telemetry) {
@@ -192,7 +246,7 @@ export class CamundaCore {
       /^(trace|silly)$/.test(this._log.level()) &&
       !this._config.telemetry?.log &&
       // No explicit override provided
-      (this._overrides as any)['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined &&
+      (this._getOverrides() as any)['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined &&
       // And env var either absent or truthy enabling value
       (typeof process === 'undefined' ||
         process.env['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined ||
@@ -308,12 +362,20 @@ export class CamundaCore {
 
   // Merge new overrides and re-hydrate.
   configure(next: CamundaOptions) {
-    if (next.config) this._overrides = { ...this._overrides, ...next.config };
+    // Re-hydrate the CANDIDATE override map BEFORE committing anything: a hydration
+    // failure (e.g. an invalid CAMUNDA_USER_AGENT, issue #693) must leave the client
+    // fully on its previous configuration — neither config/fetch state nor the stored
+    // overrides may change, or the rejected update would leak into later configure()
+    // calls (r4626806581).
+    const candidate = next.config
+      ? { ...this._getOverrides(), ...next.config }
+      : this._getOverrides();
+    const { config } = hydrateConfig({ overrides: candidate, env: next.env });
+    if (next.config) this._setOverrides(candidate);
+    this._config = deepFreeze(config) as Readonly<CamundaConfig>;
     if (next.fetch) this._baseFetch = next.fetch;
     // Always wrap from the base fetch to avoid accumulating closure layers on repeated configure() calls.
-    this._fetch = this._baseFetch;
-    const { config } = hydrateConfig({ overrides: this._overrides, env: next.env });
-    this._config = deepFreeze(config) as Readonly<CamundaConfig>;
+    this._fetch = withUserAgent(this._baseFetch, () => this._config.userAgent);
     // Re-wrap fetch if telemetry present OR env auto telemetry toggled
     if (next.telemetry) {
       this._fetch = wrapFetch(this._fetch || (fetch as any), {
@@ -334,7 +396,7 @@ export class CamundaCore {
     } else if (
       /^(trace|silly)$/.test(this._log.level()) &&
       !this._config.telemetry?.log &&
-      (this._overrides as any)['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined &&
+      (this._getOverrides() as any)['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined &&
       (typeof process === 'undefined' ||
         process.env['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined ||
         /^(1|true|yes|on)$/i.test(process.env['CAMUNDA_SDK_TELEMETRY_LOG'] || ''))

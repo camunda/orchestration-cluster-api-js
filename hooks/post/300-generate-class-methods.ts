@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const ROOT = process.cwd();
 const METADATA_PATH = path.join(ROOT, 'external-spec/bundled/spec-metadata.json');
@@ -22,74 +23,80 @@ function toFunctionBody(line: string): string {
     .replace(/\bthis\./g, 'rt.');
 }
 
+type SpecSchema = Record<string, unknown>;
+
+/** The default-tenant fields `camunda-schema-bundler` (>= 2.5.1) writes per operation. */
+export interface TenantMetadata {
+  optionalTenantIdInBody?: boolean;
+  optionalTenantIdInBodyVariants?: string[];
+  optionalTenantIdsInBody?: boolean;
+}
+
 /**
- * Detect operations whose request body has an optional `tenantIds: array`
- * property. Mirrors `optionalTenantIdInBody` (singular) from the bundler
- * metadata, but for the plural array case (e.g. `activateJobs`).
+ * Decide default-tenant injection for one operation from its spec-metadata
+ * entry (issue #707). The bundler owns the spec analysis; this only turns its
+ * flags into the runtime matcher the generated code uses:
  *
- * Sourced from the bundled spec rather than spec-metadata.json so this hook
- * remains self-contained and does not require a `camunda-schema-bundler`
- * release. See issue #170.
+ * - `optionalTenantIdInBody` true → every body the operation accepts carries
+ *   an optional `tenantId` (including inline bodies such as `createDeployment`,
+ *   which have no named variant), so inject unconditionally (`[[]]`).
+ * - otherwise, if `optionalTenantIdInBodyVariants` lists union variants, inject
+ *   only when the body sent is one of them. Each named variant is recognised at
+ *   runtime by its sorted required property names (resolved from the bundled
+ *   spec's component schemas), so `suspendProcessDefinitions` injects on its
+ *   by-id variant and not its by-key one.
+ * - `optionalTenantIdsInBody` → inject `[defaultTenantId]` (activateJobs).
  */
-function collectOpsWithOptionalTenantIdsArray(): Set<string> {
-  const result = new Set<string>();
-  if (!fs.existsSync(BUNDLED_SPEC_PATH)) return result;
+export function tenantInjectionFromMetadata(
+  op: TenantMetadata,
+  schemas: Record<string, SpecSchema>
+): {
+  optionalTenantIdInBody: boolean;
+  optionalTenantIdVariants: string[][];
+  optionalTenantIdsInBody: boolean;
+} {
+  const optionalTenantIdsInBody = !!op.optionalTenantIdsInBody;
+  if (op.optionalTenantIdInBody) {
+    return {
+      optionalTenantIdInBody: true,
+      optionalTenantIdVariants: [[]],
+      optionalTenantIdsInBody,
+    };
+  }
+  const names = op.optionalTenantIdInBodyVariants ?? [];
+  const variants = names.map((name) => {
+    const schema = schemas[name];
+    if (!schema) {
+      throw new Error(`[class-gen] optionalTenantIdInBodyVariants names unknown schema ${name}`);
+    }
+    return requiredPropsOf(schema, schemas);
+  });
+  return {
+    optionalTenantIdInBody: variants.length > 0,
+    optionalTenantIdVariants: variants,
+    optionalTenantIdsInBody,
+  };
+}
+
+/** Sorted required property names of a schema, merged through `$ref` and `allOf`. */
+function requiredPropsOf(schema: SpecSchema, schemas: Record<string, SpecSchema>): string[] {
+  const required = new Set<string>();
+  const visit = (raw: SpecSchema | undefined, depth: number) => {
+    const s =
+      raw && typeof raw['$ref'] === 'string'
+        ? schemas[(raw['$ref'] as string).split('/').pop()!]
+        : raw;
+    if (!s || depth > 10) return;
+    for (const r of (s['required'] as string[] | undefined) ?? []) required.add(r);
+    for (const part of (s['allOf'] as SpecSchema[] | undefined) ?? []) visit(part, depth + 1);
+  };
+  visit(schema, 0);
+  return [...required].sort();
+}
+
+function loadComponentSchemas(): Record<string, SpecSchema> {
   const spec = JSON.parse(fs.readFileSync(BUNDLED_SPEC_PATH, 'utf8'));
-  const componentSchemas = (spec?.components?.schemas || {}) as Record<
-    string,
-    Record<string, unknown>
-  >;
-
-  function resolveSchemaRef(
-    schema: Record<string, unknown> | undefined
-  ): Record<string, unknown> | undefined {
-    if (!schema) return undefined;
-    if (typeof schema['$ref'] === 'string') {
-      const name = (schema['$ref'] as string).split('/').pop()!;
-      return componentSchemas[name];
-    }
-    return schema;
-  }
-
-  function hasOptionalTenantIdsArray(schema: Record<string, unknown> | undefined): boolean {
-    if (!schema || schema['type'] !== 'object') return false;
-    const props = schema['properties'] as Record<string, Record<string, unknown>> | undefined;
-    if (!props || !props['tenantIds']) return false;
-    const required = (schema['required'] as string[] | undefined) ?? [];
-    if (required.includes('tenantIds')) return false;
-    return props['tenantIds']['type'] === 'array';
-  }
-
-  const paths = (spec?.paths || {}) as Record<string, Record<string, unknown>>;
-  for (const methods of Object.values(paths)) {
-    for (const op of Object.values(methods)) {
-      const opObj = op as Record<string, unknown>;
-      const opId = opObj['operationId'] as string | undefined;
-      if (!opId) continue;
-      const rb = opObj['requestBody'] as Record<string, unknown> | undefined;
-      const content = rb?.['content'] as Record<string, unknown> | undefined;
-      if (!content) continue;
-      for (const [ct, mediaObj] of Object.entries(content)) {
-        if (!/json/i.test(ct)) continue;
-        const media = mediaObj as Record<string, unknown> | undefined;
-        const rawSchema = media?.['schema'] as Record<string, unknown> | undefined;
-        const resolved = resolveSchemaRef(rawSchema);
-        if (!resolved) continue;
-        const variants = (resolved['oneOf'] || resolved['anyOf']) as
-          | Record<string, unknown>[]
-          | undefined;
-        if (Array.isArray(variants) && variants.length > 1) {
-          const all =
-            variants.length > 0 &&
-            variants.map((v) => resolveSchemaRef(v)).every((rs) => hasOptionalTenantIdsArray(rs));
-          if (all) result.add(opId);
-        } else if (hasOptionalTenantIdsArray(resolved)) {
-          result.add(opId);
-        }
-      }
-    }
-  }
-  return result;
+  return (spec?.components?.schemas || {}) as Record<string, SpecSchema>;
 }
 
 const MARK_TYPES_START = '// === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===';
@@ -159,13 +166,15 @@ async function main() {
     pathParams: string[];
     queryParams: Array<{ name: string; required: boolean }>;
     optionalTenantIdInBody: boolean;
+    optionalTenantIdVariants: string[][];
     optionalTenantIdsInBody: boolean;
   }
   const ops: OpMeta[] = [];
-  const opsWithTenantIdsArray = collectOpsWithOptionalTenantIdsArray();
+  const componentSchemas = loadComponentSchemas();
   for (const op of metadata.operations) {
     const originalId = op.operationId;
     const opId = sanitize(originalId);
+    const tenant = tenantInjectionFromMetadata(op, componentSchemas);
     ops.push({
       opId,
       hasBody: op.hasRequestBody,
@@ -179,8 +188,7 @@ async function main() {
       verb: op.method.toLowerCase(),
       pathParams: op.pathParams || [],
       queryParams: op.queryParams || [],
-      optionalTenantIdInBody: op.optionalTenantIdInBody || false,
-      optionalTenantIdsInBody: opsWithTenantIdsArray.has(originalId),
+      ...tenant,
     });
   }
   ops.sort((a, b) => a.opId.localeCompare(b.opId));
@@ -359,10 +367,18 @@ export type ${o.opId}Consistency = {
         methods.push(`      envelope.query = { ${queryParamNames.join(', ')} };`);
       if (o.hasBody) methods.push('      envelope.body = _body;');
       if (o.hasBody && o.optionalTenantIdInBody) {
+        // Inject into a shallow copy: envelope.body aliases the caller's input, so
+        // mutating it would leak the default tenant into reused inputs and throw on
+        // frozen inputs. See issue #647 / PR #648 review.
+        // The variant list scopes injection to the body shapes that actually carry
+        // an optional tenantId: a union body (e.g. suspendProcessDefinitions)
+        // injects on its by-id variant but not its by-key variant. See issue #704.
         methods.push(
-          '      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {'
+          `      if (_bodyHasOptionalTenantIdVariant(envelope.body, ${JSON.stringify(o.optionalTenantIdVariants)})) {`
         );
-        methods.push('        envelope.body.tenantId = this._config.defaultTenantId;');
+        methods.push(
+          '        envelope.body = { ...envelope.body, tenantId: this._config.defaultTenantId };'
+        );
         methods.push(
           "        this._log.trace(() => ['tenant.default.inject', { op: '" +
             o.originalOpId +
@@ -374,10 +390,14 @@ export type ${o.opId}Consistency = {
         // Inject [defaultTenantId] when caller omits tenantIds (or passes empty array).
         // Only inject when a default tenant is configured — otherwise leave the field
         // absent so downstream behavior matches "no default" semantics. See issue #170.
+        // With tenantFilter ASSIGNED the server ignores tenantIds, so leave them alone (#647).
         methods.push(
-          '      if (envelope.body && this._config.defaultTenantId !== undefined && this._config.defaultTenantId !== null && (!Array.isArray(envelope.body.tenantIds) || envelope.body.tenantIds.length === 0)) {'
+          "      if (envelope.body && envelope.body.tenantFilter !== 'ASSIGNED' && this._config.defaultTenantId !== undefined && this._config.defaultTenantId !== null && (!Array.isArray(envelope.body.tenantIds) || envelope.body.tenantIds.length === 0)) {"
         );
-        methods.push('        envelope.body.tenantIds = [this._config.defaultTenantId];');
+        // Shallow copy, same aliasing rationale as the singular tenantId case above.
+        methods.push(
+          '        envelope.body = { ...envelope.body, tenantIds: [this._config.defaultTenantId] };'
+        );
         methods.push(
           "        this._log.trace(() => ['tenant.default.inject', { op: '" +
             o.originalOpId +
@@ -648,7 +668,7 @@ export type ${o.opId}Consistency = {
   const opsSrc = [
     '// @generated by hooks/post/300-generate-class-methods.ts - DO NOT EDIT DIRECTLY',
     '// One standalone function per operation. CamundaClient methods delegate to these.',
-    "import type { CamundaCore, OperationRuntime } from '../runtime/camundaCore';",
+    "import { _bodyHasOptionalTenantIdVariant, type CamundaCore, type OperationRuntime } from '../runtime/camundaCore';",
     "import { type CancelablePromise, toCancelable } from '../runtime/cancelable';",
     "import { type ConsistencyOptions, eventualPoll } from '../runtime/eventual';",
     "import type { OperationOptions } from '../runtime/retry';",
@@ -763,9 +783,16 @@ function indent(s: string, d: number) {
     .join('\n');
 }
 
-try {
-  await main();
-} catch (e) {
-  console.error('[class-gen] error', e);
-  process.exitCode = 1;
+// Run only when executed directly (tsx hooks/post/300-generate-class-methods.ts),
+// not when imported by the test suite — tests call tenantInjectionFromMetadata()
+// in-process against synthetic metadata fixtures.
+const invokedDirectly =
+  process.argv[1] !== undefined && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (invokedDirectly) {
+  try {
+    await main();
+  } catch (e) {
+    console.error('[class-gen] error', e);
+    process.exitCode = 1;
+  }
 }

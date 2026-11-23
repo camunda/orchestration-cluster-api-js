@@ -17,6 +17,24 @@ https://raw.githubusercontent.com/camunda/sdk-infra/refs/heads/main/policies/AGE
 It holds the conventions shared by all Camunda SDK repos (commits, bug fixes, tests, opening issues). Precedence on conflict: this file, then the shared SDK file, then the central Camunda file.
 <!-- sdk-infra-delegation:end -->
 
+## Opening issues
+
+Every issue you open (`gh issue create`, REST or MCP) must carry the SDK defect-metrics fields (https://camunda.github.io/sdk-quality-metrics/). This applies in this repo and to issues you file elsewhere (other SDKs, camunda/sdk-infra, camunda/camunda). Put these lines at the end of the body, or set the matching labels directly:
+
+```
+Type: bug | enhancement | documentation | question
+Found-by: review | ci | conformance-test | performance-test | integration | manual-test | audit | user
+Affects: main | stable | both
+Severity: critical | high | medium | low
+Introduced-by: <commit sha | owner/repo@sha | #PR | release tag>   (optional)
+```
+
+- For a bug, `Found-by`, `Affects` and `Severity` are required. Without them the issue gets `needs-triage`.
+- `Found-by` is the quality layer that caught it, not who typed the issue. `Affects: stable` means a released `stable/N` line.
+- An issue created with a workflow's `GITHUB_TOKEN` does not trigger `sdk-issue-labels.yml`, so the body lines are not turned into labels. Set the labels directly instead: `--label bug --label found-by/<x> --label affects/<main|stable> --label severity/<x>`. For `Affects: both`, add both labels (`--label affects/main --label affects/stable`); there is no `affects/both` label.
+
+Value definitions: [shared policy, "Opening issues"](https://github.com/camunda/sdk-infra/blob/main/policies/AGENTS.md#opening-issues).
+
 ## Repo-specific instructions
 
 ### Role & boundary
@@ -181,16 +199,45 @@ If that step fails, the bot comments on the backport PR. Causes:
 - **The change depends on spec the stable branch doesn't have** (e.g. it wraps an operation that only exists upstream on `main`; the pipeline fails type-checking the examples). It can't be backported as-is. Close the backport PR, or reduce it to the parts that apply to the stable spec.
 - **The patch touched non-generated paths, or the branch moved** while it regenerated. Fix the generator output, or comment `/backport` again on the source PR.
 
+## API compatibility gate (stable branches)
+
+A release from a `stable/*` branch must not stop customer code that compiled against the previous release on that branch from compiling. `scripts/api-compat.ts` checks this: it downloads the newest published release of the branch's major (`stable/10` → latest `10.x.y`, never a prerelease; a branch with no release yet skips) from npm and type-checks generated assertions over its public API against the current build's `.d.ts` files. It runs in two places:
+
+- **PRs to `stable/*`**: `.github/workflows/api-compat.yml` (check name `API compatibility`). Breaks are listed in the job summary.
+- **Releases from `stable/*`**: the `publish` job of `release.yml` checks the code it is about to publish, after the final build. This also covers generated code from upstream spec changes, which the release pipeline commits without a PR (`stable/<N>` regenerates from camunda `stable/8.<N>`, a moving branch).
+
+Breaking means existing code could stop compiling: removed exports, members or entry points; new required arguments or request fields; narrowed argument types; result fields that become nullable, optional or removed; widened return types. Additions, new optional arguments or fields, and widened request types pass. Types are compared where signatures use them (arguments old→new, results new→old). `main` is not gated: it releases the next major.
+
+**Override.** When a break is intended (typically a bug fix that has to change the API), apply the **`api-break-approved`** label to the PR; the check still lists the breaks but passes. The release gate passes if any PR merged since the last release has the label. For a break with no PR to label (upstream spec drift), run the Release workflow manually with `api_break_approved` checked.
+
+Run it locally after `npm run build:types` (or a full build):
+
+```bash
+npm run api-compat -- --baseline-major 10               # current build vs the newest 10.x.y
+npm run api-compat -- --baseline-version 10.0.1          # current build vs a published version
+npm run api-compat -- --baseline <dir> --current <dir>   # two unpacked packages
+```
+
+Tests: `tests/api-compat.test.ts` covers each kind of break and of compatible change. When you change the checker, keep it green against real releases too: a release compared with itself must report nothing.
+
+## Public API surface reports (`etc/*.api.md`)
+
+Every public entry point — derived from `package.json` (`exports` → `index`, `logger`, `fn`, `effect`; `imports` `#platform` → node/browser), never a hardcoded list — has a committed API Extractor report in `etc/*.api.md`, and the `exports`/`imports` map itself is committed as `etc/entry-points.json` so a removed, renamed or retargeted public subpath is flagged even when every declaration report still matches. `npm run api:check` (`scripts/api-report.ts`) fails with a readable diff when the built declarations or the entry-point map no longer match the committed reports — i.e. when the public API surface changed for any reason (spec bump, bundler/generator/hook change, hand edit). This is the change-detection complement to the stable-branch compatibility gate above: the reports flag *any* public API change against the branch's own baseline, whether or not it is breaking.
+
+The blocking comparison always runs against declarations regenerated from the **committed spec bundle**, never against a build that re-bundled the moving upstream spec (that would fail an unchanged PR on upstream drift, which CI treats as non-blocking). So: `npm run build:local` ends with `api:check`; plain `npm run build` does not; CI and release run `generate:local && build:types && api:check` as a dedicated step *before* the fetching `npm run build` (so the check sees the committed spec and the final build leaves a complete `dist/`). The release job additionally runs `api:update` after that final fetching build, so the release commit records reports matching the declarations it ships. For a local pre-push check with fresh fetch, use `npm run build:ci`.
+
+When it fails on an intentional change: run `npm run api:update`, review the `etc/*.api.md` diff (that diff **is** the public API review surface), and commit it with the PR. If the diff removes or narrows anything, the change is breaking — say so with a `BREAKING CHANGE:` footer. Reports are LF-normalized, timestamp-free, include the full definitions of reachable-but-unexported helper types (`includeForgottenExports`), and have diagnostic source locations (`dist/<hash>.d.ts:line:col`) stripped, so a no-op dependency bump or a declaration-comment-only change produces no diff. `api:update` rewrites the committed reports byte-for-byte from the freshly extracted ones (it never relies on API Extractor's whitespace-insensitive localBuild auto-write), so update ⇒ check is a true round trip — even for a whitespace-only change inside a string literal. Tests: `tests/api-report.test.ts`.
+
 ## Pre-push checklist
 
-Before pushing any commits, **always** run `npm run build`. This:
+Before pushing any commits, **always** run `npm run build:ci`. This:
 
 1. Regenerates `src/gen/` from the bundled spec
 2. Syncs README code snippets from `examples/readme.ts` (fails if out of sync)
-3. Runs all unit tests
-4. Produces the `dist/` output
+3. Produces the `dist/` output
+4. Verifies the public API reports (`api:check`)
 
-If the build modifies any files (e.g. README snippet drift, generated code changes), commit those changes before pushing — and respect the **separate-commits rule** above when the modified files are `src/gen/*`.
+Then run `npm test` (unit tests). If the build modifies any files (e.g. README snippet drift, generated code changes), commit those changes before pushing — and respect the **separate-commits rule** above when the modified files are `src/gen/*`.
 
 ## Build pipeline
 

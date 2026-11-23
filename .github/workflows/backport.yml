@@ -113,7 +113,8 @@ jobs:
           # PRs often contain "Merge branch 'main'" commits; don't cherry-pick them.
           merge_commits: skip
           label_pattern: ^backport ([^ ]+)$
-          pull_title: ${pull_title} (backport #${pull_number} to ${target_branch})
+          # Quoted: unquoted, YAML reads " #" as a comment and drops the rest of the title.
+          pull_title: '${pull_title} (backport #${pull_number} to ${target_branch})'
           pull_description: |-
             Backport of #${pull_number} to `${target_branch}`.
 
@@ -149,7 +150,7 @@ jobs:
           read -ra created <<< "$CREATED_PRS"
           read -ra existing <<< "$(echo "$existing" | tr '\n' ' ')"
           targets='[]'
-          for pr in $(printf '%s\n' "${created[@]}" "${existing[@]}" | grep -E '^[0-9]+$' | sort -un); do
+          for pr in $(printf '%s\n' ${created[@]+"${created[@]}"} ${existing[@]+"${existing[@]}"} | grep -E '^[0-9]+$' | sort -un); do
             t=$(gh pr view "$pr" --json number,headRefName,baseRefName,headRefOid \
               -q '{pr: .number, branch: .headRefName, base: .baseRefName, sha: .headRefOid}')
             targets=$(jq -c --argjson t "$t" '. + [$t]' <<< "$targets")

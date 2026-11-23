@@ -7,6 +7,20 @@ export type ClientOptions = {
     baseUrl: '{schema}://{host}:{port}/v2' | '{schema}://{host}:{port}' | (string & {});
 };
 
+/**
+ * A `CamundaUserResult` with `isAnonymous` set to `false`, so `username` is always set. `GET /authentication/me` returns `CamundaUserResult`. Clients that only handle a caller with an identity can narrow the result to this schema once they checked `isAnonymous`.
+ */
+export type AuthenticatedCamundaUserResult = CamundaUserResult & {
+    /**
+     * Always `false`, because the caller has an identity.
+     */
+    isAnonymous?: false;
+    /**
+     * The username of the user.
+     */
+    username?: Username;
+};
+
 export type AgentDefinitionSearchQuerySortRequest = {
     /**
      * The field to sort by.
@@ -1671,9 +1685,13 @@ export type OwnAuthorizationSearchResult = AuthorizationSearchResult & {
 
 export type CamundaUserResult = {
     /**
-     * The username of the user.
+     * Whether the caller has no identity. Only an unprotected API answers an anonymous caller; a protected API returns `401` instead. When `true`, `username`, `displayName` and `email` are `null` and the lists are empty.
      */
-    username: Username;
+    isAnonymous: boolean;
+    /**
+     * The username of the user. `null` when `isAnonymous` is `true`.
+     */
+    username: Username | null;
     /**
      * The display name of the user.
      */
@@ -1683,7 +1701,7 @@ export type CamundaUserResult = {
      */
     email: string | null;
     /**
-     * The web components the user is authorized to use. When authorizations are disabled for the cluster, this always returns `["*"]`, regardless of the user's actual permissions, since access is not restricted in that case.
+     * The web components the user is authorized to use. When authorizations are disabled for the cluster, this always returns `["*"]`, regardless of the user's actual permissions, since access is not restricted in that case. An anonymous caller of an unprotected API also gets `["*"]`, for the same reason.
      */
     authorizedComponents: Array<string>;
     /**
@@ -1850,6 +1868,7 @@ export type AuthorizationCreateResult = {
  */
 export const PermissionTypeEnum = {
   ACCESS: 'ACCESS',
+  ANSWER: 'ANSWER',
   CANCEL_PROCESS_INSTANCE: 'CANCEL_PROCESS_INSTANCE',
   CLAIM: 'CLAIM',
   CLAIM_USER_TASK: 'CLAIM_USER_TASK',
@@ -1891,6 +1910,7 @@ export const PermissionTypeEnum = {
   READ_TASK_LISTENER: 'READ_TASK_LISTENER',
   RESTORE: 'RESTORE',
   REVEAL: 'REVEAL',
+  SUSPEND_PROCESS_DEFINITION: 'SUSPEND_PROCESS_DEFINITION',
   SUSPEND_PROCESS_INSTANCE: 'SUSPEND_PROCESS_INSTANCE',
   UPDATE: 'UPDATE',
   UPDATE_PROCESS_INSTANCE: 'UPDATE_PROCESS_INSTANCE',
@@ -1917,6 +1937,7 @@ export const ResourceTypeEnum = {
   GROUP: 'GROUP',
   MAPPING_RULE: 'MAPPING_RULE',
   MESSAGE: 'MESSAGE',
+  PROBE: 'PROBE',
   PROCESS_DEFINITION: 'PROCESS_DEFINITION',
   RESOURCE: 'RESOURCE',
   ROLE: 'ROLE',
@@ -3906,6 +3927,13 @@ export type RestorePartitionStatus = {
      */
     completedAt: string | null;
 };
+
+/**
+ * A date-time in RFC 3339 format, or an empty string to clear the persisted value.
+ * A `null` value or omitting the property preserves the persisted value.
+ *
+ */
+export type ClearableDateTime = string | null | string | null | null;
 
 export type ConditionalEvaluationInstruction = {
     /**
@@ -7768,13 +7796,13 @@ export type JobResultCorrections = {
      */
     assignee?: string | null;
     /**
-     * The due date of the task.
+     * The due date of the task. Clear by providing an empty String.
      */
-    dueDate?: string | null;
+    dueDate?: ClearableDateTime;
     /**
-     * The follow-up date of the task.
+     * The follow-up date of the task. Clear by providing an empty String.
      */
-    followUpDate?: string | null;
+    followUpDate?: ClearableDateTime;
     /**
      * The list of candidate users of the task.
      */
@@ -9407,6 +9435,178 @@ export type ProblemDetail = {
     instance: string;
 };
 
+/**
+ * Instruction to suspend process definitions, selected either by key or by ID.
+ *
+ */
+export type ProcessDefinitionSuspensionInstruction = ProcessDefinitionSuspensionInstructionByKey | ProcessDefinitionSuspensionInstructionById;
+
+/**
+ * Process definition suspension by key
+ */
+export type ProcessDefinitionSuspensionInstructionByKey = {
+    /**
+     * The key of the process definition version to suspend.
+     */
+    processDefinitionKey: ProcessDefinitionKey;
+    /**
+     * Whether to also suspend the process instances of the affected
+     * process definition versions. The instances are changed by a batch operation.
+     *
+     */
+    includeProcessInstances?: boolean;
+};
+
+/**
+ * Process definition suspension by ID
+ */
+export type ProcessDefinitionSuspensionInstructionById = {
+    /**
+     * The BPMN process ID of the process definition.
+     */
+    processDefinitionId: ProcessDefinitionId;
+    /**
+     * The version of the process definition. Must be 1 or greater; `-1` is not accepted.
+     * If omitted, all versions are affected.
+     *
+     */
+    processDefinitionVersion?: number;
+    /**
+     * The tenant of the process definition. Required when multi-tenancy is enabled;
+     * if multi-tenancy is disabled, it can be omitted and the default tenant is used.
+     *
+     */
+    tenantId?: TenantId;
+    /**
+     * Whether to also suspend the process instances of the affected
+     * process definition versions. The instances are changed by a batch operation.
+     *
+     */
+    includeProcessInstances?: boolean;
+};
+
+export type ProcessDefinitionSuspensionResult = {
+    /**
+     * The affected process definition versions.
+     */
+    processDefinitions: Array<ProcessDefinitionSuspensionVersionResult>;
+    /**
+     * The key of the batch operation that suspends the running process instances.
+     * Null when `includeProcessInstances` is not set.
+     *
+     */
+    batchOperationKey: BatchOperationKey | null;
+};
+
+export type ProcessDefinitionSuspensionVersionResult = {
+    /**
+     * The key of the process definition version.
+     */
+    processDefinitionKey: ProcessDefinitionKey;
+    /**
+     * The version of the process definition.
+     */
+    processDefinitionVersion: number;
+    /**
+     * `SUSPENDED` if the version was active and is now suspended. The suspension applies to
+     * all partitions shortly after the response.
+     * `ALREADY_SUSPENDED` if the version was already suspended, so its state is unchanged.
+     * With `includeProcessInstances`, its process instances are still suspended by the
+     * batch operation.
+     * `DRAINING` if it is being deleted and is left unchanged. This only occurs when the
+     * request selects by ID without a version; selecting a single draining version is rejected
+     * with 409.
+     *
+     */
+    outcome: 'SUSPENDED' | 'ALREADY_SUSPENDED' | 'DRAINING';
+};
+
+/**
+ * Instruction to resume process definitions, selected either by key or by ID.
+ *
+ */
+export type ProcessDefinitionResumptionInstruction = ProcessDefinitionResumptionInstructionByKey | ProcessDefinitionResumptionInstructionById;
+
+/**
+ * Process definition resumption by key
+ */
+export type ProcessDefinitionResumptionInstructionByKey = {
+    /**
+     * The key of the process definition version to resume.
+     */
+    processDefinitionKey: ProcessDefinitionKey;
+    /**
+     * Whether to also resume the process instances of the affected
+     * process definition versions. The instances are changed by a batch operation.
+     *
+     */
+    includeProcessInstances?: boolean;
+};
+
+/**
+ * Process definition resumption by ID
+ */
+export type ProcessDefinitionResumptionInstructionById = {
+    /**
+     * The BPMN process ID of the process definition.
+     */
+    processDefinitionId: ProcessDefinitionId;
+    /**
+     * The version of the process definition. Must be 1 or greater; `-1` is not accepted.
+     * If omitted, all versions are affected.
+     *
+     */
+    processDefinitionVersion?: number;
+    /**
+     * The tenant of the process definition. Required when multi-tenancy is enabled;
+     * if multi-tenancy is disabled, it can be omitted and the default tenant is used.
+     *
+     */
+    tenantId?: TenantId;
+    /**
+     * Whether to also resume the process instances of the affected
+     * process definition versions. The instances are changed by a batch operation.
+     *
+     */
+    includeProcessInstances?: boolean;
+};
+
+export type ProcessDefinitionResumptionResult = {
+    /**
+     * The affected process definition versions.
+     */
+    processDefinitions: Array<ProcessDefinitionResumptionVersionResult>;
+    /**
+     * The key of the batch operation that resumes the suspended process instances.
+     * Null when `includeProcessInstances` is not set.
+     *
+     */
+    batchOperationKey: BatchOperationKey | null;
+};
+
+export type ProcessDefinitionResumptionVersionResult = {
+    /**
+     * The key of the process definition version.
+     */
+    processDefinitionKey: ProcessDefinitionKey;
+    /**
+     * The version of the process definition.
+     */
+    processDefinitionVersion: number;
+    /**
+     * `RESUMED` if the version was suspended and is now active again. The resumption applies
+     * to all partitions shortly after the response.
+     * `ALREADY_RESUMED` if the version was already active, so its state is unchanged.
+     * With `includeProcessInstances`, its suspended process instances are still resumed by
+     * the batch operation.
+     * `DRAINING` if it is being deleted and is left unchanged. This only occurs when the
+     * request selects by ID without a version; selecting a single draining version is rejected
+     * with 409.
+     *
+     */
+    outcome: 'RESUMED' | 'ALREADY_RESUMED' | 'DRAINING';
+};
+
 export type ProcessDefinitionSearchQuerySortRequest = {
     /**
      * The field to sort by.
@@ -9473,14 +9673,15 @@ export type ProcessDefinitionFilter = {
     /**
      * Filter by the process definition's state.
      * When not set, process definitions in any state are returned.
-     * Set to `ACTIVE` to exclude draining and deleted definitions (recommended for most use cases).
+     * Set to `ACTIVE` to exclude draining, deleted, and suspended definitions (recommended for most use cases).
      * Set to `DRAINING` to return only definitions that are being deleted but still have
      * active process instances draining.
      * Set to `DELETED` to return only definitions that have been deleted but are still
      * retained in secondary storage.
+     * Set to `SUSPENDED` to return only definitions that are suspended: no new process instances can be created from them.
      *
      */
-    state?: 'ACTIVE' | 'DRAINING' | 'DELETED';
+    state?: 'ACTIVE' | 'DRAINING' | 'DELETED' | 'SUSPENDED';
 };
 
 export type ProcessDefinitionSearchQueryResult = SearchQueryResponse & {
@@ -9527,9 +9728,10 @@ export type ProcessDefinitionResult = {
      * The state of this process definition.
      * `DRAINING` indicates the definition is being deleted but still has active process
      * instances draining before it is removed.
+     * `SUSPENDED` indicates no new process instances can be created from this definition; it returns to `ACTIVE` when resumed.
      *
      */
-    state: 'ACTIVE' | 'DRAINING' | 'DELETED';
+    state: 'ACTIVE' | 'DRAINING' | 'DELETED' | 'SUSPENDED';
 };
 
 /**
@@ -9805,15 +10007,6 @@ export type ProcessInstanceCreationInstructionBase = {
      */
     variables?: {
         [key: string]: unknown;
-    };
-    /**
-     * Metadata of the variables, keyed by variable name. Use it to set how a variable is
-     * treated, for example to protect its value. Each key must be the name of a variable in
-     * `variables`. A variable without an entry has no metadata.
-     *
-     */
-    variablesMetadata?: {
-        [key: string]: VariableMetadata;
     };
     /**
      * The tenant id of the process definition.
@@ -11256,6 +11449,10 @@ export type DeploymentConfigurationResponse = {
      */
     isTenantsApiEnabled: boolean;
     /**
+     * Whether wait-state tracking is enabled.
+     */
+    isWaitStatesEnabled: boolean;
+    /**
      * The maximum HTTP request size in bytes.
      */
     maxRequestSize: number;
@@ -11592,7 +11789,7 @@ export type UserTaskFilterFields = {
      * Whether the user task is suspended because its owning process instance is suspended.
      *
      */
-    isSuspended?: boolean | null;
+    isSuspended?: boolean;
     /**
      * The assignee of the user task.
      */
@@ -11856,11 +12053,11 @@ export type Changeset = {
     /**
      * The due date of the task. Reset by providing an empty String.
      */
-    dueDate?: string | null;
+    dueDate?: ClearableDateTime;
     /**
      * The follow-up date of the task. Reset by providing an empty String.
      */
-    followUpDate?: string | null;
+    followUpDate?: ClearableDateTime;
     /**
      * The list of candidate users of the task. Reset by providing an empty list.
      */
@@ -12053,14 +12250,14 @@ export type UserTaskLookupResult = {
 /**
  * The lifecycle state of an active user task. A state ending in `-ING` means a change to the
  * task is in progress, for example waiting for task listeners; the task fields still hold
- * the values from before the change.
+ * the values from before the change. A claim in progress is reported as `ASSIGNING`, as in
+ * the user task search.
  *
  */
 export const UserTaskLookupStateEnum = {
   CREATING: 'CREATING',
   CREATED: 'CREATED',
   ASSIGNING: 'ASSIGNING',
-  CLAIMING: 'CLAIMING',
   UPDATING: 'UPDATING',
   COMPLETING: 'COMPLETING',
   CANCELING: 'CANCELING',
@@ -12345,10 +12542,6 @@ export type VariableFilter = {
      * The key of the process instance of this variable.
      */
     processInstanceKey?: ProcessInstanceKeyFilterProperty;
-    /**
-     * The protection modes applied to the variable.
-     */
-    protectionMode?: ProtectionModeFilterProperty;
 };
 
 /**
@@ -12366,15 +12559,7 @@ export type VariableSearchQueryResult = SearchQueryResponse & {
  */
 export type VariableSearchResult = VariableResultBase & {
     /**
-     * The value of this variable. Can be truncated or redacted.
-     *
-     * If the value is truncated, `isTruncated` is `true` and the value contains only the
-     * beginning of the full value.
-     *
-     * If the variable is redacted, the value is set to `""` instead of the real value. Check
-     * `metadata.protectionModes` before you use the value: it contains `REDACT` for a redacted
-     * variable.
-     *
+     * Value of this variable. Can be truncated.
      */
     value: string;
     /**
@@ -12388,11 +12573,7 @@ export type VariableSearchResult = VariableResultBase & {
  */
 export type VariableResult = VariableResultBase & {
     /**
-     * The full value of this variable, or `""` if the variable is redacted.
-     *
-     * Check `metadata.protectionModes` before you use the value: it contains `REDACT` for a
-     * redacted variable.
-     *
+     * Full value of this variable.
      */
     value: string;
 };
@@ -12432,67 +12613,6 @@ export type VariableResultBase = {
      *
      */
     rootProcessInstanceKey: ProcessInstanceKey | null;
-    /**
-     * Metadata of this variable.
-     */
-    metadata: VariableMetadata;
-};
-
-/**
- * Metadata describing how a variable is treated.
- */
-export type VariableMetadata = {
-    /**
-     * The protections applied to the variable. The value of a variable protected with
-     * `REDACT` is irrecoverably replaced before it is stored in secondary storage, so it is
-     * never readable.
-     *
-     */
-    protectionModes: Array<ProtectionModeEnum>;
-};
-
-/**
- * The kind of protection applied to a variable value. `REDACT` irrecoverably replaces the
- * value before it reaches secondary storage.
- *
- */
-export const ProtectionModeEnum = {
-  REDACT: 'REDACT',
-} as const;
-export type ProtectionModeEnum = (typeof ProtectionModeEnum)[keyof typeof ProtectionModeEnum];
-/**
- * ProtectionModeEnum property with full advanced search capabilities.
- */
-export type ProtectionModeFilterProperty = ProtectionModeExactMatch | AdvancedProtectionModeFilter;
-
-/**
- * Advanced filter
- *
- * Advanced ProtectionModeEnum filter.
- */
-export type AdvancedProtectionModeFilter = {
-    /**
-     * Checks if the variable has the provided protection mode.
-     */
-    $eq?: ProtectionModeEnum;
-    /**
-     * Checks if the variable does not have the provided protection mode.
-     */
-    $neq?: ProtectionModeEnum;
-    /**
-     * Checks if the variable has any protection mode. Use `false` to match the variables
-     * that are not protected.
-     *
-     */
-    $exists?: boolean;
-    /**
-     * Checks if the variable has at least one of the provided protection modes.
-     */
-    $in?: Array<ProtectionModeEnum>;
-    /**
-     * Checks if the variable has none of the provided protection modes.
-     */
-    $notIn?: Array<ProtectionModeEnum>;
 };
 
 export type VariableValueFilterProperty = {
@@ -12516,15 +12636,6 @@ export type SetVariableRequest = {
      */
     variables: {
         [key: string]: unknown;
-    };
-    /**
-     * Metadata of the variables, keyed by variable name. Use it to set how a variable is
-     * treated, for example to protect its value. Each key must be the name of a variable in
-     * `variables`. A variable without an entry keeps the metadata it has, or has none.
-     *
-     */
-    variablesMetadata?: {
-        [key: string]: VariableMetadata;
     };
     /**
      * If set to `true`, the variables are merged strictly into the local scope (as specified
@@ -12895,13 +13006,6 @@ export type ProcessInstanceStateExactMatch = ProcessInstanceStateEnum;
  * Matches the value exactly.
  */
 export type UserTaskStateExactMatch = UserTaskStateEnum;
-
-/**
- * Exact match
- *
- * Matches variables that have this protection mode.
- */
-export type ProtectionModeExactMatch = ProtectionModeEnum;
 
 /**
  * System-generated key for an authorization.
@@ -13515,13 +13619,6 @@ export type ProcessInstanceStateExactMatchWritable = ProcessInstanceStateEnum;
  * Matches the value exactly.
  */
 export type UserTaskStateExactMatchWritable = UserTaskStateEnum;
-
-/**
- * Exact match
- *
- * Matches variables that have this protection mode.
- */
-export type ProtectionModeExactMatchWritable = ProtectionModeEnum;
 
 export type GetAgentDefinitionData = {
     body?: never;
@@ -18814,6 +18911,59 @@ export type PublishMessageResponses = {
 
 export type PublishMessageResponse = PublishMessageResponses[keyof PublishMessageResponses];
 
+export type ResumeProcessDefinitionsData = {
+    body: ProcessDefinitionResumptionInstruction;
+    path?: never;
+    query?: never;
+    url: '/process-definitions/resumption';
+};
+
+export type ResumeProcessDefinitionsErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * No process definition matches the request.
+     */
+    404: ProblemDetail;
+    /**
+     * The request conflicts with the current state of the process definition, likely because
+     * the process definition is in a state that cannot be resumed.
+     * More details are provided in the response body.
+     *
+     */
+    409: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type ResumeProcessDefinitionsError = ResumeProcessDefinitionsErrors[keyof ResumeProcessDefinitionsErrors];
+
+export type ResumeProcessDefinitionsResponses = {
+    /**
+     * The resumption request was accepted.
+     */
+    200: ProcessDefinitionResumptionResult;
+};
+
+export type ResumeProcessDefinitionsResponse = ResumeProcessDefinitionsResponses[keyof ResumeProcessDefinitionsResponses];
+
 export type SearchProcessDefinitionsData = {
     body?: ProcessDefinitionSearchQuery;
     path?: never;
@@ -18924,6 +19074,59 @@ export type GetProcessDefinitionInstanceStatisticsResponses = {
 };
 
 export type GetProcessDefinitionInstanceStatisticsResponse = GetProcessDefinitionInstanceStatisticsResponses[keyof GetProcessDefinitionInstanceStatisticsResponses];
+
+export type SuspendProcessDefinitionsData = {
+    body: ProcessDefinitionSuspensionInstruction;
+    path?: never;
+    query?: never;
+    url: '/process-definitions/suspension';
+};
+
+export type SuspendProcessDefinitionsErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * No process definition matches the request.
+     */
+    404: ProblemDetail;
+    /**
+     * The request conflicts with the current state of the process definition, likely because
+     * the process definition is in a state that cannot be suspended.
+     * More details are provided in the response body.
+     *
+     */
+    409: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type SuspendProcessDefinitionsError = SuspendProcessDefinitionsErrors[keyof SuspendProcessDefinitionsErrors];
+
+export type SuspendProcessDefinitionsResponses = {
+    /**
+     * The suspension request was accepted.
+     */
+    200: ProcessDefinitionSuspensionResult;
+};
+
+export type SuspendProcessDefinitionsResponse = SuspendProcessDefinitionsResponses[keyof SuspendProcessDefinitionsResponses];
 
 export type GetProcessDefinitionData = {
     body?: never;
@@ -24329,7 +24532,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:24ae1ee7781ef7d83d91ce87161d69eb57be972250076993fd23216f4759ed63
+// specHash=sha256:914f89f26245982b7e11d9a3bdcbfccdc228e07fbf7bd7008279ed1d494d70ed
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

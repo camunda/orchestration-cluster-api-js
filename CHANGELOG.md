@@ -1,3 +1,49 @@
+# [11.0.0-alpha.10](https://github.com/camunda/orchestration-cluster-api-js/compare/v11.0.0-alpha.9...v11.0.0-alpha.10) (2026-11-21)
+
+
+### Features
+
+* **ci:** guard the public API surface with committed API Extractor reports ([#703](https://github.com/camunda/orchestration-cluster-api-js/issues/703)) ([7b93953](https://github.com/camunda/orchestration-cluster-api-js/commit/7b93953c0f690ad20157ec02e62c11d476593bd0)), closes [#platform](https://github.com/camunda/orchestration-cluster-api-js/issues/platform) [#700](https://github.com/camunda/orchestration-cluster-api-js/issues/700)
+
+# [11.0.0-alpha.9](https://github.com/camunda/orchestration-cluster-api-js/compare/v11.0.0-alpha.8...v11.0.0-alpha.9) (2026-11-21)
+
+
+### Features
+
+* inject default tenant per union-variant body shape (Closes [#704](https://github.com/camunda/orchestration-cluster-api-js/issues/704)) ([#705](https://github.com/camunda/orchestration-cluster-api-js/issues/705)) ([af1c2b1](https://github.com/camunda/orchestration-cluster-api-js/commit/af1c2b1e258be4bd1088a820ac6bda14ff26df47))
+
+# [11.0.0-alpha.8](https://github.com/camunda/orchestration-cluster-api-js/compare/v11.0.0-alpha.7...v11.0.0-alpha.8) (2026-11-20)
+
+
+### Bug Fixes
+
+* send the default tenant on tenant-scoped commands ([#648](https://github.com/camunda/orchestration-cluster-api-js/issues/648)) ([ae666f4](https://github.com/camunda/orchestration-cluster-api-js/commit/ae666f4ba313e9716c534c9f444f6db5ab18a7c2)), closes [#647](https://github.com/camunda/orchestration-cluster-api-js/issues/647)
+
+# [11.0.0-alpha.7](https://github.com/camunda/orchestration-cluster-api-js/compare/v11.0.0-alpha.6...v11.0.0-alpha.7) (2026-11-19)
+
+
+### Features
+
+* send attributable user-agent on rest and oauth requests ([#694](https://github.com/camunda/orchestration-cluster-api-js/issues/694)) ([8574a8c](https://github.com/camunda/orchestration-cluster-api-js/commit/8574a8c904795ee3d5e0bc7f4ae83d4085f1e2d3)), closes [#693](https://github.com/camunda/orchestration-cluster-api-js/issues/693) [#platform](https://github.com/camunda/orchestration-cluster-api-js/issues/platform) [#693](https://github.com/camunda/orchestration-cluster-api-js/issues/693) [#platform](https://github.com/camunda/orchestration-cluster-api-js/issues/platform)
+
+# [11.0.0-alpha.6](https://github.com/camunda/orchestration-cluster-api-js/compare/v11.0.0-alpha.5...v11.0.0-alpha.6) (2026-11-19)
+
+
+### Bug Fixes
+
+* stop default-tenant injection from mutating the caller's request ([#688](https://github.com/camunda/orchestration-cluster-api-js/issues/688)) ([fd1b8b3](https://github.com/camunda/orchestration-cluster-api-js/commit/fd1b8b3e1f8a29d5bdd36d3f42946fa57f428d55)), closes [#687](https://github.com/camunda/orchestration-cluster-api-js/issues/687)
+
+# [11.0.0-alpha.5](https://github.com/camunda/orchestration-cluster-api-js/compare/v11.0.0-alpha.4...v11.0.0-alpha.5) (2026-11-18)
+
+
+### Bug Fixes
+
+* derive support-log redaction from the configuration schema ([#623](https://github.com/camunda/orchestration-cluster-api-js/issues/623)) ([c582531](https://github.com/camunda/orchestration-cluster-api-js/commit/c58253150639cbb6af080c95ec420922dbd28db0)), closes [#615](https://github.com/camunda/orchestration-cluster-api-js/issues/615)
+* fail the job when it cannot be dispatched to a thread ([#627](https://github.com/camunda/orchestration-cluster-api-js/issues/627)) ([b8211ea](https://github.com/camunda/orchestration-cluster-api-js/commit/b8211ea06ef90d4f4562524bd9617c50c2f082b3)), closes [#622](https://github.com/camunda/orchestration-cluster-api-js/issues/622)
+* log validation failures without job variable content ([#626](https://github.com/camunda/orchestration-cluster-api-js/issues/626)) ([7b99159](https://github.com/camunda/orchestration-cluster-api-js/commit/7b991597af83a9c6e4f27f553597bb1660baeddd)), closes [#619](https://github.com/camunda/orchestration-cluster-api-js/issues/619)
+* redact credentials from silly-level HTTP body previews ([#625](https://github.com/camunda/orchestration-cluster-api-js/issues/625)) ([d55f885](https://github.com/camunda/orchestration-cluster-api-js/commit/d55f8854c05c482736114c9a05769029a1d178f5)), closes [#617](https://github.com/camunda/orchestration-cluster-api-js/issues/617) [#644](https://github.com/camunda/orchestration-cluster-api-js/issues/644) [#641](https://github.com/camunda/orchestration-cluster-api-js/issues/641)
+* redact secrets when the config or client is stringified ([#624](https://github.com/camunda/orchestration-cluster-api-js/issues/624)) ([255de51](https://github.com/camunda/orchestration-cluster-api-js/commit/255de51fc14a13d34983df0a8fd52103f59f8cfb)), closes [#616](https://github.com/camunda/orchestration-cluster-api-js/issues/616)
+
 # [11.0.0-alpha.4](https://github.com/camunda/orchestration-cluster-api-js/compare/v11.0.0-alpha.3...v11.0.0-alpha.4) (2026-11-04)
 
 

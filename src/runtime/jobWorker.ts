@@ -8,6 +8,7 @@ import {
   DEFAULT_POLL_BACKOFF_MIN_MS,
   nextActivationRetryDelayMs,
 } from './pollBackoff';
+import { projectValidationFailure } from './validationLogging';
 import { stopWorkerGracefully } from './workerGracefulStop';
 import { WorkerStartGate } from './workerStartGate';
 
@@ -43,6 +44,38 @@ export interface JobWorkerConfig<
    * Ceiling (ms) of the between-failed-poll exponential backoff. Default `30000`.
    */
   pollBackoffMaxMs?: number;
+  /**
+   * Your handler for an activated job.
+   *
+   * **`job.variables` are untrusted input.** They arrive from the Orchestration Cluster,
+   * but their content is set by whoever started the process instance or wrote to it since
+   * — a form, an API caller, an upstream service, a message payload. Treat every value as
+   * attacker-controlled: validate it before using it in a query, a file path, a shell
+   * command, a URL or a template.
+   *
+   * `job.customHeaders` are defined during modelling and reach you from the deployed
+   * process model, so they are controlled by whoever deploys processes rather than by
+   * whoever starts an instance — a narrower trust boundary, not an absent one.
+   *
+   * What the SDK does for you:
+   *
+   * - **JSON only.** Variables are deserialized as plain JSON. No constructor is invoked
+   *   and no user class is instantiated from the payload — there is no mechanism here that
+   *   can turn a payload into an arbitrary object.
+   * - **No sharing between jobs.** Each activated job owns its own variables object;
+   *   nothing is shared or mutated across concurrently running jobs.
+   *
+   * What it does *not* do:
+   *
+   * - **No size or depth limit.** The SDK enforces no limit of its own on a variable
+   *   payload, in addition to whatever the cluster accepts.
+   * - **No shape validation by default.** {@link validateSchemas} is `false` unless you
+   *   set it; with it enabled and an {@link inputSchema} supplied, variables that do not
+   *   match are rejected and the job is failed before your handler runs. That is the
+   *   supported way to constrain the shape of what reaches this function.
+   *
+   * See the "Job variables are untrusted input" section of the README.
+   */
   jobHandler: (job: Job<In, Headers>) => Promise<JobActionReceipt> | JobActionReceipt;
   /** Immediately start polling for work - default `true` */
   autoStart?: boolean;
@@ -381,7 +414,7 @@ export class JobWorker {
       if (this._cfg.inputSchema) {
         const parsed = this._cfg.inputSchema.safeParse(variables);
         if (!parsed.success) {
-          this._log.warn('job.validation.variables.failed', parsed.error.flatten());
+          this._log.warn('job.validation.variables.failed', projectValidationFailure(parsed.error));
           await this._failValidation(raw as ActivatedJobResult, 'Invalid variables');
           return;
         }
@@ -390,7 +423,7 @@ export class JobWorker {
       if (this._cfg.customHeadersSchema) {
         const parsed = this._cfg.customHeadersSchema.safeParse(headers);
         if (!parsed.success) {
-          this._log.warn('job.validation.headers.failed', parsed.error.flatten());
+          this._log.warn('job.validation.headers.failed', projectValidationFailure(parsed.error));
           await this._failValidation(raw as ActivatedJobResult, 'Invalid custom headers');
           return;
         }

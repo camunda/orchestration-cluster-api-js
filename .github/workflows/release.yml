@@ -6,6 +6,13 @@ on:
       - main
       - 'stable/**'
   workflow_dispatch:
+    inputs:
+      api_break_approved:
+        description: >-
+          Release even though the public API breaks compatibility with the last release on
+          this stable branch (for breaks with no PR to label, e.g. from upstream spec drift).
+        type: boolean
+        default: false
 
 concurrency:
   group: orchestration-cluster-api-js-release-${{ github.ref_name }}
@@ -144,9 +151,56 @@ jobs:
         if: needs.generate.outputs.changed != 'true'
         run: echo "No generated drift detected; fast-forward skipped."
 
+  # Builds the newest api-break-approved merge's type declarations for the publish job's API
+  # gate. Historical code is built here, without publishing credentials, never in publish.
+  api-compat-baselines:
+    name: Stage approved API baselines
+    needs: merge
+    if: startsWith(github.ref_name, 'stable/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      artifact-id: ${{ steps.upload.outputs.artifact-id }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install deps
+        run: npm ci --ignore-scripts
+
+      - name: Build the newest approved merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          API_COMPAT_BASELINES: ${{ runner.temp }}/api-compat-baselines
+        run: |
+          set -uo pipefail
+          version=$(npm run -s api-compat -- --print-baseline-major "${GITHUB_REF_NAME#stable/}") || exit 2
+          [ -z "$version" ] || bash scripts/api-compat-release-gate.sh --prepare "$version"
+
+      - name: Upload approved API baselines
+        id: upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: api-compat-baselines-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/api-compat-baselines
+          if-no-files-found: ignore
+          retention-days: 1
+
   publish:
     name: Version & Publish (${{ github.ref_name }})
-    needs: merge
+    needs: [merge, api-compat-baselines]
+    # api-compat-baselines is skipped on main; publish must still run there.
+    if: ${{ !cancelled() && needs.merge.result == 'success' && contains(fromJSON('["success", "skipped"]'), needs.api-compat-baselines.result) }}
     runs-on: ubuntu-latest
     steps:
       # The release pushes directly to a ruleset-protected branch. GITHUB_TOKEN can never
@@ -231,7 +285,55 @@ jobs:
         if: steps.next_version.outputs.publish_needed == 'true'
         run: |
           npm version ${{ steps.next_version.outputs.version }} --no-git-tag-version
+          # Check the API surface against the committed spec sources FIRST:
+          # `npm run build` re-fetches the upstream spec, and generate:local
+          # wipes dist/. Finishing with the full build keeps publish artifacts
+          # (dist/index.js, dist/index.cjs, ...) complete.
+          npm run generate:local
+          npm run build:types
+          npm run api:check
           npm run build
+          # The fetching build above can move the public declarations with the
+          # upstream spec. Refresh the API reports from the FINAL build so the
+          # release commit below records reports that match the declarations it
+          # ships — otherwise it commits changed inputs (external-spec/,
+          # src/gen/) with stale reports, and the next PR's committed-input API
+          # check fails on drift it did not cause.
+          npm run api:update
+
+      - name: Download approved API baselines
+        if: steps.next_version.outputs.publish_needed == 'true' && needs.api-compat-baselines.outputs.artifact-id != ''
+        uses: actions/download-artifact@v8
+        with:
+          artifact-ids: ${{ needs.api-compat-baselines.outputs.artifact-id }}
+          path: ${{ runner.temp }}/api-compat-baselines
+          merge-multiple: true
+
+      # Stable branches must not break customer code that compiled against the last release
+      # on the branch. This checks the code actually being published, which includes
+      # generated code from upstream spec changes that no PR reviewed. Override: the
+      # api-break-approved label on a PR merged into this branch since that release (it
+      # covers the API up to its merge), or the api_break_approved input of a manual run.
+      - name: API compatibility gate (stable branches)
+        if: steps.next_version.outputs.publish_needed == 'true' && startsWith(github.ref_name, 'stable/')
+        env:
+          # Not every stable branch creates the app token (stable/9 releases with
+          # GITHUB_TOKEN); the job token can read the PRs a commit came from.
+          GH_TOKEN: ${{ steps.app-token.outputs.token || github.token }}
+          DISPATCH_APPROVED: ${{ github.event_name == 'workflow_dispatch' && inputs.api_break_approved }}
+          API_COMPAT_BASELINES: ${{ runner.temp }}/api-compat-baselines
+        run: |
+          set -uo pipefail
+          # The newest published release of this stable major, not the nearest tag: a
+          # stable branch is cut from main at an alpha.
+          major="${GITHUB_REF_NAME#stable/}"
+          version=$(npm run -s api-compat -- --print-baseline-major "$major") || exit 2
+          if [ -z "$version" ]; then
+            echo "::notice::No ${major}.x release published yet; nothing to compare against."
+            exit 0
+          fi
+          echo "Baseline: v${version}"
+          bash scripts/api-compat-release-gate.sh "$version"
 
       - name: Smoke tests (post-bump)
         if: steps.next_version.outputs.publish_needed == 'true'
@@ -360,7 +462,7 @@ jobs:
           artifact-name: post-release-smoke-docker-logs
 
   notify-release-failure:
-    needs: [generate, merge, publish, post-release-smoke]
+    needs: [generate, merge, api-compat-baselines, publish, post-release-smoke]
     if: ${{ always() && contains(needs.*.result, 'failure') }}
     permissions: {}
     uses: camunda/sdk-infra/.github/workflows/sdk-slack-notify.yml@v1

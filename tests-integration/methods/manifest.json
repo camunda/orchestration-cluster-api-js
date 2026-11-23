@@ -1,6 +1,6 @@
 {
-  "operations": 247,
-  "tests": 250,
+  "operations": 249,
+  "tests": 252,
   "missing": [],
   "ignored": [],
   "files": [
@@ -166,6 +166,7 @@
     "resumeBatchOperation.test.ts",
     "resumeClusterExporting.test.ts",
     "resumeExporting.test.ts",
+    "resumeProcessDefinitions.test.ts",
     "resumeProcessInstance.test.ts",
     "resumeProcessInstancesBatchOperation.test.ts",
     "searchAgentDefinitions.test.ts",
@@ -218,6 +219,7 @@
     "searchUsersForTenant.test.ts",
     "searchVariables.test.ts",
     "suspendBatchOperation.test.ts",
+    "suspendProcessDefinitions.test.ts",
     "suspendProcessInstance.test.ts",
     "suspendProcessInstancesBatchOperation.test.ts",
     "syncRuntimeBackupState.test.ts",
