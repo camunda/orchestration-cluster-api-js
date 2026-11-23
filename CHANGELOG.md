@@ -1,3 +1,10 @@
+# [11.0.0-alpha.11](https://github.com/camunda/orchestration-cluster-api-js/compare/v11.0.0-alpha.10...v11.0.0-alpha.11) (2026-11-23)
+
+
+### Bug Fixes
+
+* **ci:** regenerate backports without credentials, push via a path-checked patch ([#653](https://github.com/camunda/orchestration-cluster-api-js/issues/653)) ([84c2dae](https://github.com/camunda/orchestration-cluster-api-js/commit/84c2dae49762cf2f0fc2dd80170535c674a432bd))
+
 # [11.0.0-alpha.10](https://github.com/camunda/orchestration-cluster-api-js/compare/v11.0.0-alpha.9...v11.0.0-alpha.10) (2026-11-21)
 
 
