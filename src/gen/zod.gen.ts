@@ -380,6 +380,7 @@ export const zPermissionTypeEnum = /*#__PURE__*/ (() => z.enum([
     'READ_TASK_LISTENER',
     'RESTORE',
     'REVEAL',
+    'SUSPEND_PROCESS_DEFINITION',
     'SUSPEND_PROCESS_INSTANCE',
     'UPDATE',
     'UPDATE_PROCESS_INSTANCE',
