@@ -6482,6 +6482,27 @@ export class CamundaClientBase extends CamundaCore {
    * value at the size limit regardless of the `truncateValues` parameter. The truncation
    * size limit is configurable.
     *
+   * @example Search variable history
+   * ```ts
+   * async function searchVariableHistoryExample(processInstanceKey: ProcessInstanceKey) {
+   *   const camunda = createCamundaClient();
+   * 
+   *   const result = await camunda.searchVariableHistory(
+   *     {
+   *       filter: {
+   *         processInstanceKey,
+   *       },
+   *       page: { limit: 10 },
+   *       truncateValues: true,
+   *     },
+   *     { consistency: { waitUpToMs: 5000 } }
+   *   );
+   * 
+   *   for (const item of result.items ?? []) {
+   *     console.log(`${item.name} changed at ${item.timestamp}: ${item.value}`);
+   *   }
+   * }
+   * ```
    * @operationId searchVariableHistory
    * @tags Variable
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
