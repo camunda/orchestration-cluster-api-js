@@ -126,6 +126,20 @@ type ActivatedJobResultWithoutJobLeaseToken = Omit<ActivatedJobResult$1, 'jobLea
     jobLeaseToken?: null;
 };
 
+// @public (undocumented)
+type ActivatedProbeResult = {
+    probeKey: ProbeKey;
+    probeId: ProbeId;
+    worker: string;
+    deadline: number;
+    tenantId: TenantId;
+    physicalTenantId: string;
+    input: {
+        [key: string]: unknown;
+    };
+    secretPointers: Array<string>;
+};
+
 // Warning: (ae-forgotten-export) The symbol "ActivateJobsData" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ActivateJobsErrors" needs to be exported by the entry point index.d.ts
 //
@@ -184,6 +198,52 @@ export interface ActivateJobsStreamOptions<R = never> {
     readonly withLease?: boolean;
     readonly workerName?: string;
 }
+
+// Warning: (ae-forgotten-export) The symbol "ActivateProbesData" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ActivateProbesResponses" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ActivateProbesErrors" needs to be exported by the entry point index.d.ts
+//
+// @public
+const activateProbes$1: <ThrowOnError extends boolean = true>(options: Options<ActivateProbesData, ThrowOnError>) => RequestResult<ActivateProbesResponses, ActivateProbesErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "activateProbesOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type activateProbesBody = (NonNullable<activateProbesOptions> extends {
+    body?: infer B;
+} ? B : never);
+
+// @public (undocumented)
+type ActivateProbesData = {
+    body: ProbeActivationRequest;
+    path?: never;
+    query?: never;
+    url: '/probes/activation';
+};
+
+// @public (undocumented)
+type ActivateProbesErrors = {
+    400: ProblemDetail;
+    401: ProblemDetail;
+    403: ProblemDetail;
+    500: ProblemDetail;
+    503: ProblemDetail;
+};
+
+// Warning: (ae-forgotten-export) The symbol "activateProbesBody" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type activateProbesInput = activateProbesBody;
+
+// Warning: (ae-forgotten-export) The symbol "activateProbes$1" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type activateProbesOptions = Parameters<typeof activateProbes$1>[0];
+
+// @public (undocumented)
+type ActivateProbesResponses = {
+    200: ProbeActivationResult;
+};
 
 // Warning: (ae-forgotten-export) The symbol "AddClockData" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "AddClockResponses" needs to be exported by the entry point index.d.ts
@@ -1260,6 +1320,66 @@ type AncestorScopeInstruction = ({
 } & InferredAncestorKeyInstruction) | ({
     ancestorScopeType: 'sourceParent';
 } & UseSourceParentKeyInstruction);
+
+// Warning: (ae-forgotten-export) The symbol "AnswerProbeData" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "AnswerProbeResponses" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "AnswerProbeErrors" needs to be exported by the entry point index.d.ts
+//
+// @public
+const answerProbe$1: <ThrowOnError extends boolean = true>(options: Options<AnswerProbeData, ThrowOnError>) => RequestResult<AnswerProbeResponses, AnswerProbeErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "answerProbeOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type answerProbeBody = (NonNullable<answerProbeOptions> extends {
+    body?: infer B;
+} ? B : never);
+
+// @public (undocumented)
+type AnswerProbeData = {
+    body: ProbeAnswerRequest;
+    path: {
+        probeKey: ProbeKeyWritable;
+    };
+    query?: never;
+    url: '/probes/{probeKey}/answer';
+};
+
+// @public (undocumented)
+type AnswerProbeErrors = {
+    400: ProblemDetail;
+    401: ProblemDetail;
+    403: ProblemDetail;
+    404: ProblemDetail;
+    409: ProblemDetail;
+    413: ProblemDetail;
+    500: ProblemDetail;
+    503: ProblemDetail;
+};
+
+// Warning: (ae-forgotten-export) The symbol "answerProbeBody" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type answerProbeInput = answerProbeBody & {
+    probeKey: answerProbePathParam_probeKey;
+};
+
+// Warning: (ae-forgotten-export) The symbol "answerProbe$1" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type answerProbeOptions = Parameters<typeof answerProbe$1>[0];
+
+// @public (undocumented)
+type answerProbePathParam_probeKey = (NonNullable<answerProbeOptions> extends {
+    path: {
+        probeKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+type AnswerProbeResponses = {
+    204: void;
+};
 
 // @public
 type AnyVariableSchema = z.ZodObject<any>;
@@ -2878,8 +2998,12 @@ class CamundaClientBase extends CamundaCore {
     activateJobs(input: activateJobsInput, options?: OperationOptions): CancelablePromise<{
         jobs: EnrichedActivatedJob[];
     }>;
+    // Warning: (ae-forgotten-export) The symbol "activateProbesInput" needs to be exported by the entry point index.d.ts
+    activateProbes(input: activateProbesInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof activateProbes$1>>;
     // Warning: (ae-forgotten-export) The symbol "addClockInput" needs to be exported by the entry point index.d.ts
     addClock(input: addClockInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof addClock$1>>;
+    // Warning: (ae-forgotten-export) The symbol "answerProbeInput" needs to be exported by the entry point index.d.ts
+    answerProbe(input: answerProbeInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof answerProbe$1>>;
     // Warning: (ae-forgotten-export) The symbol "assignClientToGroupInput" needs to be exported by the entry point index.d.ts
     assignClientToGroup(input: assignClientToGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof assignClientToGroup$1>>;
     // Warning: (ae-forgotten-export) The symbol "assignClientToTenantInput" needs to be exported by the entry point index.d.ts
@@ -2975,6 +3099,9 @@ class CamundaClientBase extends CamundaCore {
     // Warning: (ae-forgotten-export) The symbol "createMappingRuleInput" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "createMappingRule$1" needs to be exported by the entry point index.d.ts
     createMappingRule(input: createMappingRuleInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof createMappingRule$1>>;
+    // Warning: (ae-forgotten-export) The symbol "createProbeInput" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "createProbe$1" needs to be exported by the entry point index.d.ts
+    createProbe(input: createProbeInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof createProbe$1>>;
     // Warning: (ae-forgotten-export) The symbol "createProcessInstanceInput" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "createProcessInstance$1" needs to be exported by the entry point index.d.ts
     createProcessInstance(input: createProcessInstanceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof createProcessInstance$1>>;
@@ -5733,6 +5860,53 @@ type createMappingRuleOptions = Parameters<typeof createMappingRule$1>[0];
 // @public (undocumented)
 type CreateMappingRuleResponses = {
     201: MappingRuleCreateResult;
+};
+
+// Warning: (ae-forgotten-export) The symbol "CreateProbeData" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "CreateProbeResponses" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "CreateProbeErrors" needs to be exported by the entry point index.d.ts
+//
+// @public
+const createProbe$1: <ThrowOnError extends boolean = true>(options: Options<CreateProbeData, ThrowOnError>) => RequestResult<CreateProbeResponses, CreateProbeErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "createProbeOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type createProbeBody = (NonNullable<createProbeOptions> extends {
+    body?: infer B;
+} ? B : never);
+
+// @public (undocumented)
+type CreateProbeData = {
+    body: ProbeCreationRequest;
+    path?: never;
+    query?: never;
+    url: '/probes';
+};
+
+// @public (undocumented)
+type CreateProbeErrors = {
+    400: ProblemDetail;
+    401: ProblemDetail;
+    403: ProblemDetail;
+    404: ProblemDetail;
+    413: ProblemDetail;
+    500: ProblemDetail;
+    503: ProblemDetail;
+    504: ProblemDetail;
+};
+
+// Warning: (ae-forgotten-export) The symbol "createProbeBody" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type createProbeInput = createProbeBody;
+
+// @public (undocumented)
+type createProbeOptions = Parameters<typeof createProbe$1>[0];
+
+// @public (undocumented)
+type CreateProbeResponses = {
+    200: ProbeResult;
 };
 
 // Warning: (ae-forgotten-export) The symbol "CreateProcessInstanceData" needs to be exported by the entry point index.d.ts
@@ -13682,6 +13856,119 @@ type PrimitiveType<T> = T extends {
     type: 'enum';
     choices: readonly (infer C)[];
 } ? C : never;
+
+// @public (undocumented)
+type ProbeActivationRequest = {
+    probeIds: Array<ProbeId>;
+    worker?: string;
+    maxProbesToActivate: number;
+    requestTimeout?: number;
+    tenantIds?: Array<TenantId>;
+    tenantFilter?: TenantFilterEnum;
+};
+
+// @public
+type ProbeActivationResult = {
+    probes: Array<ActivatedProbeResult>;
+};
+
+// Warning: (ae-forgotten-export) The symbol "ProbeOkAnswerRequest" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ProbeUnsupportedAnswerRequest" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ProbeErrorAnswerRequest" needs to be exported by the entry point index.d.ts
+//
+// @public
+type ProbeAnswerRequest = ({
+    outcome: 'OK';
+} & ProbeOkAnswerRequest) | ({
+    outcome: 'UNSUPPORTED';
+} & ProbeUnsupportedAnswerRequest) | ({
+    outcome: 'ERROR';
+} & ProbeErrorAnswerRequest);
+
+// @public (undocumented)
+type ProbeCreationRequest = {
+    probeId: ProbeId;
+    input: string;
+    tenantId?: TenantId;
+    requestTimeout?: number;
+};
+
+// @public
+type ProbeErrorAnswerRequest = {
+    outcome: string;
+    message: string;
+};
+
+// @public
+type ProbeErrorResult = {
+    outcome: string;
+    worker: string;
+    message: string;
+};
+
+// @public
+type ProbeId = CamundaKey<'ProbeId'>;
+
+// @public (undocumented)
+const ProbeId: {
+    assumeExists(value: string): ProbeId;
+    getValue(key: ProbeId): string;
+    isValid(value: string): boolean;
+};
+
+// @public
+type ProbeKey = CamundaKey<'ProbeKey'>;
+
+// @public (undocumented)
+const ProbeKey: {
+    assumeExists(value: string): ProbeKey;
+    getValue(key: ProbeKey): string;
+    isValid(value: string): boolean;
+};
+
+// @public
+type ProbeKeyWritable = LongKey;
+
+// @public
+type ProbeOkAnswerRequest = {
+    outcome: string;
+    data: {
+        [key: string]: unknown;
+    };
+};
+
+// @public
+type ProbeOkResult = {
+    outcome: string;
+    worker: string;
+    data: {
+        [key: string]: unknown;
+    };
+};
+
+// Warning: (ae-forgotten-export) The symbol "ProbeOkResult" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ProbeUnsupportedResult" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ProbeErrorResult" needs to be exported by the entry point index.d.ts
+//
+// @public
+type ProbeResult = ({
+    outcome: 'OK';
+} & ProbeOkResult) | ({
+    outcome: 'UNSUPPORTED';
+} & ProbeUnsupportedResult) | ({
+    outcome: 'ERROR';
+} & ProbeErrorResult);
+
+// @public
+type ProbeUnsupportedAnswerRequest = {
+    outcome: string;
+};
+
+// @public
+type ProbeUnsupportedResult = {
+    outcome: string;
+    worker: string;
+};
 
 // @public
 type ProblemDetail = {
@@ -22019,6 +22306,9 @@ export function workerLayer<A extends CompleteVars, R = never>(config: EffectWor
 // (ae-forgotten-export) The symbol "MessageSubscriptionTypeEnum" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "MessageSubscriptionStateEnum" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "MessageSubscriptionKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "ActivatedProbeResult" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "ProbeKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "ProbeId" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "ProcessDefinitionSuspensionVersionResult" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "ProcessDefinitionResumptionVersionResult" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "ProcessDefinitionSearchQuerySortRequest" needs to be exported by the entry point index.d.ts
@@ -22247,6 +22537,12 @@ export function workerLayer<A extends CompleteVars, R = never>(config: EffectWor
 // (ae-forgotten-export) The symbol "MessageCorrelationResult" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "MessagePublicationRequest" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "MessagePublicationResult" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "ProbeCreationRequest" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "ProbeResult" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "ProbeActivationRequest" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "ProbeActivationResult" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "ProbeAnswerRequest" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "ProbeKeyWritable" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "ProcessDefinitionResumptionInstruction" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "ProcessDefinitionResumptionResult" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "ProcessDefinitionSearchQuery" needs to be exported by the entry point index.d.ts
@@ -22390,6 +22686,7 @@ export function workerLayer<A extends CompleteVars, R = never>(config: EffectWor
 // (ae-forgotten-export) The symbol "HttpRetryPolicy" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "InferOrUnknown" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "activateAdHocSubProcessActivitiesPathParam_adHocSubProcessInstanceKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "answerProbePathParam_probeKey" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "assignClientToGroupPathParam_groupId" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "assignClientToGroupPathParam_clientId" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "assignClientToTenantPathParam_tenantId" needs to be exported by the entry point index.d.ts

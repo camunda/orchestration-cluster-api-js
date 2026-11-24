@@ -115,6 +115,20 @@ export type ActivatedJobResultWithoutJobLeaseToken = Omit<ActivatedJobResult, 'j
     jobLeaseToken?: null;
 };
 
+// @public (undocumented)
+export type ActivatedProbeResult = {
+    probeKey: ProbeKey;
+    probeId: ProbeId;
+    worker: string;
+    deadline: number;
+    tenantId: TenantId;
+    physicalTenantId: string;
+    input: {
+        [key: string]: unknown;
+    };
+    secretPointers: Array<string>;
+};
+
 // @public
 const activateJobs$1: <ThrowOnError extends boolean = true>(options: Options<ActivateJobsData, ThrowOnError>) => RequestResult<ActivateJobsResponses, ActivateJobsErrors, ThrowOnError>;
 
@@ -160,6 +174,54 @@ export type ActivateJobsResponse = ActivateJobsResponses[keyof ActivateJobsRespo
 // @public (undocumented)
 export type ActivateJobsResponses = {
     200: JobActivationResult;
+};
+
+// @public
+const activateProbes$1: <ThrowOnError extends boolean = true>(options: Options<ActivateProbesData, ThrowOnError>) => RequestResult<ActivateProbesResponses, ActivateProbesErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "activateProbesOptions" needs to be exported by the entry point index.d.cts
+//
+// @public (undocumented)
+type activateProbesBody = (NonNullable<activateProbesOptions> extends {
+    body?: infer B;
+} ? B : never);
+
+// @public (undocumented)
+export type ActivateProbesData = {
+    body: ProbeActivationRequest;
+    path?: never;
+    query?: never;
+    url: '/probes/activation';
+};
+
+// @public (undocumented)
+export type ActivateProbesError = ActivateProbesErrors[keyof ActivateProbesErrors];
+
+// @public (undocumented)
+export type ActivateProbesErrors = {
+    400: ProblemDetail;
+    401: ProblemDetail;
+    403: ProblemDetail;
+    500: ProblemDetail;
+    503: ProblemDetail;
+};
+
+// Warning: (ae-forgotten-export) The symbol "activateProbesBody" needs to be exported by the entry point index.d.cts
+//
+// @public (undocumented)
+export type activateProbesInput = activateProbesBody;
+
+// Warning: (ae-forgotten-export) The symbol "activateProbes$1" needs to be exported by the entry point index.d.cts
+//
+// @public (undocumented)
+type activateProbesOptions = Parameters<typeof activateProbes$1>[0];
+
+// @public (undocumented)
+export type ActivateProbesResponse = ActivateProbesResponses[keyof ActivateProbesResponses];
+
+// @public (undocumented)
+export type ActivateProbesResponses = {
+    200: ProbeActivationResult;
 };
 
 // @public
@@ -1234,6 +1296,68 @@ export type AncestorScopeInstruction = ({
 } & InferredAncestorKeyInstruction) | ({
     ancestorScopeType: 'sourceParent';
 } & UseSourceParentKeyInstruction);
+
+// @public
+const answerProbe$1: <ThrowOnError extends boolean = true>(options: Options<AnswerProbeData, ThrowOnError>) => RequestResult<AnswerProbeResponses, AnswerProbeErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "answerProbeOptions" needs to be exported by the entry point index.d.cts
+//
+// @public (undocumented)
+type answerProbeBody = (NonNullable<answerProbeOptions> extends {
+    body?: infer B;
+} ? B : never);
+
+// @public (undocumented)
+export type AnswerProbeData = {
+    body: ProbeAnswerRequest;
+    path: {
+        probeKey: ProbeKeyWritable;
+    };
+    query?: never;
+    url: '/probes/{probeKey}/answer';
+};
+
+// @public (undocumented)
+export type AnswerProbeError = AnswerProbeErrors[keyof AnswerProbeErrors];
+
+// @public (undocumented)
+export type AnswerProbeErrors = {
+    400: ProblemDetail;
+    401: ProblemDetail;
+    403: ProblemDetail;
+    404: ProblemDetail;
+    409: ProblemDetail;
+    413: ProblemDetail;
+    500: ProblemDetail;
+    503: ProblemDetail;
+};
+
+// Warning: (ae-forgotten-export) The symbol "answerProbeBody" needs to be exported by the entry point index.d.cts
+//
+// @public (undocumented)
+export type answerProbeInput = answerProbeBody & {
+    probeKey: answerProbePathParam_probeKey;
+};
+
+// Warning: (ae-forgotten-export) The symbol "answerProbe$1" needs to be exported by the entry point index.d.cts
+//
+// @public (undocumented)
+type answerProbeOptions = Parameters<typeof answerProbe$1>[0];
+
+// @public (undocumented)
+type answerProbePathParam_probeKey = (NonNullable<answerProbeOptions> extends {
+    path: {
+        probeKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+export type AnswerProbeResponse = AnswerProbeResponses[keyof AnswerProbeResponses];
+
+// @public (undocumented)
+export type AnswerProbeResponses = {
+    204: void;
+};
 
 // @public
 export type AnyVariableSchema = z.ZodObject<any>;
@@ -2899,7 +3023,9 @@ export class CamundaClientBase extends CamundaCore {
     activateJobs(input: activateJobsInput, options?: OperationOptions): CancelablePromise<{
         jobs: EnrichedActivatedJob[];
     }>;
+    activateProbes(input: activateProbesInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof activateProbes$1>>;
     addClock(input: addClockInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof addClock$1>>;
+    answerProbe(input: answerProbeInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof answerProbe$1>>;
     assignClientToGroup(input: assignClientToGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof assignClientToGroup$1>>;
     assignClientToTenant(input: assignClientToTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof assignClientToTenant$1>>;
     assignGroupToTenant(input: assignGroupToTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof assignGroupToTenant$1>>;
@@ -2957,6 +3083,8 @@ export class CamundaClientBase extends CamundaCore {
     createJobWorker<In extends zod.ZodTypeAny = any, Out extends zod.ZodTypeAny = any, Headers extends zod.ZodTypeAny = any>(cfg: JobWorkerConfig<In, Out, Headers>): JobWorker;
     // Warning: (ae-forgotten-export) The symbol "createMappingRule$1" needs to be exported by the entry point index.d.cts
     createMappingRule(input: createMappingRuleInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof createMappingRule$1>>;
+    // Warning: (ae-forgotten-export) The symbol "createProbe$1" needs to be exported by the entry point index.d.cts
+    createProbe(input: createProbeInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof createProbe$1>>;
     // Warning: (ae-forgotten-export) The symbol "createProcessInstance$1" needs to be exported by the entry point index.d.cts
     createProcessInstance(input: createProcessInstanceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof createProcessInstance$1>>;
     // Warning: (ae-forgotten-export) The symbol "createRole$1" needs to be exported by the entry point index.d.cts
@@ -5506,6 +5634,55 @@ export type CreateMappingRuleResponse = CreateMappingRuleResponses[keyof CreateM
 // @public (undocumented)
 export type CreateMappingRuleResponses = {
     201: MappingRuleCreateResult;
+};
+
+// @public
+const createProbe$1: <ThrowOnError extends boolean = true>(options: Options<CreateProbeData, ThrowOnError>) => RequestResult<CreateProbeResponses, CreateProbeErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "createProbeOptions" needs to be exported by the entry point index.d.cts
+//
+// @public (undocumented)
+type createProbeBody = (NonNullable<createProbeOptions> extends {
+    body?: infer B;
+} ? B : never);
+
+// @public (undocumented)
+export type CreateProbeData = {
+    body: ProbeCreationRequest;
+    path?: never;
+    query?: never;
+    url: '/probes';
+};
+
+// @public (undocumented)
+export type CreateProbeError = CreateProbeErrors[keyof CreateProbeErrors];
+
+// @public (undocumented)
+export type CreateProbeErrors = {
+    400: ProblemDetail;
+    401: ProblemDetail;
+    403: ProblemDetail;
+    404: ProblemDetail;
+    413: ProblemDetail;
+    500: ProblemDetail;
+    503: ProblemDetail;
+    504: ProblemDetail;
+};
+
+// Warning: (ae-forgotten-export) The symbol "createProbeBody" needs to be exported by the entry point index.d.cts
+//
+// @public (undocumented)
+export type createProbeInput = createProbeBody;
+
+// @public (undocumented)
+type createProbeOptions = Parameters<typeof createProbe$1>[0];
+
+// @public (undocumented)
+export type CreateProbeResponse = CreateProbeResponses[keyof CreateProbeResponses];
+
+// @public (undocumented)
+export type CreateProbeResponses = {
+    200: ProbeResult;
 };
 
 // @public
@@ -13739,6 +13916,111 @@ type PrimitiveType<T> = T extends {
     choices: readonly (infer C)[];
 } ? C : never;
 
+// @public (undocumented)
+export type ProbeActivationRequest = {
+    probeIds: Array<ProbeId>;
+    worker?: string;
+    maxProbesToActivate: number;
+    requestTimeout?: number;
+    tenantIds?: Array<TenantId>;
+    tenantFilter?: TenantFilterEnum;
+};
+
+// @public
+export type ProbeActivationResult = {
+    probes: Array<ActivatedProbeResult>;
+};
+
+// @public
+export type ProbeAnswerRequest = ({
+    outcome: 'OK';
+} & ProbeOkAnswerRequest) | ({
+    outcome: 'UNSUPPORTED';
+} & ProbeUnsupportedAnswerRequest) | ({
+    outcome: 'ERROR';
+} & ProbeErrorAnswerRequest);
+
+// @public (undocumented)
+export type ProbeCreationRequest = {
+    probeId: ProbeId;
+    input: string;
+    tenantId?: TenantId;
+    requestTimeout?: number;
+};
+
+// @public
+export type ProbeErrorAnswerRequest = {
+    outcome: string;
+    message: string;
+};
+
+// @public
+export type ProbeErrorResult = {
+    outcome: string;
+    worker: string;
+    message: string;
+};
+
+// @public
+export type ProbeId = CamundaKey<'ProbeId'>;
+
+// @public (undocumented)
+export const ProbeId: {
+    assumeExists(value: string): ProbeId;
+    getValue(key: ProbeId): string;
+    isValid(value: string): boolean;
+};
+
+// @public
+export type ProbeKey = CamundaKey<'ProbeKey'>;
+
+// @public (undocumented)
+export const ProbeKey: {
+    assumeExists(value: string): ProbeKey;
+    getValue(key: ProbeKey): string;
+    isValid(value: string): boolean;
+};
+
+// @public
+export type ProbeKeyWritable = LongKey;
+
+// @public
+export type ProbeOkAnswerRequest = {
+    outcome: string;
+    data: {
+        [key: string]: unknown;
+    };
+};
+
+// @public
+export type ProbeOkResult = {
+    outcome: string;
+    worker: string;
+    data: {
+        [key: string]: unknown;
+    };
+};
+
+// @public
+export type ProbeResult = ({
+    outcome: 'OK';
+} & ProbeOkResult) | ({
+    outcome: 'UNSUPPORTED';
+} & ProbeUnsupportedResult) | ({
+    outcome: 'ERROR';
+} & ProbeErrorResult);
+
+// @public
+export type ProbeUnsupportedAnswerRequest = {
+    outcome: string;
+};
+
+// @public
+export type ProbeUnsupportedResult = {
+    outcome: string;
+    worker: string;
+};
+
 // @public
 export type ProblemDetail = {
     type: string;
@@ -18575,7 +18857,7 @@ export type SourceElementInstruction = ({
 } & SourceElementInstanceKeyInstruction);
 
 // @public (undocumented)
-export const SPEC_HASH: "sha256:f1835f69622ac3d3e861829f27826021facf49db86e4b2c2b775ea5d7eb30afa";
+export const SPEC_HASH: "sha256:aaebe938a1573864cae21403b7323b369e4e6e643df8fae8f241dc787718f6a7";
 
 // Warning: (ae-forgotten-export) The symbol "ServerSentEventsResult" needs to be exported by the entry point index.d.cts
 //
@@ -22041,6 +22323,7 @@ interface WorkerHandle {
 // (ae-forgotten-export) The symbol "VariableConsistencyOptions" needs to be exported by the entry point index.d.cts
 // (ae-forgotten-export) The symbol "CollectClock" needs to be exported by the entry point index.d.cts
 // (ae-forgotten-export) The symbol "activateAdHocSubProcessActivitiesPathParam_adHocSubProcessInstanceKey" needs to be exported by the entry point index.d.cts
+// (ae-forgotten-export) The symbol "answerProbePathParam_probeKey" needs to be exported by the entry point index.d.cts
 // (ae-forgotten-export) The symbol "assignClientToGroupPathParam_groupId" needs to be exported by the entry point index.d.cts
 // (ae-forgotten-export) The symbol "assignClientToGroupPathParam_clientId" needs to be exported by the entry point index.d.cts
 // (ae-forgotten-export) The symbol "assignClientToTenantPathParam_tenantId" needs to be exported by the entry point index.d.cts
