@@ -1003,6 +1003,13 @@
       "label": "Search variables"
     }
   ],
+  "searchVariableHistory": [
+    {
+      "file": "extended-operations.ts",
+      "region": "SearchVariableHistory",
+      "label": "Search variable history"
+    }
+  ],
   "getElementInstance": [
     {
       "file": "extended-operations.ts",
