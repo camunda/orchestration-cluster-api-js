@@ -8087,6 +8087,11 @@ export type VariableKey = CamundaKey<'VariableKey'>;
 export type ScopeKey = ProcessInstanceKey | ElementInstanceKey;
 
 /**
+ * System-generated key for a variable history item.
+ */
+export type VariableHistoryItemKey = CamundaKey<'VariableHistoryItemKey'>;
+
+/**
  * System-generated key for a incident.
  */
 export type IncidentKey = CamundaKey<'IncidentKey'>;
@@ -8387,6 +8392,39 @@ export type AdvancedVariableKeyFilter = {
      * Checks if the property matches none of the provided values.
      */
     $notIn?: Array<VariableKey>;
+};
+
+/**
+ * VariableHistoryItemKey property with full advanced search capabilities.
+ */
+export type VariableHistoryItemKeyFilterProperty = VariableHistoryItemKeyExactMatch | AdvancedVariableHistoryItemKeyFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced VariableHistoryItemKey filter.
+ */
+export type AdvancedVariableHistoryItemKeyFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: VariableHistoryItemKey;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: VariableHistoryItemKey;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<VariableHistoryItemKey>;
+    /**
+     * Checks if the property matches none of the provided values.
+     */
+    $notIn?: Array<VariableHistoryItemKey>;
 };
 
 /**
@@ -11300,14 +11338,87 @@ export type SecretResolutionError = {
 export type SecretErrorCode = 'NOT_FOUND' | 'ACCESS_DENIED' | 'INVALID_REFERENCE' | 'UNREADABLE';
 
 /**
- * Reserved for future filtering options. Currently takes no properties. The request body is
- * optional: omitting it (or sending an empty object) applies no filters.
+ * Options for listing secrets. The request body is optional: omitting it, or sending an empty
+ * object, lists every secret the caller may read.
  *
  */
 export type SecretListRequest = {
-    [key: string]: never;
+    /**
+     * Narrows the listed secrets. Omit it to list secrets in every state. Clusters before 8.11
+     * reject this property with `400`.
+     *
+     */
+    filter?: SecretListFilter;
 };
 
+/**
+ * Secret list filter.
+ */
+export type SecretListFilter = {
+    /**
+     * Only list secrets in the matching states. Omit it to list secrets in every state.
+     */
+    status?: SecretStatusFilterProperty;
+};
+
+/**
+ * SecretStatusEnum property with full advanced search capabilities.
+ */
+export type SecretStatusFilterProperty = SecretStatusExactMatch | AdvancedSecretStatusFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced SecretStatusEnum filter.
+ */
+export type AdvancedSecretStatusFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: SecretStatusEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: SecretStatusEnum;
+    /**
+     * Checks if the current property exists. Every listed secret has a status, so `true`
+     * matches every secret and `false` matches none.
+     *
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<SecretStatusEnum>;
+    /**
+     * Checks if the property matches none of the provided values.
+     */
+    $notIn?: Array<SecretStatusEnum>;
+    $like?: LikeFilter;
+};
+
+/**
+ * The state a secret store reports for a secret.
+ *
+ * - `ACTIVE`: the store reports the secret as usable.
+ * - `DISABLED`: the secret was disabled in its store.
+ * - `EXPIRED`: the secret's expiry date has passed.
+ * - `NOT_YET_ACTIVE`: the secret's activation date is in the future.
+ *
+ * A secret has exactly one status. When several apply, `DISABLED` wins over `EXPIRED`, and
+ * `EXPIRED` over `NOT_YET_ACTIVE`: a secret that is both disabled and expired is listed only
+ * as `DISABLED`, so an `EXPIRED` filter skips it.
+ *
+ * A store that cannot report states reports every secret as `ACTIVE`.
+ *
+ */
+export const SecretStatusEnum = {
+  ACTIVE: 'ACTIVE',
+  DISABLED: 'DISABLED',
+  EXPIRED: 'EXPIRED',
+  NOT_YET_ACTIVE: 'NOT_YET_ACTIVE',
+} as const;
+export type SecretStatusEnum = (typeof SecretStatusEnum)[keyof typeof SecretStatusEnum];
 /**
  * The secret references the caller is authorized to see.
  *
@@ -12657,6 +12768,347 @@ export type SetVariableRequest = {
     operationReference?: OperationReference;
 };
 
+export type VariableHistoryItemSearchQuerySortRequest = {
+    /**
+     * The field to sort by.
+     */
+    field: 'variableHistoryItemKey';
+    order?: SortOrderEnum;
+};
+
+/**
+ * Variable history item search query request.
+ */
+export type VariableHistoryItemSearchQuery = SearchQueryRequest & {
+    /**
+     * Sort field criteria.
+     */
+    sort?: Array<VariableHistoryItemSearchQuerySortRequest>;
+    /**
+     * The variable history item search filters.
+     */
+    filter?: VariableHistoryItemFilter;
+};
+
+/**
+ * Variable history item filter request.
+ */
+export type VariableHistoryItemFilter = {
+    /**
+     * The key of the variable this history item belongs to.
+     */
+    variableKey?: VariableKeyFilterProperty;
+    /**
+     * The key of the process instance of this variable.
+     */
+    processInstanceKey?: ProcessInstanceKeyFilterProperty;
+    /**
+     * Name of the variable.
+     */
+    name?: StringFilterProperty;
+    /**
+     * The key of the scope that defines where this variable is directly defined. This can
+     * be a process instance key (for process-level variables) or an element instance key
+     * (for local variables scoped to tasks, sub-processes, gateways, events, etc.).
+     *
+     */
+    scopeKey?: ScopeKeyFilterProperty;
+    /**
+     * The model-defined id of the element that caused this change, if any.
+     */
+    elementId?: ElementIdFilterProperty;
+    /**
+     * The key of the element instance that caused this change, if any.
+     */
+    elementInstanceKey?: ElementInstanceKeyFilterProperty;
+    /**
+     * The unique key of this variable history item.
+     */
+    variableHistoryItemKey?: VariableHistoryItemKeyFilterProperty;
+    /**
+     * The key of the process definition.
+     */
+    processDefinitionKey?: ProcessDefinitionKeyFilterProperty;
+    /**
+     * The id of the process definition.
+     */
+    processDefinitionId?: ProcessDefinitionIdFilterProperty;
+    /**
+     * The tenant id of this variable.
+     */
+    tenantId?: StringFilterProperty;
+    /**
+     * The timestamp when this change occurred.
+     */
+    timestamp?: DateTimeFilterProperty;
+    /**
+     * The type of operation that produced this variable change.
+     */
+    operationType?: VariableHistoryItemOperationTypeFilterProperty;
+    /**
+     * What wrote this variable value.
+     */
+    variableOperationType?: VariableHistoryItemVariableOperationTypeFilterProperty;
+    /**
+     * The type of the actor who performed the operation.
+     */
+    actorType?: VariableHistoryItemActorTypeFilterProperty;
+    /**
+     * The id of the user or client that caused this change, if known.
+     */
+    actorId?: StringFilterProperty;
+    /**
+     * The element id of the agent that caused this change, for example the element id
+     * of an ad-hoc sub-process, if any.
+     *
+     */
+    agentElementId?: ElementIdFilterProperty;
+};
+
+/**
+ * Variable history item search query response.
+ */
+export type VariableHistoryItemSearchQueryResult = SearchQueryResponse & {
+    /**
+     * The matching variable history items.
+     */
+    items: Array<VariableHistoryItemSearchResult>;
+};
+
+/**
+ * Variable history item search response item.
+ */
+export type VariableHistoryItemSearchResult = VariableHistoryItemResultBase & {
+    /**
+     * Value of this variable change. Can be truncated, also when `truncateValues` is false, for the output collection of a multi-instance element or an ad-hoc sub-process.
+     */
+    value: string;
+    /**
+     * Indicates if the value is truncated.
+     */
+    isTruncated: boolean;
+};
+
+/**
+ * Variable history item response base.
+ */
+export type VariableHistoryItemResultBase = {
+    /**
+     * The unique key of this variable history item.
+     */
+    variableHistoryItemKey: VariableHistoryItemKey;
+    /**
+     * The key of the variable this history item belongs to.
+     */
+    variableKey: VariableKey;
+    /**
+     * Name of the variable.
+     */
+    name: string;
+    /**
+     * The key of the scope where this variable is directly defined. For process-level
+     * variables, this is the process instance key. For local variables, this is the key
+     * of the specific element instance where the variable is directly defined.
+     *
+     */
+    scopeKey: ScopeKey;
+    /**
+     * The key of the element instance that caused this change, if any.
+     */
+    elementInstanceKey: ElementInstanceKey | null;
+    /**
+     * The model-defined id of the element that caused this change, if any.
+     */
+    elementId: ElementId | null;
+    /**
+     * The key of the process instance of this variable.
+     */
+    processInstanceKey: ProcessInstanceKey;
+    /**
+     * The key of the root process instance. The root process instance is the top-level
+     * ancestor in the process instance hierarchy. This field is only present for data
+     * belonging to process instance hierarchies created in version 8.9 or later.
+     *
+     */
+    rootProcessInstanceKey: ProcessInstanceKey | null;
+    /**
+     * The key of the process definition.
+     */
+    processDefinitionKey: ProcessDefinitionKey;
+    /**
+     * The id of the process definition.
+     */
+    processDefinitionId: ProcessDefinitionId;
+    /**
+     * The tenant id of this variable.
+     */
+    tenantId: TenantId;
+    /**
+     * The timestamp when this change occurred.
+     */
+    timestamp: string;
+    operationType: VariableHistoryItemOperationTypeEnum;
+    variableOperationType: VariableHistoryItemVariableOperationTypeEnum;
+    actorType: VariableHistoryItemActorTypeEnum;
+    /**
+     * The id of the user or client that caused this change, if known.
+     */
+    actorId: string | null;
+    /**
+     * The element id of the agent that caused this change, for example the element id
+     * of an ad-hoc sub-process, if any.
+     *
+     */
+    agentElementId: ElementId | null;
+};
+
+/**
+ * The type of operation that produced this variable change. Camunda can add values in later
+ * versions; clients must handle unknown values gracefully.
+ *
+ */
+export const VariableHistoryItemOperationTypeEnum = {
+  CREATE: 'CREATE',
+  UPDATE: 'UPDATE',
+} as const;
+export type VariableHistoryItemOperationTypeEnum = (typeof VariableHistoryItemOperationTypeEnum)[keyof typeof VariableHistoryItemOperationTypeEnum];
+/**
+ * What wrote this variable value, for example a job completion, a script result, or a
+ * multi-instance output collection. Camunda can add values in later versions; clients must
+ * handle unknown values gracefully.
+ *
+ */
+export const VariableHistoryItemVariableOperationTypeEnum = {
+  API: 'API',
+  USER_TASK_COMPLETION: 'USER_TASK_COMPLETION',
+  PROCESS_INSTANCE_CREATION: 'PROCESS_INSTANCE_CREATION',
+  PROCESS_INSTANCE_MODIFICATION: 'PROCESS_INSTANCE_MODIFICATION',
+  JOB_COMPLETION: 'JOB_COMPLETION',
+  JOB_FAILURE: 'JOB_FAILURE',
+  JOB_ERROR: 'JOB_ERROR',
+  EXECUTION_LISTENER_COMPLETION: 'EXECUTION_LISTENER_COMPLETION',
+  MESSAGE_CORRELATION: 'MESSAGE_CORRELATION',
+  SIGNAL_BROADCAST: 'SIGNAL_BROADCAST',
+  CONDITIONAL_EVALUATION: 'CONDITIONAL_EVALUATION',
+  AD_HOC_SUB_PROCESS_ACTIVATION: 'AD_HOC_SUB_PROCESS_ACTIVATION',
+  INPUT_MAPPING: 'INPUT_MAPPING',
+  OUTPUT_MAPPING: 'OUTPUT_MAPPING',
+  SCRIPT_RESULT: 'SCRIPT_RESULT',
+  DECISION_RESULT: 'DECISION_RESULT',
+  CALL_ACTIVITY_INPUT: 'CALL_ACTIVITY_INPUT',
+  CALL_ACTIVITY_OUTPUT: 'CALL_ACTIVITY_OUTPUT',
+  MULTI_INSTANCE_INPUT_ELEMENT: 'MULTI_INSTANCE_INPUT_ELEMENT',
+  MULTI_INSTANCE_LOOP_COUNTER: 'MULTI_INSTANCE_LOOP_COUNTER',
+  MULTI_INSTANCE_OUTPUT_ELEMENT: 'MULTI_INSTANCE_OUTPUT_ELEMENT',
+  MULTI_INSTANCE_OUTPUT_COLLECTION: 'MULTI_INSTANCE_OUTPUT_COLLECTION',
+  AD_HOC_SUB_PROCESS_METADATA: 'AD_HOC_SUB_PROCESS_METADATA',
+  AD_HOC_SUB_PROCESS_OUTPUT_ELEMENT: 'AD_HOC_SUB_PROCESS_OUTPUT_ELEMENT',
+  AD_HOC_SUB_PROCESS_OUTPUT_COLLECTION: 'AD_HOC_SUB_PROCESS_OUTPUT_COLLECTION',
+  UNKNOWN: 'UNKNOWN',
+} as const;
+export type VariableHistoryItemVariableOperationTypeEnum = (typeof VariableHistoryItemVariableOperationTypeEnum)[keyof typeof VariableHistoryItemVariableOperationTypeEnum];
+/**
+ * The type of the actor who performed the operation. Camunda can add values in later
+ * versions; clients must handle unknown values gracefully.
+ *
+ */
+export const VariableHistoryItemActorTypeEnum = {
+  USER: 'USER',
+  CLIENT: 'CLIENT',
+  ENGINE: 'ENGINE',
+  UNKNOWN: 'UNKNOWN',
+} as const;
+export type VariableHistoryItemActorTypeEnum = (typeof VariableHistoryItemActorTypeEnum)[keyof typeof VariableHistoryItemActorTypeEnum];
+/**
+ * VariableHistoryItemOperationTypeEnum property with full advanced search capabilities.
+ */
+export type VariableHistoryItemOperationTypeFilterProperty = VariableHistoryItemOperationTypeExactMatch | AdvancedVariableHistoryItemOperationTypeFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced VariableHistoryItemOperationTypeEnum filter.
+ */
+export type AdvancedVariableHistoryItemOperationTypeFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: VariableHistoryItemOperationTypeEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: VariableHistoryItemOperationTypeEnum;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<VariableHistoryItemOperationTypeEnum>;
+    $like?: LikeFilter;
+};
+
+/**
+ * VariableHistoryItemVariableOperationTypeEnum property with full advanced search capabilities.
+ */
+export type VariableHistoryItemVariableOperationTypeFilterProperty = VariableHistoryItemVariableOperationTypeExactMatch | AdvancedVariableHistoryItemVariableOperationTypeFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced VariableHistoryItemVariableOperationTypeEnum filter.
+ */
+export type AdvancedVariableHistoryItemVariableOperationTypeFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: VariableHistoryItemVariableOperationTypeEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: VariableHistoryItemVariableOperationTypeEnum;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<VariableHistoryItemVariableOperationTypeEnum>;
+    $like?: LikeFilter;
+};
+
+/**
+ * VariableHistoryItemActorTypeEnum property with full advanced search capabilities.
+ */
+export type VariableHistoryItemActorTypeFilterProperty = VariableHistoryItemActorTypeExactMatch | AdvancedVariableHistoryItemActorTypeFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced VariableHistoryItemActorTypeEnum filter.
+ */
+export type AdvancedVariableHistoryItemActorTypeFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: VariableHistoryItemActorTypeEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: VariableHistoryItemActorTypeEnum;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<VariableHistoryItemActorTypeEnum>;
+    $like?: LikeFilter;
+};
+
 /**
  * Exact match
  *
@@ -12921,6 +13373,13 @@ export type VariableKeyExactMatch = VariableKey;
  *
  * Matches the value exactly.
  */
+export type VariableHistoryItemKeyExactMatch = VariableHistoryItemKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export type DecisionEvaluationInstanceKeyExactMatch = DecisionEvaluationInstanceKey;
 
 /**
@@ -13005,7 +13464,35 @@ export type ProcessInstanceStateExactMatch = ProcessInstanceStateEnum;
  *
  * Matches the value exactly.
  */
+export type SecretStatusExactMatch = SecretStatusEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export type UserTaskStateExactMatch = UserTaskStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type VariableHistoryItemOperationTypeExactMatch = VariableHistoryItemOperationTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type VariableHistoryItemVariableOperationTypeExactMatch = VariableHistoryItemVariableOperationTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type VariableHistoryItemActorTypeExactMatch = VariableHistoryItemActorTypeEnum;
 
 /**
  * System-generated key for an authorization.
@@ -13204,6 +13691,11 @@ export type VariableKeyWritable = LongKey;
  *
  */
 export type ScopeKeyWritable = ProcessInstanceKeyWritable | ElementInstanceKeyWritable;
+
+/**
+ * System-generated key for a variable history item.
+ */
+export type VariableHistoryItemKeyWritable = LongKey;
 
 /**
  * System-generated key for a incident.
@@ -13534,6 +14026,13 @@ export type VariableKeyExactMatchWritable = VariableKeyWritable;
  *
  * Matches the value exactly.
  */
+export type VariableHistoryItemKeyExactMatchWritable = VariableHistoryItemKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export type DecisionEvaluationInstanceKeyExactMatchWritable = DecisionEvaluationInstanceKey;
 
 /**
@@ -13618,7 +14117,35 @@ export type ProcessInstanceStateExactMatchWritable = ProcessInstanceStateEnum;
  *
  * Matches the value exactly.
  */
+export type SecretStatusExactMatchWritable = SecretStatusEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export type UserTaskStateExactMatchWritable = UserTaskStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type VariableHistoryItemOperationTypeExactMatchWritable = VariableHistoryItemOperationTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type VariableHistoryItemVariableOperationTypeExactMatchWritable = VariableHistoryItemVariableOperationTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type VariableHistoryItemActorTypeExactMatchWritable = VariableHistoryItemActorTypeEnum;
 
 export type GetAgentDefinitionData = {
     body?: never;
@@ -24441,6 +24968,48 @@ export type SearchUserTaskVariablesResponses = {
 
 export type SearchUserTaskVariablesResponse = SearchUserTaskVariablesResponses[keyof SearchUserTaskVariablesResponses];
 
+export type SearchVariableHistoryData = {
+    body?: VariableHistoryItemSearchQuery;
+    path?: never;
+    query?: {
+        /**
+         * When true (default), long variable values in the response are truncated. When false, full variable values are returned where available.
+         */
+        truncateValues?: boolean;
+    };
+    url: '/variables/history/search';
+};
+
+export type SearchVariableHistoryErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type SearchVariableHistoryError = SearchVariableHistoryErrors[keyof SearchVariableHistoryErrors];
+
+export type SearchVariableHistoryResponses = {
+    /**
+     * The variable history search result.
+     */
+    200: VariableHistoryItemSearchQueryResult;
+};
+
+export type SearchVariableHistoryResponse = SearchVariableHistoryResponses[keyof SearchVariableHistoryResponses];
+
 export type SearchVariablesData = {
     body?: VariableSearchQuery;
     path?: never;
@@ -24532,7 +25101,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:914f89f26245982b7e11d9a3bdcbfccdc228e07fbf7bd7008279ed1d494d70ed
+// specHash=sha256:f1835f69622ac3d3e861829f27826021facf49db86e4b2c2b775ea5d7eb30afa
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
@@ -25290,6 +25859,24 @@ export const UserTaskKey: {
   isValid(value: string): boolean {
     try {
       assertConstraint(value, 'UserTaskKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+      return true;
+    } catch { return false; }
+  },
+};
+// System-generated key for a variable history item.
+export const VariableHistoryItemKey: {
+  assumeExists(value: string): VariableHistoryItemKey;
+  getValue(key: VariableHistoryItemKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): VariableHistoryItemKey {
+    assertConstraint(value, 'VariableHistoryItemKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+    return value as any;
+  },
+  getValue(key: VariableHistoryItemKey): string { return key; },
+  isValid(value: string): boolean {
+    try {
+      assertConstraint(value, 'VariableHistoryItemKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
   },

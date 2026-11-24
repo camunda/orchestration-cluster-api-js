@@ -9,7 +9,7 @@ import { enrichActivatedJob, EnrichedActivatedJob, EnrichedActivatedJobOf } from
 import * as Sdk from './sdk.gen';
 
 // Generated
-// Operations: 249
+// Operations: 250
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -1177,6 +1177,15 @@ export type searchUserTaskVariablesInput = searchUserTaskVariablesBody & { userT
 export type searchUserTaskVariablesConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchUserTaskVariables>> 
+};
+type searchVariableHistoryOptions = Parameters<typeof Sdk.searchVariableHistory>[0];
+type searchVariableHistoryBody = (NonNullable<searchVariableHistoryOptions> extends { body?: infer B } ? B : never);
+type searchVariableHistoryQueryParam_truncateValues = (NonNullable<searchVariableHistoryOptions> extends { query?: { truncateValues?: infer Q } } ? Q : any);
+export type searchVariableHistoryInput = searchVariableHistoryBody & { truncateValues?: searchVariableHistoryQueryParam_truncateValues };
+/** Management of eventual consistency **/
+export type searchVariableHistoryConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchVariableHistory>> 
 };
 type searchVariablesOptions = Parameters<typeof Sdk.searchVariables>[0];
 type searchVariablesBody = (NonNullable<searchVariablesOptions> extends { body?: infer B } ? B : never);
@@ -10708,10 +10717,17 @@ export function listRuntimeBackupsAsClusterAdmin(core: CamundaCore, arg: any, op
  * dot); those are omitted, since `/secrets/resolve` would reject them and no permission can
  * be granted on them.
  *
- * A returned reference is usable verbatim with `/secrets/resolve`. In a FEEL expression,
+ * A returned reference is usable verbatim with `/secrets/resolve`, although a secret that its
+ * store does not report as `ACTIVE` may fail to resolve there. In a FEEL expression,
  * however, a name that is not a bare identifier has to be backtick-escaped, since FEEL reads
  * a bare dash as the minus operator: a listed `camunda.secrets.db-password` is written
  * `` =camunda.secrets.`db-password` `` in a BPMN input mapping.
+ *
+ * Pass `filter.status` to list only the secrets in the matching states, either as a single
+ * status or with the advanced operators (`$in`, `$neq`, ...). A store that does not report
+ * states reports every secret as `ACTIVE`, so a filter that excludes `ACTIVE` returns
+ * nothing from it. The status filter does not widen access: a reference the caller may not read is
+ * never returned, with or without a filter.
  *
   *
  * @operationId listSecrets
@@ -15673,6 +15689,92 @@ export function searchUserTaskVariables(core: CamundaCore, arg: any, /** Managem
     };
     const invoke = () => toCancelable(()=>call());
     if (useConsistency) return eventualPoll('searchUserTaskVariables', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
+    return invoke();
+  });
+}
+
+/**
+ * Search variable history
+ *
+ * Search for variable history items, which record the changes made to a variable's
+ * value over time. The audit log configuration decides which changes are recorded;
+ * by default, only changes made by users are.
+ *
+ * Results are sorted by `variableHistoryItemKey` ascending by default, which lists the
+ * changes of one variable from oldest to newest. Across partitions, the key says nothing
+ * about time: a search that spans partitions, for example by process definition, lists the
+ * changes of one partition after the other.
+ *
+ * By default, the endpoint truncates long variable values in the response. For the output
+ * collection of a multi-instance element or an ad-hoc sub-process, the endpoint cuts the
+ * value at the size limit regardless of the `truncateValues` parameter. The truncation
+ * size limit is configurable.
+  *
+ * @operationId searchVariableHistory
+ * @tags Variable
+ * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+ */
+export function searchVariableHistory(core: CamundaCore, input: searchVariableHistoryInput, /** Management of eventual consistency **/ consistencyManagement: searchVariableHistoryConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchVariableHistory>>;
+export function searchVariableHistory(core: CamundaCore, arg: any, /** Management of eventual consistency **/ consistencyManagement: searchVariableHistoryConsistency, options?: OperationOptions): CancelablePromise<any> {
+  const rt = core as unknown as OperationRuntime;
+  if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+  const useConsistency = consistencyManagement.consistency;
+  return toCancelable(async signal => {
+    const { truncateValues, ..._body } = arg || {};
+    let envelope: any = {};
+    envelope.query = { truncateValues };
+    envelope.body = _body;
+    if (rt._validation.settings.req !== 'none') {
+      const _schemas = await import('./zod/searchVariableHistory.gen');
+      if (envelope.body !== undefined) {
+        const maybeBody = await rt._validation.gateRequest('searchVariableHistory', _schemas.zSearchVariableHistoryBody, envelope.body);
+        if (rt._validation.settings.req === 'strict') envelope.body = maybeBody;
+      }
+      if (envelope.query !== undefined) {
+        const maybeQuery = await rt._validation.gateRequest('searchVariableHistory', _schemas.zSearchVariableHistoryQuery, envelope.query);
+        if (rt._validation.settings.req === 'strict') envelope.query = maybeQuery;
+      }
+    }
+    const opts: any = { client: rt._client, signal, throwOnError: false };
+    if (envelope.query) opts.query = envelope.query;
+    if (envelope.body !== undefined) opts.body = envelope.body;
+    const call = async () => {
+      try {
+      const _raw = await Sdk.searchVariableHistory(opts);
+      let data = rt._evaluateResponse(_raw, 'searchVariableHistory', (resp: any) => {
+        const st = resp.status ?? resp.response?.status;
+        if (!st) return undefined;
+        const candidate = st === 429 || st === 503 || st === 500;
+        if (!candidate) return undefined;
+        let prob: any = undefined;
+        if (resp.error && typeof resp.error === 'object') prob = resp.error;
+        const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+        err.status = st; err.name = 'HttpSdkError';
+        if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+        const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+        if (!isBp) err.nonRetryable = true;
+        return err;
+      });
+      const _respSchemaName = 'zSearchVariableHistoryResponse';
+      if (_isVoidResponse(_respSchemaName)) {
+        data = undefined;
+      }
+      if (rt._validation.settings.res !== 'none') {
+        const _schemas = await import('./zod/searchVariableHistory.gen');
+        const _schema = _schemas.zSearchVariableHistoryResponse;
+        if (_schema) {
+          const maybeR = await rt._validation.gateResponse('searchVariableHistory', _schema, data);
+          if (rt._validation.settings.res === 'strict') data = maybeR;
+        }
+      }
+      return data;
+      } catch(e) {
+        // Defer normalization to outer executeWithHttpRetry boundary
+        throw e;
+      }
+    };
+    const invoke = () => toCancelable(()=>call());
+    if (useConsistency) return eventualPoll('searchVariableHistory', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }

@@ -1,6 +1,6 @@
 {
-  "operations": 249,
-  "tests": 252,
+  "operations": 250,
+  "tests": 253,
   "missing": [],
   "ignored": [],
   "files": [
@@ -217,6 +217,7 @@
     "searchUsersForGroup.test.ts",
     "searchUsersForRole.test.ts",
     "searchUsersForTenant.test.ts",
+    "searchVariableHistory.test.ts",
     "searchVariables.test.ts",
     "suspendBatchOperation.test.ts",
     "suspendProcessDefinitions.test.ts",

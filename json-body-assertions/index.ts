@@ -839,6 +839,11 @@ export const RESPONSE_INDEX = {
       '200': 1
     }
   },
+  '/variables/history/search': {
+    'POST': {
+      '200': 1
+    }
+  },
   '/variables/search': {
     'POST': {
       '200': 1

@@ -3865,6 +3865,11 @@ export const zExpressionEvaluationRequest = /*#__PURE__*/ (() => z.object({
 }))();
 
 /**
+ * System-generated key for a variable history item.
+ */
+export const zVariableHistoryItemKey = zLongKey;
+
+/**
  * System-generated key for a incident.
  */
 export const zIncidentKey = zLongKey;
@@ -4911,6 +4916,27 @@ export const zAdvancedVariableKeyFilter = /*#__PURE__*/ (() => z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced VariableKey filter.'
+}))();
+
+/**
+ * Advanced filter
+ *
+ * Advanced VariableHistoryItemKey filter.
+ */
+export const zAdvancedVariableHistoryItemKeyFilter = /*#__PURE__*/ (() => z.object({
+    $eq: zVariableHistoryItemKey.optional(),
+    $neq: zVariableHistoryItemKey.optional(),
+    $exists: z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    }).optional(),
+    $in: z.array(zVariableHistoryItemKey).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    }).optional(),
+    $notIn: z.array(zVariableHistoryItemKey).register(z.globalRegistry, {
+        description: 'Checks if the property matches none of the provided values.'
+    }).optional()
+}).register(z.globalRegistry, {
+    description: 'Advanced VariableHistoryItemKey filter.'
 }))();
 
 /**
@@ -7379,12 +7405,49 @@ export const zSecretResolveResult = /*#__PURE__*/ (() => z.object({
 }))();
 
 /**
- * Reserved for future filtering options. Currently takes no properties. The request body is
- * optional: omitting it (or sending an empty object) applies no filters.
+ * The state a secret store reports for a secret.
+ *
+ * - `ACTIVE`: the store reports the secret as usable.
+ * - `DISABLED`: the secret was disabled in its store.
+ * - `EXPIRED`: the secret's expiry date has passed.
+ * - `NOT_YET_ACTIVE`: the secret's activation date is in the future.
+ *
+ * A secret has exactly one status. When several apply, `DISABLED` wins over `EXPIRED`, and
+ * `EXPIRED` over `NOT_YET_ACTIVE`: a secret that is both disabled and expired is listed only
+ * as `DISABLED`, so an `EXPIRED` filter skips it.
+ *
+ * A store that cannot report states reports every secret as `ACTIVE`.
  *
  */
-export const zSecretListRequest = /*#__PURE__*/ (() => z.record(z.string(), z.never()).register(z.globalRegistry, {
-    description: 'Reserved for future filtering options. Currently takes no properties. The request body is\noptional: omitting it (or sending an empty object) applies no filters.\n'
+export const zSecretStatusEnum = /*#__PURE__*/ (() => z.enum([
+    'ACTIVE',
+    'DISABLED',
+    'EXPIRED',
+    'NOT_YET_ACTIVE'
+]).register(z.globalRegistry, {
+    description: 'The state a secret store reports for a secret.\n\n- `ACTIVE`: the store reports the secret as usable.\n- `DISABLED`: the secret was disabled in its store.\n- `EXPIRED`: the secret\'s expiry date has passed.\n- `NOT_YET_ACTIVE`: the secret\'s activation date is in the future.\n\nA secret has exactly one status. When several apply, `DISABLED` wins over `EXPIRED`, and\n`EXPIRED` over `NOT_YET_ACTIVE`: a secret that is both disabled and expired is listed only\nas `DISABLED`, so an `EXPIRED` filter skips it.\n\nA store that cannot report states reports every secret as `ACTIVE`.\n'
+}))();
+
+/**
+ * Advanced filter
+ *
+ * Advanced SecretStatusEnum filter.
+ */
+export const zAdvancedSecretStatusFilter = /*#__PURE__*/ (() => z.object({
+    $eq: zSecretStatusEnum.optional(),
+    $neq: zSecretStatusEnum.optional(),
+    $exists: z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists. Every listed secret has a status, so `true`\nmatches every secret and `false` matches none.\n'
+    }).optional(),
+    $in: z.array(zSecretStatusEnum).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    }).optional(),
+    $notIn: z.array(zSecretStatusEnum).register(z.globalRegistry, {
+        description: 'Checks if the property matches none of the provided values.'
+    }).optional(),
+    $like: zLikeFilter.optional()
+}).register(z.globalRegistry, {
+    description: 'Advanced SecretStatusEnum filter.'
 }))();
 
 /**
@@ -8211,6 +8274,184 @@ export const zSetVariableRequest = /*#__PURE__*/ (() => z.object({
         description: 'If set to `true`, the variables are merged strictly into the local scope (as specified\nby the `elementInstanceKey`). Otherwise, the variables are propagated to upper scopes\nand set at the outermost one.\n\nLet\'s consider the following example:\nThere are two scopes \'1\' and \'2\'. Scope \'1\' is the parent scope of \'2\'. The effective\nvariables of the scopes are:\n1 => { "foo" : 2 }\n2 => { "bar" : 1 }\n\nAn update request with elementInstanceKey as \'2\', variables { "foo": 5 }, and local set\nto `true` leaves scope \'1\' unchanged and adjusts scope \'2\' to { "bar": 1, "foo": 5 }. By\ndefault, with local set to `false`, scope \'1\' will be { "foo": 5 } and scope \'2\' will be\n{ "bar": 1 }.'
     }).optional().default(false),
     operationReference: zOperationReference.optional()
+}))();
+
+export const zVariableHistoryItemSearchQuerySortRequest = /*#__PURE__*/ (() => z.object({
+    field: z.enum(['variableHistoryItemKey']).register(z.globalRegistry, {
+        description: 'The field to sort by.'
+    }),
+    order: zSortOrderEnum.optional()
+}))();
+
+/**
+ * The type of operation that produced this variable change. Camunda can add values in later
+ * versions; clients must handle unknown values gracefully.
+ *
+ */
+export const zVariableHistoryItemOperationTypeEnum = /*#__PURE__*/ (() => z.enum(['CREATE', 'UPDATE']).register(z.globalRegistry, {
+    description: 'The type of operation that produced this variable change. Camunda can add values in later\nversions; clients must handle unknown values gracefully.\n'
+}))();
+
+/**
+ * What wrote this variable value, for example a job completion, a script result, or a
+ * multi-instance output collection. Camunda can add values in later versions; clients must
+ * handle unknown values gracefully.
+ *
+ */
+export const zVariableHistoryItemVariableOperationTypeEnum = /*#__PURE__*/ (() => z.enum([
+    'API',
+    'USER_TASK_COMPLETION',
+    'PROCESS_INSTANCE_CREATION',
+    'PROCESS_INSTANCE_MODIFICATION',
+    'JOB_COMPLETION',
+    'JOB_FAILURE',
+    'JOB_ERROR',
+    'EXECUTION_LISTENER_COMPLETION',
+    'MESSAGE_CORRELATION',
+    'SIGNAL_BROADCAST',
+    'CONDITIONAL_EVALUATION',
+    'AD_HOC_SUB_PROCESS_ACTIVATION',
+    'INPUT_MAPPING',
+    'OUTPUT_MAPPING',
+    'SCRIPT_RESULT',
+    'DECISION_RESULT',
+    'CALL_ACTIVITY_INPUT',
+    'CALL_ACTIVITY_OUTPUT',
+    'MULTI_INSTANCE_INPUT_ELEMENT',
+    'MULTI_INSTANCE_LOOP_COUNTER',
+    'MULTI_INSTANCE_OUTPUT_ELEMENT',
+    'MULTI_INSTANCE_OUTPUT_COLLECTION',
+    'AD_HOC_SUB_PROCESS_METADATA',
+    'AD_HOC_SUB_PROCESS_OUTPUT_ELEMENT',
+    'AD_HOC_SUB_PROCESS_OUTPUT_COLLECTION',
+    'UNKNOWN'
+]).register(z.globalRegistry, {
+    description: 'What wrote this variable value, for example a job completion, a script result, or a\nmulti-instance output collection. Camunda can add values in later versions; clients must\nhandle unknown values gracefully.\n'
+}))();
+
+/**
+ * The type of the actor who performed the operation. Camunda can add values in later
+ * versions; clients must handle unknown values gracefully.
+ *
+ */
+export const zVariableHistoryItemActorTypeEnum = /*#__PURE__*/ (() => z.enum([
+    'USER',
+    'CLIENT',
+    'ENGINE',
+    'UNKNOWN'
+]).register(z.globalRegistry, {
+    description: 'The type of the actor who performed the operation. Camunda can add values in later\nversions; clients must handle unknown values gracefully.\n'
+}))();
+
+/**
+ * Variable history item response base.
+ */
+export const zVariableHistoryItemResultBase = /*#__PURE__*/ (() => z.object({
+    variableHistoryItemKey: zVariableHistoryItemKey,
+    variableKey: zVariableKey,
+    name: z.string().register(z.globalRegistry, {
+        description: 'Name of the variable.'
+    }),
+    scopeKey: zScopeKey,
+    elementInstanceKey: zElementInstanceKey.nullable(),
+    elementId: zElementId.nullable(),
+    processInstanceKey: zProcessInstanceKey,
+    rootProcessInstanceKey: zProcessInstanceKey.nullable(),
+    processDefinitionKey: zProcessDefinitionKey,
+    processDefinitionId: zProcessDefinitionId,
+    tenantId: zTenantId,
+    timestamp: z.iso.datetime().register(z.globalRegistry, {
+        description: 'The timestamp when this change occurred.'
+    }),
+    operationType: zVariableHistoryItemOperationTypeEnum,
+    variableOperationType: zVariableHistoryItemVariableOperationTypeEnum,
+    actorType: zVariableHistoryItemActorTypeEnum,
+    actorId: z.string().nullable(),
+    agentElementId: zElementId.nullable()
+}).register(z.globalRegistry, {
+    description: 'Variable history item response base.'
+}))();
+
+/**
+ * Variable history item search response item.
+ */
+export const zVariableHistoryItemSearchResult = /*#__PURE__*/ (() => zVariableHistoryItemResultBase.and(z.object({
+    value: z.string().register(z.globalRegistry, {
+        description: 'Value of this variable change. Can be truncated, also when `truncateValues` is false, for the output collection of a multi-instance element or an ad-hoc sub-process.'
+    }),
+    isTruncated: z.boolean().register(z.globalRegistry, {
+        description: 'Indicates if the value is truncated.'
+    })
+})).register(z.globalRegistry, {
+    description: 'Variable history item search response item.'
+}))();
+
+/**
+ * Variable history item search query response.
+ */
+export const zVariableHistoryItemSearchQueryResult = /*#__PURE__*/ (() => zSearchQueryResponse.and(z.object({
+    items: z.array(zVariableHistoryItemSearchResult).register(z.globalRegistry, {
+        description: 'The matching variable history items.'
+    })
+})).register(z.globalRegistry, {
+    description: 'Variable history item search query response.'
+}))();
+
+/**
+ * Advanced filter
+ *
+ * Advanced VariableHistoryItemOperationTypeEnum filter.
+ */
+export const zAdvancedVariableHistoryItemOperationTypeFilter = /*#__PURE__*/ (() => z.object({
+    $eq: zVariableHistoryItemOperationTypeEnum.optional(),
+    $neq: zVariableHistoryItemOperationTypeEnum.optional(),
+    $exists: z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    }).optional(),
+    $in: z.array(zVariableHistoryItemOperationTypeEnum).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    }).optional(),
+    $like: zLikeFilter.optional()
+}).register(z.globalRegistry, {
+    description: 'Advanced VariableHistoryItemOperationTypeEnum filter.'
+}))();
+
+/**
+ * Advanced filter
+ *
+ * Advanced VariableHistoryItemVariableOperationTypeEnum filter.
+ */
+export const zAdvancedVariableHistoryItemVariableOperationTypeFilter = /*#__PURE__*/ (() => z.object({
+    $eq: zVariableHistoryItemVariableOperationTypeEnum.optional(),
+    $neq: zVariableHistoryItemVariableOperationTypeEnum.optional(),
+    $exists: z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    }).optional(),
+    $in: z.array(zVariableHistoryItemVariableOperationTypeEnum).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    }).optional(),
+    $like: zLikeFilter.optional()
+}).register(z.globalRegistry, {
+    description: 'Advanced VariableHistoryItemVariableOperationTypeEnum filter.'
+}))();
+
+/**
+ * Advanced filter
+ *
+ * Advanced VariableHistoryItemActorTypeEnum filter.
+ */
+export const zAdvancedVariableHistoryItemActorTypeFilter = /*#__PURE__*/ (() => z.object({
+    $eq: zVariableHistoryItemActorTypeEnum.optional(),
+    $neq: zVariableHistoryItemActorTypeEnum.optional(),
+    $exists: z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    }).optional(),
+    $in: z.array(zVariableHistoryItemActorTypeEnum).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    }).optional(),
+    $like: zLikeFilter.optional()
+}).register(z.globalRegistry, {
+    description: 'Advanced VariableHistoryItemActorTypeEnum filter.'
 }))();
 
 /**
@@ -9151,6 +9392,21 @@ export const zVariableSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and
  *
  * Matches the value exactly.
  */
+export const zVariableHistoryItemKeyExactMatch = zVariableHistoryItemKey;
+
+/**
+ * VariableHistoryItemKey property with full advanced search capabilities.
+ */
+export const zVariableHistoryItemKeyFilterProperty = /*#__PURE__*/ (() => z.union([
+    zVariableHistoryItemKeyExactMatch,
+    zAdvancedVariableHistoryItemKeyFilter
+]))();
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export const zDecisionEvaluationInstanceKeyExactMatch = zDecisionEvaluationInstanceKey;
 
 /**
@@ -9747,6 +10003,41 @@ export const zProcessInstanceSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequ
  *
  * Matches the value exactly.
  */
+export const zSecretStatusExactMatch = zSecretStatusEnum;
+
+/**
+ * SecretStatusEnum property with full advanced search capabilities.
+ */
+export const zSecretStatusFilterProperty = /*#__PURE__*/ (() => z.union([
+    zSecretStatusExactMatch,
+    zAdvancedSecretStatusFilter
+]))();
+
+/**
+ * Secret list filter.
+ */
+export const zSecretListFilter = /*#__PURE__*/ (() => z.object({
+    status: zSecretStatusFilterProperty.optional()
+}).register(z.globalRegistry, {
+    description: 'Secret list filter.'
+}))();
+
+/**
+ * Options for listing secrets. The request body is optional: omitting it, or sending an empty
+ * object, lists every secret the caller may read.
+ *
+ */
+export const zSecretListRequest = /*#__PURE__*/ (() => z.object({
+    filter: zSecretListFilter.optional()
+}).register(z.globalRegistry, {
+    description: 'Options for listing secrets. The request body is optional: omitting it, or sending an empty\nobject, lists every secret the caller may read.\n'
+}))();
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export const zUserTaskStateExactMatch = zUserTaskStateEnum;
 
 /**
@@ -9812,6 +10103,87 @@ export const zUserTaskSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and
     filter: zUserTaskFilter.optional()
 })).register(z.globalRegistry, {
     description: 'User task search query request.'
+}))();
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zVariableHistoryItemOperationTypeExactMatch = zVariableHistoryItemOperationTypeEnum;
+
+/**
+ * VariableHistoryItemOperationTypeEnum property with full advanced search capabilities.
+ */
+export const zVariableHistoryItemOperationTypeFilterProperty = /*#__PURE__*/ (() => z.union([
+    zVariableHistoryItemOperationTypeExactMatch,
+    zAdvancedVariableHistoryItemOperationTypeFilter
+]))();
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zVariableHistoryItemVariableOperationTypeExactMatch = zVariableHistoryItemVariableOperationTypeEnum;
+
+/**
+ * VariableHistoryItemVariableOperationTypeEnum property with full advanced search capabilities.
+ */
+export const zVariableHistoryItemVariableOperationTypeFilterProperty = /*#__PURE__*/ (() => z.union([
+    zVariableHistoryItemVariableOperationTypeExactMatch,
+    zAdvancedVariableHistoryItemVariableOperationTypeFilter
+]))();
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zVariableHistoryItemActorTypeExactMatch = zVariableHistoryItemActorTypeEnum;
+
+/**
+ * VariableHistoryItemActorTypeEnum property with full advanced search capabilities.
+ */
+export const zVariableHistoryItemActorTypeFilterProperty = /*#__PURE__*/ (() => z.union([
+    zVariableHistoryItemActorTypeExactMatch,
+    zAdvancedVariableHistoryItemActorTypeFilter
+]))();
+
+/**
+ * Variable history item filter request.
+ */
+export const zVariableHistoryItemFilter = /*#__PURE__*/ (() => z.object({
+    variableKey: zVariableKeyFilterProperty.optional(),
+    processInstanceKey: zProcessInstanceKeyFilterProperty.optional(),
+    name: zStringFilterProperty.optional(),
+    scopeKey: zScopeKeyFilterProperty.optional(),
+    elementId: zElementIdFilterProperty.optional(),
+    elementInstanceKey: zElementInstanceKeyFilterProperty.optional(),
+    variableHistoryItemKey: zVariableHistoryItemKeyFilterProperty.optional(),
+    processDefinitionKey: zProcessDefinitionKeyFilterProperty.optional(),
+    processDefinitionId: zProcessDefinitionIdFilterProperty.optional(),
+    tenantId: zStringFilterProperty.optional(),
+    timestamp: zDateTimeFilterProperty.optional(),
+    operationType: zVariableHistoryItemOperationTypeFilterProperty.optional(),
+    variableOperationType: zVariableHistoryItemVariableOperationTypeFilterProperty.optional(),
+    actorType: zVariableHistoryItemActorTypeFilterProperty.optional(),
+    actorId: zStringFilterProperty.optional(),
+    agentElementId: zElementIdFilterProperty.optional()
+}).register(z.globalRegistry, {
+    description: 'Variable history item filter request.'
+}))();
+
+/**
+ * Variable history item search query request.
+ */
+export const zVariableHistoryItemSearchQuery = /*#__PURE__*/ (() => zSearchQueryRequest.and(z.object({
+    sort: z.array(zVariableHistoryItemSearchQuerySortRequest).register(z.globalRegistry, {
+        description: 'Sort field criteria.'
+    }).optional(),
+    filter: zVariableHistoryItemFilter.optional()
+})).register(z.globalRegistry, {
+    description: 'Variable history item search query request.'
 }))();
 
 /**
@@ -9988,6 +10360,11 @@ export const zScopeKeyWritable = /*#__PURE__*/ (() => z.union([
     zProcessInstanceKeyWritable,
     zElementInstanceKeyWritable
 ]))();
+
+/**
+ * System-generated key for a variable history item.
+ */
+export const zVariableHistoryItemKeyWritable = zLongKey;
 
 /**
  * System-generated key for a incident.
@@ -10328,6 +10705,13 @@ export const zVariableKeyExactMatchWritable = zVariableKeyWritable;
  *
  * Matches the value exactly.
  */
+export const zVariableHistoryItemKeyExactMatchWritable = zVariableHistoryItemKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export const zDecisionEvaluationInstanceKeyExactMatchWritable = zDecisionEvaluationInstanceKey;
 
 /**
@@ -10412,7 +10796,35 @@ export const zProcessInstanceStateExactMatchWritable = zProcessInstanceStateEnum
  *
  * Matches the value exactly.
  */
+export const zSecretStatusExactMatchWritable = zSecretStatusEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export const zUserTaskStateExactMatchWritable = zUserTaskStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zVariableHistoryItemOperationTypeExactMatchWritable = zVariableHistoryItemOperationTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zVariableHistoryItemVariableOperationTypeExactMatchWritable = zVariableHistoryItemVariableOperationTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zVariableHistoryItemActorTypeExactMatchWritable = zVariableHistoryItemActorTypeEnum;
 
 export const zGetAgentDefinitionPath = /*#__PURE__*/ (() => z.object({
     agentDefinitionKey: zAgentDefinitionKeyWritable
@@ -12887,6 +13299,19 @@ export const zSearchUserTaskVariablesQuery = /*#__PURE__*/ (() => z.object({
  * The user task variable search result.
  */
 export const zSearchUserTaskVariablesResponse = zVariableSearchQueryResult;
+
+export const zSearchVariableHistoryBody = zVariableHistoryItemSearchQuery;
+
+export const zSearchVariableHistoryQuery = /*#__PURE__*/ (() => z.object({
+    truncateValues: z.boolean().register(z.globalRegistry, {
+        description: 'When true (default), long variable values in the response are truncated. When false, full variable values are returned where available.'
+    }).optional().default(true)
+}))();
+
+/**
+ * The variable history search result.
+ */
+export const zSearchVariableHistoryResponse = zVariableHistoryItemSearchQueryResult;
 
 export const zSearchVariablesBody = zVariableSearchQuery;
 
