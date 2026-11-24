@@ -1758,5 +1758,26 @@
       "region": "CancelClusterRebalance",
       "label": "Cancel the running cluster rebalance"
     }
+  ],
+  "createProbe": [
+    {
+      "file": "probe.ts",
+      "region": "CreateProbe",
+      "label": "Create a probe"
+    }
+  ],
+  "activateProbes": [
+    {
+      "file": "probe.ts",
+      "region": "ActivateProbes",
+      "label": "Activate probes"
+    }
+  ],
+  "answerProbe": [
+    {
+      "file": "probe.ts",
+      "region": "AnswerProbe",
+      "label": "Answer a probe"
+    }
   ]
 }
