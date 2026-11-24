@@ -24,15 +24,27 @@ function injectingOps(): string[] {
   return [...ops].sort();
 }
 
-function metadataTenantOps(): string[] {
+type TenantShape = 'scalar' | 'list';
+
+function metadataTenantShapes(): Map<string, TenantShape> {
   const meta = JSON.parse(
     readFileSync(join(root, 'external-spec', 'bundled', 'spec-metadata.json'), 'utf8')
-  ) as { operations: { operationId: string; optionalTenantIdInBody?: boolean }[] };
-  return meta.operations
-    .filter((o) => o.optionalTenantIdInBody)
-    .map((o) => o.operationId)
-    .sort();
+  ) as {
+    operations: {
+      operationId: string;
+      optionalTenantIdInBody?: boolean;
+      optionalTenantIdsInBody?: boolean;
+    }[];
+  };
+  const shapes = new Map<string, TenantShape>();
+  for (const o of meta.operations) {
+    if (o.optionalTenantIdsInBody) shapes.set(o.operationId, 'list');
+    else if (o.optionalTenantIdInBody) shapes.set(o.operationId, 'scalar');
+  }
+  return shapes;
 }
+
+const tenantShapes = metadataTenantShapes();
 
 const ops = injectingOps();
 
@@ -83,16 +95,19 @@ function tenantOf(sent: Sent): unknown {
   return sent.tenantIds !== undefined ? sent.tenantIds : sent.tenantId;
 }
 
+// The injected shape follows the spec metadata: `optionalTenantIdsInBody`
+// operations (e.g. activateJobs) take a tenant list, the rest a scalar.
 function expected(opId: string, tenant: string): unknown {
-  return opId === 'activateJobs' ? [tenant] : tenant;
+  return tenantShapes.get(opId) === 'list' ? [tenant] : tenant;
 }
 
 describe('default-tenant injection leaves the caller request untouched (#687)', () => {
   it('covers every operation the spec marks as taking an optional body tenant', () => {
-    const fromMetadata = metadataTenantOps();
+    const fromMetadata = [...tenantShapes.keys()].sort();
     expect(fromMetadata.length).toBeGreaterThan(0);
     expect(ops).toEqual(expect.arrayContaining(fromMetadata));
     expect(ops).toContain('activateJobs');
+    expect(tenantShapes.get('activateJobs')).toBe('list');
   });
 
   it.each(ops)('%s does not modify the caller request', async (opId) => {
