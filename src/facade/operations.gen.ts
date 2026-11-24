@@ -6715,7 +6715,7 @@ export function searchUserTaskVariables(options: Parameters<typeof _searchUserTa
  *       page: { limit: 10 },
  *       truncateValues: true,
  *     },
- *     { consistency: { waitUpToMs: 5000 } }
+ *     { consistency: { waitUpToMs: 0 } }
  *   );
  * 
  *   for (const item of result.items ?? []) {

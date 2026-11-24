@@ -360,7 +360,7 @@ async function searchVariableHistoryExample(processInstanceKey: ProcessInstanceK
       page: { limit: 10 },
       truncateValues: true,
     },
-    { consistency: { waitUpToMs: 5000 } }
+    { consistency: { waitUpToMs: 0 } }
   );
 
   for (const item of result.items ?? []) {
