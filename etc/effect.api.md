@@ -700,6 +700,16 @@ type AdvancedScopeKeyFilter = {
     $notIn?: Array<ScopeKey>;
 };
 
+// @public
+type AdvancedSecretStatusFilter = {
+    $eq?: SecretStatusEnum;
+    $neq?: SecretStatusEnum;
+    $exists?: boolean;
+    $in?: Array<SecretStatusEnum>;
+    $notIn?: Array<SecretStatusEnum>;
+    $like?: LikeFilter;
+};
+
 // Warning: (ae-forgotten-export) The symbol "BasicStringFilter" needs to be exported by the entry point index.d.ts
 //
 // @public
@@ -713,6 +723,42 @@ type AdvancedUserTaskStateFilter = {
     $neq?: UserTaskStateEnum;
     $exists?: boolean;
     $in?: Array<UserTaskStateEnum>;
+    $like?: LikeFilter;
+};
+
+// @public
+type AdvancedVariableHistoryItemActorTypeFilter = {
+    $eq?: VariableHistoryItemActorTypeEnum;
+    $neq?: VariableHistoryItemActorTypeEnum;
+    $exists?: boolean;
+    $in?: Array<VariableHistoryItemActorTypeEnum>;
+    $like?: LikeFilter;
+};
+
+// @public
+type AdvancedVariableHistoryItemKeyFilter = {
+    $eq?: VariableHistoryItemKey;
+    $neq?: VariableHistoryItemKey;
+    $exists?: boolean;
+    $in?: Array<VariableHistoryItemKey>;
+    $notIn?: Array<VariableHistoryItemKey>;
+};
+
+// @public
+type AdvancedVariableHistoryItemOperationTypeFilter = {
+    $eq?: VariableHistoryItemOperationTypeEnum;
+    $neq?: VariableHistoryItemOperationTypeEnum;
+    $exists?: boolean;
+    $in?: Array<VariableHistoryItemOperationTypeEnum>;
+    $like?: LikeFilter;
+};
+
+// @public
+type AdvancedVariableHistoryItemVariableOperationTypeFilter = {
+    $eq?: VariableHistoryItemVariableOperationTypeEnum;
+    $neq?: VariableHistoryItemVariableOperationTypeEnum;
+    $exists?: boolean;
+    $in?: Array<VariableHistoryItemVariableOperationTypeEnum>;
     $like?: LikeFilter;
 };
 
@@ -3527,6 +3573,10 @@ class CamundaClientBase extends CamundaCore {
     // Warning: (ae-forgotten-export) The symbol "searchUserTaskVariablesConsistency" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "searchUserTaskVariables$1" needs to be exported by the entry point index.d.ts
     searchUserTaskVariables(input: searchUserTaskVariablesInput, consistencyManagement: searchUserTaskVariablesConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof searchUserTaskVariables$1>>;
+    // Warning: (ae-forgotten-export) The symbol "searchVariableHistoryInput" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "searchVariableHistoryConsistency" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "searchVariableHistory$1" needs to be exported by the entry point index.d.ts
+    searchVariableHistory(input: searchVariableHistoryInput, consistencyManagement: searchVariableHistoryConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof searchVariableHistory$1>>;
     // Warning: (ae-forgotten-export) The symbol "searchVariablesInput" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "searchVariablesConsistency" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "searchVariables$1" needs to be exported by the entry point index.d.ts
@@ -18083,6 +18133,65 @@ type SearchUserTaskVariablesResponses = {
     200: VariableSearchQueryResult;
 };
 
+// Warning: (ae-forgotten-export) The symbol "SearchVariableHistoryData" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "SearchVariableHistoryResponses" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "SearchVariableHistoryErrors" needs to be exported by the entry point index.d.ts
+//
+// @public
+const searchVariableHistory$1: <ThrowOnError extends boolean = true>(options?: Options<SearchVariableHistoryData, ThrowOnError>) => RequestResult<SearchVariableHistoryResponses, SearchVariableHistoryErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchVariableHistoryOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchVariableHistoryBody = (NonNullable<searchVariableHistoryOptions> extends {
+    body?: infer B;
+} ? B : never);
+
+// @public
+type searchVariableHistoryConsistency = {
+    consistency: ConsistencyOptions<_DataOf$1<typeof searchVariableHistory$1>>;
+};
+
+// @public (undocumented)
+type SearchVariableHistoryData = {
+    body?: VariableHistoryItemSearchQuery;
+    path?: never;
+    query?: {
+        truncateValues?: boolean;
+    };
+    url: '/variables/history/search';
+};
+
+// @public (undocumented)
+type SearchVariableHistoryErrors = {
+    400: ProblemDetail;
+    401: ProblemDetail;
+    403: ProblemDetail;
+    500: ProblemDetail;
+};
+
+// Warning: (ae-forgotten-export) The symbol "searchVariableHistoryBody" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+type searchVariableHistoryInput = searchVariableHistoryBody & {
+    truncateValues?: searchVariableHistoryQueryParam_truncateValues;
+};
+
+// @public (undocumented)
+type searchVariableHistoryOptions = Parameters<typeof searchVariableHistory$1>[0];
+
+// @public (undocumented)
+type searchVariableHistoryQueryParam_truncateValues = (NonNullable<searchVariableHistoryOptions> extends {
+    query?: {
+        truncateValues?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
+type SearchVariableHistoryResponses = {
+    200: VariableHistoryItemSearchQueryResult;
+};
+
 // Warning: (ae-forgotten-export) The symbol "SearchVariablesData" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "SearchVariablesResponses" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "SearchVariablesErrors" needs to be exported by the entry point index.d.ts
@@ -18146,8 +18255,13 @@ type SearchVariablesResponses = {
 type SecretErrorCode = 'NOT_FOUND' | 'ACCESS_DENIED' | 'INVALID_REFERENCE' | 'UNREADABLE';
 
 // @public
+type SecretListFilter = {
+    status?: SecretStatusFilterProperty;
+};
+
+// @public
 type SecretListRequest = {
-    [key: string]: never;
+    filter?: SecretListFilter;
 };
 
 // @public
@@ -18172,6 +18286,26 @@ type SecretResolveResult = {
     resolved: Array<ResolvedSecret>;
     errors: Array<SecretResolutionError>;
 };
+
+// @public
+const SecretStatusEnum: {
+    readonly ACTIVE: "ACTIVE";
+    readonly DISABLED: "DISABLED";
+    readonly EXPIRED: "EXPIRED";
+    readonly NOT_YET_ACTIVE: "NOT_YET_ACTIVE";
+};
+
+// @public (undocumented)
+type SecretStatusEnum = (typeof SecretStatusEnum)[keyof typeof SecretStatusEnum];
+
+// @public
+type SecretStatusExactMatch = SecretStatusEnum;
+
+// Warning: (ae-forgotten-export) The symbol "SecretStatusExactMatch" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "AdvancedSecretStatusFilter" needs to be exported by the entry point index.d.ts
+//
+// @public
+type SecretStatusFilterProperty = SecretStatusExactMatch | AdvancedSecretStatusFilter;
 
 // @public (undocumented)
 interface SerializerOptions<T> {
@@ -21237,6 +21371,171 @@ type VariableFilter = {
 };
 
 // @public
+const VariableHistoryItemActorTypeEnum: {
+    readonly USER: "USER";
+    readonly CLIENT: "CLIENT";
+    readonly ENGINE: "ENGINE";
+    readonly UNKNOWN: "UNKNOWN";
+};
+
+// @public (undocumented)
+type VariableHistoryItemActorTypeEnum = (typeof VariableHistoryItemActorTypeEnum)[keyof typeof VariableHistoryItemActorTypeEnum];
+
+// @public
+type VariableHistoryItemActorTypeExactMatch = VariableHistoryItemActorTypeEnum;
+
+// Warning: (ae-forgotten-export) The symbol "VariableHistoryItemActorTypeExactMatch" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "AdvancedVariableHistoryItemActorTypeFilter" needs to be exported by the entry point index.d.ts
+//
+// @public
+type VariableHistoryItemActorTypeFilterProperty = VariableHistoryItemActorTypeExactMatch | AdvancedVariableHistoryItemActorTypeFilter;
+
+// @public
+type VariableHistoryItemFilter = {
+    variableKey?: VariableKeyFilterProperty;
+    processInstanceKey?: ProcessInstanceKeyFilterProperty;
+    name?: StringFilterProperty;
+    scopeKey?: ScopeKeyFilterProperty;
+    elementId?: ElementIdFilterProperty;
+    elementInstanceKey?: ElementInstanceKeyFilterProperty;
+    variableHistoryItemKey?: VariableHistoryItemKeyFilterProperty;
+    processDefinitionKey?: ProcessDefinitionKeyFilterProperty;
+    processDefinitionId?: ProcessDefinitionIdFilterProperty;
+    tenantId?: StringFilterProperty;
+    timestamp?: DateTimeFilterProperty;
+    operationType?: VariableHistoryItemOperationTypeFilterProperty;
+    variableOperationType?: VariableHistoryItemVariableOperationTypeFilterProperty;
+    actorType?: VariableHistoryItemActorTypeFilterProperty;
+    actorId?: StringFilterProperty;
+    agentElementId?: ElementIdFilterProperty;
+};
+
+// @public
+type VariableHistoryItemKey = CamundaKey<'VariableHistoryItemKey'>;
+
+// @public (undocumented)
+const VariableHistoryItemKey: {
+    assumeExists(value: string): VariableHistoryItemKey;
+    getValue(key: VariableHistoryItemKey): string;
+    isValid(value: string): boolean;
+};
+
+// @public
+type VariableHistoryItemKeyExactMatch = VariableHistoryItemKey;
+
+// Warning: (ae-forgotten-export) The symbol "VariableHistoryItemKeyExactMatch" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "AdvancedVariableHistoryItemKeyFilter" needs to be exported by the entry point index.d.ts
+//
+// @public
+type VariableHistoryItemKeyFilterProperty = VariableHistoryItemKeyExactMatch | AdvancedVariableHistoryItemKeyFilter;
+
+// @public
+const VariableHistoryItemOperationTypeEnum: {
+    readonly CREATE: "CREATE";
+    readonly UPDATE: "UPDATE";
+};
+
+// @public (undocumented)
+type VariableHistoryItemOperationTypeEnum = (typeof VariableHistoryItemOperationTypeEnum)[keyof typeof VariableHistoryItemOperationTypeEnum];
+
+// @public
+type VariableHistoryItemOperationTypeExactMatch = VariableHistoryItemOperationTypeEnum;
+
+// Warning: (ae-forgotten-export) The symbol "VariableHistoryItemOperationTypeExactMatch" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "AdvancedVariableHistoryItemOperationTypeFilter" needs to be exported by the entry point index.d.ts
+//
+// @public
+type VariableHistoryItemOperationTypeFilterProperty = VariableHistoryItemOperationTypeExactMatch | AdvancedVariableHistoryItemOperationTypeFilter;
+
+// @public
+type VariableHistoryItemResultBase = {
+    variableHistoryItemKey: VariableHistoryItemKey;
+    variableKey: VariableKey;
+    name: string;
+    scopeKey: ScopeKey;
+    elementInstanceKey: ElementInstanceKey | null;
+    elementId: ElementId | null;
+    processInstanceKey: ProcessInstanceKey;
+    rootProcessInstanceKey: ProcessInstanceKey | null;
+    processDefinitionKey: ProcessDefinitionKey;
+    processDefinitionId: ProcessDefinitionId;
+    tenantId: TenantId;
+    timestamp: string;
+    operationType: VariableHistoryItemOperationTypeEnum;
+    variableOperationType: VariableHistoryItemVariableOperationTypeEnum;
+    actorType: VariableHistoryItemActorTypeEnum;
+    actorId: string | null;
+    agentElementId: ElementId | null;
+};
+
+// @public
+type VariableHistoryItemSearchQuery = SearchQueryRequest & {
+    sort?: Array<VariableHistoryItemSearchQuerySortRequest>;
+    filter?: VariableHistoryItemFilter;
+};
+
+// @public
+type VariableHistoryItemSearchQueryResult = SearchQueryResponse & {
+    items: Array<VariableHistoryItemSearchResult>;
+};
+
+// @public (undocumented)
+type VariableHistoryItemSearchQuerySortRequest = {
+    field: 'variableHistoryItemKey';
+    order?: SortOrderEnum;
+};
+
+// Warning: (ae-forgotten-export) The symbol "VariableHistoryItemResultBase" needs to be exported by the entry point index.d.ts
+//
+// @public
+type VariableHistoryItemSearchResult = VariableHistoryItemResultBase & {
+    value: string;
+    isTruncated: boolean;
+};
+
+// @public
+const VariableHistoryItemVariableOperationTypeEnum: {
+    readonly API: "API";
+    readonly USER_TASK_COMPLETION: "USER_TASK_COMPLETION";
+    readonly PROCESS_INSTANCE_CREATION: "PROCESS_INSTANCE_CREATION";
+    readonly PROCESS_INSTANCE_MODIFICATION: "PROCESS_INSTANCE_MODIFICATION";
+    readonly JOB_COMPLETION: "JOB_COMPLETION";
+    readonly JOB_FAILURE: "JOB_FAILURE";
+    readonly JOB_ERROR: "JOB_ERROR";
+    readonly EXECUTION_LISTENER_COMPLETION: "EXECUTION_LISTENER_COMPLETION";
+    readonly MESSAGE_CORRELATION: "MESSAGE_CORRELATION";
+    readonly SIGNAL_BROADCAST: "SIGNAL_BROADCAST";
+    readonly CONDITIONAL_EVALUATION: "CONDITIONAL_EVALUATION";
+    readonly AD_HOC_SUB_PROCESS_ACTIVATION: "AD_HOC_SUB_PROCESS_ACTIVATION";
+    readonly INPUT_MAPPING: "INPUT_MAPPING";
+    readonly OUTPUT_MAPPING: "OUTPUT_MAPPING";
+    readonly SCRIPT_RESULT: "SCRIPT_RESULT";
+    readonly DECISION_RESULT: "DECISION_RESULT";
+    readonly CALL_ACTIVITY_INPUT: "CALL_ACTIVITY_INPUT";
+    readonly CALL_ACTIVITY_OUTPUT: "CALL_ACTIVITY_OUTPUT";
+    readonly MULTI_INSTANCE_INPUT_ELEMENT: "MULTI_INSTANCE_INPUT_ELEMENT";
+    readonly MULTI_INSTANCE_LOOP_COUNTER: "MULTI_INSTANCE_LOOP_COUNTER";
+    readonly MULTI_INSTANCE_OUTPUT_ELEMENT: "MULTI_INSTANCE_OUTPUT_ELEMENT";
+    readonly MULTI_INSTANCE_OUTPUT_COLLECTION: "MULTI_INSTANCE_OUTPUT_COLLECTION";
+    readonly AD_HOC_SUB_PROCESS_METADATA: "AD_HOC_SUB_PROCESS_METADATA";
+    readonly AD_HOC_SUB_PROCESS_OUTPUT_ELEMENT: "AD_HOC_SUB_PROCESS_OUTPUT_ELEMENT";
+    readonly AD_HOC_SUB_PROCESS_OUTPUT_COLLECTION: "AD_HOC_SUB_PROCESS_OUTPUT_COLLECTION";
+    readonly UNKNOWN: "UNKNOWN";
+};
+
+// @public (undocumented)
+type VariableHistoryItemVariableOperationTypeEnum = (typeof VariableHistoryItemVariableOperationTypeEnum)[keyof typeof VariableHistoryItemVariableOperationTypeEnum];
+
+// @public
+type VariableHistoryItemVariableOperationTypeExactMatch = VariableHistoryItemVariableOperationTypeEnum;
+
+// Warning: (ae-forgotten-export) The symbol "VariableHistoryItemVariableOperationTypeExactMatch" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "AdvancedVariableHistoryItemVariableOperationTypeFilter" needs to be exported by the entry point index.d.ts
+//
+// @public
+type VariableHistoryItemVariableOperationTypeFilterProperty = VariableHistoryItemVariableOperationTypeExactMatch | AdvancedVariableHistoryItemVariableOperationTypeFilter;
+
+// @public
 type VariableKey = CamundaKey<'VariableKey'>;
 
 // @public (undocumented)
@@ -21696,6 +21995,7 @@ export function workerLayer<A extends CompleteVars, R = never>(config: EffectWor
 // (ae-forgotten-export) The symbol "DecisionDefinitionKey" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "ScopeKey" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "VariableKey" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "VariableHistoryItemKey" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "DecisionEvaluationInstanceKey" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "AgentDefinitionKey" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "AgentInstanceKey" needs to be exported by the entry point index.d.ts
@@ -21765,6 +22065,9 @@ export function workerLayer<A extends CompleteVars, R = never>(config: EffectWor
 // (ae-forgotten-export) The symbol "ResolvedSecret" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "SecretResolutionError" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "SecretErrorCode" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "SecretListFilter" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "SecretStatusFilterProperty" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "SecretStatusEnum" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "SignalKey" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "JobMetricsConfigurationResponse" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "ComponentsConfigurationResponse" needs to be exported by the entry point index.d.ts
@@ -21798,6 +22101,16 @@ export function workerLayer<A extends CompleteVars, R = never>(config: EffectWor
 // (ae-forgotten-export) The symbol "VariableKeyFilterProperty" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "ScopeKeyFilterProperty" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "VariableSearchResult" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "VariableHistoryItemSearchQuerySortRequest" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "VariableHistoryItemFilter" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "VariableHistoryItemKeyFilterProperty" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "VariableHistoryItemOperationTypeFilterProperty" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "VariableHistoryItemVariableOperationTypeFilterProperty" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "VariableHistoryItemActorTypeFilterProperty" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "VariableHistoryItemSearchResult" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "VariableHistoryItemOperationTypeEnum" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "VariableHistoryItemVariableOperationTypeEnum" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "VariableHistoryItemActorTypeEnum" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "AgentDefinitionKeyWritable" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "AgentDefinitionSearchQuery" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "AgentDefinitionSearchQueryResult" needs to be exported by the entry point index.d.ts
@@ -22062,6 +22375,8 @@ export function workerLayer<A extends CompleteVars, R = never>(config: EffectWor
 // (ae-forgotten-export) The symbol "UserTaskLookupRequest" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "UserTaskLookupResult" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "UserTaskVariableSearchQueryRequest" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "VariableHistoryItemSearchQuery" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "VariableHistoryItemSearchQueryResult" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "VariableSearchQuery" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "VariableKeyWritable" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "VariableResult" needs to be exported by the entry point index.d.ts
@@ -22238,6 +22553,7 @@ export function workerLayer<A extends CompleteVars, R = never>(config: EffectWor
 // (ae-forgotten-export) The symbol "searchUserTaskEffectiveVariablesQueryParam_truncateValues" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "searchUserTaskVariablesPathParam_userTaskKey" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "searchUserTaskVariablesQueryParam_truncateValues" needs to be exported by the entry point index.d.ts
+// (ae-forgotten-export) The symbol "searchVariableHistoryQueryParam_truncateValues" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "searchVariablesQueryParam_truncateValues" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "suspendBatchOperationPathParam_batchOperationKey" needs to be exported by the entry point index.d.ts
 // (ae-forgotten-export) The symbol "suspendProcessInstancePathParam_processInstanceKey" needs to be exported by the entry point index.d.ts
