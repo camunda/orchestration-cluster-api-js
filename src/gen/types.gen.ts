@@ -6510,6 +6510,13 @@ export type LoopIterationId = number;
 export type HistoryItemId = CamundaKey<'HistoryItemId'>;
 
 /**
+ * The ID of a probe, as its worker registered it: 1 to 256 characters, without whitespace,
+ * and not `*`. The engine matches it to the probe IDs of polling workers by exact equality.
+ *
+ */
+export type ProbeId = CamundaKey<'ProbeId'>;
+
+/**
  * An opaque, engine-minted fencing token identifying a single activation of a job.
  * Returned by Activate Jobs as `ActivatedJobResult.jobLeaseToken` when the job is
  * activated with a lease, and passed back under the same name on fenced job
@@ -8102,6 +8109,11 @@ export type IncidentKey = CamundaKey<'IncidentKey'>;
 export type JobKey = CamundaKey<'JobKey'>;
 
 /**
+ * System-generated key for a probe.
+ */
+export type ProbeKey = CamundaKey<'ProbeKey'>;
+
+/**
  * System-generated key for a decision definition.
  */
 export type DecisionDefinitionKey = CamundaKey<'DecisionDefinitionKey'>;
@@ -9445,6 +9457,247 @@ export type MessageSubscriptionKey = CamundaKey<'MessageSubscriptionKey'>;
  * System-generated key for an message.
  */
 export type MessageKey = CamundaKey<'MessageKey'>;
+
+export type ProbeCreationRequest = {
+    /**
+     * The probe ID, as the worker registered it: 1 to 256 characters, without whitespace, and
+     * not `*`. The engine matches it to the probe IDs of polling workers by exact equality.
+     *
+     */
+    probeId: ProbeId;
+    /**
+     * A FEEL expression that evaluates to a context: the question for the worker, whose shape
+     * the worker of the probe ID defines. References to `camunda.vars` and
+     * `camunda.secrets` follow the rules of input mappings.
+     *
+     */
+    input: string;
+    /**
+     * The tenant of the probe. Required with multi-tenancy.
+     */
+    tenantId?: TenantId;
+    /**
+     * How long to wait for an answer, in milliseconds, from 0 to 30000. With `0` or absent,
+     * the cluster's request timeout is used, capped at 30000.
+     *
+     */
+    requestTimeout?: number;
+};
+
+/**
+ * The answer of the worker, one of three shapes chosen by `outcome`.
+ *
+ */
+export type ProbeResult = ({
+    outcome: 'OK';
+} & ProbeOkResult) | ({
+    outcome: 'UNSUPPORTED';
+} & ProbeUnsupportedResult) | ({
+    outcome: 'ERROR';
+} & ProbeErrorResult);
+
+/**
+ * OK probe result
+ *
+ * The worker produced an answer.
+ */
+export type ProbeOkResult = {
+    /**
+     * The outcome of the probe, `OK`.
+     */
+    outcome: string;
+    /**
+     * The name of the worker that answered.
+     */
+    worker: string;
+    /**
+     * The answer, whose shape the worker of the probe ID defines.
+     */
+    data: {
+        [key: string]: unknown;
+    };
+};
+
+/**
+ * Unsupported probe result
+ *
+ * The worker does not support this probe.
+ */
+export type ProbeUnsupportedResult = {
+    /**
+     * The outcome of the probe, `UNSUPPORTED`.
+     */
+    outcome: string;
+    /**
+     * The name of the worker that answered.
+     */
+    worker: string;
+};
+
+/**
+ * Error probe result
+ *
+ * The worker failed to produce an answer.
+ */
+export type ProbeErrorResult = {
+    /**
+     * The outcome of the probe, `ERROR`.
+     */
+    outcome: string;
+    /**
+     * The name of the worker that answered.
+     */
+    worker: string;
+    /**
+     * Why the worker failed, at most 500 characters.
+     */
+    message: string;
+};
+
+export type ProbeActivationRequest = {
+    /**
+     * The probe IDs to collect probes for: 1 to 100 distinct values, each 1 to 256
+     * characters, without whitespace, and not `*`. Probe IDs on which the caller lacks the
+     * `ANSWER` permission are skipped.
+     *
+     */
+    probeIds: Array<ProbeId>;
+    /**
+     * The name of the worker, returned to the client in the answer.
+     */
+    worker?: string;
+    /**
+     * The maximum number of probes to collect with this request, at least 1.
+     */
+    maxProbesToActivate: number;
+    /**
+     * How long to hold the request until a probe is collected, in milliseconds. With `0` or
+     * absent, the cluster's long polling timeout is used. With a value below `0`, long
+     * polling is off and the request returns at once, also when it collected no probe.
+     *
+     */
+    requestTimeout?: number;
+    /**
+     * A list of IDs of tenants for which to collect probes.
+     */
+    tenantIds?: Array<TenantId>;
+    /**
+     * The tenant filtering strategy - determines whether to use provided tenant IDs or assigned tenant IDs from the authenticated principal's authorized tenants.
+     *
+     */
+    tenantFilter?: TenantFilterEnum;
+};
+
+/**
+ * The collected probes.
+ */
+export type ProbeActivationResult = {
+    /**
+     * The collected probes, none when the request timed out.
+     */
+    probes: Array<ActivatedProbeResult>;
+};
+
+export type ActivatedProbeResult = {
+    /**
+     * The key to answer the probe with.
+     */
+    probeKey: ProbeKey;
+    /**
+     * The probe ID, to pick the handler when the worker polls several probe IDs.
+     */
+    probeId: ProbeId;
+    /**
+     * The name of the worker that collected the probe.
+     */
+    worker: string;
+    /**
+     * The deadline of the probe, as a UNIX epoch timestamp in milliseconds. An answer after
+     * it gets 404.
+     *
+     */
+    deadline: number;
+    /**
+     * The ID of the tenant of the probe.
+     */
+    tenantId: TenantId;
+    /**
+     * The ID of the physical tenant that the activation request was routed to;
+     * the default physical tenant when the request did not specify one.
+     *
+     */
+    physicalTenantId: string;
+    /**
+     * The evaluated input, with the values of its secrets injected.
+     */
+    input: {
+        [key: string]: unknown;
+    };
+    /**
+     * The JSON pointers (RFC 6901) of the `input` values into which the engine injected a
+     * secret value; empty when none. Remove these values from logs and error messages.
+     *
+     */
+    secretPointers: Array<string>;
+};
+
+/**
+ * The answer of the worker, one of three shapes chosen by `outcome`.
+ *
+ */
+export type ProbeAnswerRequest = ({
+    outcome: 'OK';
+} & ProbeOkAnswerRequest) | ({
+    outcome: 'UNSUPPORTED';
+} & ProbeUnsupportedAnswerRequest) | ({
+    outcome: 'ERROR';
+} & ProbeErrorAnswerRequest);
+
+/**
+ * OK probe answer
+ *
+ * The worker produced an answer.
+ */
+export type ProbeOkAnswerRequest = {
+    /**
+     * The outcome of the probe, `OK`.
+     */
+    outcome: string;
+    /**
+     * The answer, whose shape the worker of the probe ID defines.
+     */
+    data: {
+        [key: string]: unknown;
+    };
+};
+
+/**
+ * Unsupported probe answer
+ *
+ * The worker does not support this probe.
+ */
+export type ProbeUnsupportedAnswerRequest = {
+    /**
+     * The outcome of the probe, `UNSUPPORTED`.
+     */
+    outcome: string;
+};
+
+/**
+ * Error probe answer
+ *
+ * The worker failed to produce an answer.
+ */
+export type ProbeErrorAnswerRequest = {
+    /**
+     * The outcome of the probe, `ERROR`.
+     */
+    outcome: string;
+    /**
+     * Why the worker failed, 1 to 500 characters.
+     */
+    message: string;
+};
 
 /**
  * A Problem detail object as described in [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457). There may be additional properties specific to the problem type.
@@ -13706,6 +13959,11 @@ export type IncidentKeyWritable = LongKey;
  * System-generated key for a job.
  */
 export type JobKeyWritable = LongKey;
+
+/**
+ * System-generated key for a probe.
+ */
+export type ProbeKeyWritable = LongKey;
 
 /**
  * System-generated key for a decision definition.
@@ -19438,6 +19696,187 @@ export type PublishMessageResponses = {
 
 export type PublishMessageResponse = PublishMessageResponses[keyof PublishMessageResponses];
 
+export type CreateProbeData = {
+    body: ProbeCreationRequest;
+    path?: never;
+    query?: never;
+    url: '/probes';
+};
+
+export type CreateProbeErrors = {
+    /**
+     * The request is invalid, or the probe ended because of its secrets.
+     *
+     * The title of the problem tells the two apart:
+     * - `INVALID_ARGUMENT`: the body is invalid, for example a blank input, a probe ID that is
+     * not valid, a `requestTimeout` out of range, or an input that is not a valid
+     * expression or does not evaluate to a context.
+     * - `SECRET_RESOLUTION_ERROR`: a secret that the input references could not be resolved,
+     * or its value could not be injected into the input.
+     *
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * No worker collected the probe before its deadline: no worker polls this probe ID, or
+     * the workers that poll it lack the `ANSWER` permission on it. The title is `NO_WORKER`.
+     *
+     */
+    404: ProblemDetail;
+    /**
+     * The request is too large to be written to the log. The title is `PAYLOAD_TOO_LARGE`.
+     *
+     */
+    413: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+    /**
+     * The probe got no answer in time.
+     *
+     * The title of the problem tells why:
+     * - `WORKER_DID_NOT_ANSWER`: a worker collected the probe but did not answer before its
+     * deadline.
+     * - `SECRET_RESOLUTION_TIMEOUT`: the probe still waited for the values of its secrets at
+     * its deadline.
+     * - `DEADLINE_EXCEEDED`: the gateway timed out before the engine answered, for example
+     * after a leader change.
+     *
+     */
+    504: ProblemDetail;
+};
+
+export type CreateProbeError = CreateProbeErrors[keyof CreateProbeErrors];
+
+export type CreateProbeResponses = {
+    /**
+     * A worker answered. The body is one of three shapes, chosen by `outcome`: `OK` with the
+     * worker's `data`, `UNSUPPORTED`, or `ERROR` with a `message`.
+     *
+     */
+    200: ProbeResult;
+};
+
+export type CreateProbeResponse = CreateProbeResponses[keyof CreateProbeResponses];
+
+export type ActivateProbesData = {
+    body: ProbeActivationRequest;
+    path?: never;
+    query?: never;
+    url: '/probes/activation';
+};
+
+export type ActivateProbesErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type ActivateProbesError = ActivateProbesErrors[keyof ActivateProbesErrors];
+
+export type ActivateProbesResponses = {
+    /**
+     * The collected probes, none when the request timed out.
+     */
+    200: ProbeActivationResult;
+};
+
+export type ActivateProbesResponse = ActivateProbesResponses[keyof ActivateProbesResponses];
+
+export type AnswerProbeData = {
+    body: ProbeAnswerRequest;
+    path: {
+        /**
+         * The key of the probe to answer.
+         */
+        probeKey: ProbeKeyWritable;
+    };
+    query?: never;
+    url: '/probes/{probeKey}/answer';
+};
+
+export type AnswerProbeErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * The probe with the given key is not found: it ended already, its deadline passed, or it belongs to a tenant the caller is not assigned to.
+     *
+     */
+    404: ProblemDetail;
+    /**
+     * The probe with the given key is not activated: no worker collected it, or it waits for the values of its secrets.
+     *
+     */
+    409: ProblemDetail;
+    /**
+     * The answer is too large to be written to the log. The title is `PAYLOAD_TOO_LARGE`.
+     * Answer with a short `ERROR` instead, so that the client does not wait for the deadline.
+     *
+     */
+    413: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type AnswerProbeError = AnswerProbeErrors[keyof AnswerProbeErrors];
+
+export type AnswerProbeResponses = {
+    /**
+     * The answer is accepted.
+     */
+    204: void;
+};
+
+export type AnswerProbeResponse = AnswerProbeResponses[keyof AnswerProbeResponses];
+
 export type ResumeProcessDefinitionsData = {
     body: ProcessDefinitionResumptionInstruction;
     path?: never;
@@ -25101,7 +25540,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:f1835f69622ac3d3e861829f27826021facf49db86e4b2c2b775ea5d7eb30afa
+// specHash=sha256:aaebe938a1573864cae21403b7323b369e4e6e643df8fae8f241dc787718f6a7
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
@@ -25679,6 +26118,42 @@ export const MessageSubscriptionKey: {
   isValid(value: string): boolean {
     try {
       assertConstraint(value, 'MessageSubscriptionKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+      return true;
+    } catch { return false; }
+  },
+};
+// The ID of a probe, as its worker registered it: 1 to 256 characters, without whitespace, and not `*`. The engine matches it to the probe IDs of polling workers by exact equality. 
+export const ProbeId: {
+  assumeExists(value: string): ProbeId;
+  getValue(key: ProbeId): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): ProbeId {
+    assertConstraint(value, 'ProbeId', { pattern: "^\\S+$", minLength: 1, maxLength: 256 });
+    return value as any;
+  },
+  getValue(key: ProbeId): string { return key; },
+  isValid(value: string): boolean {
+    try {
+      assertConstraint(value, 'ProbeId', { pattern: "^\\S+$", minLength: 1, maxLength: 256 });
+      return true;
+    } catch { return false; }
+  },
+};
+// System-generated key for a probe.
+export const ProbeKey: {
+  assumeExists(value: string): ProbeKey;
+  getValue(key: ProbeKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): ProbeKey {
+    assertConstraint(value, 'ProbeKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+    return value as any;
+  },
+  getValue(key: ProbeKey): string { return key; },
+  isValid(value: string): boolean {
+    try {
+      assertConstraint(value, 'ProbeKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
   },

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2.0.0",
-  "specHash": "sha256:f1835f69622ac3d3e861829f27826021facf49db86e4b2c2b775ea5d7eb30afa",
+  "specHash": "sha256:aaebe938a1573864cae21403b7323b369e4e6e643df8fae8f241dc787718f6a7",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -1349,6 +1349,89 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/MessageSubscriptionKey"
+      }
+    },
+    {
+      "name": "ProbeId",
+      "semanticType": "ProbeId",
+      "category": "model-id",
+      "description": "The ID of a probe, as its worker registered it: 1 to 256 characters, without whitespace,\nand not `*`. The engine matches it to the probe IDs of polling workers by exact equality.\n",
+      "composition": {
+        "schemaKind": "inline",
+        "refs": [],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "pattern": "^\\S+$",
+        "minLength": 1,
+        "maxLength": 256,
+        "format": "ProbeId"
+      },
+      "examples": [
+        "validate-configuration/io.camunda:aws-credential:1"
+      ],
+      "extensions": {
+        "x-semantic-type": "ProbeId"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "probe-id",
+      "brand": {
+        "tsType": "CamundaKey<'ProbeId'>"
+      },
+      "zod": {
+        "schemaName": "zProbeId",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ProbeId"
+      }
+    },
+    {
+      "name": "ProbeKey",
+      "semanticType": "ProbeKey",
+      "category": "system-key",
+      "description": "System-generated key for a probe.",
+      "composition": {
+        "schemaKind": "allOf",
+        "refs": [
+          "LongKey"
+        ],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "pattern": "^-?[0-9]+$",
+        "minLength": 1,
+        "maxLength": 25
+      },
+      "examples": [
+        "2251799813685464"
+      ],
+      "extensions": {
+        "x-semantic-type": "ProbeKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "probe-key",
+      "brand": {
+        "tsType": "CamundaKey<'ProbeKey'>"
+      },
+      "zod": {
+        "schemaName": "zProbeKey",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ProbeKey"
       }
     },
     {
@@ -3010,6 +3093,60 @@
       }
     },
     {
+      "name": "ProbeAnswerRequest",
+      "kind": "union-wrapper",
+      "description": "The answer of the worker, one of three shapes chosen by `outcome`.\n",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "ProbeOkAnswerRequest"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "ProbeUnsupportedAnswerRequest"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "ProbeErrorAnswerRequest"
+        }
+      ],
+      "stableId": "probe-answer-request",
+      "tsType": "ProbeOkAnswerRequest | ProbeUnsupportedAnswerRequest | ProbeErrorAnswerRequest",
+      "zod": {
+        "schemaName": "zProbeAnswerRequest"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ProbeAnswerRequest"
+      }
+    },
+    {
+      "name": "ProbeResult",
+      "kind": "union-wrapper",
+      "description": "The answer of the worker, one of three shapes chosen by `outcome`.\n",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "ProbeOkResult"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "ProbeUnsupportedResult"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "ProbeErrorResult"
+        }
+      ],
+      "stableId": "probe-result",
+      "tsType": "ProbeOkResult | ProbeUnsupportedResult | ProbeErrorResult",
+      "zod": {
+        "schemaName": "zProbeResult"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ProbeResult"
+      }
+    },
+    {
       "name": "ProcessDefinitionIdFilterProperty",
       "kind": "union-wrapper",
       "description": "ProcessDefinitionId property with full advanced search capabilities.",
@@ -3658,8 +3795,8 @@
     }
   ],
   "integrity": {
-    "totalPrimaryKeys": 45,
-    "totalUnionWrappers": 76,
+    "totalPrimaryKeys": 47,
+    "totalUnionWrappers": 78,
     "implicitCamundaKeys": []
   }
 }

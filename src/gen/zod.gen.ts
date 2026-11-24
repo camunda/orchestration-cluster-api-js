@@ -2916,6 +2916,15 @@ export const zHistoryItemId = /*#__PURE__*/ (() => z.string().min(1).max(256).re
 }))();
 
 /**
+ * The ID of a probe, as its worker registered it: 1 to 256 characters, without whitespace,
+ * and not `*`. The engine matches it to the probe IDs of polling workers by exact equality.
+ *
+ */
+export const zProbeId = /*#__PURE__*/ (() => z.string().min(1).max(256).regex(/^\S+$/).register(z.globalRegistry, {
+    description: 'The ID of a probe, as its worker registered it: 1 to 256 characters, without whitespace,\nand not `*`. The engine matches it to the probe IDs of polling workers by exact equality.\n'
+}))();
+
+/**
  * An opaque, engine-minted fencing token identifying a single activation of a job.
  * Returned by Activate Jobs as `ActivatedJobResult.jobLeaseToken` when the job is
  * activated with a lease, and passed back under the same name on fenced job
@@ -4129,6 +4138,11 @@ export const zJobSearchResult = /*#__PURE__*/ (() => z.object({
         description: 'The priority of the job. Higher values indicate higher priority. Jobs created before 8.10 have no stored priority; they appear last when sorting by this field and are excluded when filtering by this field. The API returns 0 for such jobs.\n'
     })
 }))();
+
+/**
+ * System-generated key for a probe.
+ */
+export const zProbeKey = zLongKey;
 
 /**
  * System-generated key for a decision definition.
@@ -5401,6 +5415,187 @@ export const zCorrelatedMessageSubscriptionResult = /*#__PURE__*/ (() => z.objec
     subscriptionKey: zMessageSubscriptionKey,
     tenantId: zTenantId
 }))();
+
+export const zProbeCreationRequest = /*#__PURE__*/ (() => z.object({
+    probeId: zProbeId,
+    input: z.string().min(1).register(z.globalRegistry, {
+        description: 'A FEEL expression that evaluates to a context: the question for the worker, whose shape\nthe worker of the probe ID defines. References to `camunda.vars` and\n`camunda.secrets` follow the rules of input mappings.\n'
+    }),
+    tenantId: zTenantId.optional(),
+    requestTimeout: z.coerce.number().int().gte(0).lte(30000).register(z.globalRegistry, {
+        description: 'How long to wait for an answer, in milliseconds, from 0 to 30000. With `0` or absent,\nthe cluster\'s request timeout is used, capped at 30000.\n'
+    }).optional()
+}))();
+
+/**
+ * OK probe result
+ *
+ * The worker produced an answer.
+ */
+export const zProbeOkResult = /*#__PURE__*/ (() => z.object({
+    outcome: z.string().register(z.globalRegistry, {
+        description: 'The outcome of the probe, `OK`.'
+    }),
+    worker: z.string().register(z.globalRegistry, {
+        description: 'The name of the worker that answered.'
+    }),
+    data: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
+        description: 'The answer, whose shape the worker of the probe ID defines.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The worker produced an answer.'
+}))();
+
+/**
+ * Unsupported probe result
+ *
+ * The worker does not support this probe.
+ */
+export const zProbeUnsupportedResult = /*#__PURE__*/ (() => z.object({
+    outcome: z.string().register(z.globalRegistry, {
+        description: 'The outcome of the probe, `UNSUPPORTED`.'
+    }),
+    worker: z.string().register(z.globalRegistry, {
+        description: 'The name of the worker that answered.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The worker does not support this probe.'
+}))();
+
+/**
+ * Error probe result
+ *
+ * The worker failed to produce an answer.
+ */
+export const zProbeErrorResult = /*#__PURE__*/ (() => z.object({
+    outcome: z.string().register(z.globalRegistry, {
+        description: 'The outcome of the probe, `ERROR`.'
+    }),
+    worker: z.string().register(z.globalRegistry, {
+        description: 'The name of the worker that answered.'
+    }),
+    message: z.string().max(500).register(z.globalRegistry, {
+        description: 'Why the worker failed, at most 500 characters.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The worker failed to produce an answer.'
+}))();
+
+/**
+ * The answer of the worker, one of three shapes chosen by `outcome`.
+ *
+ */
+export const zProbeResult = /*#__PURE__*/ (() => z.discriminatedUnion('outcome', [
+    zProbeOkResult.extend({ outcome: z.literal('OK') }),
+    zProbeUnsupportedResult.extend({ outcome: z.literal('UNSUPPORTED') }),
+    zProbeErrorResult.extend({ outcome: z.literal('ERROR') })
+]))();
+
+export const zProbeActivationRequest = /*#__PURE__*/ (() => z.object({
+    probeIds: z.array(zProbeId).min(1).max(100).register(z.globalRegistry, {
+        description: 'The probe IDs to collect probes for: 1 to 100 distinct values, each 1 to 256\ncharacters, without whitespace, and not `*`. Probe IDs on which the caller lacks the\n`ANSWER` permission are skipped.\n'
+    }),
+    worker: z.string().register(z.globalRegistry, {
+        description: 'The name of the worker, returned to the client in the answer.'
+    }).optional(),
+    maxProbesToActivate: z.int().gte(1).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+        description: 'The maximum number of probes to collect with this request, at least 1.'
+    }),
+    requestTimeout: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
+        description: 'How long to hold the request until a probe is collected, in milliseconds. With `0` or\nabsent, the cluster\'s long polling timeout is used. With a value below `0`, long\npolling is off and the request returns at once, also when it collected no probe.\n'
+    }).optional(),
+    tenantIds: z.array(zTenantId).register(z.globalRegistry, {
+        description: 'A list of IDs of tenants for which to collect probes.'
+    }).optional(),
+    tenantFilter: zTenantFilterEnum.optional()
+}))();
+
+export const zActivatedProbeResult = /*#__PURE__*/ (() => z.object({
+    probeKey: zProbeKey,
+    probeId: zProbeId,
+    worker: z.string().register(z.globalRegistry, {
+        description: 'The name of the worker that collected the probe.'
+    }),
+    deadline: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
+        description: 'The deadline of the probe, as a UNIX epoch timestamp in milliseconds. An answer after\nit gets 404.\n'
+    }),
+    tenantId: zTenantId,
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The ID of the physical tenant that the activation request was routed to;\nthe default physical tenant when the request did not specify one.\n'
+    }),
+    input: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
+        description: 'The evaluated input, with the values of its secrets injected.'
+    }),
+    secretPointers: z.array(z.string()).register(z.globalRegistry, {
+        description: 'The JSON pointers (RFC 6901) of the `input` values into which the engine injected a\nsecret value; empty when none. Remove these values from logs and error messages.\n'
+    })
+}))();
+
+/**
+ * The collected probes.
+ */
+export const zProbeActivationResult = /*#__PURE__*/ (() => z.object({
+    probes: z.array(zActivatedProbeResult).register(z.globalRegistry, {
+        description: 'The collected probes, none when the request timed out.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The collected probes.'
+}))();
+
+/**
+ * OK probe answer
+ *
+ * The worker produced an answer.
+ */
+export const zProbeOkAnswerRequest = /*#__PURE__*/ (() => z.object({
+    outcome: z.string().register(z.globalRegistry, {
+        description: 'The outcome of the probe, `OK`.'
+    }),
+    data: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
+        description: 'The answer, whose shape the worker of the probe ID defines.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The worker produced an answer.'
+}))();
+
+/**
+ * Unsupported probe answer
+ *
+ * The worker does not support this probe.
+ */
+export const zProbeUnsupportedAnswerRequest = /*#__PURE__*/ (() => z.object({
+    outcome: z.string().register(z.globalRegistry, {
+        description: 'The outcome of the probe, `UNSUPPORTED`.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The worker does not support this probe.'
+}))();
+
+/**
+ * Error probe answer
+ *
+ * The worker failed to produce an answer.
+ */
+export const zProbeErrorAnswerRequest = /*#__PURE__*/ (() => z.object({
+    outcome: z.string().register(z.globalRegistry, {
+        description: 'The outcome of the probe, `ERROR`.'
+    }),
+    message: z.string().min(1).max(500).register(z.globalRegistry, {
+        description: 'Why the worker failed, 1 to 500 characters.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The worker failed to produce an answer.'
+}))();
+
+/**
+ * The answer of the worker, one of three shapes chosen by `outcome`.
+ *
+ */
+export const zProbeAnswerRequest = /*#__PURE__*/ (() => z.discriminatedUnion('outcome', [
+    zProbeOkAnswerRequest.extend({ outcome: z.literal('OK') }),
+    zProbeUnsupportedAnswerRequest.extend({ outcome: z.literal('UNSUPPORTED') }),
+    zProbeErrorAnswerRequest.extend({ outcome: z.literal('ERROR') })
+]))();
 
 /**
  * A Problem detail object as described in [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457). There may be additional properties specific to the problem type.
@@ -10377,6 +10572,11 @@ export const zIncidentKeyWritable = zLongKey;
 export const zJobKeyWritable = zLongKey;
 
 /**
+ * System-generated key for a probe.
+ */
+export const zProbeKeyWritable = zLongKey;
+
+/**
  * System-generated key for a decision definition.
  */
 export const zDecisionDefinitionKeyWritable = zLongKey;
@@ -12006,6 +12206,35 @@ export const zPublishMessageBody = zMessagePublicationRequest;
  * The message was published.
  */
 export const zPublishMessageResponse = zMessagePublicationResult;
+
+export const zCreateProbeBody = zProbeCreationRequest;
+
+/**
+ * A worker answered. The body is one of three shapes, chosen by `outcome`: `OK` with the
+ * worker's `data`, `UNSUPPORTED`, or `ERROR` with a `message`.
+ *
+ */
+export const zCreateProbeResponse = zProbeResult;
+
+export const zActivateProbesBody = zProbeActivationRequest;
+
+/**
+ * The collected probes, none when the request timed out.
+ */
+export const zActivateProbesResponse = zProbeActivationResult;
+
+export const zAnswerProbeBody = zProbeAnswerRequest;
+
+export const zAnswerProbePath = /*#__PURE__*/ (() => z.object({
+    probeKey: zProbeKeyWritable
+}))();
+
+/**
+ * The answer is accepted.
+ */
+export const zAnswerProbeResponse = /*#__PURE__*/ (() => z.void().register(z.globalRegistry, {
+    description: 'The answer is accepted.'
+}))();
 
 export const zResumeProcessDefinitionsBody = zProcessDefinitionResumptionInstruction;
 

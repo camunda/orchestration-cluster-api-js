@@ -423,6 +423,16 @@ export const RESPONSE_INDEX = {
       '200': 1
     }
   },
+  '/probes': {
+    'POST': {
+      '200': 1
+    }
+  },
+  '/probes/activation': {
+    'POST': {
+      '200': 1
+    }
+  },
   '/process-definitions/resumption': {
     'POST': {
       '200': 1
