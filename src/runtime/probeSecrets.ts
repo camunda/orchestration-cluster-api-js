@@ -6,13 +6,13 @@
  * name-based redaction of body previews cannot know those names: a secret can sit under any
  * field name, at any depth. So wherever a response body is logged or written to disk, every
  * activated probe in it goes through here first: an object with an `input` and either
- * `secretPointers` or the `probeKey` and `probeId` of an activated probe.
+ * `secretPointers`, a `probeKey`, or the `probeId` and `deadline` of an activated probe.
  *
  * A probe can also arrive as JSON held in a string value (an echoed payload, a problem detail),
  * which a diagnostic would otherwise print whole, so such strings are parsed and masked too.
  *
  * Fail safe: when the pointers are missing, are not a list of strings, or one is not a valid
- * pointer, the whole `input` is masked rather than guessed at.
+ * pointer or resolves to nothing, the whole `input` is masked rather than guessed at.
  */
 
 const REDACTED = '[redacted]';
@@ -52,30 +52,43 @@ function child(node: unknown, token: string): unknown {
   return undefined;
 }
 
-/** Mask the value `tokens` points at inside `root`, in place. A pointer to nothing masks nothing. */
-function maskAt(root: unknown, tokens: string[]): void {
+/**
+ * Mask the value `tokens` points at inside `root`, in place. Returns false when the pointer
+ * resolves to nothing, which means the metadata and the data disagree.
+ */
+function maskAt(root: unknown, tokens: string[]): boolean {
   let parent = root;
   for (let i = 0; i < tokens.length - 1; i++) {
     parent = child(parent, tokens[i]);
-    if (parent === undefined) return;
+    if (parent === undefined) return false;
   }
   const last = tokens[tokens.length - 1];
   if (Array.isArray(parent)) {
-    if (ARRAY_INDEX.test(last) && Number(last) < parent.length) parent[Number(last)] = REDACTED;
-  } else if (parent !== null && typeof parent === 'object' && hasOwn(parent, last)) {
-    (parent as Record<string, unknown>)[last] = REDACTED;
+    if (!ARRAY_INDEX.test(last) || Number(last) >= parent.length) return false;
+    parent[Number(last)] = REDACTED;
+    return true;
   }
+  if (parent !== null && typeof parent === 'object' && hasOwn(parent, last)) {
+    (parent as Record<string, unknown>)[last] = REDACTED;
+    return true;
+  }
+  return false;
 }
 
-function maskInput(input: unknown, pointers: unknown): unknown {
+/**
+ * The input with the values the pointers name masked. Anything the pointers cannot be trusted
+ * to cover masks the whole input: missing or malformed pointers, and a pointer that resolves to
+ * nothing, since then the engine and this copy of the data disagree about where the secrets are.
+ */
+function maskInput(input: unknown, pointers: unknown, depth: number): unknown {
   if (!Array.isArray(pointers) || pointers.some((p) => typeof p !== 'string')) return REDACTED;
   const copy = cloneJson(input, 0);
   for (const pointer of pointers as string[]) {
     const tokens = pointerTokens(pointer);
-    if (!tokens) return REDACTED;
-    maskAt(copy, tokens);
+    if (!tokens || !maskAt(copy, tokens)) return REDACTED;
   }
-  return copy;
+  // A probe nested inside the input is masked by its own pointers too.
+  return redactProbeSecrets(copy, depth + 1);
 }
 
 /** A string that is a JSON object or array, with its probes masked; any other string is returned as it was. */
@@ -105,15 +118,18 @@ export function redactProbeSecrets(value: unknown, depth = 0): unknown {
   if (depth > MAX_DEPTH) return REDACTED;
   if (Array.isArray(value)) return value.map((v) => redactProbeSecrets(v, depth + 1));
   const record = value as Record<string, unknown>;
-  // Probe-shaped, not just pointer-bearing: metadata that is missing must mask, not bypass.
+  // Probe-shaped, not just pointer-bearing: metadata that is missing must mask, not bypass. A
+  // createProbe request has a probeId and an input but is neither: its input is a FEEL expression.
   const isProbe =
     hasOwn(record, 'input') &&
-    (hasOwn(record, 'secretPointers') || (hasOwn(record, 'probeKey') && hasOwn(record, 'probeId')));
+    (hasOwn(record, 'secretPointers') ||
+      hasOwn(record, 'probeKey') ||
+      (hasOwn(record, 'probeId') && hasOwn(record, 'deadline')));
   const out: Record<string, unknown> = Object.create(null);
   for (const [k, v] of Object.entries(record)) {
     out[k] =
       isProbe && k === 'input'
-        ? maskInput(v, record.secretPointers)
+        ? maskInput(v, record.secretPointers, depth)
         : redactProbeSecrets(v, depth + 1);
   }
   return out;

@@ -115,13 +115,52 @@ describe('redactProbeSecrets', () => {
     });
   });
 
-  it('ignores a pointer to nothing and does not reach the prototype chain', () => {
-    const out = redactProbeSecrets(
-      probe({ keep: 'yes' }, ['/missing', '/__proto__', '/constructor'])
-    ) as {
-      input: Record<string, unknown>;
+  it('masks the whole input when a pointer resolves to nothing', () => {
+    // The metadata and the data disagree, so the secrets may be anywhere. A pointer that is not
+    // an own key (`/__proto__`, `/constructor`) resolves to nothing too.
+    for (const bad of [
+      '/missing',
+      '/list/5',
+      '/list/-',
+      '/__proto__',
+      '/constructor',
+      '/a%20b',
+      '/cfg/k', // into a string, not an object
+    ]) {
+      const out = redactProbeSecrets(
+        probe({ keep: 'yes', list: [SECRET], 'a b': SECRET, cfg: JSON.stringify({ k: SECRET }) }, [
+          bad,
+        ])
+      ) as { input: unknown };
+      expect(out.input).toBe('[redacted]');
+    }
+  });
+
+  it('masks the whole input when input is not an object the pointers can address', () => {
+    for (const input of [SECRET, JSON.stringify({ k: SECRET }), null, 7]) {
+      const out = redactProbeSecrets(probe(input, ['/k'])) as { input: unknown };
+      expect(out.input).toBe('[redacted]');
+    }
+  });
+
+  it('masks a probe nested inside another probe input by its own pointers', () => {
+    const inner = probe({ k: SECRET, other: 'visible' }, ['/k']);
+    const out = JSON.stringify(redactProbeSecrets(probe({ outer: SECRET, inner }, ['/outer'])));
+    expect(out).not.toContain(SECRET);
+    expect(out).toContain('visible');
+  });
+
+  it('recognises an activated probe by its probeKey alone', () => {
+    const out = redactProbeSecrets({ probeKey: '1', input: { anyName: SECRET } }) as {
+      input: unknown;
     };
-    expect(out.input.keep).toBe('yes');
+    expect(out.input).toBe('[redacted]');
+  });
+
+  it('does not reach the prototype chain', () => {
+    const out = redactProbeSecrets(probe({ keep: 'yes' }, ['/__proto__'])) as { input: unknown };
+    expect(out.input).toBe('[redacted]');
+    expect(({} as Record<string, unknown>).polluted).toBeUndefined();
   });
 
   it('does not mutate its argument', () => {
