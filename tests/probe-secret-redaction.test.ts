@@ -87,6 +87,19 @@ describe('redactProbeSecrets', () => {
     expect(out.probes[0].probeId).toBe(withoutPointers.probeId);
   });
 
+  it('masks probes held as JSON inside a string value, at any nesting', () => {
+    const inner = JSON.stringify({ probes: [probe({ anyName: SECRET }, ['/anyName'])] });
+    const twice = JSON.stringify({ wrapped: inner });
+    for (const value of [{ detail: inner }, { detail: twice }, [inner]]) {
+      expect(JSON.stringify(redactProbeSecrets(value))).not.toContain(SECRET);
+    }
+  });
+
+  it('leaves strings that are not JSON, or hold no probe, exactly as they were', () => {
+    const value = { a: 'plain text', b: '{"x": 1}', c: '[1, 2]', d: '{not json' };
+    expect(redactProbeSecrets(value)).toEqual(value);
+  });
+
   it('does not treat a request-shaped body as an activated probe', () => {
     // createProbe's input is a FEEL expression that only references secrets by name.
     const body = { probeId: 'p', input: '={key: camunda.secrets.awsKey}', requestTimeout: 1000 };
@@ -127,6 +140,17 @@ describe('silly-level response preview', () => {
     }
   });
 
+  it('masks probes embedded as JSON in a string, or in a form value', () => {
+    const inner = JSON.stringify({ probes: [probe({ anyName: SECRET }, ['/anyName'])] });
+    const json = redactBodyPreview(JSON.stringify({ detail: inner }), 'application/json');
+    const form = redactBodyPreview(
+      `payload=${encodeURIComponent(inner)}`,
+      'application/x-www-form-urlencoded'
+    );
+    expect(json).not.toContain(SECRET);
+    expect(decodeURIComponent(form)).not.toContain(SECRET);
+  });
+
   it('masks the secrets of an activateProbes response', () => {
     const body = JSON.stringify({
       probes: [probe({ region: 'eu-west-1', nested: { anyName: SECRET } }, ['/nested/anyName'])],
@@ -162,6 +186,11 @@ describe('validation capture', () => {
     const text = capture([probe({ accessKey: SECRET, region: 'eu-west-1' }, ['/accessKey'])]);
     expect(text).not.toContain(SECRET);
     expect(text).toContain('eu-west-1');
+  });
+
+  it('masks probes embedded as JSON in a string', () => {
+    const inner = JSON.stringify({ probes: [probe({ anyName: SECRET }, ['/anyName'])] });
+    expect(capture([{ detail: inner }])).not.toContain(SECRET);
   });
 
   it('masks the input of a probe whose metadata is missing or malformed', () => {

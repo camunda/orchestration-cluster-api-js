@@ -197,7 +197,7 @@ function redactEmbedded(value: string, depth: number): string {
     if (parsed === null || typeof parsed !== 'object') return value;
     return depth >= MAX_EMBEDDED_DEPTH
       ? BODY_REDACTED
-      : JSON.stringify(redactJsonValue(parsed, depth + 1));
+      : JSON.stringify(redactJsonValue(redactProbeSecrets(parsed), depth + 1));
   }
   if (value.includes('=') && WELL_FORMED_FORM.test(value)) {
     return depth >= MAX_EMBEDDED_DEPTH ? BODY_REDACTED : redactFormBody(value, depth + 1);
