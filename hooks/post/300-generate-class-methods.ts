@@ -105,8 +105,17 @@ const MARK_METHODS_START = '// === AUTO-GENERATED CAMUNDA METHODS START ===';
 const MARK_METHODS_END = '// === AUTO-GENERATED CAMUNDA METHODS END ===';
 
 function isExempt(opId: string): boolean {
-  // Exempt operations: job completion / failure / throwing BPMN error (names sanitized already)
-  return ['completeJob', 'failJob', 'throwJobError', 'completeUserTask'].includes(opId);
+  // Exempt operations: job completion / failure / throwing BPMN error (names sanitized already),
+  // and the probe operations that deliver a probe's answer. createProbe holds its permit until a
+  // worker answers, so with the answer path gated behind the same permit it could never complete.
+  return [
+    'completeJob',
+    'failJob',
+    'throwJobError',
+    'completeUserTask',
+    'activateProbes',
+    'answerProbe',
+  ].includes(opId);
 }
 
 async function main() {

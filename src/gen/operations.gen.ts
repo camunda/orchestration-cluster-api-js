@@ -9,7 +9,7 @@ import { enrichActivatedJob, EnrichedActivatedJob, EnrichedActivatedJobOf } from
 import * as Sdk from './sdk.gen';
 
 // Generated
-// Operations: 249
+// Operations: 253
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -19,9 +19,16 @@ export type activateAdHocSubProcessActivitiesInput = activateAdHocSubProcessActi
 type activateJobsOptions = Parameters<typeof Sdk.activateJobs>[0];
 type activateJobsBody = (NonNullable<activateJobsOptions> extends { body?: infer B } ? B : never);
 export type activateJobsInput = activateJobsBody;
+type activateProbesOptions = Parameters<typeof Sdk.activateProbes>[0];
+type activateProbesBody = (NonNullable<activateProbesOptions> extends { body?: infer B } ? B : never);
+export type activateProbesInput = activateProbesBody;
 type addClockOptions = Parameters<typeof Sdk.addClock>[0];
 type addClockBody = (NonNullable<addClockOptions> extends { body?: infer B } ? B : never);
 export type addClockInput = addClockBody;
+type answerProbeOptions = Parameters<typeof Sdk.answerProbe>[0];
+type answerProbeBody = (NonNullable<answerProbeOptions> extends { body?: infer B } ? B : never);
+type answerProbePathParam_probeKey = (NonNullable<answerProbeOptions> extends { path: { probeKey: infer P } } ? P : any);
+export type answerProbeInput = answerProbeBody & { probeKey: answerProbePathParam_probeKey };
 type assignClientToGroupOptions = Parameters<typeof Sdk.assignClientToGroup>[0];
 type assignClientToGroupPathParam_groupId = (NonNullable<assignClientToGroupOptions> extends { path: { groupId: infer P } } ? P : any);
 type assignClientToGroupPathParam_clientId = (NonNullable<assignClientToGroupOptions> extends { path: { clientId: infer P } } ? P : any);
@@ -157,6 +164,9 @@ export type createGroupInput = createGroupBody;
 type createMappingRuleOptions = Parameters<typeof Sdk.createMappingRule>[0];
 type createMappingRuleBody = (NonNullable<createMappingRuleOptions> extends { body?: infer B } ? B : never);
 export type createMappingRuleInput = createMappingRuleBody;
+type createProbeOptions = Parameters<typeof Sdk.createProbe>[0];
+type createProbeBody = (NonNullable<createProbeOptions> extends { body?: infer B } ? B : never);
+export type createProbeInput = createProbeBody;
 type createProcessInstanceOptions = Parameters<typeof Sdk.createProcessInstance>[0];
 type createProcessInstanceBody = (NonNullable<createProcessInstanceOptions> extends { body?: infer B } ? B : never);
 export type createProcessInstanceInput = createProcessInstanceBody;
@@ -1178,6 +1188,15 @@ export type searchUserTaskVariablesConsistency = {
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchUserTaskVariables>> 
 };
+type searchVariableHistoryOptions = Parameters<typeof Sdk.searchVariableHistory>[0];
+type searchVariableHistoryBody = (NonNullable<searchVariableHistoryOptions> extends { body?: infer B } ? B : never);
+type searchVariableHistoryQueryParam_truncateValues = (NonNullable<searchVariableHistoryOptions> extends { query?: { truncateValues?: infer Q } } ? Q : any);
+export type searchVariableHistoryInput = searchVariableHistoryBody & { truncateValues?: searchVariableHistoryQueryParam_truncateValues };
+/** Management of eventual consistency **/
+export type searchVariableHistoryConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchVariableHistory>> 
+};
 type searchVariablesOptions = Parameters<typeof Sdk.searchVariables>[0];
 type searchVariablesBody = (NonNullable<searchVariablesOptions> extends { body?: infer B } ? B : never);
 type searchVariablesQueryParam_truncateValues = (NonNullable<searchVariablesOptions> extends { query?: { truncateValues?: infer Q } } ? Q : any);
@@ -1331,7 +1350,7 @@ type updateUserTaskOptions = Parameters<typeof Sdk.updateUserTask>[0];
 type updateUserTaskBody = (NonNullable<updateUserTaskOptions> extends { body?: infer B } ? B : never);
 type updateUserTaskPathParam_userTaskKey = (NonNullable<updateUserTaskOptions> extends { path: { userTaskKey: infer P } } ? P : any);
 export type updateUserTaskInput = updateUserTaskBody & { userTaskKey: updateUserTaskPathParam_userTaskKey };
-const VOID_RESPONSES = new Set(['zDeleteAuthorizationResponse', 'zUpdateAuthorizationResponse', 'zDeleteRuntimeBackupStateResponse', 'zDeleteRuntimeBackupResponse', 'zDeleteHistoryBackupResponse', 'zCancelBatchOperationResponse', 'zResumeBatchOperationResponse', 'zSuspendBatchOperationResponse', 'zPinClockResponse', 'zResetClockResponse', 'zDeleteGlobalClusterVariableResponse', 'zDeleteTenantClusterVariableResponse', 'zDeleteDecisionInstanceResponse', 'zDeleteDocumentResponse', 'zActivateAdHocSubProcessActivitiesResponse', 'zCreateElementInstanceVariablesResponse', 'zPauseExportingResponse', 'zResumeExportingResponse', 'zDeleteGlobalTaskListenerResponse', 'zDeleteGroupResponse', 'zUnassignClientFromGroupResponse', 'zAssignClientToGroupResponse', 'zUnassignMappingRuleFromGroupResponse', 'zAssignMappingRuleToGroupResponse', 'zUnassignUserFromGroupResponse', 'zAssignUserToGroupResponse', 'zResolveIncidentResponse', 'zUpdateJobResponse', 'zCompleteJobResponse', 'zThrowJobErrorResponse', 'zFailJobResponse', 'zDeleteMappingRuleResponse', 'zAssignProcessInstanceBusinessIdResponse', 'zCancelProcessInstanceResponse', 'zDeleteProcessInstanceResponse', 'zMigrateProcessInstanceResponse', 'zModifyProcessInstanceResponse', 'zResumeProcessInstanceResponse', 'zSuspendProcessInstanceResponse', 'zDeleteRoleResponse', 'zUnassignRoleFromClientResponse', 'zAssignRoleToClientResponse', 'zUnassignRoleFromGroupResponse', 'zAssignRoleToGroupResponse', 'zUnassignRoleFromMappingRuleResponse', 'zAssignRoleToMappingRuleResponse', 'zUnassignRoleFromUserResponse', 'zAssignRoleToUserResponse', 'zGetStatusResponse', 'zDeleteTenantResponse', 'zUnassignClientFromTenantResponse', 'zAssignClientToTenantResponse', 'zUnassignGroupFromTenantResponse', 'zAssignGroupToTenantResponse', 'zUnassignMappingRuleFromTenantResponse', 'zAssignMappingRuleToTenantResponse', 'zUnassignRoleFromTenantResponse', 'zAssignRoleToTenantResponse', 'zUnassignUserFromTenantResponse', 'zAssignUserToTenantResponse', 'zPauseClusterExportingResponse', 'zResumeClusterExportingResponse', 'zDeleteRuntimeBackupStateAsClusterAdminResponse', 'zDeleteRuntimeBackupAsClusterAdminResponse', 'zDeleteHistoryBackupAsClusterAdminResponse', 'zDeleteUserResponse', 'zUpdateUserTaskResponse', 'zUnassignUserTaskResponse', 'zAssignUserTaskResponse', 'zCompleteUserTaskResponse']);
+const VOID_RESPONSES = new Set(['zDeleteAuthorizationResponse', 'zUpdateAuthorizationResponse', 'zDeleteRuntimeBackupStateResponse', 'zDeleteRuntimeBackupResponse', 'zDeleteHistoryBackupResponse', 'zCancelBatchOperationResponse', 'zResumeBatchOperationResponse', 'zSuspendBatchOperationResponse', 'zPinClockResponse', 'zResetClockResponse', 'zDeleteGlobalClusterVariableResponse', 'zDeleteTenantClusterVariableResponse', 'zDeleteDecisionInstanceResponse', 'zDeleteDocumentResponse', 'zActivateAdHocSubProcessActivitiesResponse', 'zCreateElementInstanceVariablesResponse', 'zPauseExportingResponse', 'zResumeExportingResponse', 'zDeleteGlobalTaskListenerResponse', 'zDeleteGroupResponse', 'zUnassignClientFromGroupResponse', 'zAssignClientToGroupResponse', 'zUnassignMappingRuleFromGroupResponse', 'zAssignMappingRuleToGroupResponse', 'zUnassignUserFromGroupResponse', 'zAssignUserToGroupResponse', 'zResolveIncidentResponse', 'zUpdateJobResponse', 'zCompleteJobResponse', 'zThrowJobErrorResponse', 'zFailJobResponse', 'zDeleteMappingRuleResponse', 'zAnswerProbeResponse', 'zAssignProcessInstanceBusinessIdResponse', 'zCancelProcessInstanceResponse', 'zDeleteProcessInstanceResponse', 'zMigrateProcessInstanceResponse', 'zModifyProcessInstanceResponse', 'zResumeProcessInstanceResponse', 'zSuspendProcessInstanceResponse', 'zDeleteRoleResponse', 'zUnassignRoleFromClientResponse', 'zAssignRoleToClientResponse', 'zUnassignRoleFromGroupResponse', 'zAssignRoleToGroupResponse', 'zUnassignRoleFromMappingRuleResponse', 'zAssignRoleToMappingRuleResponse', 'zUnassignRoleFromUserResponse', 'zAssignRoleToUserResponse', 'zGetStatusResponse', 'zDeleteTenantResponse', 'zUnassignClientFromTenantResponse', 'zAssignClientToTenantResponse', 'zUnassignGroupFromTenantResponse', 'zAssignGroupToTenantResponse', 'zUnassignMappingRuleFromTenantResponse', 'zAssignMappingRuleToTenantResponse', 'zUnassignRoleFromTenantResponse', 'zAssignRoleToTenantResponse', 'zUnassignUserFromTenantResponse', 'zAssignUserToTenantResponse', 'zPauseClusterExportingResponse', 'zResumeClusterExportingResponse', 'zDeleteRuntimeBackupStateAsClusterAdminResponse', 'zDeleteRuntimeBackupAsClusterAdminResponse', 'zDeleteHistoryBackupAsClusterAdminResponse', 'zDeleteUserResponse', 'zUpdateUserTaskResponse', 'zUnassignUserTaskResponse', 'zAssignUserTaskResponse', 'zCompleteUserTaskResponse']);
 /** Extended deployment result with typed buckets for direct access to deployed artifacts. */
 export interface ExtendedDeploymentResult extends _DataOf<typeof Sdk.createDeployment> {
   processes: Array<NonNullable<_DataOf<typeof Sdk.createDeployment>["deployments"][number]["processDefinition"]>>;
@@ -1489,6 +1508,82 @@ export function activateJobs(core: CamundaCore, arg: any, options?: OperationOpt
 }
 
 /**
+ * Activate probes (alpha)
+ *
+ * Collects probes of the given probe IDs for a worker, up to the requested maximum.
+ *
+ * Like job activation, the request goes to every partition. When no probe is waiting, it is
+ * held until a probe of one of these probe IDs is created or until `requestTimeout`. Probe
+ * IDs on which the caller lacks the `ANSWER` permission are skipped. The worker answers each
+ * probe with `POST /v2/probes/{probeKey}/answer` before the probe's `deadline`.
+ *
+ * This endpoint is an alpha feature and may be subject to change
+ * in future releases.
+ *
+  *
+ * @operationId activateProbes
+ * @tags Probe
+ */
+export function activateProbes(core: CamundaCore, input: activateProbesInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.activateProbes>>;
+export function activateProbes(core: CamundaCore, arg: any, options?: OperationOptions): CancelablePromise<any> {
+  const rt = core as unknown as OperationRuntime;
+  return toCancelable(async signal => {
+    const _body = arg;
+    let envelope: any = {};
+    envelope.body = _body;
+    if (envelope.body && envelope.body.tenantFilter !== 'ASSIGNED' && rt._config.defaultTenantId !== undefined && rt._config.defaultTenantId !== null && (!Array.isArray(envelope.body.tenantIds) || envelope.body.tenantIds.length === 0)) {
+      envelope.body = { ...envelope.body, tenantIds: [rt._config.defaultTenantId] };
+      rt._log.trace(() => ['tenant.default.inject', { op: 'activateProbes', tenantIds: [rt._config.defaultTenantId] }]);
+    }
+    if (rt._validation.settings.req !== 'none') {
+      const _schemas = await import('./zod/activateProbes.gen');
+      if (envelope.body !== undefined) {
+        const maybeBody = await rt._validation.gateRequest('activateProbes', _schemas.zActivateProbesBody, envelope.body);
+        if (rt._validation.settings.req === 'strict') envelope.body = maybeBody;
+      }
+    }
+    const opts: any = { client: rt._client, signal, throwOnError: false };
+    if (envelope.body !== undefined) opts.body = envelope.body;
+    const call = async () => {
+      try {
+      const _raw = await Sdk.activateProbes(opts);
+      let data = rt._evaluateResponse(_raw, 'activateProbes', (resp: any) => {
+        const st = resp.status ?? resp.response?.status;
+        if (!st) return undefined;
+        const candidate = st === 429 || st === 503 || st === 500;
+        if (!candidate) return undefined;
+        let prob: any = undefined;
+        if (resp.error && typeof resp.error === 'object') prob = resp.error;
+        const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+        err.status = st; err.name = 'HttpSdkError';
+        if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+        const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+        if (!isBp) err.nonRetryable = true;
+        return err;
+      });
+      const _respSchemaName = 'zActivateProbesResponse';
+      if (_isVoidResponse(_respSchemaName)) {
+        data = undefined;
+      }
+      if (rt._validation.settings.res !== 'none') {
+        const _schemas = await import('./zod/activateProbes.gen');
+        const _schema = _schemas.zActivateProbesResponse;
+        if (_schema) {
+          const maybeR = await rt._validation.gateResponse('activateProbes', _schema, data);
+          if (rt._validation.settings.res === 'strict') data = maybeR;
+        }
+      }
+      return data;
+      } catch(e) {
+        // Defer normalization to outer executeWithHttpRetry boundary
+        throw e;
+      }
+    };
+    return rt._invokeWithRetry(() => call(), { opId: 'activateProbes', exempt: true, retryOverride: options?.retry });
+  });
+}
+
+/**
  * Add time to internal clock
  *
  * Moves the Zeebe engine's internal clock forward or backward by the given offset.
@@ -1559,6 +1654,83 @@ export function addClock(core: CamundaCore, arg: any, options?: OperationOptions
       }
     };
     return rt._invokeWithRetry(() => call(), { opId: 'addClock', exempt: false, retryOverride: options?.retry });
+  });
+}
+
+/**
+ * Answer probe (alpha)
+ *
+ * Sends a worker's answer to a probe it collected, which ends the probe.
+ *
+ * The body is one of three shapes, chosen by `outcome`: `OK` with the result in `data`,
+ * `UNSUPPORTED`, or `ERROR` with a `message`. The client that created the probe gets this
+ * answer with the name of the worker that collected the probe.
+ *
+ * This endpoint is an alpha feature and may be subject to change
+ * in future releases.
+ *
+  *
+ * @operationId answerProbe
+ * @tags Probe
+ */
+export function answerProbe(core: CamundaCore, input: answerProbeInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.answerProbe>>;
+export function answerProbe(core: CamundaCore, arg: any, options?: OperationOptions): CancelablePromise<any> {
+  const rt = core as unknown as OperationRuntime;
+  return toCancelable(async signal => {
+    const { probeKey, ..._body } = arg || {};
+    let envelope: any = {};
+    envelope.path = { probeKey };
+    envelope.body = _body;
+    if (rt._validation.settings.req !== 'none') {
+      const _schemas = await import('./zod/answerProbe.gen');
+      if (envelope.body !== undefined) {
+        const maybeBody = await rt._validation.gateRequest('answerProbe', _schemas.zAnswerProbeBody, envelope.body);
+        if (rt._validation.settings.req === 'strict') envelope.body = maybeBody;
+      }
+      if (envelope.path !== undefined) {
+        const maybePath = await rt._validation.gateRequest('answerProbe', _schemas.zAnswerProbePath, envelope.path);
+        if (rt._validation.settings.req === 'strict') envelope.path = maybePath;
+      }
+    }
+    const opts: any = { client: rt._client, signal, throwOnError: false };
+    if (envelope.path) opts.path = envelope.path;
+    if (envelope.body !== undefined) opts.body = envelope.body;
+    const call = async () => {
+      try {
+      const _raw = await Sdk.answerProbe(opts);
+      let data = rt._evaluateResponse(_raw, 'answerProbe', (resp: any) => {
+        const st = resp.status ?? resp.response?.status;
+        if (!st) return undefined;
+        const candidate = st === 429 || st === 503 || st === 500;
+        if (!candidate) return undefined;
+        let prob: any = undefined;
+        if (resp.error && typeof resp.error === 'object') prob = resp.error;
+        const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+        err.status = st; err.name = 'HttpSdkError';
+        if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+        const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+        if (!isBp) err.nonRetryable = true;
+        return err;
+      });
+      const _respSchemaName = 'zAnswerProbeResponse';
+      if (_isVoidResponse(_respSchemaName)) {
+        data = undefined;
+      }
+      if (rt._validation.settings.res !== 'none') {
+        const _schemas = await import('./zod/answerProbe.gen');
+        const _schema = _schemas.zAnswerProbeResponse;
+        if (_schema) {
+          const maybeR = await rt._validation.gateResponse('answerProbe', _schema, data);
+          if (rt._validation.settings.res === 'strict') data = maybeR;
+        }
+      }
+      return data;
+      } catch(e) {
+        // Defer normalization to outer executeWithHttpRetry boundary
+        throw e;
+      }
+    };
+    return rt._invokeWithRetry(() => call(), { opId: 'answerProbe', exempt: true, retryOverride: options?.retry });
   });
 }
 
@@ -4000,6 +4172,87 @@ export function createMappingRule(core: CamundaCore, arg: any, options?: Operati
       }
     };
     return rt._invokeWithRetry(() => call(), { opId: 'createMappingRule', exempt: false, retryOverride: options?.retry });
+  });
+}
+
+/**
+ * Create probe (alpha)
+ *
+ * Asks a worker a short question and waits for its answer in the same request.
+ *
+ * The probe is routed on `probeId`: a worker that polls for this probe ID with
+ * `POST /v2/probes/activation` collects it and answers with
+ * `POST /v2/probes/{probeKey}/answer`. The engine evaluates `input` when the probe is
+ * created and injects the values of the secrets it references before a worker collects it.
+ *
+ * The probe ends at its deadline, `requestTimeout` after the gateway received the request.
+ * Wait at least `requestTimeout` plus one second for the HTTP response, so that you get the
+ * reason the probe ended instead of a client-side timeout. With `requestTimeout` absent or
+ * `0`, the deadline uses the cluster's request timeout, capped at 30 seconds.
+ *
+ * This endpoint is an alpha feature and may be subject to change
+ * in future releases.
+ *
+  *
+ * @operationId createProbe
+ * @tags Probe
+ */
+export function createProbe(core: CamundaCore, input: createProbeInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createProbe>>;
+export function createProbe(core: CamundaCore, arg: any, options?: OperationOptions): CancelablePromise<any> {
+  const rt = core as unknown as OperationRuntime;
+  return toCancelable(async signal => {
+    const _body = arg;
+    let envelope: any = {};
+    envelope.body = _body;
+    if (_bodyHasOptionalTenantIdVariant(envelope.body, [[]])) {
+      envelope.body = { ...envelope.body, tenantId: rt._config.defaultTenantId };
+      rt._log.trace(() => ['tenant.default.inject', { op: 'createProbe', tenant: rt._config.defaultTenantId }]);
+    }
+    if (rt._validation.settings.req !== 'none') {
+      const _schemas = await import('./zod/createProbe.gen');
+      if (envelope.body !== undefined) {
+        const maybeBody = await rt._validation.gateRequest('createProbe', _schemas.zCreateProbeBody, envelope.body);
+        if (rt._validation.settings.req === 'strict') envelope.body = maybeBody;
+      }
+    }
+    const opts: any = { client: rt._client, signal, throwOnError: false };
+    if (envelope.body !== undefined) opts.body = envelope.body;
+    const call = async () => {
+      try {
+      const _raw = await Sdk.createProbe(opts);
+      let data = rt._evaluateResponse(_raw, 'createProbe', (resp: any) => {
+        const st = resp.status ?? resp.response?.status;
+        if (!st) return undefined;
+        const candidate = st === 429 || st === 503 || st === 500;
+        if (!candidate) return undefined;
+        let prob: any = undefined;
+        if (resp.error && typeof resp.error === 'object') prob = resp.error;
+        const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+        err.status = st; err.name = 'HttpSdkError';
+        if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+        const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+        if (!isBp) err.nonRetryable = true;
+        return err;
+      });
+      const _respSchemaName = 'zCreateProbeResponse';
+      if (_isVoidResponse(_respSchemaName)) {
+        data = undefined;
+      }
+      if (rt._validation.settings.res !== 'none') {
+        const _schemas = await import('./zod/createProbe.gen');
+        const _schema = _schemas.zCreateProbeResponse;
+        if (_schema) {
+          const maybeR = await rt._validation.gateResponse('createProbe', _schema, data);
+          if (rt._validation.settings.res === 'strict') data = maybeR;
+        }
+      }
+      return data;
+      } catch(e) {
+        // Defer normalization to outer executeWithHttpRetry boundary
+        throw e;
+      }
+    };
+    return rt._invokeWithRetry(() => call(), { opId: 'createProbe', exempt: false, retryOverride: options?.retry });
   });
 }
 
@@ -10708,10 +10961,17 @@ export function listRuntimeBackupsAsClusterAdmin(core: CamundaCore, arg: any, op
  * dot); those are omitted, since `/secrets/resolve` would reject them and no permission can
  * be granted on them.
  *
- * A returned reference is usable verbatim with `/secrets/resolve`. In a FEEL expression,
+ * A returned reference is usable verbatim with `/secrets/resolve`, although a secret that its
+ * store does not report as `ACTIVE` may fail to resolve there. In a FEEL expression,
  * however, a name that is not a bare identifier has to be backtick-escaped, since FEEL reads
  * a bare dash as the minus operator: a listed `camunda.secrets.db-password` is written
  * `` =camunda.secrets.`db-password` `` in a BPMN input mapping.
+ *
+ * Pass `filter.status` to list only the secrets in the matching states, either as a single
+ * status or with the advanced operators (`$in`, `$neq`, ...). A store that does not report
+ * states reports every secret as `ACTIVE`, so a filter that excludes `ACTIVE` returns
+ * nothing from it. The status filter does not widen access: a reference the caller may not read is
+ * never returned, with or without a filter.
  *
   *
  * @operationId listSecrets
@@ -15673,6 +15933,92 @@ export function searchUserTaskVariables(core: CamundaCore, arg: any, /** Managem
     };
     const invoke = () => toCancelable(()=>call());
     if (useConsistency) return eventualPoll('searchUserTaskVariables', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
+    return invoke();
+  });
+}
+
+/**
+ * Search variable history
+ *
+ * Search for variable history items, which record the changes made to a variable's
+ * value over time. The audit log configuration decides which changes are recorded;
+ * by default, only changes made by users are.
+ *
+ * Results are sorted by `variableHistoryItemKey` ascending by default, which lists the
+ * changes of one variable from oldest to newest. Across partitions, the key says nothing
+ * about time: a search that spans partitions, for example by process definition, lists the
+ * changes of one partition after the other.
+ *
+ * By default, the endpoint truncates long variable values in the response. For the output
+ * collection of a multi-instance element or an ad-hoc sub-process, the endpoint cuts the
+ * value at the size limit regardless of the `truncateValues` parameter. The truncation
+ * size limit is configurable.
+  *
+ * @operationId searchVariableHistory
+ * @tags Variable
+ * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+ */
+export function searchVariableHistory(core: CamundaCore, input: searchVariableHistoryInput, /** Management of eventual consistency **/ consistencyManagement: searchVariableHistoryConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchVariableHistory>>;
+export function searchVariableHistory(core: CamundaCore, arg: any, /** Management of eventual consistency **/ consistencyManagement: searchVariableHistoryConsistency, options?: OperationOptions): CancelablePromise<any> {
+  const rt = core as unknown as OperationRuntime;
+  if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+  const useConsistency = consistencyManagement.consistency;
+  return toCancelable(async signal => {
+    const { truncateValues, ..._body } = arg || {};
+    let envelope: any = {};
+    envelope.query = { truncateValues };
+    envelope.body = _body;
+    if (rt._validation.settings.req !== 'none') {
+      const _schemas = await import('./zod/searchVariableHistory.gen');
+      if (envelope.body !== undefined) {
+        const maybeBody = await rt._validation.gateRequest('searchVariableHistory', _schemas.zSearchVariableHistoryBody, envelope.body);
+        if (rt._validation.settings.req === 'strict') envelope.body = maybeBody;
+      }
+      if (envelope.query !== undefined) {
+        const maybeQuery = await rt._validation.gateRequest('searchVariableHistory', _schemas.zSearchVariableHistoryQuery, envelope.query);
+        if (rt._validation.settings.req === 'strict') envelope.query = maybeQuery;
+      }
+    }
+    const opts: any = { client: rt._client, signal, throwOnError: false };
+    if (envelope.query) opts.query = envelope.query;
+    if (envelope.body !== undefined) opts.body = envelope.body;
+    const call = async () => {
+      try {
+      const _raw = await Sdk.searchVariableHistory(opts);
+      let data = rt._evaluateResponse(_raw, 'searchVariableHistory', (resp: any) => {
+        const st = resp.status ?? resp.response?.status;
+        if (!st) return undefined;
+        const candidate = st === 429 || st === 503 || st === 500;
+        if (!candidate) return undefined;
+        let prob: any = undefined;
+        if (resp.error && typeof resp.error === 'object') prob = resp.error;
+        const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+        err.status = st; err.name = 'HttpSdkError';
+        if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+        const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+        if (!isBp) err.nonRetryable = true;
+        return err;
+      });
+      const _respSchemaName = 'zSearchVariableHistoryResponse';
+      if (_isVoidResponse(_respSchemaName)) {
+        data = undefined;
+      }
+      if (rt._validation.settings.res !== 'none') {
+        const _schemas = await import('./zod/searchVariableHistory.gen');
+        const _schema = _schemas.zSearchVariableHistoryResponse;
+        if (_schema) {
+          const maybeR = await rt._validation.gateResponse('searchVariableHistory', _schema, data);
+          if (rt._validation.settings.res === 'strict') data = maybeR;
+        }
+      }
+      return data;
+      } catch(e) {
+        // Defer normalization to outer executeWithHttpRetry boundary
+        throw e;
+      }
+    };
+    const invoke = () => toCancelable(()=>call());
+    if (useConsistency) return eventualPoll('searchVariableHistory', false, invoke, { ...useConsistency, logger: rt._log, clock: rt._clock, random: rt._random });
     return invoke();
   });
 }

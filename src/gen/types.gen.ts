@@ -6510,6 +6510,13 @@ export type LoopIterationId = number;
 export type HistoryItemId = CamundaKey<'HistoryItemId'>;
 
 /**
+ * The ID of a probe, as its worker registered it: 1 to 256 characters, without whitespace,
+ * and not `*`. The engine matches it to the probe IDs of polling workers by exact equality.
+ *
+ */
+export type ProbeId = CamundaKey<'ProbeId'>;
+
+/**
  * An opaque, engine-minted fencing token identifying a single activation of a job.
  * Returned by Activate Jobs as `ActivatedJobResult.jobLeaseToken` when the job is
  * activated with a lease, and passed back under the same name on fenced job
@@ -8087,6 +8094,11 @@ export type VariableKey = CamundaKey<'VariableKey'>;
 export type ScopeKey = ProcessInstanceKey | ElementInstanceKey;
 
 /**
+ * System-generated key for a variable history item.
+ */
+export type VariableHistoryItemKey = CamundaKey<'VariableHistoryItemKey'>;
+
+/**
  * System-generated key for a incident.
  */
 export type IncidentKey = CamundaKey<'IncidentKey'>;
@@ -8095,6 +8107,11 @@ export type IncidentKey = CamundaKey<'IncidentKey'>;
  * System-generated key for a job.
  */
 export type JobKey = CamundaKey<'JobKey'>;
+
+/**
+ * System-generated key for a probe.
+ */
+export type ProbeKey = CamundaKey<'ProbeKey'>;
 
 /**
  * System-generated key for a decision definition.
@@ -8387,6 +8404,39 @@ export type AdvancedVariableKeyFilter = {
      * Checks if the property matches none of the provided values.
      */
     $notIn?: Array<VariableKey>;
+};
+
+/**
+ * VariableHistoryItemKey property with full advanced search capabilities.
+ */
+export type VariableHistoryItemKeyFilterProperty = VariableHistoryItemKeyExactMatch | AdvancedVariableHistoryItemKeyFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced VariableHistoryItemKey filter.
+ */
+export type AdvancedVariableHistoryItemKeyFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: VariableHistoryItemKey;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: VariableHistoryItemKey;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<VariableHistoryItemKey>;
+    /**
+     * Checks if the property matches none of the provided values.
+     */
+    $notIn?: Array<VariableHistoryItemKey>;
 };
 
 /**
@@ -9407,6 +9457,247 @@ export type MessageSubscriptionKey = CamundaKey<'MessageSubscriptionKey'>;
  * System-generated key for an message.
  */
 export type MessageKey = CamundaKey<'MessageKey'>;
+
+export type ProbeCreationRequest = {
+    /**
+     * The probe ID, as the worker registered it: 1 to 256 characters, without whitespace, and
+     * not `*`. The engine matches it to the probe IDs of polling workers by exact equality.
+     *
+     */
+    probeId: ProbeId;
+    /**
+     * A FEEL expression that evaluates to a context: the question for the worker, whose shape
+     * the worker of the probe ID defines. References to `camunda.vars` and
+     * `camunda.secrets` follow the rules of input mappings.
+     *
+     */
+    input: string;
+    /**
+     * The tenant of the probe. Required with multi-tenancy.
+     */
+    tenantId?: TenantId;
+    /**
+     * How long to wait for an answer, in milliseconds, from 0 to 30000. With `0` or absent,
+     * the cluster's request timeout is used, capped at 30000.
+     *
+     */
+    requestTimeout?: number;
+};
+
+/**
+ * The answer of the worker, one of three shapes chosen by `outcome`.
+ *
+ */
+export type ProbeResult = ({
+    outcome: 'OK';
+} & ProbeOkResult) | ({
+    outcome: 'UNSUPPORTED';
+} & ProbeUnsupportedResult) | ({
+    outcome: 'ERROR';
+} & ProbeErrorResult);
+
+/**
+ * OK probe result
+ *
+ * The worker produced an answer.
+ */
+export type ProbeOkResult = {
+    /**
+     * The outcome of the probe, `OK`.
+     */
+    outcome: string;
+    /**
+     * The name of the worker that answered.
+     */
+    worker: string;
+    /**
+     * The answer, whose shape the worker of the probe ID defines.
+     */
+    data: {
+        [key: string]: unknown;
+    };
+};
+
+/**
+ * Unsupported probe result
+ *
+ * The worker does not support this probe.
+ */
+export type ProbeUnsupportedResult = {
+    /**
+     * The outcome of the probe, `UNSUPPORTED`.
+     */
+    outcome: string;
+    /**
+     * The name of the worker that answered.
+     */
+    worker: string;
+};
+
+/**
+ * Error probe result
+ *
+ * The worker failed to produce an answer.
+ */
+export type ProbeErrorResult = {
+    /**
+     * The outcome of the probe, `ERROR`.
+     */
+    outcome: string;
+    /**
+     * The name of the worker that answered.
+     */
+    worker: string;
+    /**
+     * Why the worker failed, at most 500 characters.
+     */
+    message: string;
+};
+
+export type ProbeActivationRequest = {
+    /**
+     * The probe IDs to collect probes for: 1 to 100 distinct values, each 1 to 256
+     * characters, without whitespace, and not `*`. Probe IDs on which the caller lacks the
+     * `ANSWER` permission are skipped.
+     *
+     */
+    probeIds: Array<ProbeId>;
+    /**
+     * The name of the worker, returned to the client in the answer.
+     */
+    worker?: string;
+    /**
+     * The maximum number of probes to collect with this request, at least 1.
+     */
+    maxProbesToActivate: number;
+    /**
+     * How long to hold the request until a probe is collected, in milliseconds. With `0` or
+     * absent, the cluster's long polling timeout is used. With a value below `0`, long
+     * polling is off and the request returns at once, also when it collected no probe.
+     *
+     */
+    requestTimeout?: number;
+    /**
+     * A list of IDs of tenants for which to collect probes.
+     */
+    tenantIds?: Array<TenantId>;
+    /**
+     * The tenant filtering strategy - determines whether to use provided tenant IDs or assigned tenant IDs from the authenticated principal's authorized tenants.
+     *
+     */
+    tenantFilter?: TenantFilterEnum;
+};
+
+/**
+ * The collected probes.
+ */
+export type ProbeActivationResult = {
+    /**
+     * The collected probes, none when the request timed out.
+     */
+    probes: Array<ActivatedProbeResult>;
+};
+
+export type ActivatedProbeResult = {
+    /**
+     * The key to answer the probe with.
+     */
+    probeKey: ProbeKey;
+    /**
+     * The probe ID, to pick the handler when the worker polls several probe IDs.
+     */
+    probeId: ProbeId;
+    /**
+     * The name of the worker that collected the probe.
+     */
+    worker: string;
+    /**
+     * The deadline of the probe, as a UNIX epoch timestamp in milliseconds. An answer after
+     * it gets 404.
+     *
+     */
+    deadline: number;
+    /**
+     * The ID of the tenant of the probe.
+     */
+    tenantId: TenantId;
+    /**
+     * The ID of the physical tenant that the activation request was routed to;
+     * the default physical tenant when the request did not specify one.
+     *
+     */
+    physicalTenantId: string;
+    /**
+     * The evaluated input, with the values of its secrets injected.
+     */
+    input: {
+        [key: string]: unknown;
+    };
+    /**
+     * The JSON pointers (RFC 6901) of the `input` values into which the engine injected a
+     * secret value; empty when none. Remove these values from logs and error messages.
+     *
+     */
+    secretPointers: Array<string>;
+};
+
+/**
+ * The answer of the worker, one of three shapes chosen by `outcome`.
+ *
+ */
+export type ProbeAnswerRequest = ({
+    outcome: 'OK';
+} & ProbeOkAnswerRequest) | ({
+    outcome: 'UNSUPPORTED';
+} & ProbeUnsupportedAnswerRequest) | ({
+    outcome: 'ERROR';
+} & ProbeErrorAnswerRequest);
+
+/**
+ * OK probe answer
+ *
+ * The worker produced an answer.
+ */
+export type ProbeOkAnswerRequest = {
+    /**
+     * The outcome of the probe, `OK`.
+     */
+    outcome: string;
+    /**
+     * The answer, whose shape the worker of the probe ID defines.
+     */
+    data: {
+        [key: string]: unknown;
+    };
+};
+
+/**
+ * Unsupported probe answer
+ *
+ * The worker does not support this probe.
+ */
+export type ProbeUnsupportedAnswerRequest = {
+    /**
+     * The outcome of the probe, `UNSUPPORTED`.
+     */
+    outcome: string;
+};
+
+/**
+ * Error probe answer
+ *
+ * The worker failed to produce an answer.
+ */
+export type ProbeErrorAnswerRequest = {
+    /**
+     * The outcome of the probe, `ERROR`.
+     */
+    outcome: string;
+    /**
+     * Why the worker failed, 1 to 500 characters.
+     */
+    message: string;
+};
 
 /**
  * A Problem detail object as described in [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457). There may be additional properties specific to the problem type.
@@ -11300,14 +11591,87 @@ export type SecretResolutionError = {
 export type SecretErrorCode = 'NOT_FOUND' | 'ACCESS_DENIED' | 'INVALID_REFERENCE' | 'UNREADABLE';
 
 /**
- * Reserved for future filtering options. Currently takes no properties. The request body is
- * optional: omitting it (or sending an empty object) applies no filters.
+ * Options for listing secrets. The request body is optional: omitting it, or sending an empty
+ * object, lists every secret the caller may read.
  *
  */
 export type SecretListRequest = {
-    [key: string]: never;
+    /**
+     * Narrows the listed secrets. Omit it to list secrets in every state. Clusters before 8.11
+     * reject this property with `400`.
+     *
+     */
+    filter?: SecretListFilter;
 };
 
+/**
+ * Secret list filter.
+ */
+export type SecretListFilter = {
+    /**
+     * Only list secrets in the matching states. Omit it to list secrets in every state.
+     */
+    status?: SecretStatusFilterProperty;
+};
+
+/**
+ * SecretStatusEnum property with full advanced search capabilities.
+ */
+export type SecretStatusFilterProperty = SecretStatusExactMatch | AdvancedSecretStatusFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced SecretStatusEnum filter.
+ */
+export type AdvancedSecretStatusFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: SecretStatusEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: SecretStatusEnum;
+    /**
+     * Checks if the current property exists. Every listed secret has a status, so `true`
+     * matches every secret and `false` matches none.
+     *
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<SecretStatusEnum>;
+    /**
+     * Checks if the property matches none of the provided values.
+     */
+    $notIn?: Array<SecretStatusEnum>;
+    $like?: LikeFilter;
+};
+
+/**
+ * The state a secret store reports for a secret.
+ *
+ * - `ACTIVE`: the store reports the secret as usable.
+ * - `DISABLED`: the secret was disabled in its store.
+ * - `EXPIRED`: the secret's expiry date has passed.
+ * - `NOT_YET_ACTIVE`: the secret's activation date is in the future.
+ *
+ * A secret has exactly one status. When several apply, `DISABLED` wins over `EXPIRED`, and
+ * `EXPIRED` over `NOT_YET_ACTIVE`: a secret that is both disabled and expired is listed only
+ * as `DISABLED`, so an `EXPIRED` filter skips it.
+ *
+ * A store that cannot report states reports every secret as `ACTIVE`.
+ *
+ */
+export const SecretStatusEnum = {
+  ACTIVE: 'ACTIVE',
+  DISABLED: 'DISABLED',
+  EXPIRED: 'EXPIRED',
+  NOT_YET_ACTIVE: 'NOT_YET_ACTIVE',
+} as const;
+export type SecretStatusEnum = (typeof SecretStatusEnum)[keyof typeof SecretStatusEnum];
 /**
  * The secret references the caller is authorized to see.
  *
@@ -12657,6 +13021,347 @@ export type SetVariableRequest = {
     operationReference?: OperationReference;
 };
 
+export type VariableHistoryItemSearchQuerySortRequest = {
+    /**
+     * The field to sort by.
+     */
+    field: 'variableHistoryItemKey';
+    order?: SortOrderEnum;
+};
+
+/**
+ * Variable history item search query request.
+ */
+export type VariableHistoryItemSearchQuery = SearchQueryRequest & {
+    /**
+     * Sort field criteria.
+     */
+    sort?: Array<VariableHistoryItemSearchQuerySortRequest>;
+    /**
+     * The variable history item search filters.
+     */
+    filter?: VariableHistoryItemFilter;
+};
+
+/**
+ * Variable history item filter request.
+ */
+export type VariableHistoryItemFilter = {
+    /**
+     * The key of the variable this history item belongs to.
+     */
+    variableKey?: VariableKeyFilterProperty;
+    /**
+     * The key of the process instance of this variable.
+     */
+    processInstanceKey?: ProcessInstanceKeyFilterProperty;
+    /**
+     * Name of the variable.
+     */
+    name?: StringFilterProperty;
+    /**
+     * The key of the scope that defines where this variable is directly defined. This can
+     * be a process instance key (for process-level variables) or an element instance key
+     * (for local variables scoped to tasks, sub-processes, gateways, events, etc.).
+     *
+     */
+    scopeKey?: ScopeKeyFilterProperty;
+    /**
+     * The model-defined id of the element that caused this change, if any.
+     */
+    elementId?: ElementIdFilterProperty;
+    /**
+     * The key of the element instance that caused this change, if any.
+     */
+    elementInstanceKey?: ElementInstanceKeyFilterProperty;
+    /**
+     * The unique key of this variable history item.
+     */
+    variableHistoryItemKey?: VariableHistoryItemKeyFilterProperty;
+    /**
+     * The key of the process definition.
+     */
+    processDefinitionKey?: ProcessDefinitionKeyFilterProperty;
+    /**
+     * The id of the process definition.
+     */
+    processDefinitionId?: ProcessDefinitionIdFilterProperty;
+    /**
+     * The tenant id of this variable.
+     */
+    tenantId?: StringFilterProperty;
+    /**
+     * The timestamp when this change occurred.
+     */
+    timestamp?: DateTimeFilterProperty;
+    /**
+     * The type of operation that produced this variable change.
+     */
+    operationType?: VariableHistoryItemOperationTypeFilterProperty;
+    /**
+     * What wrote this variable value.
+     */
+    variableOperationType?: VariableHistoryItemVariableOperationTypeFilterProperty;
+    /**
+     * The type of the actor who performed the operation.
+     */
+    actorType?: VariableHistoryItemActorTypeFilterProperty;
+    /**
+     * The id of the user or client that caused this change, if known.
+     */
+    actorId?: StringFilterProperty;
+    /**
+     * The element id of the agent that caused this change, for example the element id
+     * of an ad-hoc sub-process, if any.
+     *
+     */
+    agentElementId?: ElementIdFilterProperty;
+};
+
+/**
+ * Variable history item search query response.
+ */
+export type VariableHistoryItemSearchQueryResult = SearchQueryResponse & {
+    /**
+     * The matching variable history items.
+     */
+    items: Array<VariableHistoryItemSearchResult>;
+};
+
+/**
+ * Variable history item search response item.
+ */
+export type VariableHistoryItemSearchResult = VariableHistoryItemResultBase & {
+    /**
+     * Value of this variable change. Can be truncated, also when `truncateValues` is false, for the output collection of a multi-instance element or an ad-hoc sub-process.
+     */
+    value: string;
+    /**
+     * Indicates if the value is truncated.
+     */
+    isTruncated: boolean;
+};
+
+/**
+ * Variable history item response base.
+ */
+export type VariableHistoryItemResultBase = {
+    /**
+     * The unique key of this variable history item.
+     */
+    variableHistoryItemKey: VariableHistoryItemKey;
+    /**
+     * The key of the variable this history item belongs to.
+     */
+    variableKey: VariableKey;
+    /**
+     * Name of the variable.
+     */
+    name: string;
+    /**
+     * The key of the scope where this variable is directly defined. For process-level
+     * variables, this is the process instance key. For local variables, this is the key
+     * of the specific element instance where the variable is directly defined.
+     *
+     */
+    scopeKey: ScopeKey;
+    /**
+     * The key of the element instance that caused this change, if any.
+     */
+    elementInstanceKey: ElementInstanceKey | null;
+    /**
+     * The model-defined id of the element that caused this change, if any.
+     */
+    elementId: ElementId | null;
+    /**
+     * The key of the process instance of this variable.
+     */
+    processInstanceKey: ProcessInstanceKey;
+    /**
+     * The key of the root process instance. The root process instance is the top-level
+     * ancestor in the process instance hierarchy. This field is only present for data
+     * belonging to process instance hierarchies created in version 8.9 or later.
+     *
+     */
+    rootProcessInstanceKey: ProcessInstanceKey | null;
+    /**
+     * The key of the process definition.
+     */
+    processDefinitionKey: ProcessDefinitionKey;
+    /**
+     * The id of the process definition.
+     */
+    processDefinitionId: ProcessDefinitionId;
+    /**
+     * The tenant id of this variable.
+     */
+    tenantId: TenantId;
+    /**
+     * The timestamp when this change occurred.
+     */
+    timestamp: string;
+    operationType: VariableHistoryItemOperationTypeEnum;
+    variableOperationType: VariableHistoryItemVariableOperationTypeEnum;
+    actorType: VariableHistoryItemActorTypeEnum;
+    /**
+     * The id of the user or client that caused this change, if known.
+     */
+    actorId: string | null;
+    /**
+     * The element id of the agent that caused this change, for example the element id
+     * of an ad-hoc sub-process, if any.
+     *
+     */
+    agentElementId: ElementId | null;
+};
+
+/**
+ * The type of operation that produced this variable change. Camunda can add values in later
+ * versions; clients must handle unknown values gracefully.
+ *
+ */
+export const VariableHistoryItemOperationTypeEnum = {
+  CREATE: 'CREATE',
+  UPDATE: 'UPDATE',
+} as const;
+export type VariableHistoryItemOperationTypeEnum = (typeof VariableHistoryItemOperationTypeEnum)[keyof typeof VariableHistoryItemOperationTypeEnum];
+/**
+ * What wrote this variable value, for example a job completion, a script result, or a
+ * multi-instance output collection. Camunda can add values in later versions; clients must
+ * handle unknown values gracefully.
+ *
+ */
+export const VariableHistoryItemVariableOperationTypeEnum = {
+  API: 'API',
+  USER_TASK_COMPLETION: 'USER_TASK_COMPLETION',
+  PROCESS_INSTANCE_CREATION: 'PROCESS_INSTANCE_CREATION',
+  PROCESS_INSTANCE_MODIFICATION: 'PROCESS_INSTANCE_MODIFICATION',
+  JOB_COMPLETION: 'JOB_COMPLETION',
+  JOB_FAILURE: 'JOB_FAILURE',
+  JOB_ERROR: 'JOB_ERROR',
+  EXECUTION_LISTENER_COMPLETION: 'EXECUTION_LISTENER_COMPLETION',
+  MESSAGE_CORRELATION: 'MESSAGE_CORRELATION',
+  SIGNAL_BROADCAST: 'SIGNAL_BROADCAST',
+  CONDITIONAL_EVALUATION: 'CONDITIONAL_EVALUATION',
+  AD_HOC_SUB_PROCESS_ACTIVATION: 'AD_HOC_SUB_PROCESS_ACTIVATION',
+  INPUT_MAPPING: 'INPUT_MAPPING',
+  OUTPUT_MAPPING: 'OUTPUT_MAPPING',
+  SCRIPT_RESULT: 'SCRIPT_RESULT',
+  DECISION_RESULT: 'DECISION_RESULT',
+  CALL_ACTIVITY_INPUT: 'CALL_ACTIVITY_INPUT',
+  CALL_ACTIVITY_OUTPUT: 'CALL_ACTIVITY_OUTPUT',
+  MULTI_INSTANCE_INPUT_ELEMENT: 'MULTI_INSTANCE_INPUT_ELEMENT',
+  MULTI_INSTANCE_LOOP_COUNTER: 'MULTI_INSTANCE_LOOP_COUNTER',
+  MULTI_INSTANCE_OUTPUT_ELEMENT: 'MULTI_INSTANCE_OUTPUT_ELEMENT',
+  MULTI_INSTANCE_OUTPUT_COLLECTION: 'MULTI_INSTANCE_OUTPUT_COLLECTION',
+  AD_HOC_SUB_PROCESS_METADATA: 'AD_HOC_SUB_PROCESS_METADATA',
+  AD_HOC_SUB_PROCESS_OUTPUT_ELEMENT: 'AD_HOC_SUB_PROCESS_OUTPUT_ELEMENT',
+  AD_HOC_SUB_PROCESS_OUTPUT_COLLECTION: 'AD_HOC_SUB_PROCESS_OUTPUT_COLLECTION',
+  UNKNOWN: 'UNKNOWN',
+} as const;
+export type VariableHistoryItemVariableOperationTypeEnum = (typeof VariableHistoryItemVariableOperationTypeEnum)[keyof typeof VariableHistoryItemVariableOperationTypeEnum];
+/**
+ * The type of the actor who performed the operation. Camunda can add values in later
+ * versions; clients must handle unknown values gracefully.
+ *
+ */
+export const VariableHistoryItemActorTypeEnum = {
+  USER: 'USER',
+  CLIENT: 'CLIENT',
+  ENGINE: 'ENGINE',
+  UNKNOWN: 'UNKNOWN',
+} as const;
+export type VariableHistoryItemActorTypeEnum = (typeof VariableHistoryItemActorTypeEnum)[keyof typeof VariableHistoryItemActorTypeEnum];
+/**
+ * VariableHistoryItemOperationTypeEnum property with full advanced search capabilities.
+ */
+export type VariableHistoryItemOperationTypeFilterProperty = VariableHistoryItemOperationTypeExactMatch | AdvancedVariableHistoryItemOperationTypeFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced VariableHistoryItemOperationTypeEnum filter.
+ */
+export type AdvancedVariableHistoryItemOperationTypeFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: VariableHistoryItemOperationTypeEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: VariableHistoryItemOperationTypeEnum;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<VariableHistoryItemOperationTypeEnum>;
+    $like?: LikeFilter;
+};
+
+/**
+ * VariableHistoryItemVariableOperationTypeEnum property with full advanced search capabilities.
+ */
+export type VariableHistoryItemVariableOperationTypeFilterProperty = VariableHistoryItemVariableOperationTypeExactMatch | AdvancedVariableHistoryItemVariableOperationTypeFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced VariableHistoryItemVariableOperationTypeEnum filter.
+ */
+export type AdvancedVariableHistoryItemVariableOperationTypeFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: VariableHistoryItemVariableOperationTypeEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: VariableHistoryItemVariableOperationTypeEnum;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<VariableHistoryItemVariableOperationTypeEnum>;
+    $like?: LikeFilter;
+};
+
+/**
+ * VariableHistoryItemActorTypeEnum property with full advanced search capabilities.
+ */
+export type VariableHistoryItemActorTypeFilterProperty = VariableHistoryItemActorTypeExactMatch | AdvancedVariableHistoryItemActorTypeFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced VariableHistoryItemActorTypeEnum filter.
+ */
+export type AdvancedVariableHistoryItemActorTypeFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: VariableHistoryItemActorTypeEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: VariableHistoryItemActorTypeEnum;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<VariableHistoryItemActorTypeEnum>;
+    $like?: LikeFilter;
+};
+
 /**
  * Exact match
  *
@@ -12921,6 +13626,13 @@ export type VariableKeyExactMatch = VariableKey;
  *
  * Matches the value exactly.
  */
+export type VariableHistoryItemKeyExactMatch = VariableHistoryItemKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export type DecisionEvaluationInstanceKeyExactMatch = DecisionEvaluationInstanceKey;
 
 /**
@@ -13005,7 +13717,35 @@ export type ProcessInstanceStateExactMatch = ProcessInstanceStateEnum;
  *
  * Matches the value exactly.
  */
+export type SecretStatusExactMatch = SecretStatusEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export type UserTaskStateExactMatch = UserTaskStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type VariableHistoryItemOperationTypeExactMatch = VariableHistoryItemOperationTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type VariableHistoryItemVariableOperationTypeExactMatch = VariableHistoryItemVariableOperationTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type VariableHistoryItemActorTypeExactMatch = VariableHistoryItemActorTypeEnum;
 
 /**
  * System-generated key for an authorization.
@@ -13206,6 +13946,11 @@ export type VariableKeyWritable = LongKey;
 export type ScopeKeyWritable = ProcessInstanceKeyWritable | ElementInstanceKeyWritable;
 
 /**
+ * System-generated key for a variable history item.
+ */
+export type VariableHistoryItemKeyWritable = LongKey;
+
+/**
  * System-generated key for a incident.
  */
 export type IncidentKeyWritable = LongKey;
@@ -13214,6 +13959,11 @@ export type IncidentKeyWritable = LongKey;
  * System-generated key for a job.
  */
 export type JobKeyWritable = LongKey;
+
+/**
+ * System-generated key for a probe.
+ */
+export type ProbeKeyWritable = LongKey;
 
 /**
  * System-generated key for a decision definition.
@@ -13534,6 +14284,13 @@ export type VariableKeyExactMatchWritable = VariableKeyWritable;
  *
  * Matches the value exactly.
  */
+export type VariableHistoryItemKeyExactMatchWritable = VariableHistoryItemKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export type DecisionEvaluationInstanceKeyExactMatchWritable = DecisionEvaluationInstanceKey;
 
 /**
@@ -13618,7 +14375,35 @@ export type ProcessInstanceStateExactMatchWritable = ProcessInstanceStateEnum;
  *
  * Matches the value exactly.
  */
+export type SecretStatusExactMatchWritable = SecretStatusEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export type UserTaskStateExactMatchWritable = UserTaskStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type VariableHistoryItemOperationTypeExactMatchWritable = VariableHistoryItemOperationTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type VariableHistoryItemVariableOperationTypeExactMatchWritable = VariableHistoryItemVariableOperationTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type VariableHistoryItemActorTypeExactMatchWritable = VariableHistoryItemActorTypeEnum;
 
 export type GetAgentDefinitionData = {
     body?: never;
@@ -18910,6 +19695,187 @@ export type PublishMessageResponses = {
 };
 
 export type PublishMessageResponse = PublishMessageResponses[keyof PublishMessageResponses];
+
+export type CreateProbeData = {
+    body: ProbeCreationRequest;
+    path?: never;
+    query?: never;
+    url: '/probes';
+};
+
+export type CreateProbeErrors = {
+    /**
+     * The request is invalid, or the probe ended because of its secrets.
+     *
+     * The title of the problem tells the two apart:
+     * - `INVALID_ARGUMENT`: the body is invalid, for example a blank input, a probe ID that is
+     * not valid, a `requestTimeout` out of range, or an input that is not a valid
+     * expression or does not evaluate to a context.
+     * - `SECRET_RESOLUTION_ERROR`: a secret that the input references could not be resolved,
+     * or its value could not be injected into the input.
+     *
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * No worker collected the probe before its deadline: no worker polls this probe ID, or
+     * the workers that poll it lack the `ANSWER` permission on it. The title is `NO_WORKER`.
+     *
+     */
+    404: ProblemDetail;
+    /**
+     * The request is too large to be written to the log. The title is `PAYLOAD_TOO_LARGE`.
+     *
+     */
+    413: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+    /**
+     * The probe got no answer in time.
+     *
+     * The title of the problem tells why:
+     * - `WORKER_DID_NOT_ANSWER`: a worker collected the probe but did not answer before its
+     * deadline.
+     * - `SECRET_RESOLUTION_TIMEOUT`: the probe still waited for the values of its secrets at
+     * its deadline.
+     * - `DEADLINE_EXCEEDED`: the gateway timed out before the engine answered, for example
+     * after a leader change.
+     *
+     */
+    504: ProblemDetail;
+};
+
+export type CreateProbeError = CreateProbeErrors[keyof CreateProbeErrors];
+
+export type CreateProbeResponses = {
+    /**
+     * A worker answered. The body is one of three shapes, chosen by `outcome`: `OK` with the
+     * worker's `data`, `UNSUPPORTED`, or `ERROR` with a `message`.
+     *
+     */
+    200: ProbeResult;
+};
+
+export type CreateProbeResponse = CreateProbeResponses[keyof CreateProbeResponses];
+
+export type ActivateProbesData = {
+    body: ProbeActivationRequest;
+    path?: never;
+    query?: never;
+    url: '/probes/activation';
+};
+
+export type ActivateProbesErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type ActivateProbesError = ActivateProbesErrors[keyof ActivateProbesErrors];
+
+export type ActivateProbesResponses = {
+    /**
+     * The collected probes, none when the request timed out.
+     */
+    200: ProbeActivationResult;
+};
+
+export type ActivateProbesResponse = ActivateProbesResponses[keyof ActivateProbesResponses];
+
+export type AnswerProbeData = {
+    body: ProbeAnswerRequest;
+    path: {
+        /**
+         * The key of the probe to answer.
+         */
+        probeKey: ProbeKeyWritable;
+    };
+    query?: never;
+    url: '/probes/{probeKey}/answer';
+};
+
+export type AnswerProbeErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * The probe with the given key is not found: it ended already, its deadline passed, or it belongs to a tenant the caller is not assigned to.
+     *
+     */
+    404: ProblemDetail;
+    /**
+     * The probe with the given key is not activated: no worker collected it, or it waits for the values of its secrets.
+     *
+     */
+    409: ProblemDetail;
+    /**
+     * The answer is too large to be written to the log. The title is `PAYLOAD_TOO_LARGE`.
+     * Answer with a short `ERROR` instead, so that the client does not wait for the deadline.
+     *
+     */
+    413: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type AnswerProbeError = AnswerProbeErrors[keyof AnswerProbeErrors];
+
+export type AnswerProbeResponses = {
+    /**
+     * The answer is accepted.
+     */
+    204: void;
+};
+
+export type AnswerProbeResponse = AnswerProbeResponses[keyof AnswerProbeResponses];
 
 export type ResumeProcessDefinitionsData = {
     body: ProcessDefinitionResumptionInstruction;
@@ -24441,6 +25407,48 @@ export type SearchUserTaskVariablesResponses = {
 
 export type SearchUserTaskVariablesResponse = SearchUserTaskVariablesResponses[keyof SearchUserTaskVariablesResponses];
 
+export type SearchVariableHistoryData = {
+    body?: VariableHistoryItemSearchQuery;
+    path?: never;
+    query?: {
+        /**
+         * When true (default), long variable values in the response are truncated. When false, full variable values are returned where available.
+         */
+        truncateValues?: boolean;
+    };
+    url: '/variables/history/search';
+};
+
+export type SearchVariableHistoryErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type SearchVariableHistoryError = SearchVariableHistoryErrors[keyof SearchVariableHistoryErrors];
+
+export type SearchVariableHistoryResponses = {
+    /**
+     * The variable history search result.
+     */
+    200: VariableHistoryItemSearchQueryResult;
+};
+
+export type SearchVariableHistoryResponse = SearchVariableHistoryResponses[keyof SearchVariableHistoryResponses];
+
 export type SearchVariablesData = {
     body?: VariableSearchQuery;
     path?: never;
@@ -24532,7 +25540,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:914f89f26245982b7e11d9a3bdcbfccdc228e07fbf7bd7008279ed1d494d70ed
+// specHash=sha256:aaebe938a1573864cae21403b7323b369e4e6e643df8fae8f241dc787718f6a7
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
@@ -25114,6 +26122,42 @@ export const MessageSubscriptionKey: {
     } catch { return false; }
   },
 };
+// The ID of a probe, as its worker registered it: 1 to 256 characters, without whitespace, and not `*`. The engine matches it to the probe IDs of polling workers by exact equality. 
+export const ProbeId: {
+  assumeExists(value: string): ProbeId;
+  getValue(key: ProbeId): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): ProbeId {
+    assertConstraint(value, 'ProbeId', { pattern: "^\\S+$", minLength: 1, maxLength: 256 });
+    return value as any;
+  },
+  getValue(key: ProbeId): string { return key; },
+  isValid(value: string): boolean {
+    try {
+      assertConstraint(value, 'ProbeId', { pattern: "^\\S+$", minLength: 1, maxLength: 256 });
+      return true;
+    } catch { return false; }
+  },
+};
+// System-generated key for a probe.
+export const ProbeKey: {
+  assumeExists(value: string): ProbeKey;
+  getValue(key: ProbeKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): ProbeKey {
+    assertConstraint(value, 'ProbeKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+    return value as any;
+  },
+  getValue(key: ProbeKey): string { return key; },
+  isValid(value: string): boolean {
+    try {
+      assertConstraint(value, 'ProbeKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+      return true;
+    } catch { return false; }
+  },
+};
 // Id of a process definition, from the model. Only ids of process definitions that are deployed are useful.
 export const ProcessDefinitionId: {
   assumeExists(value: string): ProcessDefinitionId;
@@ -25290,6 +26334,24 @@ export const UserTaskKey: {
   isValid(value: string): boolean {
     try {
       assertConstraint(value, 'UserTaskKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+      return true;
+    } catch { return false; }
+  },
+};
+// System-generated key for a variable history item.
+export const VariableHistoryItemKey: {
+  assumeExists(value: string): VariableHistoryItemKey;
+  getValue(key: VariableHistoryItemKey): string;
+  isValid(value: string): boolean;
+} = {
+  assumeExists(value: string): VariableHistoryItemKey {
+    assertConstraint(value, 'VariableHistoryItemKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+    return value as any;
+  },
+  getValue(key: VariableHistoryItemKey): string { return key; },
+  isValid(value: string): boolean {
+    try {
+      assertConstraint(value, 'VariableHistoryItemKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
   },

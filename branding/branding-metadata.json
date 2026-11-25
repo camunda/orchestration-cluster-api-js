@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2.0.0",
-  "specHash": "sha256:914f89f26245982b7e11d9a3bdcbfccdc228e07fbf7bd7008279ed1d494d70ed",
+  "specHash": "sha256:aaebe938a1573864cae21403b7323b369e4e6e643df8fae8f241dc787718f6a7",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -1352,6 +1352,89 @@
       }
     },
     {
+      "name": "ProbeId",
+      "semanticType": "ProbeId",
+      "category": "model-id",
+      "description": "The ID of a probe, as its worker registered it: 1 to 256 characters, without whitespace,\nand not `*`. The engine matches it to the probe IDs of polling workers by exact equality.\n",
+      "composition": {
+        "schemaKind": "inline",
+        "refs": [],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "pattern": "^\\S+$",
+        "minLength": 1,
+        "maxLength": 256,
+        "format": "ProbeId"
+      },
+      "examples": [
+        "validate-configuration/io.camunda:aws-credential:1"
+      ],
+      "extensions": {
+        "x-semantic-type": "ProbeId"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "probe-id",
+      "brand": {
+        "tsType": "CamundaKey<'ProbeId'>"
+      },
+      "zod": {
+        "schemaName": "zProbeId",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ProbeId"
+      }
+    },
+    {
+      "name": "ProbeKey",
+      "semanticType": "ProbeKey",
+      "category": "system-key",
+      "description": "System-generated key for a probe.",
+      "composition": {
+        "schemaKind": "allOf",
+        "refs": [
+          "LongKey"
+        ],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "pattern": "^-?[0-9]+$",
+        "minLength": 1,
+        "maxLength": 25
+      },
+      "examples": [
+        "2251799813685464"
+      ],
+      "extensions": {
+        "x-semantic-type": "ProbeKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "probe-key",
+      "brand": {
+        "tsType": "CamundaKey<'ProbeKey'>"
+      },
+      "zod": {
+        "schemaName": "zProbeKey",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ProbeKey"
+      }
+    },
+    {
       "name": "ProcessDefinitionId",
       "semanticType": "ProcessDefinitionId",
       "category": "model-id",
@@ -1757,6 +1840,48 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/UserTaskKey"
+      }
+    },
+    {
+      "name": "VariableHistoryItemKey",
+      "semanticType": "VariableHistoryItemKey",
+      "category": "system-key",
+      "description": "System-generated key for a variable history item.",
+      "composition": {
+        "schemaKind": "allOf",
+        "refs": [
+          "LongKey"
+        ],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "pattern": "^-?[0-9]+$",
+        "minLength": 1,
+        "maxLength": 25
+      },
+      "examples": [
+        "2251799813683999"
+      ],
+      "extensions": {
+        "x-semantic-type": "VariableHistoryItemKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "variable-history-item-key",
+      "brand": {
+        "tsType": "CamundaKey<'VariableHistoryItemKey'>"
+      },
+      "zod": {
+        "schemaName": "zVariableHistoryItemKey",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/VariableHistoryItemKey"
       }
     },
     {
@@ -2968,6 +3093,60 @@
       }
     },
     {
+      "name": "ProbeAnswerRequest",
+      "kind": "union-wrapper",
+      "description": "The answer of the worker, one of three shapes chosen by `outcome`.\n",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "ProbeOkAnswerRequest"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "ProbeUnsupportedAnswerRequest"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "ProbeErrorAnswerRequest"
+        }
+      ],
+      "stableId": "probe-answer-request",
+      "tsType": "ProbeOkAnswerRequest | ProbeUnsupportedAnswerRequest | ProbeErrorAnswerRequest",
+      "zod": {
+        "schemaName": "zProbeAnswerRequest"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ProbeAnswerRequest"
+      }
+    },
+    {
+      "name": "ProbeResult",
+      "kind": "union-wrapper",
+      "description": "The answer of the worker, one of three shapes chosen by `outcome`.\n",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "ProbeOkResult"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "ProbeUnsupportedResult"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "ProbeErrorResult"
+        }
+      ],
+      "stableId": "probe-result",
+      "tsType": "ProbeOkResult | ProbeUnsupportedResult | ProbeErrorResult",
+      "zod": {
+        "schemaName": "zProbeResult"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ProbeResult"
+      }
+    },
+    {
       "name": "ProcessDefinitionIdFilterProperty",
       "kind": "union-wrapper",
       "description": "ProcessDefinitionId property with full advanced search capabilities.",
@@ -3305,6 +3484,29 @@
       }
     },
     {
+      "name": "SecretStatusFilterProperty",
+      "kind": "union-wrapper",
+      "description": "SecretStatusEnum property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "SecretStatusExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedSecretStatusFilter"
+        }
+      ],
+      "stableId": "secret-status-filter-property",
+      "tsType": "SecretStatusExactMatch | AdvancedSecretStatusFilter",
+      "zod": {
+        "schemaName": "zSecretStatusFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/SecretStatusFilterProperty"
+      }
+    },
+    {
       "name": "SourceElementInstruction",
       "kind": "union-wrapper",
       "description": "Defines the source element identifier for the move instruction. It can either be a sourceElementId, or sourceElementInstanceKey.\n",
@@ -3370,6 +3572,98 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/UserTaskStateFilterProperty"
+      }
+    },
+    {
+      "name": "VariableHistoryItemActorTypeFilterProperty",
+      "kind": "union-wrapper",
+      "description": "VariableHistoryItemActorTypeEnum property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "VariableHistoryItemActorTypeExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedVariableHistoryItemActorTypeFilter"
+        }
+      ],
+      "stableId": "variable-history-item-actor-type-filter-property",
+      "tsType": "VariableHistoryItemActorTypeExactMatch | AdvancedVariableHistoryItemActorTypeFilter",
+      "zod": {
+        "schemaName": "zVariableHistoryItemActorTypeFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/VariableHistoryItemActorTypeFilterProperty"
+      }
+    },
+    {
+      "name": "VariableHistoryItemKeyFilterProperty",
+      "kind": "union-wrapper",
+      "description": "VariableHistoryItemKey property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "VariableHistoryItemKeyExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedVariableHistoryItemKeyFilter"
+        }
+      ],
+      "stableId": "variable-history-item-key-filter-property",
+      "tsType": "VariableHistoryItemKeyExactMatch | AdvancedVariableHistoryItemKeyFilter",
+      "zod": {
+        "schemaName": "zVariableHistoryItemKeyFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/VariableHistoryItemKeyFilterProperty"
+      }
+    },
+    {
+      "name": "VariableHistoryItemOperationTypeFilterProperty",
+      "kind": "union-wrapper",
+      "description": "VariableHistoryItemOperationTypeEnum property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "VariableHistoryItemOperationTypeExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedVariableHistoryItemOperationTypeFilter"
+        }
+      ],
+      "stableId": "variable-history-item-operation-type-filter-property",
+      "tsType": "VariableHistoryItemOperationTypeExactMatch | AdvancedVariableHistoryItemOperationTypeFilter",
+      "zod": {
+        "schemaName": "zVariableHistoryItemOperationTypeFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/VariableHistoryItemOperationTypeFilterProperty"
+      }
+    },
+    {
+      "name": "VariableHistoryItemVariableOperationTypeFilterProperty",
+      "kind": "union-wrapper",
+      "description": "VariableHistoryItemVariableOperationTypeEnum property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "VariableHistoryItemVariableOperationTypeExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedVariableHistoryItemVariableOperationTypeFilter"
+        }
+      ],
+      "stableId": "variable-history-item-variable-operation-type-filter-property",
+      "tsType": "VariableHistoryItemVariableOperationTypeExactMatch | AdvancedVariableHistoryItemVariableOperationTypeFilter",
+      "zod": {
+        "schemaName": "zVariableHistoryItemVariableOperationTypeFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/VariableHistoryItemVariableOperationTypeFilterProperty"
       }
     },
     {
@@ -3501,8 +3795,8 @@
     }
   ],
   "integrity": {
-    "totalPrimaryKeys": 44,
-    "totalUnionWrappers": 71,
+    "totalPrimaryKeys": 47,
+    "totalUnionWrappers": 78,
     "implicitCamundaKeys": []
   }
 }

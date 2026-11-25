@@ -1,6 +1,7 @@
 import { ZodObject, type ZodTypeAny } from 'zod';
 import { CamundaValidationError } from './errors';
 import type { Logger } from './logger';
+import { redactProbeSecrets } from './probeSecrets';
 import { node } from '#platform';
 
 export type ExtrasPolicy = 'ignore' | 'warn' | 'error';
@@ -84,7 +85,7 @@ export function detectExtrasAndMaybeThrow(opts: DetectOptions) {
           extras: extras,
           // biome-ignore lint/plugin: capture-artifact timestamp: records when the capture was written, not cadence
           timestamp: new Date().toISOString(),
-          sample: value,
+          sample: redactProbeSecrets(value),
         };
         fs.writeFileSync(file, JSON.stringify(payload, null, 2), { mode: 0o600 });
         logger?.debug?.('validation.capture', file);

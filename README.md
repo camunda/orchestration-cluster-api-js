@@ -522,8 +522,10 @@ Certain operations that help drain work or complete execution are _exempt_ from 
 - `failJob`
 - `throwJobError`
 - `completeUserTask`
+- `activateProbes`
+- `answerProbe`
 
-These continue immediately even during severe backpressure to promote system recovery.
+These continue immediately even during severe backpressure to promote system recovery. The probe pair is exempt because `createProbe` holds its permit until a worker answers: if activating and answering queued behind it, a client at concurrency one could never complete its own probe.
 
 ### Interaction With HTTP Retry
 

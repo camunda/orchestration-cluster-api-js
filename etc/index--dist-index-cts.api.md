@@ -115,6 +115,20 @@ export type ActivatedJobResultWithoutJobLeaseToken = Omit<ActivatedJobResult, 'j
     jobLeaseToken?: null;
 };
 
+// @public (undocumented)
+export type ActivatedProbeResult = {
+    probeKey: ProbeKey;
+    probeId: ProbeId;
+    worker: string;
+    deadline: number;
+    tenantId: TenantId;
+    physicalTenantId: string;
+    input: {
+        [key: string]: unknown;
+    };
+    secretPointers: Array<string>;
+};
+
 // @public
 const activateJobs$1: <ThrowOnError extends boolean = true>(options: Options<ActivateJobsData, ThrowOnError>) => RequestResult<ActivateJobsResponses, ActivateJobsErrors, ThrowOnError>;
 
@@ -160,6 +174,54 @@ export type ActivateJobsResponse = ActivateJobsResponses[keyof ActivateJobsRespo
 // @public (undocumented)
 export type ActivateJobsResponses = {
     200: JobActivationResult;
+};
+
+// @public
+const activateProbes$1: <ThrowOnError extends boolean = true>(options: Options<ActivateProbesData, ThrowOnError>) => RequestResult<ActivateProbesResponses, ActivateProbesErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "activateProbesOptions" needs to be exported by the entry point index.d.cts
+//
+// @public (undocumented)
+type activateProbesBody = (NonNullable<activateProbesOptions> extends {
+    body?: infer B;
+} ? B : never);
+
+// @public (undocumented)
+export type ActivateProbesData = {
+    body: ProbeActivationRequest;
+    path?: never;
+    query?: never;
+    url: '/probes/activation';
+};
+
+// @public (undocumented)
+export type ActivateProbesError = ActivateProbesErrors[keyof ActivateProbesErrors];
+
+// @public (undocumented)
+export type ActivateProbesErrors = {
+    400: ProblemDetail;
+    401: ProblemDetail;
+    403: ProblemDetail;
+    500: ProblemDetail;
+    503: ProblemDetail;
+};
+
+// Warning: (ae-forgotten-export) The symbol "activateProbesBody" needs to be exported by the entry point index.d.cts
+//
+// @public (undocumented)
+export type activateProbesInput = activateProbesBody;
+
+// Warning: (ae-forgotten-export) The symbol "activateProbes$1" needs to be exported by the entry point index.d.cts
+//
+// @public (undocumented)
+type activateProbesOptions = Parameters<typeof activateProbes$1>[0];
+
+// @public (undocumented)
+export type ActivateProbesResponse = ActivateProbesResponses[keyof ActivateProbesResponses];
+
+// @public (undocumented)
+export type ActivateProbesResponses = {
+    200: ProbeActivationResult;
 };
 
 // @public
@@ -680,6 +742,16 @@ export type AdvancedScopeKeyFilter = {
 };
 
 // @public
+export type AdvancedSecretStatusFilter = {
+    $eq?: SecretStatusEnum;
+    $neq?: SecretStatusEnum;
+    $exists?: boolean;
+    $in?: Array<SecretStatusEnum>;
+    $notIn?: Array<SecretStatusEnum>;
+    $like?: LikeFilter;
+};
+
+// @public
 export type AdvancedStringFilter = BasicStringFilter & {
     $like?: LikeFilter;
 };
@@ -690,6 +762,42 @@ export type AdvancedUserTaskStateFilter = {
     $neq?: UserTaskStateEnum;
     $exists?: boolean;
     $in?: Array<UserTaskStateEnum>;
+    $like?: LikeFilter;
+};
+
+// @public
+export type AdvancedVariableHistoryItemActorTypeFilter = {
+    $eq?: VariableHistoryItemActorTypeEnum;
+    $neq?: VariableHistoryItemActorTypeEnum;
+    $exists?: boolean;
+    $in?: Array<VariableHistoryItemActorTypeEnum>;
+    $like?: LikeFilter;
+};
+
+// @public
+export type AdvancedVariableHistoryItemKeyFilter = {
+    $eq?: VariableHistoryItemKey;
+    $neq?: VariableHistoryItemKey;
+    $exists?: boolean;
+    $in?: Array<VariableHistoryItemKey>;
+    $notIn?: Array<VariableHistoryItemKey>;
+};
+
+// @public
+export type AdvancedVariableHistoryItemOperationTypeFilter = {
+    $eq?: VariableHistoryItemOperationTypeEnum;
+    $neq?: VariableHistoryItemOperationTypeEnum;
+    $exists?: boolean;
+    $in?: Array<VariableHistoryItemOperationTypeEnum>;
+    $like?: LikeFilter;
+};
+
+// @public
+export type AdvancedVariableHistoryItemVariableOperationTypeFilter = {
+    $eq?: VariableHistoryItemVariableOperationTypeEnum;
+    $neq?: VariableHistoryItemVariableOperationTypeEnum;
+    $exists?: boolean;
+    $in?: Array<VariableHistoryItemVariableOperationTypeEnum>;
     $like?: LikeFilter;
 };
 
@@ -1188,6 +1296,68 @@ export type AncestorScopeInstruction = ({
 } & InferredAncestorKeyInstruction) | ({
     ancestorScopeType: 'sourceParent';
 } & UseSourceParentKeyInstruction);
+
+// @public
+const answerProbe$1: <ThrowOnError extends boolean = true>(options: Options<AnswerProbeData, ThrowOnError>) => RequestResult<AnswerProbeResponses, AnswerProbeErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "answerProbeOptions" needs to be exported by the entry point index.d.cts
+//
+// @public (undocumented)
+type answerProbeBody = (NonNullable<answerProbeOptions> extends {
+    body?: infer B;
+} ? B : never);
+
+// @public (undocumented)
+export type AnswerProbeData = {
+    body: ProbeAnswerRequest;
+    path: {
+        probeKey: ProbeKeyWritable;
+    };
+    query?: never;
+    url: '/probes/{probeKey}/answer';
+};
+
+// @public (undocumented)
+export type AnswerProbeError = AnswerProbeErrors[keyof AnswerProbeErrors];
+
+// @public (undocumented)
+export type AnswerProbeErrors = {
+    400: ProblemDetail;
+    401: ProblemDetail;
+    403: ProblemDetail;
+    404: ProblemDetail;
+    409: ProblemDetail;
+    413: ProblemDetail;
+    500: ProblemDetail;
+    503: ProblemDetail;
+};
+
+// Warning: (ae-forgotten-export) The symbol "answerProbeBody" needs to be exported by the entry point index.d.cts
+//
+// @public (undocumented)
+export type answerProbeInput = answerProbeBody & {
+    probeKey: answerProbePathParam_probeKey;
+};
+
+// Warning: (ae-forgotten-export) The symbol "answerProbe$1" needs to be exported by the entry point index.d.cts
+//
+// @public (undocumented)
+type answerProbeOptions = Parameters<typeof answerProbe$1>[0];
+
+// @public (undocumented)
+type answerProbePathParam_probeKey = (NonNullable<answerProbeOptions> extends {
+    path: {
+        probeKey: infer P;
+    };
+} ? P : any);
+
+// @public (undocumented)
+export type AnswerProbeResponse = AnswerProbeResponses[keyof AnswerProbeResponses];
+
+// @public (undocumented)
+export type AnswerProbeResponses = {
+    204: void;
+};
 
 // @public
 export type AnyVariableSchema = z.ZodObject<any>;
@@ -2853,7 +3023,9 @@ export class CamundaClientBase extends CamundaCore {
     activateJobs(input: activateJobsInput, options?: OperationOptions): CancelablePromise<{
         jobs: EnrichedActivatedJob[];
     }>;
+    activateProbes(input: activateProbesInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof activateProbes$1>>;
     addClock(input: addClockInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof addClock$1>>;
+    answerProbe(input: answerProbeInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof answerProbe$1>>;
     assignClientToGroup(input: assignClientToGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof assignClientToGroup$1>>;
     assignClientToTenant(input: assignClientToTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof assignClientToTenant$1>>;
     assignGroupToTenant(input: assignGroupToTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof assignGroupToTenant$1>>;
@@ -2911,6 +3083,8 @@ export class CamundaClientBase extends CamundaCore {
     createJobWorker<In extends zod.ZodTypeAny = any, Out extends zod.ZodTypeAny = any, Headers extends zod.ZodTypeAny = any>(cfg: JobWorkerConfig<In, Out, Headers>): JobWorker;
     // Warning: (ae-forgotten-export) The symbol "createMappingRule$1" needs to be exported by the entry point index.d.cts
     createMappingRule(input: createMappingRuleInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof createMappingRule$1>>;
+    // Warning: (ae-forgotten-export) The symbol "createProbe$1" needs to be exported by the entry point index.d.cts
+    createProbe(input: createProbeInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof createProbe$1>>;
     // Warning: (ae-forgotten-export) The symbol "createProcessInstance$1" needs to be exported by the entry point index.d.cts
     createProcessInstance(input: createProcessInstanceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof createProcessInstance$1>>;
     // Warning: (ae-forgotten-export) The symbol "createRole$1" needs to be exported by the entry point index.d.cts
@@ -3260,6 +3434,8 @@ export class CamundaClientBase extends CamundaCore {
     searchUserTasks(input: searchUserTasksInput, consistencyManagement: searchUserTasksConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof searchUserTasks$1>>;
     // Warning: (ae-forgotten-export) The symbol "searchUserTaskVariables$1" needs to be exported by the entry point index.d.cts
     searchUserTaskVariables(input: searchUserTaskVariablesInput, consistencyManagement: searchUserTaskVariablesConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof searchUserTaskVariables$1>>;
+    // Warning: (ae-forgotten-export) The symbol "searchVariableHistory$1" needs to be exported by the entry point index.d.cts
+    searchVariableHistory(input: searchVariableHistoryInput, consistencyManagement: searchVariableHistoryConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof searchVariableHistory$1>>;
     // Warning: (ae-forgotten-export) The symbol "searchVariables$1" needs to be exported by the entry point index.d.cts
     searchVariables(input: searchVariablesInput, consistencyManagement: searchVariablesConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof searchVariables$1>>;
     searchVariablesAsDto<TSchema extends AnyVariableSchema>(schema: TSchema, options: {
@@ -5458,6 +5634,55 @@ export type CreateMappingRuleResponse = CreateMappingRuleResponses[keyof CreateM
 // @public (undocumented)
 export type CreateMappingRuleResponses = {
     201: MappingRuleCreateResult;
+};
+
+// @public
+const createProbe$1: <ThrowOnError extends boolean = true>(options: Options<CreateProbeData, ThrowOnError>) => RequestResult<CreateProbeResponses, CreateProbeErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "createProbeOptions" needs to be exported by the entry point index.d.cts
+//
+// @public (undocumented)
+type createProbeBody = (NonNullable<createProbeOptions> extends {
+    body?: infer B;
+} ? B : never);
+
+// @public (undocumented)
+export type CreateProbeData = {
+    body: ProbeCreationRequest;
+    path?: never;
+    query?: never;
+    url: '/probes';
+};
+
+// @public (undocumented)
+export type CreateProbeError = CreateProbeErrors[keyof CreateProbeErrors];
+
+// @public (undocumented)
+export type CreateProbeErrors = {
+    400: ProblemDetail;
+    401: ProblemDetail;
+    403: ProblemDetail;
+    404: ProblemDetail;
+    413: ProblemDetail;
+    500: ProblemDetail;
+    503: ProblemDetail;
+    504: ProblemDetail;
+};
+
+// Warning: (ae-forgotten-export) The symbol "createProbeBody" needs to be exported by the entry point index.d.cts
+//
+// @public (undocumented)
+export type createProbeInput = createProbeBody;
+
+// @public (undocumented)
+type createProbeOptions = Parameters<typeof createProbe$1>[0];
+
+// @public (undocumented)
+export type CreateProbeResponse = CreateProbeResponses[keyof CreateProbeResponses];
+
+// @public (undocumented)
+export type CreateProbeResponses = {
+    200: ProbeResult;
 };
 
 // @public
@@ -13691,6 +13916,111 @@ type PrimitiveType<T> = T extends {
     choices: readonly (infer C)[];
 } ? C : never;
 
+// @public (undocumented)
+export type ProbeActivationRequest = {
+    probeIds: Array<ProbeId>;
+    worker?: string;
+    maxProbesToActivate: number;
+    requestTimeout?: number;
+    tenantIds?: Array<TenantId>;
+    tenantFilter?: TenantFilterEnum;
+};
+
+// @public
+export type ProbeActivationResult = {
+    probes: Array<ActivatedProbeResult>;
+};
+
+// @public
+export type ProbeAnswerRequest = ({
+    outcome: 'OK';
+} & ProbeOkAnswerRequest) | ({
+    outcome: 'UNSUPPORTED';
+} & ProbeUnsupportedAnswerRequest) | ({
+    outcome: 'ERROR';
+} & ProbeErrorAnswerRequest);
+
+// @public (undocumented)
+export type ProbeCreationRequest = {
+    probeId: ProbeId;
+    input: string;
+    tenantId?: TenantId;
+    requestTimeout?: number;
+};
+
+// @public
+export type ProbeErrorAnswerRequest = {
+    outcome: string;
+    message: string;
+};
+
+// @public
+export type ProbeErrorResult = {
+    outcome: string;
+    worker: string;
+    message: string;
+};
+
+// @public
+export type ProbeId = CamundaKey<'ProbeId'>;
+
+// @public (undocumented)
+export const ProbeId: {
+    assumeExists(value: string): ProbeId;
+    getValue(key: ProbeId): string;
+    isValid(value: string): boolean;
+};
+
+// @public
+export type ProbeKey = CamundaKey<'ProbeKey'>;
+
+// @public (undocumented)
+export const ProbeKey: {
+    assumeExists(value: string): ProbeKey;
+    getValue(key: ProbeKey): string;
+    isValid(value: string): boolean;
+};
+
+// @public
+export type ProbeKeyWritable = LongKey;
+
+// @public
+export type ProbeOkAnswerRequest = {
+    outcome: string;
+    data: {
+        [key: string]: unknown;
+    };
+};
+
+// @public
+export type ProbeOkResult = {
+    outcome: string;
+    worker: string;
+    data: {
+        [key: string]: unknown;
+    };
+};
+
+// @public
+export type ProbeResult = ({
+    outcome: 'OK';
+} & ProbeOkResult) | ({
+    outcome: 'UNSUPPORTED';
+} & ProbeUnsupportedResult) | ({
+    outcome: 'ERROR';
+} & ProbeErrorResult);
+
+// @public
+export type ProbeUnsupportedAnswerRequest = {
+    outcome: string;
+};
+
+// @public
+export type ProbeUnsupportedResult = {
+    outcome: string;
+    worker: string;
+};
+
 // @public
 export type ProblemDetail = {
     type: string;
@@ -18240,6 +18570,67 @@ export type SearchUserTaskVariablesResponses = {
 };
 
 // @public
+const searchVariableHistory$1: <ThrowOnError extends boolean = true>(options?: Options<SearchVariableHistoryData, ThrowOnError>) => RequestResult<SearchVariableHistoryResponses, SearchVariableHistoryErrors, ThrowOnError>;
+
+// Warning: (ae-forgotten-export) The symbol "searchVariableHistoryOptions" needs to be exported by the entry point index.d.cts
+//
+// @public (undocumented)
+type searchVariableHistoryBody = (NonNullable<searchVariableHistoryOptions> extends {
+    body?: infer B;
+} ? B : never);
+
+// @public
+export type searchVariableHistoryConsistency = {
+    consistency: ConsistencyOptions<_DataOf$1<typeof searchVariableHistory$1>>;
+};
+
+// @public (undocumented)
+export type SearchVariableHistoryData = {
+    body?: VariableHistoryItemSearchQuery;
+    path?: never;
+    query?: {
+        truncateValues?: boolean;
+    };
+    url: '/variables/history/search';
+};
+
+// @public (undocumented)
+export type SearchVariableHistoryError = SearchVariableHistoryErrors[keyof SearchVariableHistoryErrors];
+
+// @public (undocumented)
+export type SearchVariableHistoryErrors = {
+    400: ProblemDetail;
+    401: ProblemDetail;
+    403: ProblemDetail;
+    500: ProblemDetail;
+};
+
+// Warning: (ae-forgotten-export) The symbol "searchVariableHistoryBody" needs to be exported by the entry point index.d.cts
+//
+// @public (undocumented)
+export type searchVariableHistoryInput = searchVariableHistoryBody & {
+    truncateValues?: searchVariableHistoryQueryParam_truncateValues;
+};
+
+// @public (undocumented)
+type searchVariableHistoryOptions = Parameters<typeof searchVariableHistory$1>[0];
+
+// @public (undocumented)
+type searchVariableHistoryQueryParam_truncateValues = (NonNullable<searchVariableHistoryOptions> extends {
+    query?: {
+        truncateValues?: infer Q;
+    };
+} ? Q : any);
+
+// @public (undocumented)
+export type SearchVariableHistoryResponse = SearchVariableHistoryResponses[keyof SearchVariableHistoryResponses];
+
+// @public (undocumented)
+export type SearchVariableHistoryResponses = {
+    200: VariableHistoryItemSearchQueryResult;
+};
+
+// @public
 const searchVariables$1: <ThrowOnError extends boolean = true>(options?: Options<SearchVariablesData, ThrowOnError>) => RequestResult<SearchVariablesResponses, SearchVariablesErrors, ThrowOnError>;
 
 // Warning: (ae-forgotten-export) The symbol "searchVariablesOptions" needs to be exported by the entry point index.d.cts
@@ -18304,8 +18695,13 @@ export type SearchVariablesResponses = {
 export type SecretErrorCode = 'NOT_FOUND' | 'ACCESS_DENIED' | 'INVALID_REFERENCE' | 'UNREADABLE';
 
 // @public
+export type SecretListFilter = {
+    status?: SecretStatusFilterProperty;
+};
+
+// @public
 export type SecretListRequest = {
-    [key: string]: never;
+    filter?: SecretListFilter;
 };
 
 // @public
@@ -18330,6 +18726,26 @@ export type SecretResolveResult = {
     resolved: Array<ResolvedSecret>;
     errors: Array<SecretResolutionError>;
 };
+
+// @public
+export const SecretStatusEnum: {
+    readonly ACTIVE: "ACTIVE";
+    readonly DISABLED: "DISABLED";
+    readonly EXPIRED: "EXPIRED";
+    readonly NOT_YET_ACTIVE: "NOT_YET_ACTIVE";
+};
+
+// @public (undocumented)
+export type SecretStatusEnum = (typeof SecretStatusEnum)[keyof typeof SecretStatusEnum];
+
+// @public
+export type SecretStatusExactMatch = SecretStatusEnum;
+
+// @public
+export type SecretStatusExactMatchWritable = SecretStatusEnum;
+
+// @public
+export type SecretStatusFilterProperty = SecretStatusExactMatch | AdvancedSecretStatusFilter;
 
 // @public
 export const SEED_ENV_VAR = "CAMUNDA_TEST_SEED";
@@ -18441,7 +18857,7 @@ export type SourceElementInstruction = ({
 } & SourceElementInstanceKeyInstruction);
 
 // @public (undocumented)
-export const SPEC_HASH: "sha256:914f89f26245982b7e11d9a3bdcbfccdc228e07fbf7bd7008279ed1d494d70ed";
+export const SPEC_HASH: "sha256:aaebe938a1573864cae21403b7323b369e4e6e643df8fae8f241dc787718f6a7";
 
 // Warning: (ae-forgotten-export) The symbol "ServerSentEventsResult" needs to be exported by the entry point index.d.cts
 //
@@ -21534,6 +21950,172 @@ export type VariableFilter = {
 };
 
 // @public
+export const VariableHistoryItemActorTypeEnum: {
+    readonly USER: "USER";
+    readonly CLIENT: "CLIENT";
+    readonly ENGINE: "ENGINE";
+    readonly UNKNOWN: "UNKNOWN";
+};
+
+// @public (undocumented)
+export type VariableHistoryItemActorTypeEnum = (typeof VariableHistoryItemActorTypeEnum)[keyof typeof VariableHistoryItemActorTypeEnum];
+
+// @public
+export type VariableHistoryItemActorTypeExactMatch = VariableHistoryItemActorTypeEnum;
+
+// @public
+export type VariableHistoryItemActorTypeExactMatchWritable = VariableHistoryItemActorTypeEnum;
+
+// @public
+export type VariableHistoryItemActorTypeFilterProperty = VariableHistoryItemActorTypeExactMatch | AdvancedVariableHistoryItemActorTypeFilter;
+
+// @public
+export type VariableHistoryItemFilter = {
+    variableKey?: VariableKeyFilterProperty;
+    processInstanceKey?: ProcessInstanceKeyFilterProperty;
+    name?: StringFilterProperty;
+    scopeKey?: ScopeKeyFilterProperty;
+    elementId?: ElementIdFilterProperty;
+    elementInstanceKey?: ElementInstanceKeyFilterProperty;
+    variableHistoryItemKey?: VariableHistoryItemKeyFilterProperty;
+    processDefinitionKey?: ProcessDefinitionKeyFilterProperty;
+    processDefinitionId?: ProcessDefinitionIdFilterProperty;
+    tenantId?: StringFilterProperty;
+    timestamp?: DateTimeFilterProperty;
+    operationType?: VariableHistoryItemOperationTypeFilterProperty;
+    variableOperationType?: VariableHistoryItemVariableOperationTypeFilterProperty;
+    actorType?: VariableHistoryItemActorTypeFilterProperty;
+    actorId?: StringFilterProperty;
+    agentElementId?: ElementIdFilterProperty;
+};
+
+// @public
+export type VariableHistoryItemKey = CamundaKey<'VariableHistoryItemKey'>;
+
+// @public (undocumented)
+export const VariableHistoryItemKey: {
+    assumeExists(value: string): VariableHistoryItemKey;
+    getValue(key: VariableHistoryItemKey): string;
+    isValid(value: string): boolean;
+};
+
+// @public
+export type VariableHistoryItemKeyExactMatch = VariableHistoryItemKey;
+
+// @public
+export type VariableHistoryItemKeyExactMatchWritable = VariableHistoryItemKeyWritable;
+
+// @public
+export type VariableHistoryItemKeyFilterProperty = VariableHistoryItemKeyExactMatch | AdvancedVariableHistoryItemKeyFilter;
+
+// @public
+export type VariableHistoryItemKeyWritable = LongKey;
+
+// @public
+export const VariableHistoryItemOperationTypeEnum: {
+    readonly CREATE: "CREATE";
+    readonly UPDATE: "UPDATE";
+};
+
+// @public (undocumented)
+export type VariableHistoryItemOperationTypeEnum = (typeof VariableHistoryItemOperationTypeEnum)[keyof typeof VariableHistoryItemOperationTypeEnum];
+
+// @public
+export type VariableHistoryItemOperationTypeExactMatch = VariableHistoryItemOperationTypeEnum;
+
+// @public
+export type VariableHistoryItemOperationTypeExactMatchWritable = VariableHistoryItemOperationTypeEnum;
+
+// @public
+export type VariableHistoryItemOperationTypeFilterProperty = VariableHistoryItemOperationTypeExactMatch | AdvancedVariableHistoryItemOperationTypeFilter;
+
+// @public
+export type VariableHistoryItemResultBase = {
+    variableHistoryItemKey: VariableHistoryItemKey;
+    variableKey: VariableKey;
+    name: string;
+    scopeKey: ScopeKey;
+    elementInstanceKey: ElementInstanceKey | null;
+    elementId: ElementId | null;
+    processInstanceKey: ProcessInstanceKey;
+    rootProcessInstanceKey: ProcessInstanceKey | null;
+    processDefinitionKey: ProcessDefinitionKey;
+    processDefinitionId: ProcessDefinitionId;
+    tenantId: TenantId;
+    timestamp: string;
+    operationType: VariableHistoryItemOperationTypeEnum;
+    variableOperationType: VariableHistoryItemVariableOperationTypeEnum;
+    actorType: VariableHistoryItemActorTypeEnum;
+    actorId: string | null;
+    agentElementId: ElementId | null;
+};
+
+// @public
+export type VariableHistoryItemSearchQuery = SearchQueryRequest & {
+    sort?: Array<VariableHistoryItemSearchQuerySortRequest>;
+    filter?: VariableHistoryItemFilter;
+};
+
+// @public
+export type VariableHistoryItemSearchQueryResult = SearchQueryResponse & {
+    items: Array<VariableHistoryItemSearchResult>;
+};
+
+// @public (undocumented)
+export type VariableHistoryItemSearchQuerySortRequest = {
+    field: 'variableHistoryItemKey';
+    order?: SortOrderEnum;
+};
+
+// @public
+export type VariableHistoryItemSearchResult = VariableHistoryItemResultBase & {
+    value: string;
+    isTruncated: boolean;
+};
+
+// @public
+export const VariableHistoryItemVariableOperationTypeEnum: {
+    readonly API: "API";
+    readonly USER_TASK_COMPLETION: "USER_TASK_COMPLETION";
+    readonly PROCESS_INSTANCE_CREATION: "PROCESS_INSTANCE_CREATION";
+    readonly PROCESS_INSTANCE_MODIFICATION: "PROCESS_INSTANCE_MODIFICATION";
+    readonly JOB_COMPLETION: "JOB_COMPLETION";
+    readonly JOB_FAILURE: "JOB_FAILURE";
+    readonly JOB_ERROR: "JOB_ERROR";
+    readonly EXECUTION_LISTENER_COMPLETION: "EXECUTION_LISTENER_COMPLETION";
+    readonly MESSAGE_CORRELATION: "MESSAGE_CORRELATION";
+    readonly SIGNAL_BROADCAST: "SIGNAL_BROADCAST";
+    readonly CONDITIONAL_EVALUATION: "CONDITIONAL_EVALUATION";
+    readonly AD_HOC_SUB_PROCESS_ACTIVATION: "AD_HOC_SUB_PROCESS_ACTIVATION";
+    readonly INPUT_MAPPING: "INPUT_MAPPING";
+    readonly OUTPUT_MAPPING: "OUTPUT_MAPPING";
+    readonly SCRIPT_RESULT: "SCRIPT_RESULT";
+    readonly DECISION_RESULT: "DECISION_RESULT";
+    readonly CALL_ACTIVITY_INPUT: "CALL_ACTIVITY_INPUT";
+    readonly CALL_ACTIVITY_OUTPUT: "CALL_ACTIVITY_OUTPUT";
+    readonly MULTI_INSTANCE_INPUT_ELEMENT: "MULTI_INSTANCE_INPUT_ELEMENT";
+    readonly MULTI_INSTANCE_LOOP_COUNTER: "MULTI_INSTANCE_LOOP_COUNTER";
+    readonly MULTI_INSTANCE_OUTPUT_ELEMENT: "MULTI_INSTANCE_OUTPUT_ELEMENT";
+    readonly MULTI_INSTANCE_OUTPUT_COLLECTION: "MULTI_INSTANCE_OUTPUT_COLLECTION";
+    readonly AD_HOC_SUB_PROCESS_METADATA: "AD_HOC_SUB_PROCESS_METADATA";
+    readonly AD_HOC_SUB_PROCESS_OUTPUT_ELEMENT: "AD_HOC_SUB_PROCESS_OUTPUT_ELEMENT";
+    readonly AD_HOC_SUB_PROCESS_OUTPUT_COLLECTION: "AD_HOC_SUB_PROCESS_OUTPUT_COLLECTION";
+    readonly UNKNOWN: "UNKNOWN";
+};
+
+// @public (undocumented)
+export type VariableHistoryItemVariableOperationTypeEnum = (typeof VariableHistoryItemVariableOperationTypeEnum)[keyof typeof VariableHistoryItemVariableOperationTypeEnum];
+
+// @public
+export type VariableHistoryItemVariableOperationTypeExactMatch = VariableHistoryItemVariableOperationTypeEnum;
+
+// @public
+export type VariableHistoryItemVariableOperationTypeExactMatchWritable = VariableHistoryItemVariableOperationTypeEnum;
+
+// @public
+export type VariableHistoryItemVariableOperationTypeFilterProperty = VariableHistoryItemVariableOperationTypeExactMatch | AdvancedVariableHistoryItemVariableOperationTypeFilter;
+
+// @public
 export type VariableKey = CamundaKey<'VariableKey'>;
 
 // @public (undocumented)
@@ -21741,6 +22323,7 @@ interface WorkerHandle {
 // (ae-forgotten-export) The symbol "VariableConsistencyOptions" needs to be exported by the entry point index.d.cts
 // (ae-forgotten-export) The symbol "CollectClock" needs to be exported by the entry point index.d.cts
 // (ae-forgotten-export) The symbol "activateAdHocSubProcessActivitiesPathParam_adHocSubProcessInstanceKey" needs to be exported by the entry point index.d.cts
+// (ae-forgotten-export) The symbol "answerProbePathParam_probeKey" needs to be exported by the entry point index.d.cts
 // (ae-forgotten-export) The symbol "assignClientToGroupPathParam_groupId" needs to be exported by the entry point index.d.cts
 // (ae-forgotten-export) The symbol "assignClientToGroupPathParam_clientId" needs to be exported by the entry point index.d.cts
 // (ae-forgotten-export) The symbol "assignClientToTenantPathParam_tenantId" needs to be exported by the entry point index.d.cts
@@ -21905,6 +22488,7 @@ interface WorkerHandle {
 // (ae-forgotten-export) The symbol "searchUserTaskEffectiveVariablesQueryParam_truncateValues" needs to be exported by the entry point index.d.cts
 // (ae-forgotten-export) The symbol "searchUserTaskVariablesPathParam_userTaskKey" needs to be exported by the entry point index.d.cts
 // (ae-forgotten-export) The symbol "searchUserTaskVariablesQueryParam_truncateValues" needs to be exported by the entry point index.d.cts
+// (ae-forgotten-export) The symbol "searchVariableHistoryQueryParam_truncateValues" needs to be exported by the entry point index.d.cts
 // (ae-forgotten-export) The symbol "searchVariablesQueryParam_truncateValues" needs to be exported by the entry point index.d.cts
 // (ae-forgotten-export) The symbol "suspendBatchOperationPathParam_batchOperationKey" needs to be exported by the entry point index.d.cts
 // (ae-forgotten-export) The symbol "suspendProcessInstancePathParam_processInstanceKey" needs to be exported by the entry point index.d.cts

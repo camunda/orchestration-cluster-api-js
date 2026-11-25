@@ -348,6 +348,27 @@ async function searchVariablesExample(processInstanceKey: ProcessInstanceKey) {
 }
 //#endregion SearchVariables
 
+//#region SearchVariableHistory
+async function searchVariableHistoryExample(processInstanceKey: ProcessInstanceKey) {
+  const camunda = createCamundaClient();
+
+  const result = await camunda.searchVariableHistory(
+    {
+      filter: {
+        processInstanceKey,
+      },
+      page: { limit: 10 },
+      truncateValues: true,
+    },
+    { consistency: { waitUpToMs: 0 } }
+  );
+
+  for (const item of result.items ?? []) {
+    console.log(`${item.name} changed at ${item.timestamp}: ${item.value}`);
+  }
+}
+//#endregion SearchVariableHistory
+
 //#region SearchVariablesAsDto
 async function searchVariablesAsDtoExample(processInstanceKey: ProcessInstanceKey) {
   const camunda = createCamundaClient();
@@ -499,6 +520,7 @@ void resumeProcessDefinitionsExample;
 void getStartProcessFormExample;
 void getVariableExample;
 void searchVariablesExample;
+void searchVariableHistoryExample;
 void searchVariablesAsDtoExample;
 void getElementInstanceExample;
 void searchElementInstancesExample;
