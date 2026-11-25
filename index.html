@@ -354,8 +354,10 @@
 <li><code>failJob</code></li>
 <li><code>throwJobError</code></li>
 <li><code>completeUserTask</code></li>
+<li><code>activateProbes</code></li>
+<li><code>answerProbe</code></li>
 </ul>
-<p>These continue immediately even during severe backpressure to promote system recovery.</p>
+<p>These continue immediately even during severe backpressure to promote system recovery. The probe pair is exempt because <code>createProbe</code> holds its permit until a worker answers: if activating and answering queued behind it, a client at concurrency one could never complete its own probe.</p>
 <h3 id="interaction-with-http-retry" class="tsd-anchor-link">Interaction With HTTP Retry<a href="#interaction-with-http-retry" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <p>Per‑request retry still performs exponential backoff + jitter for classified transient errors. The adaptive concurrency layer sits <em>outside</em> retry:</p>
 <ol>
