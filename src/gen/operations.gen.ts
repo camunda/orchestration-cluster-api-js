@@ -1579,7 +1579,7 @@ export function activateProbes(core: CamundaCore, arg: any, options?: OperationO
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'activateProbes', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'activateProbes', exempt: true, retryOverride: options?.retry });
   });
 }
 
@@ -1730,7 +1730,7 @@ export function answerProbe(core: CamundaCore, arg: any, options?: OperationOpti
         throw e;
       }
     };
-    return rt._invokeWithRetry(() => call(), { opId: 'answerProbe', exempt: false, retryOverride: options?.retry });
+    return rt._invokeWithRetry(() => call(), { opId: 'answerProbe', exempt: true, retryOverride: options?.retry });
   });
 }
 
