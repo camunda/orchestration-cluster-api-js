@@ -5,10 +5,11 @@
  * and `secretPointers` lists the RFC 6901 pointers (into `input`) of the injected values. The
  * name-based redaction of body previews cannot know those names: a secret can sit under any
  * field name, at any depth. So wherever a response body is logged or written to disk, every
- * object that has both `secretPointers` and `input` goes through here first.
+ * activated probe in it goes through here first: an object with an `input` and either
+ * `secretPointers` or the `probeKey` and `probeId` of an activated probe.
  *
- * Fail safe: when the pointers are not a list of strings, or one is not a valid pointer, the
- * whole `input` is masked rather than guessed at.
+ * Fail safe: when the pointers are missing, are not a list of strings, or one is not a valid
+ * pointer, the whole `input` is masked rather than guessed at.
  */
 
 const REDACTED = '[redacted]';
@@ -29,6 +30,8 @@ function cloneJson(value: unknown, depth: number): unknown {
 /** The reference tokens of a JSON pointer, or `undefined` when it is not a valid, non-root pointer. */
 function pointerTokens(pointer: string): string[] | undefined {
   if (!pointer.startsWith('/')) return undefined;
+  // RFC 6901 allows `~` only as `~0` or `~1`; anything else is malformed, not a name to mask.
+  if (/~(?![01])/.test(pointer)) return undefined;
   return pointer
     .slice(1)
     .split('/')
@@ -81,7 +84,10 @@ export function redactProbeSecrets(value: unknown, depth = 0): unknown {
   if (depth > MAX_DEPTH) return REDACTED;
   if (Array.isArray(value)) return value.map((v) => redactProbeSecrets(v, depth + 1));
   const record = value as Record<string, unknown>;
-  const isProbe = hasOwn(record, 'secretPointers') && hasOwn(record, 'input');
+  // Probe-shaped, not just pointer-bearing: metadata that is missing must mask, not bypass.
+  const isProbe =
+    hasOwn(record, 'input') &&
+    (hasOwn(record, 'secretPointers') || (hasOwn(record, 'probeKey') && hasOwn(record, 'probeId')));
   const out: Record<string, unknown> = Object.create(null);
   for (const [k, v] of Object.entries(record)) {
     out[k] =

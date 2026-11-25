@@ -62,10 +62,35 @@ describe('redactProbeSecrets', () => {
   });
 
   it('masks the whole input when the pointers cannot be trusted', () => {
-    for (const bad of [['accessKey'], [42], 'accessKey', null, ['']]) {
+    // `~2` and a trailing `~` are malformed RFC 6901 escapes, not field names.
+    for (const bad of [
+      ['accessKey'],
+      [42],
+      'accessKey',
+      null,
+      [''],
+      ['/accessKey~2'],
+      ['/accessKey~'],
+      ['/a~b'],
+    ]) {
       const out = redactProbeSecrets(probe({ accessKey: SECRET }, bad)) as { input: unknown };
       expect(out.input).toBe('[redacted]');
     }
+  });
+
+  it('masks the whole input of an activated probe whose secretPointers is missing', () => {
+    const { secretPointers: _omitted, ...withoutPointers } = probe({ anyName: SECRET }, []);
+    const out = redactProbeSecrets({ probes: [withoutPointers] }) as {
+      probes: { input: unknown; probeId: string }[];
+    };
+    expect(out.probes[0].input).toBe('[redacted]');
+    expect(out.probes[0].probeId).toBe(withoutPointers.probeId);
+  });
+
+  it('does not treat a request-shaped body as an activated probe', () => {
+    // createProbe's input is a FEEL expression that only references secrets by name.
+    const body = { probeId: 'p', input: '={key: camunda.secrets.awsKey}', requestTimeout: 1000 };
+    expect(redactProbeSecrets(body)).toEqual(body);
   });
 
   it('leaves a probe with no secrets, and unrelated bodies, readable', () => {
@@ -94,6 +119,14 @@ describe('redactProbeSecrets', () => {
 });
 
 describe('silly-level response preview', () => {
+  it('masks the input of a probe whose metadata is missing or malformed', () => {
+    const { secretPointers: _omitted, ...withoutPointers } = probe({ anyName: SECRET }, []);
+    for (const p of [withoutPointers, probe({ accessKey: SECRET }, ['/accessKey~2'])]) {
+      const out = redactBodyPreview(JSON.stringify({ probes: [p] }), 'application/json');
+      expect(out).not.toContain(SECRET);
+    }
+  });
+
   it('masks the secrets of an activateProbes response', () => {
     const body = JSON.stringify({
       probes: [probe({ region: 'eu-west-1', nested: { anyName: SECRET } }, ['/nested/anyName'])],
@@ -105,26 +138,35 @@ describe('silly-level response preview', () => {
 });
 
 describe('validation capture', () => {
-  it('writes a capture sample without the probe secrets', () => {
+  // The capture writer de-duplicates by operation and extras, so each call needs its own operation id.
+  let captures = 0;
+  const capture = (probes: unknown[]) => {
     const dir = mkdtempSync(join(tmpdir(), 'probe-capture-'));
     try {
       detectExtrasAndMaybeThrow({
-        operationId: 'activateProbes',
-        value: {
-          probes: [probe({ accessKey: SECRET, region: 'eu-west-1' }, ['/accessKey'])],
-          unexpected: true,
-        },
+        operationId: `activateProbes-${captures++}`,
+        value: { probes, unexpected: true },
         schema: z.object({ probes: z.any() }),
         settings: { policy: 'warn', deep: false, captureDir: dir },
         fanatical: false,
       });
       const files = readdirSync(dir);
       expect(files).toHaveLength(1);
-      const text = readFileSync(join(dir, files[0]), 'utf8');
-      expect(text).not.toContain(SECRET);
-      expect(text).toContain('eu-west-1');
+      return readFileSync(join(dir, files[0]), 'utf8');
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }
+  };
+
+  it('writes a capture sample without the probe secrets', () => {
+    const text = capture([probe({ accessKey: SECRET, region: 'eu-west-1' }, ['/accessKey'])]);
+    expect(text).not.toContain(SECRET);
+    expect(text).toContain('eu-west-1');
+  });
+
+  it('masks the input of a probe whose metadata is missing or malformed', () => {
+    const { secretPointers: _omitted, ...withoutPointers } = probe({ anyName: SECRET }, []);
+    expect(capture([withoutPointers])).not.toContain(SECRET);
+    expect(capture([probe({ accessKey: SECRET }, ['/accessKey~2'])])).not.toContain(SECRET);
   });
 });
