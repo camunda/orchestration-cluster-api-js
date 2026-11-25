@@ -1,3 +1,10 @@
+# [11.0.0-alpha.12](https://github.com/camunda/orchestration-cluster-api-js/compare/v11.0.0-alpha.11...v11.0.0-alpha.12) (2026-11-25)
+
+
+### Features
+
+* add example coverage for searchVariableHistory ([#720](https://github.com/camunda/orchestration-cluster-api-js/issues/720)) ([5511478](https://github.com/camunda/orchestration-cluster-api-js/commit/5511478b7d47d5a45bbfc445595314a63f13efd4)), closes [#687](https://github.com/camunda/orchestration-cluster-api-js/issues/687)
+
 # [11.0.0-alpha.11](https://github.com/camunda/orchestration-cluster-api-js/compare/v11.0.0-alpha.10...v11.0.0-alpha.11) (2026-11-23)
 
 
