@@ -1,5 +1,6 @@
 // Telemetry Phase 1: hook-based lightweight instrumentation
 import type { Logger } from './logger';
+import { redactProbeSecrets } from './probeSecrets';
 import type { SupportLogger } from './supportLogger';
 
 export interface TelemetryHooks {
@@ -280,7 +281,7 @@ export function redactBodyPreview(body: string, contentType?: string | null): st
     if (trimmed[0] === '{' || trimmed[0] === '[') {
       const parsed = tryParseJson(trimmed);
       if (parsed !== null && typeof parsed === 'object') {
-        return JSON.stringify(redactJsonValue(parsed, 0));
+        return JSON.stringify(redactJsonValue(redactProbeSecrets(parsed), 0));
       }
     } else if (WELL_FORMED_FORM.test(body)) {
       return redactFormBody(body, 0);
