@@ -55,6 +55,10 @@ jobs:
         npm run format:check
         npm run typecheck
         npm test
+        # CI's blocking API Surface Check: new public methods must land in etc/*.api.md
+        # (`npm run api:update`), or the PR goes up red.
+        npm run build:types
+        npm run api:check
       # `npm test` re-records the asserted response bodies.
       verify-artifacts: |
         json-body-assertions/responses.json
